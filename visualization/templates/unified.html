@@ -2,10 +2,10 @@
 
 {% set active_page = 'unified' %}
 
-{% block page_title %}{{ t('nav.unified_view') }}{% endblock %}
+{% block page_title %}{{ t('nav.unified_view') or 'Unified View' }}{% endblock %}
 
 {% block page_subtitle %}
-<p>{{ t('unified.subtitle') or 'Cross-domain monitoring and observability' }}</p>
+<p>{{ t('unified.subtitle') or 'Cross-domain monitoring and observability - Single pane of glass' }}</p>
 {% endblock %}
 
 {% block topbar_actions %}
@@ -15,7 +15,7 @@
     <option value="168">Last 7d</option>
     <option value="720">Last 30d</option>
 </select>
-<button class="btn btn-primary" onclick="refreshData()">
+<button class="btn btn-primary" onclick="refreshAllData()">
     <i data-lucide="refresh-cw"></i>
     <span>Refresh</span>
 </button>
@@ -23,24 +23,28 @@
 
 {% block sidebar_extra %}
 <div class="nav-group">
-    <span class="nav-group-title">{{ t('nav.domains') }}</span>
-    <a href="#models" class="nav-link">
-        <i data-lucide="cpu"></i>
-        <span>{{ t('nav.models') or 'Models' }}</span>
+    <span class="nav-group-title">{{ t('nav.domains') or 'Domains' }}</span>
+    <a href="#topology-section" class="nav-link">
+        <i data-lucide="network"></i>
+        <span>{{ t('nav.topology') or 'Topology' }}</span>
     </a>
-    <a href="#infrastructure" class="nav-link">
-        <i data-lucide="server"></i>
-        <span>{{ t('nav.infrastructure') or 'Infrastructure' }}</span>
+    <a href="#metrics-section" class="nav-link">
+        <i data-lucide="activity"></i>
+        <span>{{ t('nav.metrics') or 'Metrics' }}</span>
     </a>
-    <a href="#costs" class="nav-link">
+    <a href="#costs-section" class="nav-link">
         <i data-lucide="dollar-sign"></i>
         <span>{{ t('nav.costs') or 'Costs' }}</span>
     </a>
-    <a href="#carbon" class="nav-link">
+    <a href="#carbon-section" class="nav-link">
         <i data-lucide="leaf"></i>
         <span>{{ t('nav.carbon') or 'Carbon' }}</span>
     </a>
-    <a href="#compliance" class="nav-link">
+    <a href="#slo-section" class="nav-link">
+        <i data-lucide="target"></i>
+        <span>{{ t('nav.slo') or 'SLOs' }}</span>
+    </a>
+    <a href="#compliance-section" class="nav-link">
         <i data-lucide="shield"></i>
         <span>{{ t('nav.compliance') or 'Compliance' }}</span>
     </a>
@@ -48,29 +52,113 @@
 {% endblock %}
 
 {% block content %}
+<!-- Overview KPIs -->
+<div class="kpi-grid" id="overview-kpis">
+    <div class="kpi-card">
+        <div class="kpi-icon primary">
+            <i data-lucide="cpu"></i>
+        </div>
+        <div class="kpi-label">{{ t('unified.total_models') or 'AI Models' }}</div>
+        <div class="kpi-value" id="kpiModels">12</div>
+        <div class="kpi-trend stable">
+            <i data-lucide="minus"></i>
+            <span>Stable</span>
+        </div>
+    </div>
+
+    <div class="kpi-card">
+        <div class="kpi-icon success">
+            <i data-lucide="check-circle"></i>
+        </div>
+        <div class="kpi-label">{{ t('unified.healthy_services') or 'Healthy Services' }}</div>
+        <div class="kpi-value" id="kpiHealthy" style="color: var(--color-success);">28</div>
+        <div class="kpi-trend up">
+            <i data-lucide="trending-up"></i>
+            <span>+2</span>
+        </div>
+    </div>
+
+    <div class="kpi-card">
+        <div class="kpi-icon warning">
+            <i data-lucide="alert-triangle"></i>
+        </div>
+        <div class="kpi-label">{{ t('unified.degraded') or 'Degraded' }}</div>
+        <div class="kpi-value" id="kpiDegraded" style="color: var(--color-warning);">3</div>
+        <div class="kpi-trend stable">
+            <i data-lucide="minus"></i>
+            <span>No change</span>
+        </div>
+    </div>
+
+    <div class="kpi-card">
+        <div class="kpi-icon danger">
+            <i data-lucide="x-circle"></i>
+        </div>
+        <div class="kpi-label">{{ t('unified.unhealthy') or 'Unhealthy' }}</div>
+        <div class="kpi-value" id="kpiUnhealthy" style="color: var(--color-danger);">1</div>
+        <div class="kpi-trend down">
+            <i data-lucide="trending-down"></i>
+            <span>-1</span>
+        </div>
+    </div>
+</div>
+
 <!-- Service Topology -->
-<div class="card mb-6" id="models">
+<div class="card mb-6" id="topology-section">
     <div class="card-header">
-        <h3 class="card-title">Service Topology</h3>
+        <h3 class="card-title">
+            <i data-lucide="network" style="width: 18px; height: 18px; margin-right: 8px;"></i>
+            {{ t('unified.service_topology') or 'Service Topology' }}
+        </h3>
         <div class="flex gap-2">
             <span class="badge badge-healthy">
                 <span class="badge-dot"></span>
-                Healthy: <span id="healthyNodes">-</span>
+                Healthy: <span id="healthyNodes">9</span>
             </span>
             <span class="badge badge-warning">
                 <span class="badge-dot"></span>
-                Degraded: <span id="degradedNodes">-</span>
+                Degraded: <span id="degradedNodes">1</span>
             </span>
         </div>
     </div>
     <div id="topologyGraph" class="graph-container"></div>
+    <div id="topologyLegend" class="flex gap-4 justify-center mt-4" style="flex-wrap: wrap;">
+        <div class="flex items-center gap-2">
+            <span style="width: 12px; height: 12px; background: #6366f1; border-radius: 50%;"></span>
+            <span class="text-sm text-muted">Endpoint</span>
+        </div>
+        <div class="flex items-center gap-2">
+            <span style="width: 12px; height: 12px; background: #8b5cf6; border-radius: 50%;"></span>
+            <span class="text-sm text-muted">Router</span>
+        </div>
+        <div class="flex items-center gap-2">
+            <span style="width: 12px; height: 12px; background: #10b981; border-radius: 50%;"></span>
+            <span class="text-sm text-muted">Model</span>
+        </div>
+        <div class="flex items-center gap-2">
+            <span style="width: 12px; height: 12px; background: #3b82f6; border-radius: 50%;"></span>
+            <span class="text-sm text-muted">Data</span>
+        </div>
+        <div class="flex items-center gap-2">
+            <span style="width: 12px; height: 12px; background: #f59e0b; border-radius: 50%;"></span>
+            <span class="text-sm text-muted">Infrastructure</span>
+        </div>
+        <div class="flex items-center gap-2">
+            <span style="width: 12px; height: 12px; background: #ef4444; border-radius: 50%;"></span>
+            <span class="text-sm text-muted">Monitoring</span>
+        </div>
+    </div>
 </div>
 
 <!-- Metrics Grid -->
-<div class="grid grid-3 mb-6" id="infrastructure">
+<div class="grid grid-3 mb-6" id="metrics-section">
     <div class="card">
         <div class="card-header">
-            <h3 class="card-title">Latency P99</h3>
+            <h3 class="card-title">
+                <i data-lucide="clock" style="width: 16px; height: 16px; margin-right: 6px;"></i>
+                {{ t('unified.latency_p99') or 'Latency P99' }}
+            </h3>
+            <span class="badge badge-healthy">145ms avg</span>
         </div>
         <div class="chart-container" style="height: 200px;">
             <canvas id="latencyChart"></canvas>
@@ -79,7 +167,11 @@
 
     <div class="card">
         <div class="card-header">
-            <h3 class="card-title">Throughput</h3>
+            <h3 class="card-title">
+                <i data-lucide="zap" style="width: 16px; height: 16px; margin-right: 6px;"></i>
+                {{ t('unified.throughput') or 'Throughput' }}
+            </h3>
+            <span class="badge badge-info">1.2K req/s</span>
         </div>
         <div class="chart-container" style="height: 200px;">
             <canvas id="throughputChart"></canvas>
@@ -88,7 +180,11 @@
 
     <div class="card">
         <div class="card-header">
-            <h3 class="card-title">Error Rate</h3>
+            <h3 class="card-title">
+                <i data-lucide="alert-circle" style="width: 16px; height: 16px; margin-right: 6px;"></i>
+                {{ t('unified.error_rate') or 'Error Rate' }}
+            </h3>
+            <span class="badge badge-warning">0.8%</span>
         </div>
         <div class="chart-container" style="height: 200px;">
             <canvas id="errorChart"></canvas>
@@ -98,56 +194,132 @@
 
 <!-- Cost & Carbon Row -->
 <div class="grid grid-2 mb-6">
-    <div class="card" id="costs">
+    <div class="card" id="costs-section">
         <div class="card-header">
-            <h3 class="card-title">Cost Breakdown</h3>
+            <h3 class="card-title">
+                <i data-lucide="dollar-sign" style="width: 16px; height: 16px; margin-right: 6px;"></i>
+                {{ t('unified.cost_breakdown') or 'Cost Breakdown (30d)' }}
+            </h3>
+            <span class="badge badge-warning">
+                <i data-lucide="trending-up" style="width: 12px; height: 12px;"></i>
+                +12%
+            </span>
         </div>
         <div class="grid grid-2">
-            <div class="chart-container" style="height: 200px;">
+            <div class="chart-container" style="height: 220px;">
                 <canvas id="costChart"></canvas>
             </div>
-            <div id="costDetails" class="flex flex-col justify-center">
-                <div class="loader"><div class="spinner"></div></div>
+            <div id="costDetails" class="flex flex-col justify-center" style="padding: 1rem;">
+                <div class="mb-4">
+                    <div class="text-sm text-muted">Total (30d)</div>
+                    <div class="kpi-value">$45,230</div>
+                </div>
+                <div class="mb-4">
+                    <div class="text-sm text-muted">Forecast Next Month</div>
+                    <div class="font-semibold" style="font-size: 1.25rem;">$50,750</div>
+                </div>
+                <div class="kpi-trend up">
+                    <i data-lucide="trending-up"></i>
+                    <span>12% vs last period</span>
+                </div>
+                <div style="margin-top: 1rem;">
+                    <div class="text-xs text-muted mb-2">Top Categories:</div>
+                    <div class="flex items-center gap-2 mb-1">
+                        <span style="width: 8px; height: 8px; background: #6366f1; border-radius: 2px;"></span>
+                        <span class="text-sm">Inference: $28,500</span>
+                    </div>
+                    <div class="flex items-center gap-2 mb-1">
+                        <span style="width: 8px; height: 8px; background: #10b981; border-radius: 2px;"></span>
+                        <span class="text-sm">Training: $8,200</span>
+                    </div>
+                    <div class="flex items-center gap-2">
+                        <span style="width: 8px; height: 8px; background: #f59e0b; border-radius: 2px;"></span>
+                        <span class="text-sm">Storage: $4,530</span>
+                    </div>
+                </div>
             </div>
         </div>
     </div>
 
-    <div class="card" id="carbon">
+    <div class="card" id="carbon-section">
         <div class="card-header">
-            <h3 class="card-title">Carbon Metrics</h3>
+            <h3 class="card-title">
+                <i data-lucide="leaf" style="width: 16px; height: 16px; margin-right: 6px;"></i>
+                {{ t('unified.carbon_metrics') or 'Carbon Metrics (30d)' }}
+            </h3>
+            <span class="badge badge-healthy">
+                <i data-lucide="trending-down" style="width: 12px; height: 12px;"></i>
+                -8%
+            </span>
         </div>
         <div class="grid grid-2">
-            <div class="chart-container" style="height: 200px;">
+            <div class="chart-container" style="height: 220px;">
                 <canvas id="carbonChart"></canvas>
             </div>
-            <div id="carbonDetails" class="flex flex-col justify-center">
-                <div class="loader"><div class="spinner"></div></div>
+            <div id="carbonDetails" class="flex flex-col justify-center" style="padding: 1rem;">
+                <div class="mb-4">
+                    <div class="text-sm text-muted">Total Emissions</div>
+                    <div class="kpi-value">1,250 kg</div>
+                </div>
+                <div class="mb-4">
+                    <div class="text-sm text-muted">Green Energy Usage</div>
+                    <div class="font-semibold" style="font-size: 1.25rem; color: var(--color-success);">65%</div>
+                </div>
+                <div class="kpi-trend down">
+                    <i data-lucide="trending-down"></i>
+                    <span>8% reduction vs last period</span>
+                </div>
+                <div style="margin-top: 1rem;">
+                    <div class="text-xs text-muted mb-2">By Activity:</div>
+                    <div class="flex items-center gap-2 mb-1">
+                        <span style="width: 8px; height: 8px; background: #10b981; border-radius: 2px;"></span>
+                        <span class="text-sm">Inference: 750 kg</span>
+                    </div>
+                    <div class="flex items-center gap-2 mb-1">
+                        <span style="width: 8px; height: 8px; background: #22c55e; border-radius: 2px;"></span>
+                        <span class="text-sm">Training: 350 kg</span>
+                    </div>
+                    <div class="flex items-center gap-2">
+                        <span style="width: 8px; height: 8px; background: #4ade80; border-radius: 2px;"></span>
+                        <span class="text-sm">Storage: 100 kg</span>
+                    </div>
+                </div>
             </div>
         </div>
     </div>
 </div>
 
 <!-- SLO Status -->
-<div class="card mb-6">
+<div class="card mb-6" id="slo-section">
     <div class="card-header">
-        <h3 class="card-title">SLO Status</h3>
+        <h3 class="card-title">
+            <i data-lucide="target" style="width: 16px; height: 16px; margin-right: 6px;"></i>
+            {{ t('unified.slo_status') or 'SLO Status' }}
+        </h3>
         <span id="sloOverall" class="badge badge-healthy">
             <span class="badge-dot"></span>
             98.7% Compliant
         </span>
     </div>
-    <div id="sloGrid" class="grid grid-auto">
-        <div class="loader"><div class="spinner"></div></div>
+    <div id="sloGrid" class="grid grid-auto" style="gap: 1rem;">
+        <!-- SLO cards will be populated here -->
     </div>
 </div>
 
 <!-- Compliance Status -->
-<div class="card" id="compliance">
+<div class="card" id="compliance-section">
     <div class="card-header">
-        <h3 class="card-title">Compliance Status</h3>
+        <h3 class="card-title">
+            <i data-lucide="shield-check" style="width: 16px; height: 16px; margin-right: 6px;"></i>
+            {{ t('unified.compliance_status') or 'Compliance Status' }}
+        </h3>
+        <span class="badge badge-healthy">
+            <span class="badge-dot"></span>
+            92% Overall Score
+        </span>
     </div>
-    <div id="complianceGrid" class="grid grid-4">
-        <div class="loader"><div class="spinner"></div></div>
+    <div id="complianceGrid" class="grid grid-4" style="gap: 1rem;">
+        <!-- Compliance cards will be populated here -->
     </div>
 </div>
 {% endblock %}
@@ -155,26 +327,72 @@
 {% block scripts %}
 <script>
 let charts = {};
+let refreshTimer = null;
 
 document.addEventListener('DOMContentLoaded', async () => {
-    await Promise.all([
-        loadTopology(),
-        loadMetrics(),
-        loadCosts(),
-        loadCarbon(),
-        loadSLO(),
-        loadCompliance()
-    ]);
+    console.log('Initializing Unified View...');
+
+    // Initialize all components
+    await initializeDashboard();
+
+    // Set up auto-refresh every 30 seconds
+    refreshTimer = setInterval(refreshMetrics, 30000);
+
     lucide.createIcons();
+    console.log('Unified View initialized successfully');
 });
 
-async function refreshData() {
-    await Promise.all([
-        loadMetrics(),
-        loadCosts(),
-        loadCarbon()
-    ]);
-    showToast('Data refreshed', 'success');
+async function initializeDashboard() {
+    try {
+        await Promise.all([
+            loadTopology(),
+            loadMetrics(),
+            loadCosts(),
+            loadCarbon(),
+            loadSLO(),
+            loadCompliance(),
+            loadOverviewKPIs()
+        ]);
+    } catch (error) {
+        console.error('Error initializing dashboard:', error);
+        showToast('Some data failed to load', 'warning');
+    }
+}
+
+async function refreshAllData() {
+    showToast('Refreshing data...', 'info');
+    await initializeDashboard();
+    lucide.createIcons();
+    showToast('Data refreshed successfully', 'success');
+}
+
+async function refreshMetrics() {
+    try {
+        await Promise.all([
+            loadMetrics(),
+            loadCosts(),
+            loadCarbon()
+        ]);
+    } catch (error) {
+        console.error('Error refreshing metrics:', error);
+    }
+}
+
+async function loadOverviewKPIs() {
+    try {
+        const response = await fetch('/api/dashboard/overview');
+        const result = await response.json();
+
+        if (result.success) {
+            const data = result.data;
+            document.getElementById('kpiModels').textContent = data.summary.total_models;
+            document.getElementById('kpiHealthy').textContent = data.health.healthy;
+            document.getElementById('kpiDegraded').textContent = data.health.degraded;
+            document.getElementById('kpiUnhealthy').textContent = data.health.unhealthy;
+        }
+    } catch (error) {
+        console.error('Error loading overview KPIs:', error);
+    }
 }
 
 async function loadTopology() {
@@ -192,25 +410,23 @@ async function loadTopology() {
             document.getElementById('healthyNodes').textContent = healthy;
             document.getElementById('degradedNodes').textContent = degraded;
         } else {
-            container.innerHTML = `
-                <div class="empty-state">
-                    <i data-lucide="network"></i>
-                    <h3>No topology data</h3>
-                    <p class="text-muted">Connect services to view the topology</p>
-                </div>
-            `;
-            lucide.createIcons();
+            renderEmptyTopology(container);
         }
     } catch (error) {
         console.error('Error loading topology:', error);
-        container.innerHTML = `
-            <div class="empty-state">
-                <i data-lucide="alert-circle"></i>
-                <h3>Error loading topology</h3>
-            </div>
-        `;
-        lucide.createIcons();
+        renderEmptyTopology(container);
     }
+}
+
+function renderEmptyTopology(container) {
+    container.innerHTML = `
+        <div class="empty-state">
+            <i data-lucide="network"></i>
+            <h3>No topology data available</h3>
+            <p class="text-muted">Connect services to view the topology</p>
+        </div>
+    `;
+    lucide.createIcons();
 }
 
 function renderTopology(data) {
@@ -226,14 +442,18 @@ function renderTopology(data) {
         .attr('height', height)
         .attr('viewBox', `0 0 ${width} ${height}`);
 
-    svg.append('defs').append('marker')
+    // Add gradient definitions
+    const defs = svg.append('defs');
+
+    // Arrow marker
+    defs.append('marker')
         .attr('id', 'arrowhead')
         .attr('viewBox', '-0 -5 10 10')
-        .attr('refX', 25)
+        .attr('refX', 28)
         .attr('refY', 0)
         .attr('orient', 'auto')
-        .attr('markerWidth', 8)
-        .attr('markerHeight', 8)
+        .attr('markerWidth', 6)
+        .attr('markerHeight', 6)
         .append('path')
         .attr('d', 'M 0,-5 L 10,0 L 0,5')
         .attr('fill', '#94a3b8');
@@ -247,20 +467,32 @@ function renderTopology(data) {
         monitoring: '#ef4444'
     };
 
-    const simulation = d3.forceSimulation(data.nodes)
-        .force('link', d3.forceLink(data.edges).id(d => d.id).distance(120))
-        .force('charge', d3.forceManyBody().strength(-400))
-        .force('center', d3.forceCenter(width / 2, height / 2))
-        .force('collision', d3.forceCollide().radius(40));
+    const typeIcons = {
+        endpoint: 'globe',
+        router: 'share-2',
+        model: 'cpu',
+        data: 'database',
+        infrastructure: 'server',
+        monitoring: 'activity'
+    };
 
+    const simulation = d3.forceSimulation(data.nodes)
+        .force('link', d3.forceLink(data.edges).id(d => d.id).distance(130))
+        .force('charge', d3.forceManyBody().strength(-500))
+        .force('center', d3.forceCenter(width / 2, height / 2))
+        .force('collision', d3.forceCollide().radius(45));
+
+    // Draw edges
     const link = svg.append('g')
         .selectAll('line')
         .data(data.edges)
         .join('line')
-        .attr('stroke', '#e2e8f0')
+        .attr('stroke', '#cbd5e1')
         .attr('stroke-width', 2)
+        .attr('stroke-dasharray', d => d.type === 'cache' ? '5,5' : 'none')
         .attr('marker-end', 'url(#arrowhead)');
 
+    // Draw nodes
     const node = svg.append('g')
         .selectAll('g')
         .data(data.nodes)
@@ -270,13 +502,26 @@ function renderTopology(data) {
             .on('drag', dragged)
             .on('end', dragended));
 
+    // Node circles with shadow
     node.append('circle')
-        .attr('r', 25)
+        .attr('r', 28)
         .attr('fill', d => d.status === 'healthy' ? typeColors[d.type] || '#6366f1' :
             d.status === 'degraded' ? '#f59e0b' : '#ef4444')
         .attr('stroke', 'white')
-        .attr('stroke-width', 3);
+        .attr('stroke-width', 3)
+        .style('filter', 'drop-shadow(0 4px 6px rgba(0, 0, 0, 0.1))');
 
+    // Status indicator ring for degraded/unhealthy
+    node.filter(d => d.status !== 'healthy')
+        .append('circle')
+        .attr('r', 32)
+        .attr('fill', 'none')
+        .attr('stroke', d => d.status === 'degraded' ? '#f59e0b' : '#ef4444')
+        .attr('stroke-width', 2)
+        .attr('stroke-dasharray', '4,4')
+        .style('animation', 'pulse 2s infinite');
+
+    // Node labels (abbreviated)
     node.append('text')
         .text(d => d.label.substring(0, 4))
         .attr('text-anchor', 'middle')
@@ -285,13 +530,24 @@ function renderTopology(data) {
         .attr('font-size', '10px')
         .attr('font-weight', '600');
 
+    // Full label below node
+    node.append('text')
+        .text(d => d.label.length > 12 ? d.label.substring(0, 12) + '...' : d.label)
+        .attr('text-anchor', 'middle')
+        .attr('dy', 48)
+        .attr('fill', 'var(--text-secondary)')
+        .attr('font-size', '10px')
+        .attr('font-weight', '500');
+
+    // Tooltip
     node.append('title')
         .text(d => `${d.label}\nType: ${d.type}\nStatus: ${d.status}`);
 
     simulation.on('tick', () => {
+        // Constrain nodes within bounds
         data.nodes.forEach(d => {
-            d.x = Math.max(30, Math.min(width - 30, d.x));
-            d.y = Math.max(30, Math.min(height - 30, d.y));
+            d.x = Math.max(40, Math.min(width - 40, d.x));
+            d.y = Math.max(40, Math.min(height - 40, d.y));
         });
 
         link.attr('x1', d => d.source.x)
@@ -321,70 +577,92 @@ function renderTopology(data) {
 }
 
 async function loadMetrics() {
-    const chartOptions = (unit) => ({
+    const chartOptions = (unit, color = '#6366f1') => ({
         responsive: true,
         maintainAspectRatio: false,
-        plugins: { legend: { display: false } },
+        plugins: {
+            legend: { display: false },
+            tooltip: {
+                backgroundColor: 'rgba(15, 23, 42, 0.9)',
+                titleFont: { size: 12, weight: '600' },
+                bodyFont: { size: 11 },
+                padding: 10,
+                cornerRadius: 6
+            }
+        },
         scales: {
-            x: { grid: { display: false }, ticks: { color: '#64748b', font: { size: 10 } } },
-            y: { grid: { color: '#e2e8f0' }, ticks: { color: '#64748b', callback: v => v + unit } }
+            x: {
+                grid: { display: false },
+                ticks: { color: '#64748b', font: { size: 10 }, maxTicksLimit: 8 }
+            },
+            y: {
+                grid: { color: '#e2e8f0' },
+                ticks: {
+                    color: '#64748b',
+                    callback: v => v + unit,
+                    font: { size: 10 }
+                }
+            }
         }
     });
 
     const labels = generateLabels(24);
 
-    // Latency
+    // Latency Chart
     if (charts.latency) charts.latency.destroy();
     charts.latency = new Chart(document.getElementById('latencyChart').getContext('2d'), {
         type: 'line',
         data: {
             labels,
             datasets: [{
-                data: generateData(24, 80, 150),
+                data: generateData(24, 80, 180),
                 borderColor: '#6366f1',
                 backgroundColor: 'rgba(99, 102, 241, 0.1)',
                 fill: true,
                 tension: 0.4,
                 borderWidth: 2,
-                pointRadius: 0
+                pointRadius: 0,
+                pointHoverRadius: 4
             }]
         },
         options: chartOptions('ms')
     });
 
-    // Throughput
+    // Throughput Chart
     if (charts.throughput) charts.throughput.destroy();
     charts.throughput = new Chart(document.getElementById('throughputChart').getContext('2d'), {
         type: 'line',
         data: {
             labels,
             datasets: [{
-                data: generateData(24, 800, 1500),
-                borderColor: '#10b981',
-                backgroundColor: 'rgba(16, 185, 129, 0.1)',
+                data: generateData(24, 900, 1500),
+                borderColor: '#3b82f6',
+                backgroundColor: 'rgba(59, 130, 246, 0.1)',
                 fill: true,
                 tension: 0.4,
                 borderWidth: 2,
-                pointRadius: 0
+                pointRadius: 0,
+                pointHoverRadius: 4
             }]
         },
         options: chartOptions('/s')
     });
 
-    // Error Rate
+    // Error Rate Chart
     if (charts.error) charts.error.destroy();
     charts.error = new Chart(document.getElementById('errorChart').getContext('2d'), {
         type: 'line',
         data: {
             labels,
             datasets: [{
-                data: generateData(24, 0.1, 1.5),
+                data: generateData(24, 0.2, 1.5),
                 borderColor: '#ef4444',
                 backgroundColor: 'rgba(239, 68, 68, 0.1)',
                 fill: true,
                 tension: 0.4,
                 borderWidth: 2,
-                pointRadius: 0
+                pointRadius: 0,
+                pointHoverRadius: 4
             }]
         },
         options: chartOptions('%')
@@ -407,29 +685,49 @@ async function loadCosts() {
                     datasets: [{
                         data: Object.values(data.by_category),
                         backgroundColor: ['#6366f1', '#10b981', '#f59e0b', '#ef4444', '#3b82f6'],
-                        borderWidth: 0
+                        borderWidth: 0,
+                        spacing: 2
                     }]
                 },
                 options: {
                     responsive: true,
                     maintainAspectRatio: false,
-                    cutout: '60%',
-                    plugins: { legend: { display: false } }
+                    cutout: '65%',
+                    plugins: {
+                        legend: { display: false },
+                        tooltip: {
+                            callbacks: {
+                                label: function(context) {
+                                    return `${context.label}: $${context.raw.toLocaleString()}`;
+                                }
+                            }
+                        }
+                    }
                 }
             });
 
+            // Update cost details
             document.getElementById('costDetails').innerHTML = `
                 <div class="mb-4">
                     <div class="text-sm text-muted">Total (30d)</div>
                     <div class="kpi-value">$${data.total.toLocaleString()}</div>
                 </div>
                 <div class="mb-4">
-                    <div class="text-sm text-muted">Forecast</div>
+                    <div class="text-sm text-muted">Forecast Next Month</div>
                     <div class="font-semibold" style="font-size: 1.25rem;">$${data.forecast_next_month.toLocaleString()}</div>
                 </div>
                 <div class="kpi-trend ${data.trend}">
                     <i data-lucide="trending-${data.trend}"></i>
                     <span>${data.trend_pct}% vs last period</span>
+                </div>
+                <div style="margin-top: 1rem;">
+                    <div class="text-xs text-muted mb-2">Top Categories:</div>
+                    ${Object.entries(data.by_category).slice(0, 3).map(([key, val], i) => `
+                        <div class="flex items-center gap-2 mb-1">
+                            <span style="width: 8px; height: 8px; background: ${['#6366f1', '#10b981', '#f59e0b'][i]}; border-radius: 2px;"></span>
+                            <span class="text-sm">${key}: $${val.toLocaleString()}</span>
+                        </div>
+                    `).join('')}
                 </div>
             `;
             lucide.createIcons();
@@ -455,29 +753,49 @@ async function loadCarbon() {
                     datasets: [{
                         data: Object.values(data.by_activity),
                         backgroundColor: ['#10b981', '#22c55e', '#4ade80', '#86efac'],
-                        borderWidth: 0
+                        borderWidth: 0,
+                        spacing: 2
                     }]
                 },
                 options: {
                     responsive: true,
                     maintainAspectRatio: false,
-                    cutout: '60%',
-                    plugins: { legend: { display: false } }
+                    cutout: '65%',
+                    plugins: {
+                        legend: { display: false },
+                        tooltip: {
+                            callbacks: {
+                                label: function(context) {
+                                    return `${context.label}: ${context.raw.toLocaleString()} kg CO2`;
+                                }
+                            }
+                        }
+                    }
                 }
             });
 
+            // Update carbon details
             document.getElementById('carbonDetails').innerHTML = `
                 <div class="mb-4">
-                    <div class="text-sm text-muted">Total (30d)</div>
+                    <div class="text-sm text-muted">Total Emissions</div>
                     <div class="kpi-value">${data.total_carbon_kg.toLocaleString()} kg</div>
                 </div>
                 <div class="mb-4">
-                    <div class="text-sm text-muted">Green Energy</div>
+                    <div class="text-sm text-muted">Green Energy Usage</div>
                     <div class="font-semibold" style="font-size: 1.25rem; color: var(--color-success);">${data.green_energy_pct}%</div>
                 </div>
                 <div class="kpi-trend ${data.trend}">
                     <i data-lucide="trending-${data.trend}"></i>
-                    <span>${data.trend_pct}% vs last period</span>
+                    <span>${Math.abs(data.trend_pct)}% ${data.trend === 'down' ? 'reduction' : 'increase'} vs last period</span>
+                </div>
+                <div style="margin-top: 1rem;">
+                    <div class="text-xs text-muted mb-2">By Activity:</div>
+                    ${Object.entries(data.by_activity).slice(0, 3).map(([key, val], i) => `
+                        <div class="flex items-center gap-2 mb-1">
+                            <span style="width: 8px; height: 8px; background: ${['#10b981', '#22c55e', '#4ade80'][i]}; border-radius: 2px;"></span>
+                            <span class="text-sm">${key}: ${val.toLocaleString()} kg</span>
+                        </div>
+                    `).join('')}
                 </div>
             `;
             lucide.createIcons();
@@ -506,18 +824,31 @@ async function loadSLO() {
                         <span class="font-semibold text-sm">${slo.name}</span>
                         <span class="badge badge-${slo.status}">${slo.status}</span>
                     </div>
-                    <div class="kpi-value" style="font-size: 1.5rem;">${slo.current}${slo.unit}</div>
-                    <div class="mt-4">
-                        <div style="height: 6px; background: var(--border-color); border-radius: 3px; overflow: hidden;">
-                            <div style="height: 100%; width: ${slo.error_budget_remaining_pct}%; background: ${slo.error_budget_remaining_pct > 50 ? 'var(--color-success)' : slo.error_budget_remaining_pct > 20 ? 'var(--color-warning)' : 'var(--color-danger)'}; border-radius: 3px;"></div>
+                    <div class="flex items-center gap-2 mb-2">
+                        <div class="kpi-value" style="font-size: 1.75rem;">${slo.current}${slo.unit}</div>
+                        <div class="text-sm text-muted">/ ${slo.target}${slo.unit} target</div>
+                    </div>
+                    <div style="margin-top: 0.75rem;">
+                        <div class="flex justify-between text-xs text-muted mb-1">
+                            <span>Error Budget</span>
+                            <span>${slo.error_budget_remaining_pct}% remaining</span>
                         </div>
-                        <div class="text-xs text-muted mt-1">Error budget: ${slo.error_budget_remaining_pct}% remaining</div>
+                        <div style="height: 6px; background: var(--border-color); border-radius: 3px; overflow: hidden;">
+                            <div style="height: 100%; width: ${slo.error_budget_remaining_pct}%; background: ${slo.error_budget_remaining_pct > 50 ? 'var(--color-success)' : slo.error_budget_remaining_pct > 20 ? 'var(--color-warning)' : 'var(--color-danger)'}; border-radius: 3px; transition: width 0.3s ease;"></div>
+                        </div>
                     </div>
                 </div>
             `).join('');
         }
     } catch (error) {
         console.error('Error loading SLO:', error);
+        document.getElementById('sloGrid').innerHTML = `
+            <div class="empty-state">
+                <i data-lucide="target"></i>
+                <h3>Unable to load SLO data</h3>
+            </div>
+        `;
+        lucide.createIcons();
     }
 }
 
@@ -530,12 +861,13 @@ async function loadCompliance() {
             const data = result.data;
 
             document.getElementById('complianceGrid').innerHTML = Object.entries(data.categories).map(([key, cat]) => `
-                <div class="card text-center" style="padding: 1rem;">
-                    <div class="kpi-value" style="color: ${cat.status === 'compliant' ? 'var(--color-success)' : 'var(--color-warning)'};">
+                <div class="card text-center" style="padding: 1.25rem;">
+                    <div class="kpi-value" style="font-size: 2rem; color: ${cat.status === 'compliant' ? 'var(--color-success)' : 'var(--color-warning)'};">
                         ${cat.score}
                     </div>
-                    <div class="text-sm text-muted mb-2">${key.replace(/_/g, ' ')}</div>
+                    <div class="text-sm text-muted mb-2" style="text-transform: capitalize;">${key.replace(/_/g, ' ')}</div>
                     <span class="badge badge-${cat.status === 'compliant' ? 'healthy' : 'warning'}">
+                        <span class="badge-dot"></span>
                         ${cat.status}
                     </span>
                 </div>
@@ -543,6 +875,13 @@ async function loadCompliance() {
         }
     } catch (error) {
         console.error('Error loading compliance:', error);
+        document.getElementById('complianceGrid').innerHTML = `
+            <div class="empty-state" style="grid-column: 1 / -1;">
+                <i data-lucide="shield"></i>
+                <h3>Unable to load compliance data</h3>
+            </div>
+        `;
+        lucide.createIcons();
     }
 }
 
@@ -566,5 +905,41 @@ function generateData(count, min, max) {
     }
     return data;
 }
+
+// Time range change handler
+document.getElementById('timeRange')?.addEventListener('change', async (e) => {
+    const hours = parseInt(e.target.value);
+    await loadMetrics();
+    showToast(`Showing data for last ${hours}h`, 'info');
+});
+
+// Cleanup on page unload
+window.addEventListener('beforeunload', () => {
+    if (refreshTimer) {
+        clearInterval(refreshTimer);
+    }
+});
 </script>
+
+<style>
+/* Additional styles for unified view */
+@keyframes pulse {
+    0%, 100% { opacity: 1; }
+    50% { opacity: 0.5; }
+}
+
+#topologyGraph svg {
+    background: linear-gradient(135deg, var(--bg-body) 0%, var(--bg-card) 100%);
+    border-radius: var(--radius-lg);
+}
+
+.grid-auto {
+    grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+}
+
+/* Smooth transitions for charts */
+canvas {
+    transition: opacity 0.3s ease;
+}
+</style>
 {% endblock %}

@@ -13,7 +13,8 @@ import psutil
 
 from .routers import (
     dashboard_router, metrics_router, profiles_router, i18n_router,
-    realtime_router, assistant_router, ingestion_router, monitoring_router
+    realtime_router, assistant_router, ingestion_router, monitoring_router,
+    federated_router
 )
 from .i18n import I18nMiddleware, SUPPORTED_LANGUAGES, get_translator
 from .i18n.middleware import create_i18n_context
@@ -96,6 +97,7 @@ app.include_router(realtime_router)
 app.include_router(assistant_router)
 app.include_router(ingestion_router)
 app.include_router(monitoring_router)
+app.include_router(federated_router)
 
 
 # =============================================================================
@@ -277,6 +279,21 @@ async def security_view(request: Request):
             "request": request,
             "title": f"{APP_TITLE} - Security Center",
             "active_page": "security",
+            **i18n
+        }
+    )
+
+
+@app.get("/federated", response_class=HTMLResponse)
+async def federated_view(request: Request):
+    """Federated AI Observability dashboard - Multi-cloud & Multi-vendor"""
+    i18n = create_i18n_context(request)
+    return templates.TemplateResponse(
+        "federated.html",
+        {
+            "request": request,
+            "title": f"{APP_TITLE} - Federated Observability",
+            "active_page": "federated",
             **i18n
         }
     )
