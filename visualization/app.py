@@ -282,6 +282,21 @@ async def security_view(request: Request):
     )
 
 
+@app.get("/onboarding", response_class=HTMLResponse)
+async def onboarding_view(request: Request):
+    """Onboarding flow for new users - persona selection and guided tour"""
+    i18n = create_i18n_context(request)
+    return templates.TemplateResponse(
+        "onboarding.html",
+        {
+            "request": request,
+            "title": f"{APP_TITLE} - Welcome",
+            "active_page": "onboarding",
+            **i18n
+        }
+    )
+
+
 # ============================================================================
 # Request tracking middleware
 # ============================================================================
