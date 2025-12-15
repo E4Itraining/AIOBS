@@ -27,6 +27,64 @@ from pathlib import Path
 import concurrent.futures
 
 
+def check_test_dependencies():
+    """Check for test dependencies and provide helpful error messages."""
+    missing = []
+    optional_missing = []
+
+    # Required dependencies
+    try:
+        import pytest
+    except ImportError:
+        missing.append("pytest")
+
+    # Optional but recommended
+    try:
+        import pytest_asyncio
+    except ImportError:
+        optional_missing.append("pytest-asyncio (for async test support)")
+
+    try:
+        import pytest_cov
+    except ImportError:
+        optional_missing.append("pytest-cov (for coverage reports)")
+
+    try:
+        import pytest_html
+    except ImportError:
+        optional_missing.append("pytest-html (for HTML reports)")
+
+    try:
+        import pytest_timeout
+    except ImportError:
+        optional_missing.append("pytest-timeout (for test timeouts)")
+
+    if missing:
+        print("\n" + "=" * 60, file=sys.stderr)
+        print("ERROR: Missing required test dependencies!", file=sys.stderr)
+        print("=" * 60, file=sys.stderr)
+        print(f"\nThe following packages are required but not installed:", file=sys.stderr)
+        for pkg in missing:
+            print(f"  - {pkg}", file=sys.stderr)
+        print(f"\nTo install them, run:", file=sys.stderr)
+        print(f"  pip install {' '.join(missing)}", file=sys.stderr)
+        print("=" * 60 + "\n", file=sys.stderr)
+        sys.exit(1)
+
+    if optional_missing:
+        print("\n" + "-" * 60)
+        print("NOTE: Some optional test dependencies are not installed:")
+        print("-" * 60)
+        for pkg in optional_missing:
+            print(f"  - {pkg}")
+        print("\nTests will run but some features may be limited.")
+        print("To install all optional dependencies, run:")
+        print("  pip install pytest-asyncio pytest-cov pytest-html pytest-timeout")
+        print("-" * 60 + "\n")
+
+    return True
+
+
 def find_pytest() -> str:
     """Find the pytest executable, checking multiple locations"""
     # First, try to find pytest in PATH
@@ -616,6 +674,9 @@ def main():
     )
 
     args = parser.parse_args()
+
+    # Check dependencies first
+    check_test_dependencies()
 
     # List suites and exit
     if args.list_suites:

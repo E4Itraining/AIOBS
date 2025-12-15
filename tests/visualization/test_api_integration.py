@@ -5,11 +5,17 @@ Tests for API endpoints, request/response handling, and end-to-end flows
 import pytest
 import json
 import asyncio
+import unittest
 from datetime import datetime, timedelta
 from typing import Dict, List, Any, Optional
 from dataclasses import dataclass, asdict
 from unittest.mock import MagicMock, AsyncMock, patch
 from enum import Enum
+
+
+def run_async(coro):
+    """Helper function to run async coroutines in sync tests."""
+    return asyncio.get_event_loop().run_until_complete(coro)
 
 
 # =============================================================================
@@ -200,23 +206,20 @@ class TestHealthEndpoint:
     def client(self):
         return MockAPIClient()
 
-    @pytest.mark.asyncio
-    async def test_health_returns_200(self, client):
+    def test_health_returns_200(self, client):
         """Health endpoint should return 200"""
-        response = await client.get("/health")
+        response = run_async(client.get("/health"))
         assert response.status_code == 200
 
-    @pytest.mark.asyncio
-    async def test_health_response_valid(self, client):
+    def test_health_response_valid(self, client):
         """Health response should be valid"""
-        response = await client.get("/health")
+        response = run_async(client.get("/health"))
         errors = ResponseValidator.validate_health_response(response.body)
         assert len(errors) == 0
 
-    @pytest.mark.asyncio
-    async def test_health_fast_response(self, client):
+    def test_health_fast_response(self, client):
         """Health check should be fast"""
-        response = await client.get("/health")
+        response = run_async(client.get("/health"))
         assert response.elapsed_ms < 100  # < 100ms
 
 
@@ -227,23 +230,20 @@ class TestCognitiveMetricsEndpoint:
     def client(self):
         return MockAPIClient()
 
-    @pytest.mark.asyncio
-    async def test_cognitive_returns_200(self, client):
+    def test_cognitive_returns_200(self, client):
         """Cognitive endpoint should return 200"""
-        response = await client.get("/api/metrics/cognitive")
+        response = run_async(client.get("/api/metrics/cognitive"))
         assert response.status_code == 200
 
-    @pytest.mark.asyncio
-    async def test_cognitive_response_valid(self, client):
+    def test_cognitive_response_valid(self, client):
         """Cognitive response should be valid"""
-        response = await client.get("/api/metrics/cognitive")
+        response = run_async(client.get("/api/metrics/cognitive"))
         errors = ResponseValidator.validate_cognitive_response(response.body)
         assert len(errors) == 0
 
-    @pytest.mark.asyncio
-    async def test_cognitive_contains_trust_score(self, client):
+    def test_cognitive_contains_trust_score(self, client):
         """Response should contain trust score"""
-        response = await client.get("/api/metrics/cognitive")
+        response = run_async(client.get("/api/metrics/cognitive"))
         assert "trust_score" in response.body
         assert 0 <= response.body["trust_score"] <= 1
 
@@ -255,8 +255,7 @@ class TestIngestionEndpoint:
     def client(self):
         return MockAPIClient()
 
-    @pytest.mark.asyncio
-    async def test_metric_ingestion_accepts_valid(self, client):
+    def test_metric_ingestion_accepts_valid(self, client):
         """Should accept valid metric data"""
         data = {
             "metadata": {"source_id": "test", "timestamp": datetime.utcnow().isoformat()},
@@ -265,11 +264,10 @@ class TestIngestionEndpoint:
             ]
         }
 
-        response = await client.post("/api/ingestion/metrics", data)
+        response = run_async(client.post("/api/ingestion/metrics", data))
         assert response.status_code == 202
 
-    @pytest.mark.asyncio
-    async def test_metric_validation_rejects_invalid(self):
+    def test_metric_validation_rejects_invalid(self):
         """Should reject invalid metric data"""
         validator = RequestValidator()
 
@@ -283,8 +281,7 @@ class TestIngestionEndpoint:
         })
         assert len(errors2) > 0
 
-    @pytest.mark.asyncio
-    async def test_log_validation(self):
+    def test_log_validation(self):
         """Should validate log requests"""
         validator = RequestValidator()
 
@@ -308,24 +305,22 @@ class TestAssistantEndpoint:
     def client(self):
         return MockAPIClient()
 
-    @pytest.mark.asyncio
-    async def test_assistant_query(self, client):
+    def test_assistant_query(self, client):
         """Should handle assistant queries"""
-        response = await client.post(
+        response = run_async(client.post(
             "/api/assistant/query",
             {"query": "What is the current system health?"}
-        )
+        ))
 
         assert response.status_code == 200
         assert "response" in response.body
 
-    @pytest.mark.asyncio
-    async def test_assistant_has_confidence(self, client):
+    def test_assistant_has_confidence(self, client):
         """Assistant response should include confidence"""
-        response = await client.post(
+        response = run_async(client.post(
             "/api/assistant/query",
             {"query": "Explain the recent drift detection"}
-        )
+        ))
 
         assert "confidence" in response.body
 
@@ -337,10 +332,9 @@ class TestDashboardEndpoint:
     def client(self):
         return MockAPIClient()
 
-    @pytest.mark.asyncio
-    async def test_dashboard_summary(self, client):
+    def test_dashboard_summary(self, client):
         """Should return dashboard summary"""
-        response = await client.get("/api/dashboard/summary")
+        response = run_async(client.get("/api/dashboard/summary"))
 
         assert response.status_code == 200
         assert "total_models" in response.body
@@ -460,10 +454,9 @@ class TestErrorHandling:
     def client(self):
         return MockAPIClient()
 
-    @pytest.mark.asyncio
-    async def test_404_for_unknown_path(self, client):
+    def test_404_for_unknown_path(self, client):
         """Should return 404 for unknown paths"""
-        response = await client.get("/api/nonexistent")
+        response = run_async(client.get("/api/nonexistent"))
         assert response.status_code == 404
 
     def test_error_response_format(self):
@@ -495,31 +488,29 @@ class TestEndToEndFlows:
     def client(self):
         return MockAPIClient()
 
-    @pytest.mark.asyncio
-    async def test_ingest_and_query_flow(self, client):
+    def test_ingest_and_query_flow(self, client):
         """Complete flow: ingest data, then query"""
         # Step 1: Ingest metric
-        ingest_response = await client.post(
+        ingest_response = run_async(client.post(
             "/api/ingestion/metrics",
             {
                 "metrics": [{"name": "test_metric", "value": 42.0}]
             }
-        )
+        ))
         assert ingest_response.status_code == 202
 
         # Step 2: Query cognitive metrics
-        query_response = await client.get("/api/metrics/cognitive")
+        query_response = run_async(client.get("/api/metrics/cognitive"))
         assert query_response.status_code == 200
 
-    @pytest.mark.asyncio
-    async def test_health_before_operations(self, client):
+    def test_health_before_operations(self, client):
         """Should check health before operations"""
         # Check health first
-        health = await client.get("/health")
+        health = run_async(client.get("/health"))
 
         if health.body.get("status") == "healthy":
             # Proceed with operations
-            response = await client.get("/api/dashboard/summary")
+            response = run_async(client.get("/api/dashboard/summary"))
             assert response.status_code == 200
 
 
@@ -534,27 +525,27 @@ class TestConcurrentRequests:
     def client(self):
         return MockAPIClient()
 
-    @pytest.mark.asyncio
-    async def test_parallel_requests(self, client):
+    def test_parallel_requests(self, client):
         """Should handle parallel requests"""
-        # Create multiple concurrent requests
-        tasks = [
-            client.get("/api/metrics/cognitive"),
-            client.get("/api/dashboard/summary"),
-            client.get("/health"),
-        ]
+        async def run_parallel():
+            # Create multiple concurrent requests
+            tasks = [
+                client.get("/api/metrics/cognitive"),
+                client.get("/api/dashboard/summary"),
+                client.get("/health"),
+            ]
+            return await asyncio.gather(*tasks)
 
-        responses = await asyncio.gather(*tasks)
+        responses = run_async(run_parallel())
 
         # All should succeed
         assert all(r.status_code in (200, 202) for r in responses)
 
-    @pytest.mark.asyncio
-    async def test_request_ordering(self, client):
+    def test_request_ordering(self, client):
         """Should maintain request order tracking"""
-        await client.get("/health")
-        await client.get("/api/metrics/cognitive")
-        await client.get("/api/dashboard/summary")
+        run_async(client.get("/health"))
+        run_async(client.get("/api/metrics/cognitive"))
+        run_async(client.get("/api/dashboard/summary"))
 
         assert len(client.requests) == 3
         assert client.requests[0]["path"] == "/health"
@@ -572,25 +563,22 @@ class TestResponseTimes:
     def client(self):
         return MockAPIClient()
 
-    @pytest.mark.asyncio
-    async def test_health_under_50ms(self, client):
+    def test_health_under_50ms(self, client):
         """Health check should be under 50ms"""
-        response = await client.get("/health")
+        response = run_async(client.get("/health"))
         assert response.elapsed_ms < 50
 
-    @pytest.mark.asyncio
-    async def test_dashboard_under_100ms(self, client):
+    def test_dashboard_under_100ms(self, client):
         """Dashboard should be under 100ms"""
-        response = await client.get("/api/dashboard/summary")
+        response = run_async(client.get("/api/dashboard/summary"))
         assert response.elapsed_ms < 100
 
-    @pytest.mark.asyncio
-    async def test_assistant_under_5s(self, client):
+    def test_assistant_under_5s(self, client):
         """Assistant queries should be under 5s"""
-        response = await client.post(
+        response = run_async(client.post(
             "/api/assistant/query",
             {"query": "Test query"}
-        )
+        ))
         assert response.elapsed_ms < 5000
 
 
