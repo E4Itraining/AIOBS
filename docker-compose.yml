@@ -183,23 +183,26 @@ services:
       start_period: 5s
 
   # ===========================================================================
-  # Prometheus (Optional) - For Prometheus-compatible scraping
+  # VMAgent - VictoriaMetrics Scraping Agent
+  # Collects metrics from services and writes to VictoriaMetrics
   # ===========================================================================
-  prometheus:
-    image: prom/prometheus:v2.48.0
-    container_name: aiobs-prometheus
+  vmagent:
+    image: victoriametrics/vmagent:v1.96.0
+    container_name: aiobs-vmagent
     profiles:
       - monitoring
     ports:
-      - "${PROMETHEUS_PORT:-9090}:9090"
+      - "${VMAGENT_PORT:-8429}:8429"
     volumes:
-      - ./docker/prometheus/prometheus.yml:/etc/prometheus/prometheus.yml:ro
-      - prometheus-data:/prometheus
+      - ./docker/victoriametrics/vmagent.yml:/etc/vmagent/config.yml:ro
+      - vmagent-data:/vmagentdata
     command:
-      - "--config.file=/etc/prometheus/prometheus.yml"
-      - "--storage.tsdb.path=/prometheus"
-      - "--storage.tsdb.retention.time=15d"
-      - "--web.enable-lifecycle"
+      - "--promscrape.config=/etc/vmagent/config.yml"
+      - "--remoteWrite.url=http://victoriametrics:8428/api/v1/write"
+      - "--remoteWrite.tmpDataPath=/vmagentdata"
+    depends_on:
+      victoriametrics:
+        condition: service_healthy
     networks:
       - aiobs-network
     restart: unless-stopped
@@ -248,7 +251,7 @@ volumes:
     driver: local
   redis-data:
     driver: local
-  prometheus-data:
+  vmagent-data:
     driver: local
   grafana-data:
     driver: local
