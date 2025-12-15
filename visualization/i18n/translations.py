@@ -452,6 +452,24 @@ TRANSLATIONS = {
             'profile_title': 'Profile Selection',
             'profile_body': 'Switch between different user profiles to see dashboards tailored for your role.',
             'finish': 'Finish'
+        },
+        'chatbot': {
+            'title': 'AI Assistant',
+            'online': 'Online',
+            'welcome_title': 'Hello! How can I help you?',
+            'welcome_desc': 'Ask me anything about your AI systems, metrics, or how to use AIOBS.',
+            'suggestions': 'Quick questions:',
+            'q_trust': 'Trust score?',
+            'q_alerts': 'Active alerts?',
+            'q_costs': "Today's costs?",
+            'q_navigate': 'How to navigate?',
+            'placeholder': 'Type your question...',
+            'error': 'Sorry, I encountered an error. Please try again.'
+        },
+        'search': {
+            'placeholder': 'Search pages, metrics, services...',
+            'results': 'Quick Navigation',
+            'no_results': 'No results found'
         }
     },
 
@@ -780,6 +798,24 @@ TRANSLATIONS = {
             'profile_title': 'Sélection du Profil',
             'profile_body': 'Basculez entre les différents profils utilisateur pour voir les tableaux de bord adaptés à votre rôle.',
             'finish': 'Terminer'
+        },
+        'chatbot': {
+            'title': 'Assistant IA',
+            'online': 'En ligne',
+            'welcome_title': 'Bonjour ! Comment puis-je vous aider ?',
+            'welcome_desc': 'Posez-moi des questions sur vos systèmes IA, métriques, ou comment utiliser AIOBS.',
+            'suggestions': 'Questions rapides :',
+            'q_trust': 'Score de confiance ?',
+            'q_alerts': 'Alertes actives ?',
+            'q_costs': 'Coûts du jour ?',
+            'q_navigate': 'Comment naviguer ?',
+            'placeholder': 'Tapez votre question...',
+            'error': 'Désolé, une erreur s\'est produite. Veuillez réessayer.'
+        },
+        'search': {
+            'placeholder': 'Rechercher pages, métriques, services...',
+            'results': 'Navigation rapide',
+            'no_results': 'Aucun résultat trouvé'
         }
     },
 

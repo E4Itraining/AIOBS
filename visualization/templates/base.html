@@ -168,9 +168,58 @@
                     <i data-lucide="menu"></i>
                 </button>
 
+                <!-- Breadcrumbs -->
+                <nav class="breadcrumbs" aria-label="Breadcrumb">
+                    <a href="/" class="breadcrumb-item breadcrumb-home">
+                        <i data-lucide="home"></i>
+                    </a>
+                    {% if breadcrumbs %}
+                        {% for crumb in breadcrumbs %}
+                        <span class="breadcrumb-separator">
+                            <i data-lucide="chevron-right"></i>
+                        </span>
+                        {% if crumb.url %}
+                        <a href="{{ crumb.url }}" class="breadcrumb-item">{{ crumb.label }}</a>
+                        {% else %}
+                        <span class="breadcrumb-item active">{{ crumb.label }}</span>
+                        {% endif %}
+                        {% endfor %}
+                    {% else %}
+                        {% if active_page and active_page != 'dashboard' %}
+                        <span class="breadcrumb-separator">
+                            <i data-lucide="chevron-right"></i>
+                        </span>
+                        <span class="breadcrumb-item active">{{ title }}</span>
+                        {% endif %}
+                    {% endif %}
+                </nav>
+
                 <div class="topbar-title">
                     <h1>{% block page_title %}{{ title }}{% endblock %}</h1>
                     {% block page_subtitle %}{% endblock %}
+                </div>
+
+                <!-- Global Search -->
+                <div class="global-search" id="globalSearch">
+                    <div class="search-container">
+                        <i data-lucide="search" class="search-icon"></i>
+                        <input type="text"
+                               id="globalSearchInput"
+                               class="search-input"
+                               placeholder="{{ t('search.placeholder') or 'Search pages, metrics, services...' }}"
+                               onkeyup="handleGlobalSearch(event)"
+                               onfocus="showSearchResults()"
+                               autocomplete="off">
+                        <kbd class="search-shortcut">⌘K</kbd>
+                    </div>
+                    <div class="search-results" id="searchResults">
+                        <div class="search-results-header">
+                            <span>{{ t('search.results') or 'Quick Navigation' }}</span>
+                        </div>
+                        <div class="search-results-content" id="searchResultsContent">
+                            <!-- Dynamic search results -->
+                        </div>
+                    </div>
                 </div>
 
                 <div class="topbar-actions">
@@ -246,6 +295,73 @@
                         </div>
                     </div>
                 </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- AI Chatbot Assistant -->
+    <div class="chatbot-container" id="chatbotContainer">
+        <button class="chatbot-trigger" onclick="toggleChatbot()" title="{{ t('chatbot.title') or 'AI Assistant' }}">
+            <i data-lucide="message-circle" class="chatbot-icon-default"></i>
+            <i data-lucide="x" class="chatbot-icon-close"></i>
+        </button>
+        <div class="chatbot-panel">
+            <div class="chatbot-header">
+                <div class="chatbot-header-info">
+                    <div class="chatbot-avatar">
+                        <i data-lucide="bot"></i>
+                    </div>
+                    <div>
+                        <h3>{{ t('chatbot.title') or 'AI Assistant' }}</h3>
+                        <span class="chatbot-status">
+                            <span class="status-dot"></span>
+                            {{ t('chatbot.online') or 'Online' }}
+                        </span>
+                    </div>
+                </div>
+                <button class="chatbot-minimize" onclick="toggleChatbot()">
+                    <i data-lucide="minus"></i>
+                </button>
+            </div>
+            <div class="chatbot-messages" id="chatbotMessages">
+                <div class="chatbot-welcome">
+                    <div class="chatbot-welcome-icon">
+                        <i data-lucide="sparkles"></i>
+                    </div>
+                    <h4>{{ t('chatbot.welcome_title') or 'Hello! How can I help you?' }}</h4>
+                    <p>{{ t('chatbot.welcome_desc') or 'Ask me anything about your AI systems, metrics, or how to use AIOBS.' }}</p>
+                </div>
+                <div class="chatbot-suggestions" id="chatbotSuggestions">
+                    <span class="suggestion-label">{{ t('chatbot.suggestions') or 'Quick questions:' }}</span>
+                    <div class="suggestion-chips">
+                        <button class="suggestion-chip" onclick="askQuestion('What is the current trust score?')">
+                            <i data-lucide="gauge"></i>
+                            {{ t('chatbot.q_trust') or 'Trust score?' }}
+                        </button>
+                        <button class="suggestion-chip" onclick="askQuestion('Are there any active alerts?')">
+                            <i data-lucide="alert-triangle"></i>
+                            {{ t('chatbot.q_alerts') or 'Active alerts?' }}
+                        </button>
+                        <button class="suggestion-chip" onclick="askQuestion('Show me today\'s costs')">
+                            <i data-lucide="wallet"></i>
+                            {{ t('chatbot.q_costs') or 'Today\'s costs?' }}
+                        </button>
+                        <button class="suggestion-chip" onclick="askQuestion('How do I navigate to compliance?')">
+                            <i data-lucide="compass"></i>
+                            {{ t('chatbot.q_navigate') or 'How to navigate?' }}
+                        </button>
+                    </div>
+                </div>
+            </div>
+            <div class="chatbot-input-container">
+                <input type="text"
+                       id="chatbotInput"
+                       class="chatbot-input"
+                       placeholder="{{ t('chatbot.placeholder') or 'Type your question...' }}"
+                       onkeypress="handleChatKeypress(event)">
+                <button class="chatbot-send" onclick="sendChatMessage()" id="chatbotSend">
+                    <i data-lucide="send"></i>
+                </button>
             </div>
         </div>
     </div>
@@ -560,8 +676,271 @@
             if (!onboardingComplete && window.location.pathname !== '/onboarding') {
                 // Show subtle prompt instead of redirect
                 setTimeout(() => {
-                    showToast(window.t('onboarding.prompt') || 'New here? Click the help button to get started!', 'info', 8000);
+                    showToast(window.t('onboarding.prompt') || 'New here? Click the help button or chat with our AI assistant!', 'info', 8000);
                 }, 2000);
+            }
+        });
+
+        // =============================================
+        // AI Chatbot System
+        // =============================================
+        let chatbotOpen = false;
+        let chatHistory = [];
+
+        function toggleChatbot() {
+            const container = document.getElementById('chatbotContainer');
+            chatbotOpen = !chatbotOpen;
+            container.classList.toggle('open', chatbotOpen);
+            if (chatbotOpen) {
+                document.getElementById('chatbotInput').focus();
+            }
+            lucide.createIcons();
+        }
+
+        function handleChatKeypress(event) {
+            if (event.key === 'Enter' && !event.shiftKey) {
+                event.preventDefault();
+                sendChatMessage();
+            }
+        }
+
+        function askQuestion(question) {
+            document.getElementById('chatbotInput').value = question;
+            sendChatMessage();
+        }
+
+        async function sendChatMessage() {
+            const input = document.getElementById('chatbotInput');
+            const message = input.value.trim();
+            if (!message) return;
+
+            // Clear input
+            input.value = '';
+
+            // Hide suggestions after first message
+            const suggestions = document.getElementById('chatbotSuggestions');
+            if (suggestions) suggestions.style.display = 'none';
+
+            // Add user message to chat
+            addChatMessage(message, 'user');
+
+            // Show typing indicator
+            const typingId = showTypingIndicator();
+
+            try {
+                // Call the AI assistant API
+                const response = await fetch('/api/assistant/query', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ question: message, context: chatHistory.slice(-6) })
+                });
+
+                // Remove typing indicator
+                removeTypingIndicator(typingId);
+
+                if (response.ok) {
+                    const data = await response.json();
+                    addChatMessage(data.answer || data.response || 'I can help you with that.', 'bot', data);
+                    chatHistory.push({ role: 'user', content: message });
+                    chatHistory.push({ role: 'assistant', content: data.answer || data.response });
+                } else {
+                    addChatMessage(window.t('chatbot.error') || 'Sorry, I encountered an error. Please try again.', 'bot', null, true);
+                }
+            } catch (error) {
+                removeTypingIndicator(typingId);
+                addChatMessage(window.t('chatbot.error') || 'Sorry, I encountered an error. Please try again.', 'bot', null, true);
+            }
+        }
+
+        function addChatMessage(text, sender, data = null, isError = false) {
+            const messagesContainer = document.getElementById('chatbotMessages');
+            const messageDiv = document.createElement('div');
+            messageDiv.className = `chat-message chat-message-${sender}${isError ? ' chat-message-error' : ''}`;
+
+            let content = `<div class="chat-message-content">${formatChatMessage(text)}</div>`;
+
+            // Add suggested actions if available
+            if (data && data.suggested_actions && data.suggested_actions.length > 0) {
+                content += `<div class="chat-actions">`;
+                data.suggested_actions.slice(0, 3).forEach(action => {
+                    content += `<button class="chat-action-btn" onclick="askQuestion('${action.replace(/'/g, "\\'")}')">${action}</button>`;
+                });
+                content += `</div>`;
+            }
+
+            // Add related metrics links if available
+            if (data && data.related_metrics && data.related_metrics.length > 0) {
+                content += `<div class="chat-links">`;
+                data.related_metrics.slice(0, 2).forEach(metric => {
+                    content += `<a href="${metric.url || '#'}" class="chat-link"><i data-lucide="external-link"></i>${metric.name || metric}</a>`;
+                });
+                content += `</div>`;
+            }
+
+            messageDiv.innerHTML = content;
+            messagesContainer.appendChild(messageDiv);
+            messagesContainer.scrollTop = messagesContainer.scrollHeight;
+            lucide.createIcons();
+        }
+
+        function formatChatMessage(text) {
+            // Basic markdown-like formatting
+            return text
+                .replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>')
+                .replace(/\*(.*?)\*/g, '<em>$1</em>')
+                .replace(/`(.*?)`/g, '<code>$1</code>')
+                .replace(/\n/g, '<br>');
+        }
+
+        function showTypingIndicator() {
+            const messagesContainer = document.getElementById('chatbotMessages');
+            const typingDiv = document.createElement('div');
+            const typingId = 'typing-' + Date.now();
+            typingDiv.id = typingId;
+            typingDiv.className = 'chat-message chat-message-bot chat-typing';
+            typingDiv.innerHTML = `
+                <div class="typing-indicator">
+                    <span></span><span></span><span></span>
+                </div>
+            `;
+            messagesContainer.appendChild(typingDiv);
+            messagesContainer.scrollTop = messagesContainer.scrollHeight;
+            return typingId;
+        }
+
+        function removeTypingIndicator(typingId) {
+            const typing = document.getElementById(typingId);
+            if (typing) typing.remove();
+        }
+
+        // =============================================
+        // Global Search System
+        // =============================================
+        const searchIndex = [
+            { type: 'page', title: 'Dashboard', url: '/', icon: 'home', keywords: ['home', 'overview', 'kpi', 'dashboard'] },
+            { type: 'page', title: 'Unified View', url: '/unified', icon: 'layers', keywords: ['unified', 'all', 'metrics', 'view'] },
+            { type: 'page', title: 'Executive View', url: '/executive', icon: 'briefcase', keywords: ['executive', 'business', 'kpi', 'summary'] },
+            { type: 'page', title: 'Causal Analysis', url: '/causal', icon: 'git-branch', keywords: ['causal', 'root cause', 'analysis', 'graph'] },
+            { type: 'page', title: 'Impact Analysis', url: '/impact', icon: 'trending-up', keywords: ['impact', 'business', 'effect'] },
+            { type: 'page', title: 'Live Monitoring', url: '/monitoring', icon: 'activity', keywords: ['monitoring', 'live', 'real-time', 'alerts'] },
+            { type: 'page', title: 'FinOps', url: '/finops', icon: 'wallet', keywords: ['finops', 'cost', 'budget', 'spend', 'finance'] },
+            { type: 'page', title: 'GreenOps', url: '/greenops', icon: 'leaf', keywords: ['greenops', 'carbon', 'sustainability', 'environment'] },
+            { type: 'page', title: 'Compliance', url: '/compliance', icon: 'shield-check', keywords: ['compliance', 'regulation', 'gdpr', 'audit'] },
+            { type: 'page', title: 'Security Center', url: '/security', icon: 'lock', keywords: ['security', 'threats', 'vulnerabilities'] },
+            { type: 'page', title: 'Personas & Guide', url: '/onboarding', icon: 'user-circle', keywords: ['personas', 'profile', 'onboarding', 'guide'] },
+            { type: 'metric', title: 'Trust Score', url: '/#trust-score', icon: 'shield', keywords: ['trust', 'score', 'reliability'] },
+            { type: 'metric', title: 'Data Drift', url: '/unified?metric=drift', icon: 'git-merge', keywords: ['drift', 'data', 'model'] },
+            { type: 'metric', title: 'Daily Costs', url: '/finops', icon: 'dollar-sign', keywords: ['cost', 'daily', 'spend'] },
+            { type: 'metric', title: 'Carbon Footprint', url: '/greenops', icon: 'cloud', keywords: ['carbon', 'co2', 'footprint'] },
+            { type: 'action', title: 'Change Profile', url: '/onboarding', icon: 'users', keywords: ['change', 'switch', 'profile', 'persona'] },
+            { type: 'action', title: 'Start Tour', url: '#tour', icon: 'play-circle', keywords: ['tour', 'guide', 'help', 'start'] },
+        ];
+
+        let searchResultsVisible = false;
+
+        function handleGlobalSearch(event) {
+            const query = event.target.value.toLowerCase().trim();
+            const resultsContainer = document.getElementById('searchResultsContent');
+
+            if (query.length < 1) {
+                showDefaultSearchResults();
+                return;
+            }
+
+            const results = searchIndex.filter(item => {
+                return item.title.toLowerCase().includes(query) ||
+                       item.keywords.some(k => k.includes(query));
+            }).slice(0, 8);
+
+            if (results.length === 0) {
+                resultsContainer.innerHTML = `
+                    <div class="search-empty">
+                        <i data-lucide="search-x"></i>
+                        <span>${window.t('search.no_results') || 'No results found'}</span>
+                    </div>
+                `;
+            } else {
+                resultsContainer.innerHTML = results.map(item => `
+                    <a href="${item.url}" class="search-result-item" onclick="handleSearchResultClick(event, '${item.url}')">
+                        <div class="search-result-icon">
+                            <i data-lucide="${item.icon}"></i>
+                        </div>
+                        <div class="search-result-info">
+                            <span class="search-result-title">${item.title}</span>
+                            <span class="search-result-type">${item.type}</span>
+                        </div>
+                        <i data-lucide="arrow-right" class="search-result-arrow"></i>
+                    </a>
+                `).join('');
+            }
+            lucide.createIcons();
+        }
+
+        function showDefaultSearchResults() {
+            const resultsContainer = document.getElementById('searchResultsContent');
+            const recentPages = searchIndex.filter(i => i.type === 'page').slice(0, 5);
+            resultsContainer.innerHTML = recentPages.map(item => `
+                <a href="${item.url}" class="search-result-item">
+                    <div class="search-result-icon">
+                        <i data-lucide="${item.icon}"></i>
+                    </div>
+                    <div class="search-result-info">
+                        <span class="search-result-title">${item.title}</span>
+                        <span class="search-result-type">${item.type}</span>
+                    </div>
+                    <i data-lucide="arrow-right" class="search-result-arrow"></i>
+                </a>
+            `).join('');
+            lucide.createIcons();
+        }
+
+        function showSearchResults() {
+            const searchResults = document.getElementById('searchResults');
+            searchResults.classList.add('active');
+            searchResultsVisible = true;
+            showDefaultSearchResults();
+        }
+
+        function hideSearchResults() {
+            const searchResults = document.getElementById('searchResults');
+            searchResults.classList.remove('active');
+            searchResultsVisible = false;
+        }
+
+        function handleSearchResultClick(event, url) {
+            if (url === '#tour') {
+                event.preventDefault();
+                hideSearchResults();
+                startGuidedTour();
+            } else {
+                hideSearchResults();
+            }
+        }
+
+        // Keyboard shortcut for search (Cmd/Ctrl + K)
+        document.addEventListener('keydown', (e) => {
+            if ((e.metaKey || e.ctrlKey) && e.key === 'k') {
+                e.preventDefault();
+                const searchInput = document.getElementById('globalSearchInput');
+                searchInput.focus();
+                showSearchResults();
+            }
+            if (e.key === 'Escape') {
+                hideSearchResults();
+                if (chatbotOpen) toggleChatbot();
+            }
+        });
+
+        // Close search results on click outside
+        document.addEventListener('click', (e) => {
+            const globalSearch = document.getElementById('globalSearch');
+            if (globalSearch && !globalSearch.contains(e.target)) {
+                hideSearchResults();
+            }
+            // Close chatbot on outside click (except for the trigger)
+            const chatbotContainer = document.getElementById('chatbotContainer');
+            if (chatbotContainer && !chatbotContainer.contains(e.target) && chatbotOpen) {
+                toggleChatbot();
             }
         });
 
