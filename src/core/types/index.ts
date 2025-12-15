@@ -12,3 +12,4 @@ export * from './governance';
 export * from './incidents';
 export * from './slo';
 export * from './tenant';
+export * from './game-changer';
