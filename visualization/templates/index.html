@@ -3,9 +3,17 @@
 {% block content %}
 <div class="dashboard-container">
     <!-- Sidebar -->
-    <nav class="sidebar">
+    <nav class="sidebar" id="sidebar">
+        <!-- Mobile close button -->
+        <button class="sidebar-close-btn" onclick="closeMobileSidebar()" aria-label="Fermer le menu">
+            <svg viewBox="0 0 24 24" width="24" height="24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <line x1="18" y1="6" x2="6" y2="18"></line>
+                <line x1="6" y1="6" x2="18" y2="18"></line>
+            </svg>
+        </button>
+
         <div class="sidebar-logo">
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true">
                 <circle cx="12" cy="12" r="10"/>
                 <path d="M12 6v6l4 2"/>
                 <circle cx="12" cy="12" r="3"/>
@@ -63,30 +71,30 @@
 
         <!-- KPI Cards -->
         <div class="kpi-grid" id="kpiGrid">
-            <div class="kpi-card">
+            <div class="kpi-card" data-loading="true">
                 <div class="kpi-label">{{ t('dashboard.trust_score') }}</div>
-                <div class="kpi-value" id="trustScore">--</div>
+                <div class="kpi-value skeleton-text" id="trustScore">--</div>
                 <div class="kpi-trend stable" id="trustTrend">
                     <i data-feather="minus"></i> {{ t('trends.stable') }}
                 </div>
             </div>
-            <div class="kpi-card">
+            <div class="kpi-card" data-loading="true">
                 <div class="kpi-label">{{ t('dashboard.daily_inferences') }}</div>
-                <div class="kpi-value" id="inferences">--</div>
+                <div class="kpi-value skeleton-text" id="inferences">--</div>
                 <div class="kpi-trend up">
                     <i data-feather="trending-up"></i> +12%
                 </div>
             </div>
-            <div class="kpi-card">
+            <div class="kpi-card" data-loading="true">
                 <div class="kpi-label">{{ t('dashboard.daily_cost') }}</div>
-                <div class="kpi-value" id="dailyCost">--</div>
+                <div class="kpi-value skeleton-text" id="dailyCost">--</div>
                 <div class="kpi-trend" id="costTrend">
                     <i data-feather="trending-up"></i> +8%
                 </div>
             </div>
-            <div class="kpi-card">
+            <div class="kpi-card" data-loading="true">
                 <div class="kpi-label">{{ t('dashboard.carbon_footprint') }}</div>
-                <div class="kpi-value" id="carbonKg">--</div>
+                <div class="kpi-value skeleton-text" id="carbonKg">--</div>
                 <div class="kpi-trend down" id="carbonTrend">
                     <i data-feather="trending-down"></i> -5%
                 </div>
@@ -94,7 +102,7 @@
         </div>
 
         <!-- Health Summary & Alerts -->
-        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1rem;">
+        <div class="responsive-grid-2">
             <div class="card">
                 <div class="card-header">
                     <h3 class="card-title">{{ t('dashboard.system_health') }}</h3>
@@ -137,7 +145,7 @@
         </div>
 
         <!-- Charts Row -->
-        <div style="display: grid; grid-template-columns: 2fr 1fr; gap: 1rem;">
+        <div class="responsive-grid-chart">
             <div class="card">
                 <div class="card-header">
                     <h3 class="card-title">{{ t('dashboard.trust_score_trend') }}</h3>
@@ -255,6 +263,43 @@ async function loadProfiles() {
     }
 }
 
+// Remove skeleton loading state from an element
+function removeSkeletonLoading(elementId) {
+    const el = document.getElementById(elementId);
+    if (el) {
+        el.classList.remove('skeleton-text');
+        const card = el.closest('.kpi-card');
+        if (card) {
+            card.removeAttribute('data-loading');
+        }
+    }
+}
+
+// Show error toast
+function showToast(message, type = 'error') {
+    let container = document.querySelector('.toast-container');
+    if (!container) {
+        container = document.createElement('div');
+        container.className = 'toast-container';
+        document.body.appendChild(container);
+    }
+
+    const toast = document.createElement('div');
+    toast.className = `toast ${type}`;
+    toast.innerHTML = `
+        <i data-feather="${type === 'error' ? 'alert-circle' : 'check-circle'}"></i>
+        <span>${message}</span>
+    `;
+    container.appendChild(toast);
+    feather.replace();
+
+    setTimeout(() => {
+        toast.style.opacity = '0';
+        toast.style.transform = 'translateX(100%)';
+        setTimeout(() => toast.remove(), 300);
+    }, 5000);
+}
+
 // Load main dashboard data
 async function loadDashboardData() {
     try {
@@ -264,11 +309,18 @@ async function loadDashboardData() {
         if (result.success) {
             const data = result.data;
 
-            // Update KPIs
+            // Update KPIs and remove skeleton states
             document.getElementById('trustScore').textContent = (data.key_metrics.avg_trust_score * 100).toFixed(0) + '%';
+            removeSkeletonLoading('trustScore');
+
             document.getElementById('inferences').textContent = formatNumber(data.key_metrics.total_daily_inferences);
+            removeSkeletonLoading('inferences');
+
             document.getElementById('dailyCost').textContent = '$' + data.key_metrics.total_daily_cost.toFixed(0);
+            removeSkeletonLoading('dailyCost');
+
             document.getElementById('carbonKg').textContent = data.key_metrics.total_daily_carbon_kg.toFixed(1);
+            removeSkeletonLoading('carbonKg');
 
             // Update health
             document.getElementById('healthyCount').textContent = data.health.healthy;
@@ -287,9 +339,20 @@ async function loadDashboardData() {
 
             // Update top issues
             updateTopIssues(data.top_issues);
+        } else {
+            showToast(t('errors.load_failed') || 'Erreur de chargement des données');
         }
     } catch (error) {
         console.error('Error loading dashboard:', error);
+        showToast(t('errors.connection') || 'Erreur de connexion au serveur');
+        // Remove skeleton states even on error
+        ['trustScore', 'inferences', 'dailyCost', 'carbonKg'].forEach(id => {
+            removeSkeletonLoading(id);
+            const el = document.getElementById(id);
+            if (el && el.textContent === '--') {
+                el.textContent = '-';
+            }
+        });
     }
 }
 

@@ -2,29 +2,37 @@
 
 {% block content %}
 <div class="dashboard-container">
-    <nav class="sidebar">
+    <nav class="sidebar" id="sidebar">
+        <!-- Mobile close button -->
+        <button class="sidebar-close-btn" onclick="closeMobileSidebar()" aria-label="Fermer le menu">
+            <svg viewBox="0 0 24 24" width="24" height="24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <line x1="18" y1="6" x2="6" y2="18"></line>
+                <line x1="6" y1="6" x2="18" y2="18"></line>
+            </svg>
+        </button>
+
         <div class="sidebar-logo">
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true">
                 <circle cx="12" cy="12" r="10"/>
                 <path d="M12 6v6l4 2"/>
                 <circle cx="12" cy="12" r="3"/>
             </svg>
-            AIOBS
+            {{ t('app.name') }}
         </div>
         <div class="nav-section">
-            <div class="nav-section-title">Views</div>
-            <a href="/" class="nav-item"><i data-feather="home"></i> Dashboard</a>
-            <a href="/unified" class="nav-item"><i data-feather="layers"></i> Unified View</a>
-            <a href="/causal" class="nav-item active"><i data-feather="git-branch"></i> Causal</a>
-            <a href="/impact" class="nav-item"><i data-feather="trending-up"></i> Impact</a>
+            <div class="nav-section-title">{{ t('nav.overview') }}</div>
+            <a href="/" class="nav-item"><i data-feather="home"></i> {{ t('nav.dashboard') }}</a>
+            <a href="/unified" class="nav-item"><i data-feather="layers"></i> {{ t('nav.unified_view') }}</a>
+            <a href="/causal" class="nav-item active"><i data-feather="git-branch"></i> {{ t('nav.causal_analysis') }}</a>
+            <a href="/impact" class="nav-item"><i data-feather="trending-up"></i> {{ t('nav.impact_analysis') }}</a>
         </div>
         <div class="nav-section">
-            <div class="nav-section-title">Scenarios</div>
+            <div class="nav-section-title">{{ t('causal.scenarios') }}</div>
             <button class="nav-item" onclick="loadScenario('drift_incident')">
-                <i data-feather="alert-triangle"></i> Drift Incident
+                <i data-feather="alert-triangle"></i> {{ t('causal.drift_incident') }}
             </button>
             <button class="nav-item" onclick="loadScenario('cost_spike')">
-                <i data-feather="dollar-sign"></i> Cost Spike
+                <i data-feather="dollar-sign"></i> {{ t('causal.cost_spike') }}
             </button>
         </div>
     </nav>
@@ -49,11 +57,11 @@
             <div id="causalGraph" style="height: 450px; border: 1px solid var(--border-color); border-radius: 0.5rem;"></div>
         </div>
 
-        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1rem;">
+        <div class="responsive-grid-2">
             <!-- Root Causes -->
             <div class="card">
                 <div class="card-header">
-                    <h3 class="card-title">Root Causes</h3>
+                    <h3 class="card-title">{{ t('causal.root_causes') }}</h3>
                 </div>
                 <div id="rootCauses">
                     <div class="loader"><div class="spinner"></div></div>
@@ -63,7 +71,7 @@
             <!-- Impact Path -->
             <div class="card">
                 <div class="card-header">
-                    <h3 class="card-title">Impact Path</h3>
+                    <h3 class="card-title">{{ t('causal.impact_path') }}</h3>
                 </div>
                 <div id="impactPath">
                     <div class="loader"><div class="spinner"></div></div>
