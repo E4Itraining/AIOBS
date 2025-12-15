@@ -439,9 +439,11 @@ class TestCalibration:
 
     def test_brier_score_perfect(self, analyzer):
         """Perfect predictions should have Brier score of 0"""
-        confidences = [1.0] * 50 + [0.0] * 50
+        # Brier score = (confidence - correctness)^2 where correctness = 1 if pred == label
+        # For perfect: confidence = 1.0 when predictions are correct
+        confidences = [1.0] * 100  # All confident that prediction is correct
         predictions = [1] * 50 + [0] * 50
-        labels = [1] * 50 + [0] * 50
+        labels = [1] * 50 + [0] * 50  # All predictions correct
 
         result = analyzer.compute_calibration(confidences, predictions, labels)
 
@@ -449,7 +451,9 @@ class TestCalibration:
 
     def test_brier_score_worst(self, analyzer):
         """Completely wrong predictions should have Brier score near 1"""
-        confidences = [1.0] * 50 + [0.0] * 50
+        # When all predictions are wrong: correctness = 0 for all
+        # With high confidence (1.0), Brier = (1.0 - 0)^2 = 1.0
+        confidences = [1.0] * 100  # High confidence but all wrong
         predictions = [1] * 50 + [0] * 50
         labels = [0] * 50 + [1] * 50  # All wrong
 
