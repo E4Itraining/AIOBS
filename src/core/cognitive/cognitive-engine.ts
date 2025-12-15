@@ -156,9 +156,10 @@ export class CognitiveMetricsEngine {
 
     // Drift risks
     if (drift.driftDetected) {
+      const driftSeverity = drift.overallDriftScore.severity === 'info' ? 'low' : drift.overallDriftScore.severity;
       flags.push({
         type: 'drift',
-        severity: drift.overallDriftScore.severity,
+        severity: driftSeverity,
         message: `Drift detected: ${drift.overallDriftScore.value.toFixed(2)} score`,
         detectedAt: now,
         autoResolved: false,
@@ -178,9 +179,10 @@ export class CognitiveMetricsEngine {
 
     // Hallucination risks
     if (hallucination.overallRisk.value > this.config.hallucinationThreshold) {
+      const hallucinationSeverity = hallucination.overallRisk.severity === 'info' ? 'low' : hallucination.overallRisk.severity;
       flags.push({
         type: 'hallucination',
-        severity: hallucination.overallRisk.severity,
+        severity: hallucinationSeverity,
         message: `Elevated hallucination risk: ${(hallucination.overallRisk.value * 100).toFixed(1)}%`,
         detectedAt: now,
         autoResolved: false,
@@ -189,9 +191,10 @@ export class CognitiveMetricsEngine {
 
     // Degradation risks
     if (degradation.overallDegradation.value > this.config.degradationThreshold) {
+      const degradationSeverity = degradation.overallDegradation.severity === 'info' ? 'low' : degradation.overallDegradation.severity;
       flags.push({
         type: 'degradation',
-        severity: degradation.overallDegradation.severity,
+        severity: degradationSeverity,
         message: `Performance degradation detected`,
         detectedAt: now,
         autoResolved: false,
@@ -210,10 +213,12 @@ export class CognitiveMetricsEngine {
     degradation: DegradationMetrics
   ): TrendIndicator {
     // Combine trends from different metrics
+    // For reliability: increasing is good (improving), decreasing is bad (degrading)
+    // For degradation: increasing is bad (degrading), decreasing is good (improving)
     const trends = [
       drift.dataDrift.detected ? -1 : 0,
-      reliability.trend.direction === 'improving' ? 1 : reliability.trend.direction === 'degrading' ? -1 : 0,
-      degradation.trend.direction === 'improving' ? 1 : degradation.trend.direction === 'degrading' ? -1 : 0,
+      reliability.trend.direction === 'increasing' ? 1 : reliability.trend.direction === 'decreasing' ? -1 : 0,
+      degradation.trend.direction === 'decreasing' ? 1 : degradation.trend.direction === 'increasing' ? -1 : 0,
     ];
 
     const avgTrend = trends.reduce((a, b) => a + b, 0) / trends.length;

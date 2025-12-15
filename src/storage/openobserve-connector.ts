@@ -44,6 +44,7 @@ import {
   LogsBackend,
   TracesBackend,
   LogEntry,
+  LogLevel,
   LogQuery,
   LogResult,
   Span,
@@ -128,7 +129,7 @@ export class OpenObserveConnector implements LogsBackend, TracesBackend {
     for (let attempt = 0; attempt <= this.retryConfig.maxRetries; attempt++) {
       try {
         const controller = new AbortController();
-        const timeoutId = setTimeout(() => controller.abort(), this.config.timeout);
+        const timeoutId = setTimeout(() => controller.abort(), this.config.timeout || 30000);
 
         const response = await fetch(url, {
           method,
@@ -229,9 +230,10 @@ export class OpenObserveConnector implements LogsBackend, TracesBackend {
 
     const response = await this.executeWithRetry<OpenObserveSearchResponse>('POST', url, searchRequest);
 
+    const validLevels = ['trace', 'debug', 'info', 'warn', 'error', 'fatal'] as const;
     const logs: LogEntry[] = (response.hits || []).map((hit: OpenObserveHit) => ({
       timestamp: new Date(hit._timestamp / 1000).toISOString(),
-      level: hit.level || 'info',
+      level: (validLevels.includes(hit.level as any) ? hit.level : 'info') as LogLevel,
       message: hit.message || '',
       fields: this.extractFields(hit),
       traceContext: hit.trace_id

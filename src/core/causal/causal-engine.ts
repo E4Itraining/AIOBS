@@ -9,11 +9,11 @@ import {
   CausalEdge,
   CausalScope,
   RootCauseAnalysis,
-  RootCause,
   ImpactAnalysis,
   CounterfactualAnalysis,
   AttributionAnalysis,
   CausalDiscoveryResult,
+  Intervention,
 } from '../types/causal';
 import { UUID, ISO8601, NormalizedScore, ResourceIdentifier } from '../types/common';
 import { RootCauseAnalyzer } from './root-cause-analyzer';
@@ -254,7 +254,7 @@ export class CausalEngine {
     const originalScenario = this.buildScenarioFromGraph(graph);
     const conditions = originalScenario.conditions.map(c =>
       c.nodeId === intervention.nodeId
-        ? { ...c, value: intervention.newValue, originalValue: c.value }
+        ? { ...c, value: intervention.counterfactualValue, originalValue: c.value }
         : c
     );
 
@@ -291,7 +291,7 @@ export class CausalEngine {
       let effect = 0;
       if (hasPath) {
         const pathStrength = this.computePathStrength(graph, chain);
-        const delta = (intervention.newValue as number) - (intervention.originalValue as number);
+        const delta = (intervention.counterfactualValue as number) - (intervention.originalValue as number);
         effect = delta * pathStrength;
       }
 
@@ -313,8 +313,11 @@ export class CausalEngine {
 
     let strength = 1;
     for (let i = 0; i < chain.length - 1; i++) {
+      const currentNode = chain[i];
+      const nextNode = chain[i + 1];
+      if (!currentNode || !nextNode) continue;
       const edge = graph.edges.find(
-        e => e.sourceId === chain[i].id && e.targetId === chain[i + 1].id
+        e => e.sourceId === currentNode.id && e.targetId === nextNode.id
       );
       if (edge) {
         strength *= edge.strength;
@@ -329,11 +332,11 @@ export class CausalEngine {
    */
   private assessPlausibility(intervention: Intervention): NormalizedScore {
     // Simple heuristic - larger changes are less plausible
-    if (typeof intervention.originalValue !== 'number' || typeof intervention.newValue !== 'number') {
+    if (typeof intervention.originalValue !== 'number' || typeof intervention.counterfactualValue !== 'number') {
       return 0.5;
     }
 
-    const changeRatio = Math.abs(intervention.newValue - intervention.originalValue) /
+    const changeRatio = Math.abs(intervention.counterfactualValue - intervention.originalValue) /
       Math.max(Math.abs(intervention.originalValue), 0.001);
 
     return Math.max(0.1, 1 - changeRatio / 2);
@@ -377,7 +380,7 @@ export class CausalEngine {
    * Generate comparison insights
    */
   private generateComparisonInsights(
-    original: CounterfactualAnalysis['originalScenario'],
+    _original: CounterfactualAnalysis['originalScenario'],
     counterfactuals: { scenarioId: UUID; outcomes: any[]; delta: Record<string, number> }[]
   ): CounterfactualAnalysis['comparison']['insights'] {
     const insights: CounterfactualAnalysis['comparison']['insights'] = [];
@@ -489,13 +492,16 @@ export class CausalEngine {
 
     for (let i = 0; i < nodes.length; i++) {
       for (let j = i + 1; j < nodes.length; j++) {
-        const correlation = this.estimateCorrelation(data, nodes[i].name, nodes[j].name);
+        const nodeI = nodes[i];
+        const nodeJ = nodes[j];
+        if (!nodeI || !nodeJ) continue;
+        const correlation = this.estimateCorrelation(nodeI.name, nodeJ.name);
 
         if (Math.abs(correlation) > 0.3) {
           edges.push({
             id: this.generateId(),
-            sourceId: correlation > 0 ? nodes[i].id : nodes[j].id,
-            targetId: correlation > 0 ? nodes[j].id : nodes[i].id,
+            sourceId: correlation > 0 ? nodeI.id : nodeJ.id,
+            targetId: correlation > 0 ? nodeJ.id : nodeI.id,
             relationship: {
               type: 'correlates_with',
               reversible: true,
@@ -538,9 +544,8 @@ export class CausalEngine {
    * Estimate correlation between variables
    */
   private estimateCorrelation(
-    data: CausalDiscoveryInput,
-    var1: string,
-    var2: string
+    _var1: string,
+    _var2: string
   ): number {
     // Simplified - would compute actual correlation from data
     return Math.random() * 0.8 - 0.4;
@@ -602,14 +607,6 @@ export interface CausalEvent {
   resource?: ResourceIdentifier;
   metrics?: Record<string, number>;
   relatedEvents?: UUID[];
-}
-
-export interface Intervention {
-  nodeId: UUID;
-  variable: string;
-  originalValue: any;
-  newValue: any;
-  description: string;
 }
 
 export interface CausalDiscoveryInput {

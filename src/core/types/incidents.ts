@@ -12,8 +12,7 @@ import {
   TimeWindow,
   JSONObject,
 } from './common';
-import { RootCauseAnalysis, CausalChain } from './causal';
-import { AISLODefinition, SLIValue } from './slo';
+import { RootCauseAnalysis } from './causal';
 
 // ============================================================================
 // Incident Definition

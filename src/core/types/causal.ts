@@ -211,7 +211,7 @@ export interface CausalChain {
 
   // Chain properties
   totalLagTime: number;
-  weakestLink: CausalEdge;
+  weakestLink?: CausalEdge;
   overallStrength: NormalizedScore;
 }
 

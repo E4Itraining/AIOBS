@@ -169,7 +169,7 @@ export class EvidenceGenerator {
    * Get AI Act controls based on risk level
    */
   private getAIActControls(riskLevel: string): ComplianceFramework['controls'] {
-    const baseControls = [
+    const baseControls: ComplianceFramework['controls'] = [
       {
         id: this.generateId(),
         frameworkId: this.generateId(),

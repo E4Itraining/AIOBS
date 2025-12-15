@@ -3,8 +3,8 @@
  * Manages error budgets for AI SLOs
  */
 
-import { ErrorBudgetStatus, BurnRateAlert, AISLODefinition, TimeWindow } from '../../core/types/slo';
-import { UUID, ISO8601, NormalizedScore } from '../../core/types/common';
+import { ErrorBudgetStatus, BurnRateAlert, AISLODefinition } from '../../core/types/slo';
+import { UUID, ISO8601, NormalizedScore, TimeWindow } from '../../core/types/common';
 
 /**
  * Error Budget Manager

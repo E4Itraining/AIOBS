@@ -12,7 +12,7 @@ import {
   CausalRelationType,
   CausalEvidence,
 } from '../types/causal';
-import { UUID, ISO8601, NormalizedScore, ResourceIdentifier } from '../types/common';
+import { UUID, NormalizedScore } from '../types/common';
 import { CausalEngineConfig, CausalEvent } from './causal-engine';
 
 /**
@@ -178,7 +178,7 @@ export class CausalGraphBuilder {
    * Convert event to causal node
    */
   private eventToNode(event: CausalEvent): CausalNode {
-    return {
+    const node: CausalNode = {
       id: event.id,
       type: event.type,
       name: event.name,
@@ -189,9 +189,14 @@ export class CausalGraphBuilder {
         metadata: {},
       },
       timestamp: event.timestamp,
-      resource: event.resource,
-      metrics: event.metrics,
     };
+    if (event.resource) {
+      node.resource = event.resource;
+    }
+    if (event.metrics) {
+      node.metrics = event.metrics;
+    }
+    return node;
   }
 
   /**
@@ -280,6 +285,7 @@ export class CausalGraphBuilder {
     for (let i = 0; i < sortedNodes.length - 1; i++) {
       const current = sortedNodes[i];
       const next = sortedNodes[i + 1];
+      if (!current || !next) continue;
 
       const timeDiff = new Date(next.timestamp).getTime() - new Date(current.timestamp).getTime();
       const hoursDiff = timeDiff / (1000 * 60 * 60);

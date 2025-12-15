@@ -140,7 +140,7 @@ export class VictoriaMetricsConnector implements MetricsBackend {
     for (let attempt = 0; attempt <= this.retryConfig.maxRetries; attempt++) {
       try {
         const controller = new AbortController();
-        const timeoutId = setTimeout(() => controller.abort(), this.config.timeout);
+        const timeoutId = setTimeout(() => controller.abort(), this.config.timeout || 30000);
 
         const response = await fetch(url, {
           method,

@@ -14,7 +14,7 @@ import {
   ImpactType,
   QuantifiedEffect,
 } from '../types/causal';
-import { UUID, NormalizedScore, ResourceIdentifier } from '../types/common';
+import { UUID, NormalizedScore } from '../types/common';
 import { CausalEngineConfig } from './causal-engine';
 
 /**
@@ -117,16 +117,21 @@ export class ImpactAssessor {
     // Estimate recovery time
     const timeToRecover = this.estimateRecoveryTime(impactType, strength);
 
-    return {
+    const impact: ProjectedImpact = {
       id: this.generateId(),
       targetNode,
       impactType,
       magnitude: strength,
       probability: Math.min(1, strength * 1.2), // Slightly adjust probability
       expectedLagTime: lagTime,
-      timeToRecover,
-      quantifiedEffect,
     };
+    if (timeToRecover !== undefined) {
+      impact.timeToRecover = timeToRecover;
+    }
+    if (quantifiedEffect !== undefined) {
+      impact.quantifiedEffect = quantifiedEffect;
+    }
+    return impact;
   }
 
   /**
@@ -134,7 +139,6 @@ export class ImpactAssessor {
    */
   private inferImpactType(node: CausalNode): ImpactType {
     const name = node.name.toLowerCase();
-    const type = node.type;
 
     if (name.includes('latency') || name.includes('response')) {
       return 'latency_increase';
@@ -176,7 +180,9 @@ export class ImpactAssessor {
     }
 
     // Take the first metric as representative
-    const [metric, currentValue] = Object.entries(node.metrics)[0];
+    const firstEntry = Object.entries(node.metrics)[0];
+    if (!firstEntry) return undefined;
+    const [metric, currentValue] = firstEntry;
 
     // Project impact
     const projectedChange = currentValue * strength * 0.2; // 20% max change
