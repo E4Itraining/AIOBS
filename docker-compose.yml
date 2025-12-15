@@ -12,6 +12,12 @@
 #   - victoriametrics: Time-series metrics database (port 8428)
 #   - openobserve: Logs, traces, compliance storage (port 5080)
 #   - redis: Caching and real-time pub/sub (port 6379)
+#   - test: Containerized test runner (profile: test)
+#
+# Run tests:
+#   docker-compose --profile test run --rm test
+#   docker-compose --profile test run --rm test --suite security
+#   TEST_COVERAGE=true docker-compose --profile test run --rm test
 #
 # =============================================================================
 
@@ -230,6 +236,34 @@ services:
     networks:
       - aiobs-network
     restart: unless-stopped
+
+  # ===========================================================================
+  # AIOBS Test Runner
+  # Containerized test execution for CI/CD and local validation
+  # ===========================================================================
+  test:
+    build:
+      context: .
+      dockerfile: Dockerfile.test
+    container_name: aiobs-test
+    profiles:
+      - test
+    environment:
+      - TEST_SUITE=${TEST_SUITE:-all}
+      - TEST_VERBOSE=${TEST_VERBOSE:-true}
+      - TEST_COVERAGE=${TEST_COVERAGE:-false}
+      - TEST_REPORT=${TEST_REPORT:-true}
+      - TEST_PARALLEL=${TEST_PARALLEL:-false}
+      - TEST_TIMEOUT=${TEST_TIMEOUT:-600}
+    volumes:
+      # Mount test reports directory for persistence
+      - ./test_reports:/app/test_reports
+      # Optional: mount tests for live changes during development
+      # - ./tests:/app/tests:ro
+    networks:
+      - aiobs-network
+    # Test runner exits after completion
+    restart: "no"
 
 # =============================================================================
 # Networks

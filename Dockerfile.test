@@ -1,0 +1,64 @@
+# =============================================================================
+# AIOBS Test Runner Container
+# Container for running Python tests in isolation
+# =============================================================================
+
+FROM python:3.12-slim
+
+LABEL maintainer="AIOBS Team"
+LABEL description="AIOBS Test Runner - Containerized test execution"
+LABEL version="1.0.0"
+
+WORKDIR /app
+
+# Install system dependencies required for testing
+RUN apt-get update && apt-get install -y --no-install-recommends \
+    curl \
+    git \
+    && rm -rf /var/lib/apt/lists/*
+
+# Environment variables for Python
+ENV PYTHONUNBUFFERED=1
+ENV PYTHONDONTWRITEBYTECODE=1
+ENV PIP_NO_CACHE_DIR=1
+ENV PIP_DISABLE_PIP_VERSION_CHECK=1
+
+# Copy requirements first (for layer caching)
+COPY visualization/requirements.txt ./visualization/requirements.txt
+COPY requirements.txt ./requirements.txt
+
+# Install all dependencies including test dependencies
+RUN pip install --upgrade pip && \
+    pip install -r requirements.txt && \
+    pip install \
+        pytest>=8.0.0 \
+        pytest-asyncio>=0.23.0 \
+        pytest-cov>=4.1.0 \
+        pytest-html>=4.1.0 \
+        pytest-timeout>=2.2.0 \
+        pytest-xdist>=3.5.0
+
+# Copy application code
+COPY visualization/ ./visualization/
+COPY tests/ ./tests/
+COPY pytest.ini ./pytest.ini
+COPY pyproject.toml ./pyproject.toml
+
+# Copy test runner script
+COPY docker/entrypoint-test.sh /entrypoint.sh
+RUN chmod +x /entrypoint.sh
+
+# Create directory for test reports
+RUN mkdir -p /app/test_reports
+
+# Environment variables for test configuration
+ENV TEST_SUITE=all
+ENV TEST_VERBOSE=true
+ENV TEST_COVERAGE=false
+ENV TEST_REPORT=true
+ENV TEST_PARALLEL=false
+ENV TEST_TIMEOUT=600
+
+# Default command runs all tests
+ENTRYPOINT ["/entrypoint.sh"]
+CMD ["--suite", "all"]
