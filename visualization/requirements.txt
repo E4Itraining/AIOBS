@@ -41,5 +41,5 @@ opentelemetry-sdk==1.22.0
 opentelemetry-instrumentation-fastapi==0.43b0
 
 # Testing
-pytest==8.0.0
+pytest==8.2.0
 pytest-asyncio==0.24.0
