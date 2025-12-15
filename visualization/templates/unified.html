@@ -57,7 +57,7 @@
         </div>
 
         <!-- Metrics Grid -->
-        <div style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 1rem;" id="infrastructure">
+        <div class="metrics-grid" id="infrastructure">
             <!-- Latency -->
             <div class="card">
                 <div class="card-header">
@@ -90,7 +90,7 @@
         </div>
 
         <!-- Cost & Carbon Row -->
-        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1rem;">
+        <div class="cost-carbon-grid">
             <div class="card" id="costs">
                 <div class="card-header">
                     <h3 class="card-title">Cost Breakdown</h3>
@@ -165,21 +165,30 @@ async function refreshData() {
 }
 
 async function loadTopology() {
+    const container = document.getElementById('topologyGraph');
     try {
         const response = await fetch('/api/dashboard/topology');
         const result = await response.json();
 
-        if (result.success) {
+        if (result.success && result.data && result.data.nodes && result.data.nodes.length > 0) {
             renderTopology(result.data);
 
             // Update counts
             const healthy = result.data.nodes.filter(n => n.status === 'healthy').length;
             const degraded = result.data.nodes.filter(n => n.status === 'degraded').length;
+            const unhealthy = result.data.nodes.filter(n => n.status === 'unhealthy').length;
             document.getElementById('healthyNodes').textContent = healthy;
-            document.getElementById('degradedNodes').textContent = degraded;
+            document.getElementById('degradedNodes').textContent = degraded + unhealthy;
+        } else {
+            container.innerHTML = '<div style="display: flex; align-items: center; justify-content: center; height: 100%; color: var(--text-secondary);">No topology data available</div>';
+            document.getElementById('healthyNodes').textContent = '0';
+            document.getElementById('degradedNodes').textContent = '0';
         }
     } catch (error) {
         console.error('Error loading topology:', error);
+        container.innerHTML = '<div style="display: flex; align-items: center; justify-content: center; height: 100%; color: var(--danger);">Error loading topology</div>';
+        document.getElementById('healthyNodes').textContent = '-';
+        document.getElementById('degradedNodes').textContent = '-';
     }
 }
 
@@ -187,13 +196,19 @@ function renderTopology(data) {
     const container = document.getElementById('topologyGraph');
     container.innerHTML = '';
 
-    const width = container.clientWidth;
+    // Ensure container has proper dimensions
+    const width = container.clientWidth || container.offsetWidth || 800;
     const height = 400;
+
+    // If width is still 0, use parent width or fallback
+    const effectiveWidth = width > 0 ? width : (container.parentElement?.clientWidth || 800);
 
     const svg = d3.select(container)
         .append('svg')
-        .attr('width', width)
-        .attr('height', height);
+        .attr('width', '100%')
+        .attr('height', height)
+        .attr('viewBox', `0 0 ${effectiveWidth} ${height}`)
+        .attr('preserveAspectRatio', 'xMidYMid meet');
 
     // Create arrow marker
     svg.append('defs').append('marker')
@@ -211,7 +226,7 @@ function renderTopology(data) {
     const simulation = d3.forceSimulation(data.nodes)
         .force('link', d3.forceLink(data.edges).id(d => d.id).distance(120))
         .force('charge', d3.forceManyBody().strength(-400))
-        .force('center', d3.forceCenter(width / 2, height / 2))
+        .force('center', d3.forceCenter(effectiveWidth / 2, height / 2))
         .force('collision', d3.forceCollide().radius(40));
 
     const link = svg.append('g')
@@ -261,6 +276,12 @@ function renderTopology(data) {
         .text(d => `${d.label}\nType: ${d.type}\nStatus: ${d.status}`);
 
     simulation.on('tick', () => {
+        // Keep nodes within bounds
+        data.nodes.forEach(d => {
+            d.x = Math.max(30, Math.min(effectiveWidth - 30, d.x));
+            d.y = Math.max(30, Math.min(height - 30, d.y));
+        });
+
         link
             .attr('x1', d => d.source.x)
             .attr('y1', d => d.source.y)

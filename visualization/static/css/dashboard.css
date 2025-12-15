@@ -97,6 +97,20 @@ button:active {
     width: 100% !important;
 }
 
+/* Metrics grid - responsive */
+.metrics-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+    gap: 1rem;
+}
+
+/* Cost/Carbon grid - responsive */
+.cost-carbon-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(400px, 1fr));
+    gap: 1rem;
+}
+
 /* Loading skeleton */
 .skeleton {
     background: linear-gradient(90deg, var(--bg-secondary) 25%, var(--border-color) 50%, var(--bg-secondary) 75%);

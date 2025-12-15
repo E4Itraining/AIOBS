@@ -5,7 +5,7 @@ Security validation and Data Act compliance enforcement
 
 from datetime import datetime, timedelta
 from typing import Dict, List, Optional, Any, Tuple, Set
-from dataclasses import dataclass, field
+from dataclasses import dataclass, field as dataclass_field
 import re
 import hashlib
 import json
@@ -38,16 +38,16 @@ class ValidationIssue:
     message: str
     severity: ValidationSeverity
     field: Optional[str] = None
-    details: Dict[str, Any] = field(default_factory=dict)
+    details: Dict[str, Any] = dataclass_field(default_factory=dict)
 
 
 @dataclass
 class ValidationResult:
     """Result of validation"""
     is_valid: bool
-    issues: List[ValidationIssue] = field(default_factory=list)
+    issues: List[ValidationIssue] = dataclass_field(default_factory=list)
     sanitized_data: Optional[Any] = None
-    audit_trail: Dict[str, Any] = field(default_factory=dict)
+    audit_trail: Dict[str, Any] = dataclass_field(default_factory=dict)
 
     def add_issue(self, code: str, message: str, severity: ValidationSeverity,
                   field: Optional[str] = None, details: Optional[Dict] = None):

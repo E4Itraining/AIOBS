@@ -131,6 +131,9 @@
             color: var(--text-primary);
             text-decoration: none;
             transition: all 0.2s;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
         }
 
         .nav-item:hover {
@@ -145,6 +148,8 @@
         .nav-item svg {
             width: 20px;
             height: 20px;
+            min-width: 20px;
+            flex-shrink: 0;
         }
 
         .main-content {
