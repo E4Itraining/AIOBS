@@ -1,3 +1,4 @@
+#!/usr/bin/env python3
 """
 AIOBS Continuous Data Generator
 Generates realistic test data for continuous testing and simulation
