@@ -16,135 +16,245 @@ router = APIRouter(prefix="/api/profiles", tags=["profiles"])
 
 # Widget configurations per profile type
 PROFILE_WIDGETS = {
-    # Technical ML Engineer - Focus on model metrics
+    # Technical ML Engineer - Focus on model metrics, drift, reliability, and cognitive metrics
     UserProfile.TECH_ML_ENGINEER: [
+        # Row 1: KPI Overview
+        DashboardWidget(
+            widget_id="ml_kpi_overview",
+            widget_type="kpi_row",
+            title="Model Health Overview",
+            data_source="/api/dashboard/overview",
+            config={"metrics": ["trust_score", "model_accuracy", "drift_status", "inference_count"]},
+            position={"x": 0, "y": 0, "w": 12, "h": 2}
+        ),
+        # Row 2: Trust & Drift
         DashboardWidget(
             widget_id="trust_gauge",
             widget_type="gauge",
             title="Trust Score",
             data_source="/api/metrics/trust/{model_id}",
-            config={"min": 0, "max": 1, "thresholds": [0.6, 0.8]},
-            position={"x": 0, "y": 0, "w": 3, "h": 2}
+            config={"min": 0, "max": 1, "thresholds": [0.6, 0.8], "animate": True},
+            position={"x": 0, "y": 2, "w": 3, "h": 2}
         ),
         DashboardWidget(
             widget_id="drift_chart",
             widget_type="line_chart",
-            title="Drift Detection",
-            data_source="/api/metrics/timeseries?metrics=data_drift,concept_drift",
-            config={"colors": ["#ff6b6b", "#feca57"]},
-            position={"x": 3, "y": 0, "w": 6, "h": 2}
+            title="Drift Detection Timeline",
+            data_source="/api/metrics/timeseries?metrics=data_drift,concept_drift,feature_drift",
+            config={"colors": ["#ff6b6b", "#feca57", "#48dbfb"], "show_anomalies": True},
+            position={"x": 3, "y": 2, "w": 6, "h": 2}
         ),
         DashboardWidget(
             widget_id="reliability_breakdown",
             widget_type="radar_chart",
             title="Reliability Analysis",
             data_source="/api/metrics/cognitive/{model_id}",
-            config={"metrics": ["calibration", "stability", "uncertainty", "ood"]},
-            position={"x": 9, "y": 0, "w": 3, "h": 2}
+            config={"metrics": ["calibration", "stability", "uncertainty", "ood", "robustness"]},
+            position={"x": 9, "y": 2, "w": 3, "h": 2}
+        ),
+        # Row 3: Cognitive Metrics & Performance
+        DashboardWidget(
+            widget_id="cognitive_metrics",
+            widget_type="cards_grid",
+            title="Cognitive Metrics",
+            data_source="/api/metrics/cognitive/{model_id}",
+            config={"cards": ["hallucination_risk", "confidence_calibration", "uncertainty_quantification", "ood_detection"]},
+            position={"x": 0, "y": 4, "w": 4, "h": 3}
         ),
         DashboardWidget(
             widget_id="model_performance",
             widget_type="multi_line",
-            title="Model Performance",
-            data_source="/api/metrics/timeseries?metrics=latency_p99,throughput,error_rate",
-            config={},
-            position={"x": 0, "y": 2, "w": 8, "h": 3}
+            title="Model Performance Trends",
+            data_source="/api/metrics/timeseries?metrics=latency_p99,throughput,error_rate,accuracy",
+            config={"show_predictions": True},
+            position={"x": 4, "y": 4, "w": 5, "h": 3}
         ),
         DashboardWidget(
             widget_id="causal_graph",
             widget_type="graph",
             title="Causal Analysis",
             data_source="/api/metrics/causal/graph/drift_incident",
-            config={"layout": "hierarchical"},
-            position={"x": 8, "y": 2, "w": 4, "h": 3}
+            config={"layout": "hierarchical", "interactive": True},
+            position={"x": 9, "y": 4, "w": 3, "h": 3}
         ),
-    ],
-
-    # Data Scientist - Focus on data quality and experiments
-    UserProfile.TECH_DATA_SCIENTIST: [
+        # Row 4: Model Inventory & Experiments
         DashboardWidget(
-            widget_id="data_quality_overview",
-            widget_type="kpi_row",
-            title="Data Quality Metrics",
-            data_source="/api/metrics/data_quality",
-            config={"metrics": ["completeness", "accuracy", "freshness", "consistency"]},
-            position={"x": 0, "y": 0, "w": 12, "h": 2}
-        ),
-        DashboardWidget(
-            widget_id="feature_drift",
-            widget_type="heatmap",
-            title="Feature Drift Analysis",
-            data_source="/api/metrics/drift",
-            config={"view": "features"},
-            position={"x": 0, "y": 2, "w": 8, "h": 3}
+            widget_id="model_inventory",
+            widget_type="table",
+            title="Active Models",
+            data_source="/api/dashboard/services?service_type=model",
+            config={"sortable": True, "filterable": True, "columns": ["name", "version", "status", "trust_score", "drift_status"]},
+            position={"x": 0, "y": 7, "w": 6, "h": 3}
         ),
         DashboardWidget(
             widget_id="experiment_tracker",
-            widget_type="table",
-            title="Active Experiments",
+            widget_type="timeline",
+            title="Recent Experiments & Deployments",
             data_source="/api/experiments",
-            config={"sortable": True, "filterable": True},
-            position={"x": 8, "y": 2, "w": 4, "h": 3}
+            config={"show_status": True, "clickable": True},
+            position={"x": 6, "y": 7, "w": 6, "h": 3}
+        ),
+    ],
+
+    # Data Scientist - Focus on data quality, experiments, statistics, and model analysis
+    UserProfile.TECH_DATA_SCIENTIST: [
+        # Row 1: KPI Overview
+        DashboardWidget(
+            widget_id="ds_kpi_overview",
+            widget_type="kpi_row",
+            title="Data & Experiment Overview",
+            data_source="/api/metrics/data_quality",
+            config={"metrics": ["data_quality_score", "active_experiments", "model_count", "feature_count"]},
+            position={"x": 0, "y": 0, "w": 12, "h": 2}
+        ),
+        # Row 2: Data Quality
+        DashboardWidget(
+            widget_id="data_quality_overview",
+            widget_type="cards_grid",
+            title="Data Quality Metrics",
+            data_source="/api/metrics/data_quality",
+            config={"cards": ["completeness", "accuracy", "freshness", "consistency", "uniqueness", "validity"]},
+            position={"x": 0, "y": 2, "w": 6, "h": 3}
+        ),
+        DashboardWidget(
+            widget_id="data_quality_trend",
+            widget_type="multi_line",
+            title="Data Quality Trends",
+            data_source="/api/metrics/timeseries?metrics=completeness,accuracy,freshness",
+            config={"colors": ["#10b981", "#6366f1", "#f59e0b"]},
+            position={"x": 6, "y": 2, "w": 6, "h": 3}
+        ),
+        # Row 3: Feature Analysis
+        DashboardWidget(
+            widget_id="feature_drift",
+            widget_type="heatmap",
+            title="Feature Drift Heatmap",
+            data_source="/api/metrics/drift",
+            config={"view": "features", "color_scale": "red_yellow_green"},
+            position={"x": 0, "y": 5, "w": 8, "h": 3}
+        ),
+        DashboardWidget(
+            widget_id="feature_importance",
+            widget_type="bar_chart",
+            title="Feature Importance",
+            data_source="/api/metrics/features/importance",
+            config={"horizontal": True, "sorted": True},
+            position={"x": 8, "y": 5, "w": 4, "h": 3}
+        ),
+        # Row 4: Experiments & Statistics
+        DashboardWidget(
+            widget_id="experiment_tracker",
+            widget_type="table",
+            title="Active Experiments & A/B Tests",
+            data_source="/api/experiments",
+            config={"sortable": True, "filterable": True, "columns": ["name", "status", "start_date", "p_value", "effect_size", "winner"]},
+            position={"x": 0, "y": 8, "w": 6, "h": 3}
         ),
         DashboardWidget(
             widget_id="statistical_summary",
             widget_type="stats_grid",
             title="Statistical Insights",
             data_source="/api/metrics/statistics",
-            config={},
-            position={"x": 0, "y": 5, "w": 6, "h": 3}
+            config={"show_confidence_intervals": True},
+            position={"x": 6, "y": 8, "w": 6, "h": 3}
         ),
+        # Row 5: Model Comparison & Distribution
         DashboardWidget(
             widget_id="model_comparison",
             widget_type="comparison_chart",
-            title="Model Comparison",
+            title="Model Performance Comparison",
             data_source="/api/metrics/models/compare",
-            config={"metrics": ["accuracy", "latency", "cost"]},
-            position={"x": 6, "y": 5, "w": 6, "h": 3}
+            config={"metrics": ["accuracy", "precision", "recall", "f1", "latency", "cost"]},
+            position={"x": 0, "y": 11, "w": 6, "h": 3}
+        ),
+        DashboardWidget(
+            widget_id="prediction_distribution",
+            widget_type="histogram",
+            title="Prediction Distribution",
+            data_source="/api/metrics/predictions/distribution",
+            config={"bins": 50, "show_density": True},
+            position={"x": 6, "y": 11, "w": 6, "h": 3}
         ),
     ],
 
-    # DevOps - Focus on infrastructure and SLOs
+    # DevOps Engineer - Focus on infrastructure, SLOs, service health, and operations
     UserProfile.TECH_DEVOPS: [
+        # Row 1: KPI Overview
+        DashboardWidget(
+            widget_id="devops_kpi_overview",
+            widget_type="kpi_row",
+            title="Infrastructure Overview",
+            data_source="/api/dashboard/overview",
+            config={"metrics": ["slo_compliance", "uptime_percent", "active_incidents", "deployment_frequency"]},
+            position={"x": 0, "y": 0, "w": 12, "h": 2}
+        ),
+        # Row 2: SLO Status Cards
         DashboardWidget(
             widget_id="slo_status",
             widget_type="slo_cards",
-            title="SLO Status",
+            title="SLO/SLI Status",
             data_source="/api/dashboard/slo",
-            config={},
-            position={"x": 0, "y": 0, "w": 12, "h": 2}
+            config={"show_budget": True, "show_trend": True},
+            position={"x": 0, "y": 2, "w": 12, "h": 2}
         ),
+        # Row 3: Topology & Health
         DashboardWidget(
             widget_id="service_topology",
             widget_type="topology",
-            title="Service Topology",
+            title="Service Topology & Dependencies",
             data_source="/api/dashboard/topology",
-            config={"layout": "force"},
-            position={"x": 0, "y": 2, "w": 6, "h": 4}
+            config={"layout": "force", "highlight_issues": True, "show_latency": True},
+            position={"x": 0, "y": 4, "w": 6, "h": 4}
         ),
         DashboardWidget(
             widget_id="services_health",
             widget_type="table",
-            title="Services Health",
+            title="Services Health Status",
             data_source="/api/dashboard/services",
-            config={"sortable": True, "filterable": True},
-            position={"x": 6, "y": 2, "w": 6, "h": 4}
+            config={"sortable": True, "filterable": True, "columns": ["name", "status", "uptime", "error_rate", "latency_p99", "last_deploy"]},
+            position={"x": 6, "y": 4, "w": 6, "h": 4}
         ),
+        # Row 4: Performance Metrics
         DashboardWidget(
             widget_id="latency_chart",
-            widget_type="line_chart",
-            title="Latency Trends",
-            data_source="/api/metrics/timeseries?metrics=latency_p50,latency_p99",
-            config={},
-            position={"x": 0, "y": 6, "w": 6, "h": 2}
+            widget_type="multi_line",
+            title="Latency Trends (P50, P95, P99)",
+            data_source="/api/metrics/timeseries?metrics=latency_p50,latency_p95,latency_p99",
+            config={"colors": ["#10b981", "#f59e0b", "#ef4444"], "show_anomalies": True},
+            position={"x": 0, "y": 8, "w": 4, "h": 3}
         ),
         DashboardWidget(
             widget_id="error_rate",
             widget_type="area_chart",
-            title="Error Rate",
+            title="Error Rate by Service",
             data_source="/api/metrics/timeseries?metrics=error_rate",
-            config={"color": "#ff6b6b"},
-            position={"x": 6, "y": 6, "w": 6, "h": 2}
+            config={"color": "#ff6b6b", "stacked": True},
+            position={"x": 4, "y": 8, "w": 4, "h": 3}
+        ),
+        DashboardWidget(
+            widget_id="throughput_chart",
+            widget_type="area_chart",
+            title="Request Throughput",
+            data_source="/api/metrics/timeseries?metrics=throughput",
+            config={"color": "#6366f1"},
+            position={"x": 8, "y": 8, "w": 4, "h": 3}
+        ),
+        # Row 5: Alerts & Deployments
+        DashboardWidget(
+            widget_id="active_alerts",
+            widget_type="table",
+            title="Active Alerts & Incidents",
+            data_source="/api/dashboard/overview",
+            config={"field": "top_issues", "sortable": True, "show_actions": True},
+            position={"x": 0, "y": 11, "w": 6, "h": 3}
+        ),
+        DashboardWidget(
+            widget_id="deployment_history",
+            widget_type="timeline",
+            title="Recent Deployments",
+            data_source="/api/dashboard/deployments",
+            config={"show_status": True, "show_rollbacks": True},
+            position={"x": 6, "y": 11, "w": 6, "h": 3}
         ),
     ],
 
@@ -192,31 +302,84 @@ PROFILE_WIDGETS = {
         ),
     ],
 
-    # Product Owner - Focus on features and user impact
+    # Product Owner - Focus on AI features, user experience, and business impact
     UserProfile.BUSINESS_PRODUCT: [
+        # Row 1: KPI Overview
+        DashboardWidget(
+            widget_id="po_kpi_overview",
+            widget_type="kpi_row",
+            title="Product AI Metrics",
+            data_source="/api/dashboard/overview",
+            config={"metrics": ["active_ai_features", "user_satisfaction", "feature_adoption", "conversion_lift"]},
+            position={"x": 0, "y": 0, "w": 12, "h": 2}
+        ),
+        # Row 2: AI Features Overview
         DashboardWidget(
             widget_id="model_overview",
             widget_type="cards_grid",
-            title="AI Features Overview",
+            title="AI Features Portfolio",
             data_source="/api/dashboard/services?service_type=model",
-            config={},
-            position={"x": 0, "y": 0, "w": 12, "h": 3}
+            config={"show_status": True, "show_metrics": ["usage", "satisfaction", "reliability"]},
+            position={"x": 0, "y": 2, "w": 8, "h": 3}
         ),
+        DashboardWidget(
+            widget_id="feature_health",
+            widget_type="gauge",
+            title="Overall Feature Health",
+            data_source="/api/metrics/trust/{model_id}",
+            config={"min": 0, "max": 100, "thresholds": [60, 80]},
+            position={"x": 8, "y": 2, "w": 4, "h": 3}
+        ),
+        # Row 3: User Impact & Experience
         DashboardWidget(
             widget_id="user_impact",
             widget_type="bar_chart",
             title="User Experience Impact",
             data_source="/api/metrics/impact/summary",
-            config={"field": "impact_by_domain.user_experience"},
-            position={"x": 0, "y": 3, "w": 6, "h": 3}
+            config={"field": "impact_by_domain.user_experience", "horizontal": True},
+            position={"x": 0, "y": 5, "w": 6, "h": 3}
         ),
         DashboardWidget(
-            widget_id="conversion_impact",
+            widget_id="user_satisfaction_trend",
             widget_type="line_chart",
-            title="Revenue Impact Trend",
+            title="User Satisfaction Trend",
+            data_source="/api/metrics/timeseries?metrics=user_satisfaction,nps_score",
+            config={"colors": ["#10b981", "#6366f1"]},
+            position={"x": 6, "y": 5, "w": 6, "h": 3}
+        ),
+        # Row 4: Business Impact
+        DashboardWidget(
+            widget_id="conversion_impact",
+            widget_type="multi_line",
+            title="Conversion & Revenue Impact",
             data_source="/api/metrics/impact/summary",
-            config={"field": "impact_by_domain.revenue"},
-            position={"x": 6, "y": 3, "w": 6, "h": 3}
+            config={"field": "impact_by_domain.revenue", "show_baseline": True},
+            position={"x": 0, "y": 8, "w": 6, "h": 3}
+        ),
+        DashboardWidget(
+            widget_id="feature_adoption",
+            widget_type="funnel",
+            title="Feature Adoption Funnel",
+            data_source="/api/metrics/adoption",
+            config={"stages": ["exposed", "engaged", "adopted", "retained"]},
+            position={"x": 6, "y": 8, "w": 6, "h": 3}
+        ),
+        # Row 5: Feature Performance & Roadmap
+        DashboardWidget(
+            widget_id="feature_performance",
+            widget_type="table",
+            title="Feature Performance Metrics",
+            data_source="/api/dashboard/services?service_type=model",
+            config={"columns": ["feature", "usage", "satisfaction", "reliability", "business_impact"], "sortable": True},
+            position={"x": 0, "y": 11, "w": 6, "h": 3}
+        ),
+        DashboardWidget(
+            widget_id="ab_test_results",
+            widget_type="table",
+            title="A/B Test Results",
+            data_source="/api/experiments",
+            config={"filter": "type:ab_test", "columns": ["name", "variant", "lift", "confidence", "status"]},
+            position={"x": 6, "y": 11, "w": 6, "h": 3}
         ),
     ],
 
@@ -751,17 +914,17 @@ def _get_profile_name(profile: UserProfile) -> str:
 def _get_profile_description(profile: UserProfile) -> str:
     """Get profile description"""
     descriptions = {
-        UserProfile.TECH_ML_ENGINEER: "Model performance, drift detection, reliability analysis, and cognitive metrics",
-        UserProfile.TECH_DEVOPS: "Infrastructure health, SLO/SLI monitoring, service topology, and operational metrics",
-        UserProfile.TECH_DATA_SCIENTIST: "Data quality, feature analysis, experiment tracking, and statistical insights",
-        UserProfile.BUSINESS_PRODUCT: "AI feature performance, user impact, and product metrics",
-        UserProfile.BUSINESS_EXECUTIVE: "High-level KPIs, business impact, costs, and strategic overview",
-        UserProfile.SECURITY_SOC: "Security posture, threat detection, incident management, and access monitoring",
-        UserProfile.COMPLIANCE_LEGAL: "Regulatory compliance, audit trails, governance status, and evidence management",
-        UserProfile.SUSTAINABILITY_ESG: "Carbon footprint, energy consumption, sustainability metrics, and ESG reporting",
-        UserProfile.GOVERNANCE_DSI: "Strategic IT governance, AI portfolio management, budget allocation, and digital transformation",
-        UserProfile.GOVERNANCE_RSI: "Operational IT management, systems monitoring, projects tracking, and team resources",
-        UserProfile.PRIVACY_DPO: "GDPR compliance, data processing registry, DPIA management, and data subject rights",
-        UserProfile.LEGAL_COUNSEL: "Legal risk assessment, contracts management, regulatory watch, and IP protection",
+        UserProfile.TECH_ML_ENGINEER: "Model health monitoring, multi-drift detection (data, concept, feature), cognitive metrics, reliability analysis, and causal root cause investigation",
+        UserProfile.TECH_DEVOPS: "SLO/SLI monitoring with error budgets, service topology visualization, performance metrics (P50-P99 latency), alerts management, and deployment tracking",
+        UserProfile.TECH_DATA_SCIENTIST: "Data quality monitoring (completeness, accuracy, freshness), feature drift heatmaps, A/B experiments with statistical analysis, and model performance comparison",
+        UserProfile.BUSINESS_PRODUCT: "AI features portfolio, user experience impact metrics, adoption funnels, A/B test results, satisfaction trends, and business impact tracking",
+        UserProfile.BUSINESS_EXECUTIVE: "High-level KPIs, business impact analysis, cost distribution, and strategic overview with trust trends",
+        UserProfile.SECURITY_SOC: "Security posture scoring, threat detection timeline, incident management, and access monitoring",
+        UserProfile.COMPLIANCE_LEGAL: "Regulatory compliance dashboard, audit findings, and regulation status tracking",
+        UserProfile.SUSTAINABILITY_ESG: "Carbon metrics tracking, energy consumption, sustainability by region/activity, and green recommendations",
+        UserProfile.GOVERNANCE_DSI: "Strategic IT governance, AI portfolio management, budget allocation (Sankey), risk matrix, and digital transformation roadmap",
+        UserProfile.GOVERNANCE_RSI: "Operational IT management, systems status, kanban project tracking, incidents management, and team resource allocation",
+        UserProfile.PRIVACY_DPO: "GDPR compliance dashboard, processing registry, DPIA status, data subject requests with deadlines, and personal data flow visualization",
+        UserProfile.LEGAL_COUNSEL: "Legal risk assessment matrix, regulatory watch timeline, AI contracts tracking, IP portfolio, and EU AI Act compliance",
     }
     return descriptions.get(profile, "")

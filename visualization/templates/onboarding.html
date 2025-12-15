@@ -76,11 +76,12 @@
                             <i data-lucide="cpu"></i>
                         </div>
                         <h4>{{ t('profiles.ml_engineer') or 'ML Engineer' }}</h4>
-                        <p>{{ t('onboarding.ml_engineer_desc') or 'Model performance, drift detection, reliability analysis' }}</p>
+                        <p>{{ t('onboarding.ml_engineer_desc') or 'Model health, multi-drift detection, cognitive metrics, reliability analysis, and causal root cause investigation' }}</p>
                         <div class="profile-focus">
+                            <span class="tag">Trust Score</span>
                             <span class="tag">Drift</span>
-                            <span class="tag">Trust</span>
-                            <span class="tag">Performance</span>
+                            <span class="tag">Cognitive</span>
+                            <span class="tag">Causal</span>
                         </div>
                     </div>
 
@@ -88,12 +89,13 @@
                         <div class="profile-icon">
                             <i data-lucide="server"></i>
                         </div>
-                        <h4>{{ t('profiles.devops') or 'DevOps' }}</h4>
-                        <p>{{ t('onboarding.devops_desc') or 'Infrastructure health, SLOs, service topology' }}</p>
+                        <h4>{{ t('profiles.devops') or 'DevOps Engineer' }}</h4>
+                        <p>{{ t('onboarding.devops_desc') or 'SLO/SLI monitoring, service topology, performance metrics, alerts management, and deployment tracking' }}</p>
                         <div class="profile-focus">
-                            <span class="tag">SLO</span>
+                            <span class="tag">SLO/SLI</span>
                             <span class="tag">Topology</span>
-                            <span class="tag">Alerts</span>
+                            <span class="tag">Latency</span>
+                            <span class="tag">Deploys</span>
                         </div>
                     </div>
 
@@ -102,10 +104,12 @@
                             <i data-lucide="bar-chart-2"></i>
                         </div>
                         <h4>{{ t('profiles.data_scientist') or 'Data Scientist' }}</h4>
-                        <p>{{ t('onboarding.data_scientist_desc') or 'Data quality, experiments, statistical insights' }}</p>
+                        <p>{{ t('onboarding.data_scientist_desc') or 'Data quality monitoring, feature analysis, A/B experiments, statistical insights, and model comparison' }}</p>
                         <div class="profile-focus">
                             <span class="tag">Data Quality</span>
+                            <span class="tag">Features</span>
                             <span class="tag">Experiments</span>
+                            <span class="tag">Stats</span>
                         </div>
                     </div>
                 </div>
@@ -136,10 +140,12 @@
                             <i data-lucide="package"></i>
                         </div>
                         <h4>{{ t('profiles.product_owner') or 'Product Owner' }}</h4>
-                        <p>{{ t('onboarding.product_owner_desc') or 'AI features, user impact, product metrics' }}</p>
+                        <p>{{ t('onboarding.product_owner_desc') or 'AI features portfolio, user experience metrics, adoption funnels, A/B tests, and business impact tracking' }}</p>
                         <div class="profile-focus">
                             <span class="tag">Features</span>
                             <span class="tag">UX Impact</span>
+                            <span class="tag">Adoption</span>
+                            <span class="tag">Revenue</span>
                         </div>
                     </div>
                 </div>
@@ -313,22 +319,26 @@ let selectedProfile = null;
 const tourContent = {
     tech_ml_engineer: {
         title: '{{ t("onboarding.tour_ml_title") or "ML Engineer Dashboard" }}',
-        description: '{{ t("onboarding.tour_ml_desc") or "Your workspace for AI model observability" }}',
+        description: '{{ t("onboarding.tour_ml_desc") or "Your comprehensive workspace for AI model observability, reliability, and performance optimization" }}',
         features: [
-            { icon: 'gauge', title: '{{ t("onboarding.tour_ml_1_title") or "Trust Score Monitoring" }}', desc: '{{ t("onboarding.tour_ml_1_desc") or "Track model reliability with real-time trust scores and confidence intervals" }}' },
-            { icon: 'activity', title: '{{ t("onboarding.tour_ml_2_title") or "Drift Detection" }}', desc: '{{ t("onboarding.tour_ml_2_desc") or "Detect data and concept drift before they impact your users" }}' },
-            { icon: 'git-branch', title: '{{ t("onboarding.tour_ml_3_title") or "Causal Analysis" }}', desc: '{{ t("onboarding.tour_ml_3_desc") or "Understand root causes with causal graphs and impact visualization" }}' },
-            { icon: 'brain', title: '{{ t("onboarding.tour_ml_4_title") or "Cognitive Metrics" }}', desc: '{{ t("onboarding.tour_ml_4_desc") or "Monitor hallucination risk, calibration, and uncertainty quantification" }}' }
+            { icon: 'gauge', title: '{{ t("onboarding.tour_ml_1_title") or "Trust Score & Model Health" }}', desc: '{{ t("onboarding.tour_ml_1_desc") or "Track model reliability with real-time trust scores, confidence intervals, and health indicators at a glance" }}' },
+            { icon: 'activity', title: '{{ t("onboarding.tour_ml_2_title") or "Multi-Drift Detection" }}', desc: '{{ t("onboarding.tour_ml_2_desc") or "Detect data drift, concept drift, and feature drift before they impact your users - with anomaly highlighting" }}' },
+            { icon: 'git-branch', title: '{{ t("onboarding.tour_ml_3_title") or "Causal Analysis" }}', desc: '{{ t("onboarding.tour_ml_3_desc") or "Understand root causes with interactive causal graphs and impact visualization" }}' },
+            { icon: 'brain', title: '{{ t("onboarding.tour_ml_4_title") or "Cognitive Metrics" }}', desc: '{{ t("onboarding.tour_ml_4_desc") or "Monitor hallucination risk, confidence calibration, uncertainty quantification, and out-of-distribution detection" }}' },
+            { icon: 'radar', title: '{{ t("onboarding.tour_ml_5_title") or "Reliability Radar" }}', desc: '{{ t("onboarding.tour_ml_5_desc") or "Visualize calibration, stability, uncertainty, OOD detection, and robustness in one radar chart" }}' },
+            { icon: 'flask', title: '{{ t("onboarding.tour_ml_6_title") or "Experiments & Deployments" }}', desc: '{{ t("onboarding.tour_ml_6_desc") or "Track recent experiments, A/B tests, and model deployments with timeline visualization" }}' }
         ]
     },
     tech_devops: {
-        title: '{{ t("onboarding.tour_devops_title") or "DevOps Dashboard" }}',
-        description: '{{ t("onboarding.tour_devops_desc") or "Infrastructure and operational excellence" }}',
+        title: '{{ t("onboarding.tour_devops_title") or "DevOps Engineer Dashboard" }}',
+        description: '{{ t("onboarding.tour_devops_desc") or "Infrastructure monitoring, SLO management, and operational excellence for AI systems" }}',
         features: [
-            { icon: 'target', title: '{{ t("onboarding.tour_devops_1_title") or "SLO/SLI Monitoring" }}', desc: '{{ t("onboarding.tour_devops_1_desc") or "Track service level objectives with real-time compliance status" }}' },
-            { icon: 'share-2', title: '{{ t("onboarding.tour_devops_2_title") or "Service Topology" }}', desc: '{{ t("onboarding.tour_devops_2_desc") or "Visualize service dependencies and identify bottlenecks" }}' },
-            { icon: 'bell', title: '{{ t("onboarding.tour_devops_3_title") or "Intelligent Alerts" }}', desc: '{{ t("onboarding.tour_devops_3_desc") or "Get actionable alerts with root cause context" }}' },
-            { icon: 'activity', title: '{{ t("onboarding.tour_devops_4_title") or "Performance Trends" }}', desc: '{{ t("onboarding.tour_devops_4_desc") or "Monitor latency, throughput, and error rates" }}' }
+            { icon: 'target', title: '{{ t("onboarding.tour_devops_1_title") or "SLO/SLI Monitoring" }}', desc: '{{ t("onboarding.tour_devops_1_desc") or "Track service level objectives with real-time compliance status, error budgets, and trend indicators" }}' },
+            { icon: 'share-2', title: '{{ t("onboarding.tour_devops_2_title") or "Service Topology" }}', desc: '{{ t("onboarding.tour_devops_2_desc") or "Visualize service dependencies, identify bottlenecks, and see latency across the topology" }}' },
+            { icon: 'bell', title: '{{ t("onboarding.tour_devops_3_title") or "Alerts & Incidents" }}', desc: '{{ t("onboarding.tour_devops_3_desc") or "Get actionable alerts with root cause context and manage active incidents efficiently" }}' },
+            { icon: 'activity', title: '{{ t("onboarding.tour_devops_4_title") or "Performance Metrics" }}', desc: '{{ t("onboarding.tour_devops_4_desc") or "Monitor latency percentiles (P50, P95, P99), throughput, and error rates with anomaly detection" }}' },
+            { icon: 'server', title: '{{ t("onboarding.tour_devops_5_title") or "Services Health" }}', desc: '{{ t("onboarding.tour_devops_5_desc") or "Track all services status, uptime, error rates, and deployment information in one view" }}' },
+            { icon: 'git-pull-request', title: '{{ t("onboarding.tour_devops_6_title") or "Deployment History" }}', desc: '{{ t("onboarding.tour_devops_6_desc") or "View recent deployments, rollbacks, and release status in a timeline view" }}' }
         ]
     },
     business_executive: {
@@ -342,12 +352,15 @@ const tourContent = {
         ]
     },
     business_product: {
-        title: '{{ t("onboarding.tour_product_title") or "Product Dashboard" }}',
-        description: '{{ t("onboarding.tour_product_desc") or "AI features and user experience" }}',
+        title: '{{ t("onboarding.tour_product_title") or "Product Owner Dashboard" }}',
+        description: '{{ t("onboarding.tour_product_desc") or "AI features portfolio, user experience metrics, and business impact tracking" }}',
         features: [
-            { icon: 'zap', title: '{{ t("onboarding.tour_product_1_title") or "Feature Performance" }}', desc: '{{ t("onboarding.tour_product_1_desc") or "Track how AI features perform in production" }}' },
-            { icon: 'users', title: '{{ t("onboarding.tour_product_2_title") or "User Impact" }}', desc: '{{ t("onboarding.tour_product_2_desc") or "Understand how AI affects user experience" }}' },
-            { icon: 'trending-up', title: '{{ t("onboarding.tour_product_3_title") or "Conversion Impact" }}', desc: '{{ t("onboarding.tour_product_3_desc") or "Measure AI contribution to business goals" }}' }
+            { icon: 'grid', title: '{{ t("onboarding.tour_product_1_title") or "AI Features Portfolio" }}', desc: '{{ t("onboarding.tour_product_1_desc") or "Track all AI features with usage, satisfaction, and reliability metrics in one view" }}' },
+            { icon: 'users', title: '{{ t("onboarding.tour_product_2_title") or "User Experience Impact" }}', desc: '{{ t("onboarding.tour_product_2_desc") or "Understand how AI features affect user experience and satisfaction scores" }}' },
+            { icon: 'trending-up', title: '{{ t("onboarding.tour_product_3_title") or "Conversion & Revenue" }}', desc: '{{ t("onboarding.tour_product_3_desc") or "Measure AI contribution to conversion rates, revenue, and business goals with baseline comparison" }}' },
+            { icon: 'filter', title: '{{ t("onboarding.tour_product_4_title") or "Adoption Funnel" }}', desc: '{{ t("onboarding.tour_product_4_desc") or "Track feature adoption from exposure through engagement to retention" }}' },
+            { icon: 'flask', title: '{{ t("onboarding.tour_product_5_title") or "A/B Test Results" }}', desc: '{{ t("onboarding.tour_product_5_desc") or "View experiment results with lift, confidence levels, and winning variants" }}' },
+            { icon: 'heart', title: '{{ t("onboarding.tour_product_6_title") or "Satisfaction Trends" }}', desc: '{{ t("onboarding.tour_product_6_desc") or "Monitor user satisfaction and NPS score trends over time" }}' }
         ]
     },
     security_soc: {
@@ -378,12 +391,15 @@ const tourContent = {
         ]
     },
     tech_data_scientist: {
-        title: '{{ t("onboarding.tour_ds_title") or "Data Science Dashboard" }}',
-        description: '{{ t("onboarding.tour_ds_desc") or "Data quality and experimentation" }}',
+        title: '{{ t("onboarding.tour_ds_title") or "Data Scientist Dashboard" }}',
+        description: '{{ t("onboarding.tour_ds_desc") or "Data quality monitoring, experiment tracking, statistical analysis, and model comparison" }}',
         features: [
-            { icon: 'database', title: '{{ t("onboarding.tour_ds_1_title") or "Data Quality" }}', desc: '{{ t("onboarding.tour_ds_1_desc") or "Monitor data quality metrics and anomalies" }}' },
-            { icon: 'flask', title: '{{ t("onboarding.tour_ds_2_title") or "Experiments" }}', desc: '{{ t("onboarding.tour_ds_2_desc") or "Track experiment results and A/B tests" }}' },
-            { icon: 'pie-chart', title: '{{ t("onboarding.tour_ds_3_title") or "Statistical Insights" }}', desc: '{{ t("onboarding.tour_ds_3_desc") or "Deep statistical analysis of model behavior" }}' }
+            { icon: 'database', title: '{{ t("onboarding.tour_ds_1_title") or "Data Quality Metrics" }}', desc: '{{ t("onboarding.tour_ds_1_desc") or "Monitor completeness, accuracy, freshness, consistency, uniqueness, and validity with trend visualization" }}' },
+            { icon: 'grid', title: '{{ t("onboarding.tour_ds_2_title") or "Feature Drift Heatmap" }}', desc: '{{ t("onboarding.tour_ds_2_desc") or "Visualize feature drift across all features with color-coded severity indicators" }}' },
+            { icon: 'bar-chart-2', title: '{{ t("onboarding.tour_ds_3_title") or "Feature Importance" }}', desc: '{{ t("onboarding.tour_ds_3_desc") or "See which features drive model predictions with ranked importance charts" }}' },
+            { icon: 'flask', title: '{{ t("onboarding.tour_ds_4_title") or "Experiments & A/B Tests" }}', desc: '{{ t("onboarding.tour_ds_4_desc") or "Track experiment results with p-values, effect sizes, and winning variants" }}' },
+            { icon: 'pie-chart', title: '{{ t("onboarding.tour_ds_5_title") or "Statistical Insights" }}', desc: '{{ t("onboarding.tour_ds_5_desc") or "Deep statistical analysis with confidence intervals and hypothesis testing" }}' },
+            { icon: 'git-compare', title: '{{ t("onboarding.tour_ds_6_title") or "Model Comparison" }}', desc: '{{ t("onboarding.tour_ds_6_desc") or "Compare model performance across accuracy, precision, recall, F1, latency, and cost" }}' }
         ]
     },
     governance_dsi: {
