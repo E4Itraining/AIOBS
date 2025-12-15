@@ -25,6 +25,10 @@ npm-debug.log*
 
 # Coverage
 coverage/
+htmlcov/
+.coverage
+.coverage.*
+*.cover
 
 # Cache
 .cache/
@@ -32,4 +36,43 @@ coverage/
 __pycache__/
 *.pyc
 *.pyo
+*.pyd
+.Python
+
+# Virtual Environments
 venv/
+.venv/
+env/
+.env.venv/
+ENV/
+
+# Python build artifacts
+*.egg
+*.egg-info/
+.eggs/
+build/
+develop-eggs/
+.installed.cfg
+*.manifest
+*.spec
+pip-wheel-metadata/
+
+# Test artifacts
+.pytest_cache/
+.tox/
+.nox/
+test_reports/
+.hypothesis/
+
+# Type checking
+.mypy_cache/
+.dmypy.json
+dmypy.json
+.pytype/
+
+# Documentation
+docs/_build/
+site/
+
+# Jupyter
+.ipynb_checkpoints/
