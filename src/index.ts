@@ -18,6 +18,9 @@ export * from './core/causal';
 export * from './governance/audit';
 export * from './governance/slo';
 
+// Storage Backends
+export * from './storage';
+
 // Version
 export const VERSION = '1.0.0';
 
@@ -64,12 +67,27 @@ export class AIOBS {
     const { AuditEngine } = require('./governance/audit/audit-engine');
     const { SLOMonitor } = require('./governance/slo/slo-monitor');
 
-    return {
+    const instance: AIBOSInstance = {
       cognitive: new CognitiveMetricsEngine(config?.cognitive),
       causal: new CausalEngine(config?.causal),
       audit: new AuditEngine(config?.audit),
       slo: new SLOMonitor(config?.slo),
     };
+
+    // Initialize storage backend if configured
+    if (config?.storage?.victoriaMetricsUrl && config?.storage?.openObserveUrl) {
+      const { createAIOBSStorageBackend } = require('./storage');
+      instance.storage = createAIOBSStorageBackend({
+        victoriaMetricsUrl: config.storage.victoriaMetricsUrl,
+        openObserveUrl: config.storage.openObserveUrl,
+        openObserveOrg: config.storage.openObserveOrg || 'default',
+        openObserveUser: config.storage.openObserveUser || 'admin',
+        openObservePassword: config.storage.openObservePassword || '',
+        vmTenantId: config.storage.vmTenantId,
+      });
+    }
+
+    return instance;
   }
 }
 
@@ -81,6 +99,21 @@ export interface AIBOSConfig {
   causal?: any;
   audit?: any;
   slo?: any;
+  /** Storage backend configuration */
+  storage?: {
+    /** VictoriaMetrics URL for metrics */
+    victoriaMetricsUrl?: string;
+    /** VictoriaMetrics tenant ID */
+    vmTenantId?: string;
+    /** OpenObserve URL for logs/traces */
+    openObserveUrl?: string;
+    /** OpenObserve organization */
+    openObserveOrg?: string;
+    /** OpenObserve username */
+    openObserveUser?: string;
+    /** OpenObserve password */
+    openObservePassword?: string;
+  };
 }
 
 /**
@@ -91,4 +124,6 @@ export interface AIBOSInstance {
   causal: any;
   audit: any;
   slo: any;
+  /** Storage backend (if configured) */
+  storage?: any;
 }
