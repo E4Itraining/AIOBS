@@ -66,19 +66,28 @@
             </div>
 
             <nav class="sidebar-nav">
+                <!-- Home & Getting Started -->
+                <div class="nav-group">
+                    <span class="nav-group-title">{{ t('nav.getting_started') or 'Getting Started' }}</span>
+                    <a href="/" class="nav-link {% if active_page == 'dashboard' %}active{% endif %}">
+                        <i data-lucide="home"></i>
+                        <span>{{ t('nav.home') or 'Home' }}</span>
+                    </a>
+                    <a href="/onboarding" class="nav-link {% if active_page == 'onboarding' %}active{% endif %}">
+                        <i data-lucide="user-circle"></i>
+                        <span>{{ t('nav.personas') or 'Personas & Guide' }}</span>
+                    </a>
+                </div>
+
                 <div class="nav-group">
                     <span class="nav-group-title">{{ t('nav.overview') }}</span>
-                    <a href="/" class="nav-link {% if active_page == 'dashboard' %}active{% endif %}">
-                        <i data-lucide="layout-dashboard"></i>
-                        <span>{{ t('nav.dashboard') }}</span>
-                    </a>
                     <a href="/unified" class="nav-link {% if active_page == 'unified' %}active{% endif %}">
                         <i data-lucide="layers"></i>
                         <span>{{ t('nav.unified_view') }}</span>
                     </a>
                     <a href="/executive" class="nav-link {% if active_page == 'executive' %}active{% endif %}">
                         <i data-lucide="briefcase"></i>
-                        <span>Executive View</span>
+                        <span>{{ t('nav.executive_view') or 'Executive View' }}</span>
                     </a>
                 </div>
 

@@ -144,6 +144,11 @@ TRANSLATIONS = {
             'toggle_theme': 'Toggle Theme',
             'settings': 'Settings',
             'language': 'Language',
+            # Getting Started section
+            'getting_started': 'Getting Started',
+            'home': 'Home',
+            'personas': 'Personas & Guide',
+            'executive_view': 'Executive View',
             # Profile navigation items
             'domains': 'Domains',
             'models': 'Models',
@@ -360,6 +365,15 @@ TRANSLATIONS = {
             'skip_tour': 'Skip tour',
             'start_dashboard': 'Go to Dashboard',
             'prompt': 'New here? Click the help button to get started!',
+            # Enhanced profile descriptions
+            'ml_engineer_desc': 'Model health, multi-drift detection, cognitive metrics, reliability analysis, and causal root cause investigation',
+            'devops_desc': 'SLO/SLI monitoring, service topology, performance metrics, alerts management, and deployment tracking',
+            'data_scientist_desc': 'Data quality monitoring, feature analysis, A/B experiments, statistical insights, and model comparison',
+            'product_owner_desc': 'AI features portfolio, user experience metrics, adoption funnels, A/B tests, and business impact tracking',
+            'executive_desc': 'High-level KPIs, business impact, strategic overview, costs, and compliance status',
+            'security_desc': 'Security posture, threats, incident management, and access monitoring',
+            'compliance_desc': 'Regulatory compliance, audit trails, governance',
+            'esg_desc': 'Carbon footprint, energy, sustainability metrics',
             # New category for governance
             'category_governance': 'Governance',
             'category_governance_desc': 'For IT directors and managers',
@@ -459,6 +473,11 @@ TRANSLATIONS = {
             'toggle_theme': 'Changer le thème',
             'settings': 'Paramètres',
             'language': 'Langue',
+            # Section Démarrage
+            'getting_started': 'Démarrage',
+            'home': 'Accueil',
+            'personas': 'Personas & Guide',
+            'executive_view': 'Vue Dirigeant',
             'domains': 'Domaines',
             'models': 'Modèles',
             'drift': 'Détection de Dérive',
@@ -674,6 +693,15 @@ TRANSLATIONS = {
             'skip_tour': 'Passer la visite',
             'start_dashboard': 'Aller au tableau de bord',
             'prompt': 'Nouveau ici ? Cliquez sur le bouton d\'aide pour commencer !',
+            # Descriptions enrichies des profils
+            'ml_engineer_desc': 'Santé des modèles, détection multi-dérive, métriques cognitives, analyse de fiabilité et investigation causale',
+            'devops_desc': 'Monitoring SLO/SLI, topologie de services, métriques de performance, gestion des alertes et suivi des déploiements',
+            'data_scientist_desc': 'Qualité des données, analyse des features, expériences A/B, insights statistiques et comparaison de modèles',
+            'product_owner_desc': 'Portefeuille de fonctionnalités IA, métriques UX, tunnels d\'adoption, tests A/B et suivi d\'impact business',
+            'executive_desc': 'KPIs de haut niveau, impact business, vue stratégique, coûts et conformité',
+            'security_desc': 'Posture sécurité, menaces, gestion des incidents et monitoring des accès',
+            'compliance_desc': 'Conformité réglementaire, pistes d\'audit, gouvernance',
+            'esg_desc': 'Empreinte carbone, énergie, métriques de durabilité',
             # Nouvelles catégories pour la gouvernance
             'category_governance': 'Gouvernance',
             'category_governance_desc': 'Pour les directeurs et responsables SI',
