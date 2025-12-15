@@ -113,7 +113,7 @@ export class ReliabilityAnalyzer {
 
     // Map predictions to ground truth
     const predMap = new Map(predictions.map(p => [p.id, p]));
-    const truthMap = new Map(groundTruth.map(g => [g.predictionId, g]));
+    const truthMap = groundTruth ? new Map(groundTruth.map(g => [g.predictionId, g])) : new Map();
 
     for (const [id, pred] of predMap) {
       const truth = truthMap.get(id);
@@ -174,7 +174,7 @@ export class ReliabilityAnalyzer {
     predictions: CognitiveInputData['predictions'],
     groundTruth: CognitiveInputData['groundTruth']
   ): number {
-    const truthMap = new Map(groundTruth.map(g => [g.predictionId, g]));
+    const truthMap = groundTruth ? new Map(groundTruth.map(g => [g.predictionId, g])) : new Map();
 
     const scores = predictions.map(pred => {
       const truth = truthMap.get(pred.id);

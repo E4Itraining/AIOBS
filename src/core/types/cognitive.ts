@@ -348,7 +348,7 @@ export interface DegradationProjection {
 }
 
 export interface DegradationAction {
-  type: 'retrain' | 'tune' | 'investigate' | 'replace' | 'scale';
+  type: 'retrain' | 'tune' | 'investigate' | 'replace' | 'scale' | 'monitor';
   priority: 'critical' | 'high' | 'medium' | 'low';
   description: string;
   expectedImprovement: string;

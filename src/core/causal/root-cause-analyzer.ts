@@ -283,7 +283,10 @@ export class RootCauseAnalyzer {
       const outEdges = graph.edges.filter(e => e.sourceId === currentId);
 
       for (const edge of outEdges) {
-        path[path.length - 1].edge = edge;
+        const lastPath = path[path.length - 1];
+        if (lastPath) {
+          lastPath.edge = edge;
+        }
         if (dfs(edge.targetId)) return true;
       }
 
@@ -296,26 +299,32 @@ export class RootCauseAnalyzer {
     const nodes = path.map(p => p.node);
     const edges = path.filter(p => p.edge).map(p => p.edge!);
 
-    // Find weakest link
-    const weakestLink = edges.reduce(
-      (weakest, edge) => (edge.strength < weakest.strength ? edge : weakest),
-      edges[0]
-    );
-
     // Compute total lag time
     const totalLagTime = edges.reduce((sum, e) => sum + (e.lagTime || 0), 0);
 
     // Compute overall strength
     const overallStrength = edges.reduce((strength, e) => strength * e.strength, 1);
 
-    return {
+    // Find weakest link
+    const firstEdge = edges[0];
+    const weakestLink = firstEdge
+      ? edges.reduce(
+          (weakest, edge) => (edge.strength < weakest.strength ? edge : weakest),
+          firstEdge
+        )
+      : undefined;
+
+    const chain: CausalChain = {
       id: this.generateId(),
       nodes,
       edges,
       totalLagTime,
-      weakestLink,
       overallStrength,
     };
+    if (weakestLink) {
+      chain.weakestLink = weakestLink;
+    }
+    return chain;
   }
 
   /**
