@@ -3,12 +3,13 @@ AIOBS Profile-based Navigation Router
 Adaptive UI based on user profiles (tech/non-tech)
 """
 from typing import List, Optional
-from fastapi import APIRouter, Query
+from fastapi import APIRouter, Query, Request
 from enum import Enum
 
 from ..models.schemas import (
     APIResponse, UserProfile, DashboardWidget, ProfileDashboard, NavigationItem
 )
+from ..i18n.translations import get_translator
 
 router = APIRouter(prefix="/api/profiles", tags=["profiles"])
 
@@ -277,50 +278,50 @@ PROFILE_WIDGETS = {
 }
 
 
-# Navigation items per profile
+# Navigation items per profile (labels are i18n keys like nav.models)
 PROFILE_NAVIGATION = {
     UserProfile.TECH_ML_ENGINEER: [
-        NavigationItem(id="models", label="Models", icon="cpu", route="/models"),
-        NavigationItem(id="drift", label="Drift Detection", icon="activity", route="/drift"),
-        NavigationItem(id="reliability", label="Reliability", icon="shield", route="/reliability"),
-        NavigationItem(id="experiments", label="Experiments", icon="flask", route="/experiments"),
-        NavigationItem(id="causal", label="Causal Analysis", icon="git-branch", route="/causal"),
+        NavigationItem(id="models", label="nav.models", icon="cpu", route="/models"),
+        NavigationItem(id="drift", label="nav.drift", icon="activity", route="/drift"),
+        NavigationItem(id="reliability", label="nav.reliability", icon="shield", route="/reliability"),
+        NavigationItem(id="experiments", label="nav.experiments", icon="flask", route="/experiments"),
+        NavigationItem(id="causal", label="nav.causal_analysis", icon="git-branch", route="/causal"),
     ],
     UserProfile.TECH_DEVOPS: [
-        NavigationItem(id="services", label="Services", icon="server", route="/services"),
-        NavigationItem(id="slo", label="SLO/SLI", icon="target", route="/slo"),
-        NavigationItem(id="topology", label="Topology", icon="share-2", route="/topology"),
-        NavigationItem(id="alerts", label="Alerts", icon="bell", route="/alerts"),
-        NavigationItem(id="logs", label="Logs", icon="file-text", route="/logs"),
+        NavigationItem(id="services", label="nav.services", icon="server", route="/services"),
+        NavigationItem(id="slo", label="nav.slo", icon="target", route="/slo"),
+        NavigationItem(id="topology", label="nav.topology", icon="share-2", route="/topology"),
+        NavigationItem(id="alerts", label="nav.alerts", icon="bell", route="/alerts"),
+        NavigationItem(id="logs", label="nav.logs", icon="file-text", route="/logs"),
     ],
     UserProfile.BUSINESS_EXECUTIVE: [
-        NavigationItem(id="overview", label="Overview", icon="home", route="/"),
-        NavigationItem(id="impact", label="Business Impact", icon="trending-up", route="/impact"),
-        NavigationItem(id="costs", label="Costs", icon="dollar-sign", route="/costs"),
-        NavigationItem(id="reports", label="Reports", icon="bar-chart-2", route="/reports"),
+        NavigationItem(id="overview", label="nav.overview", icon="home", route="/"),
+        NavigationItem(id="impact", label="nav.impact", icon="trending-up", route="/impact"),
+        NavigationItem(id="costs", label="nav.costs", icon="dollar-sign", route="/costs"),
+        NavigationItem(id="reports", label="nav.reports", icon="bar-chart-2", route="/reports"),
     ],
     UserProfile.BUSINESS_PRODUCT: [
-        NavigationItem(id="features", label="AI Features", icon="zap", route="/features"),
-        NavigationItem(id="performance", label="Performance", icon="activity", route="/performance"),
-        NavigationItem(id="user-impact", label="User Impact", icon="users", route="/user-impact"),
+        NavigationItem(id="features", label="nav.features", icon="zap", route="/features"),
+        NavigationItem(id="performance", label="nav.performance", icon="activity", route="/performance"),
+        NavigationItem(id="user-impact", label="nav.user_impact", icon="users", route="/user-impact"),
     ],
     UserProfile.SECURITY_SOC: [
-        NavigationItem(id="security", label="Security", icon="shield", route="/security"),
-        NavigationItem(id="incidents", label="Incidents", icon="alert-triangle", route="/incidents"),
-        NavigationItem(id="access", label="Access Logs", icon="key", route="/access"),
-        NavigationItem(id="threats", label="Threat Detection", icon="alert-octagon", route="/threats"),
+        NavigationItem(id="security", label="nav.security", icon="shield", route="/security"),
+        NavigationItem(id="incidents", label="nav.incidents", icon="alert-triangle", route="/incidents"),
+        NavigationItem(id="access", label="nav.access_logs", icon="key", route="/access"),
+        NavigationItem(id="threats", label="nav.threats", icon="alert-octagon", route="/threats"),
     ],
     UserProfile.COMPLIANCE_LEGAL: [
-        NavigationItem(id="compliance", label="Compliance", icon="check-square", route="/compliance"),
-        NavigationItem(id="audit", label="Audit Trail", icon="clipboard", route="/audit"),
-        NavigationItem(id="regulations", label="Regulations", icon="book", route="/regulations"),
-        NavigationItem(id="evidence", label="Evidence", icon="folder", route="/evidence"),
+        NavigationItem(id="compliance", label="nav.compliance", icon="check-square", route="/compliance"),
+        NavigationItem(id="audit", label="nav.audit_trail", icon="clipboard", route="/audit"),
+        NavigationItem(id="regulations", label="nav.regulations", icon="book", route="/regulations"),
+        NavigationItem(id="evidence", label="nav.evidence", icon="folder", route="/evidence"),
     ],
     UserProfile.SUSTAINABILITY_ESG: [
-        NavigationItem(id="carbon", label="Carbon", icon="cloud", route="/carbon"),
-        NavigationItem(id="energy", label="Energy", icon="zap", route="/energy"),
-        NavigationItem(id="sustainability", label="Sustainability", icon="leaf", route="/sustainability"),
-        NavigationItem(id="esg-reports", label="ESG Reports", icon="file-text", route="/esg-reports"),
+        NavigationItem(id="carbon", label="nav.carbon", icon="cloud", route="/carbon"),
+        NavigationItem(id="energy", label="nav.energy", icon="zap", route="/energy"),
+        NavigationItem(id="sustainability", label="nav.sustainability", icon="leaf", route="/sustainability"),
+        NavigationItem(id="esg-reports", label="nav.esg_reports", icon="file-text", route="/esg-reports"),
     ],
 }
 
@@ -391,9 +392,10 @@ async def get_profile_dashboard(profile_id: str) -> APIResponse:
 
 
 @router.get("/{profile_id}/navigation")
-async def get_profile_navigation(profile_id: str) -> APIResponse:
+async def get_profile_navigation(profile_id: str, request: Request) -> APIResponse:
     """
     Get navigation menu for a specific profile.
+    Labels are translated based on the current language.
     """
     try:
         profile = UserProfile(profile_id)
@@ -405,12 +407,16 @@ async def get_profile_navigation(profile_id: str) -> APIResponse:
 
     nav_items = PROFILE_NAVIGATION.get(profile, [])
 
+    # Get current language from request state (set by i18n middleware)
+    lang = getattr(request.state, 'language', 'en')
+    translator = get_translator()
+
     return APIResponse(
         success=True,
         data=[
             {
                 "id": item.id,
-                "label": item.label,
+                "label": translator.get(item.label, lang),
                 "icon": item.icon,
                 "route": item.route,
                 "badge": item.badge
