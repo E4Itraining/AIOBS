@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg width="200" height="50" viewBox="0 0 200 50" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <title>GASKIA Logo</title>
+  <defs>
+    <!-- Gradient Or Sahel vers Terre Cuite -->
+    <linearGradient id="eyeGradient" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#D4A017"/>
+      <stop offset="100%" stop-color="#8B4513"/>
+    </linearGradient>
+    <linearGradient id="eyeGradientVertical" x1="0%" y1="0%" x2="0%" y2="100%">
+      <stop offset="0%" stop-color="#D4A017"/>
+      <stop offset="50%" stop-color="#C49115"/>
+      <stop offset="100%" stop-color="#8B4513"/>
+    </linearGradient>
+  </defs>
+
+  <!-- Oeil stylisé - Concept B -->
+  <g id="eye-icon">
+    <!-- Forme extérieure de l'oeil (amande) -->
+    <path d="M8 25 Q22 8, 38 25 Q22 42, 8 25 Z"
+          fill="none"
+          stroke="url(#eyeGradient)"
+          stroke-width="3"
+          stroke-linecap="round"/>
+    <!-- Iris/Pupille centrale -->
+    <circle cx="23" cy="25" r="7" fill="url(#eyeGradientVertical)"/>
+    <!-- Reflet -->
+    <circle cx="21" cy="23" r="2" fill="#F5F5F0" opacity="0.6"/>
+  </g>
+
+  <!-- Texte GASKIA -->
+  <text x="52" y="33"
+        font-family="'Space Grotesk', sans-serif"
+        font-weight="700"
+        font-size="26"
+        letter-spacing="1.5"
+        fill="#F5F5F0">GASKIA</text>
+</svg>

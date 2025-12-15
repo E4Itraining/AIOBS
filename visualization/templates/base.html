@@ -3,12 +3,16 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>{{ title }} | AIOBS</title>
+    <title>{{ title }} | GASKIA</title>
+    <meta name="description" content="GASKIA - Voir. Prouver. Maîtriser. Trust Control Layer for AI Systems.">
 
-    <!-- Fonts -->
+    <!-- Favicon -->
+    <link rel="icon" type="image/svg+xml" href="/static/images/favicons/favicon.svg">
+
+    <!-- Fonts - Space Grotesk (Headings) + Inter (Body) -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;700&family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
 
     <!-- Chart.js -->
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
@@ -24,10 +28,12 @@
 
     <!-- i18n Setup -->
     <script>
-        window.AIOBS = window.AIOBS || {};
-        window.AIOBS.lang = '{{ lang|default("en") }}';
-        window.AIOBS.isRtl = {{ is_rtl|default(false)|lower }};
-        window.AIOBS.translations = {{ translations|tojson|safe }};
+        window.GASKIA = window.GASKIA || {};
+        window.GASKIA.lang = '{{ lang|default("en") }}';
+        window.GASKIA.isRtl = {{ is_rtl|default(false)|lower }};
+        window.GASKIA.translations = {{ translations|tojson|safe }};
+        // Alias for compatibility
+        window.AIOBS = window.GASKIA;
 
         window.t = function(key, params) {
             const keys = key.split('.');
@@ -56,9 +62,12 @@
             <div class="sidebar-header">
                 <div class="logo">
                     <div class="logo-icon">
-                        <i data-lucide="activity"></i>
+                        <img src="/static/images/logos/gaskia-icon.svg" alt="GASKIA Eye Icon" width="44" height="44">
                     </div>
-                    <span class="logo-text">AIOBS</span>
+                    <div class="logo-content">
+                        <span class="logo-text">GASKIA</span>
+                        <span class="logo-tagline">Voir. Prouver. Maîtriser.</span>
+                    </div>
                 </div>
                 <button class="sidebar-close" id="sidebarClose" aria-label="Close menu">
                     <i data-lucide="x"></i>
@@ -329,7 +338,7 @@
                         <i data-lucide="sparkles"></i>
                     </div>
                     <h4>{{ t('chatbot.welcome_title') or 'Hello! How can I help you?' }}</h4>
-                    <p>{{ t('chatbot.welcome_desc') or 'Ask me anything about your AI systems, metrics, or how to use AIOBS.' }}</p>
+                    <p>{{ t('chatbot.welcome_desc') or 'Ask me anything about your AI systems, metrics, or how to use GASKIA.' }}</p>
                 </div>
                 <div class="chatbot-suggestions" id="chatbotSuggestions">
                     <span class="suggestion-label">{{ t('chatbot.suggestions') or 'Quick questions:' }}</span>
@@ -408,13 +417,13 @@
             const current = html.getAttribute('data-theme');
             const next = current === 'light' ? 'dark' : 'light';
             html.setAttribute('data-theme', next);
-            localStorage.setItem('aiobs-theme', next);
+            localStorage.setItem('gaskia-theme', next);
             lucide.createIcons();
         }
 
         // Load saved theme
         (function() {
-            const saved = localStorage.getItem('aiobs-theme');
+            const saved = localStorage.getItem('gaskia-theme') || localStorage.getItem('aiobs-theme');
             if (saved) {
                 document.documentElement.setAttribute('data-theme', saved);
             } else if (window.matchMedia('(prefers-color-scheme: dark)').matches) {
@@ -651,7 +660,7 @@
         function endTour() {
             tourState.active = false;
             document.getElementById('tourOverlay').classList.remove('active');
-            localStorage.setItem('aiobs-tour-completed', 'true');
+            localStorage.setItem('gaskia-tour-completed', 'true');
         }
 
         // Keyboard shortcuts
@@ -669,8 +678,8 @@
 
         // Check for first visit - show onboarding
         document.addEventListener('DOMContentLoaded', () => {
-            const onboardingComplete = localStorage.getItem('aiobs-onboarding-complete');
-            const tourCompleted = localStorage.getItem('aiobs-tour-completed');
+            const onboardingComplete = localStorage.getItem('gaskia-onboarding-complete') || localStorage.getItem('aiobs-onboarding-complete');
+            const tourCompleted = localStorage.getItem('gaskia-tour-completed') || localStorage.getItem('aiobs-tour-completed');
 
             // Redirect to onboarding if first visit (not on onboarding page)
             if (!onboardingComplete && window.location.pathname !== '/onboarding') {

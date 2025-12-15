@@ -1,46 +1,54 @@
 /* ========================================
-   AIOBS Design System v2.0
-   Modern, Clean, Professional Interface
+   GASKIA Design System v1.0
+   "Voir. Prouver. Maîtriser."
+   Trust Control Layer for AI Systems
    ======================================== */
 
 /* ========== CSS Variables / Design Tokens ========== */
 :root {
+    /* GASKIA Brand Colors */
+    --color-or-sahel: #D4A017;        /* Primary - Gold Sahel */
+    --color-bleu-nuit: #1A1A2E;       /* Secondary - Night Blue */
+    --color-blanc-chaud: #F5F5F0;     /* Background - Warm White */
+    --color-terre-cuite: #8B4513;     /* Accent - Terracotta */
+
     /* Colors - Light Theme */
-    --color-primary: #6366f1;
-    --color-primary-hover: #4f46e5;
-    --color-primary-light: #eef2ff;
+    --color-primary: #D4A017;          /* Or Sahel */
+    --color-primary-hover: #B8890F;    /* Or Sahel darker */
+    --color-primary-light: #FDF6E3;    /* Or Sahel très clair */
+    --color-accent: #8B4513;           /* Terre Cuite */
 
     --color-success: #10b981;
     --color-success-light: #d1fae5;
-    --color-warning: #f59e0b;
-    --color-warning-light: #fef3c7;
+    --color-warning: #D4A017;          /* Or Sahel for warnings */
+    --color-warning-light: #FDF6E3;
     --color-danger: #ef4444;
     --color-danger-light: #fee2e2;
-    --color-info: #3b82f6;
-    --color-info-light: #dbeafe;
+    --color-info: #1A1A2E;             /* Bleu Nuit */
+    --color-info-light: #E8E8EC;
 
     /* Backgrounds */
-    --bg-body: #f8fafc;
+    --bg-body: #F5F5F0;                /* Blanc Chaud */
     --bg-card: #ffffff;
     --bg-sidebar: #ffffff;
-    --bg-hover: #f1f5f9;
-    --bg-active: #eef2ff;
+    --bg-hover: #ECEEE9;
+    --bg-active: #FDF6E3;              /* Or Sahel très léger */
 
     /* Text */
-    --text-primary: #0f172a;
-    --text-secondary: #64748b;
-    --text-tertiary: #94a3b8;
-    --text-inverse: #ffffff;
+    --text-primary: #1A1A2E;           /* Bleu Nuit */
+    --text-secondary: #4A4A5E;
+    --text-tertiary: #7A7A8E;
+    --text-inverse: #F5F5F0;           /* Blanc Chaud */
 
     /* Borders */
-    --border-color: #e2e8f0;
-    --border-light: #f1f5f9;
+    --border-color: #E0E0DA;
+    --border-light: #ECEEE9;
 
     /* Shadows */
-    --shadow-sm: 0 1px 2px rgba(0, 0, 0, 0.05);
-    --shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -2px rgba(0, 0, 0, 0.1);
-    --shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -4px rgba(0, 0, 0, 0.1);
-    --shadow-xl: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 8px 10px -6px rgba(0, 0, 0, 0.1);
+    --shadow-sm: 0 1px 2px rgba(26, 26, 46, 0.05);
+    --shadow-md: 0 4px 6px -1px rgba(26, 26, 46, 0.1), 0 2px 4px -2px rgba(26, 26, 46, 0.1);
+    --shadow-lg: 0 10px 15px -3px rgba(26, 26, 46, 0.1), 0 4px 6px -4px rgba(26, 26, 46, 0.1);
+    --shadow-xl: 0 20px 25px -5px rgba(26, 26, 46, 0.1), 0 8px 10px -6px rgba(26, 26, 46, 0.1);
 
     /* Spacing */
     --space-1: 0.25rem;
@@ -66,28 +74,32 @@
     /* Layout */
     --sidebar-width: 260px;
     --topbar-height: 64px;
+
+    /* Typography - GASKIA Brand */
+    --font-heading: 'Space Grotesk', -apple-system, BlinkMacSystemFont, sans-serif;
+    --font-body: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
 }
 
-/* Dark Theme */
+/* Dark Theme - GASKIA */
 [data-theme="dark"] {
-    --bg-body: #0f172a;
-    --bg-card: #1e293b;
-    --bg-sidebar: #1e293b;
-    --bg-hover: #334155;
-    --bg-active: #312e81;
+    --bg-body: #1A1A2E;                /* Bleu Nuit */
+    --bg-card: #252540;
+    --bg-sidebar: #252540;
+    --bg-hover: #35355A;
+    --bg-active: #3D3520;              /* Or Sahel sombre */
 
-    --text-primary: #f1f5f9;
-    --text-secondary: #94a3b8;
-    --text-tertiary: #64748b;
+    --text-primary: #F5F5F0;           /* Blanc Chaud */
+    --text-secondary: #B0B0BA;
+    --text-tertiary: #7A7A8E;
 
-    --border-color: #334155;
-    --border-light: #1e293b;
+    --border-color: #35355A;
+    --border-light: #252540;
 
-    --color-primary-light: #312e81;
+    --color-primary-light: #3D3520;
     --color-success-light: #064e3b;
-    --color-warning-light: #78350f;
+    --color-warning-light: #3D3520;
     --color-danger-light: #7f1d1d;
-    --color-info-light: #1e3a8a;
+    --color-info-light: #35355A;
 
     --shadow-sm: 0 1px 2px rgba(0, 0, 0, 0.3);
     --shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.4);
@@ -108,11 +120,28 @@ html {
 }
 
 body {
-    font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+    font-family: var(--font-body);
     background: var(--bg-body);
     color: var(--text-primary);
     line-height: 1.5;
     min-height: 100vh;
+}
+
+/* GASKIA Typography */
+h1, h2, h3, h4, h5, h6,
+.heading {
+    font-family: var(--font-heading);
+}
+
+h1 { font-size: 3rem; font-weight: 700; }      /* 48px */
+h2 { font-size: 2rem; font-weight: 700; }      /* 32px */
+h3 { font-size: 1.5rem; font-weight: 500; }    /* 24px */
+
+.tagline {
+    font-family: var(--font-heading);
+    font-weight: 500;
+    font-size: 1.25rem;                        /* 20px */
+    color: var(--color-or-sahel);
 }
 
 /* ========== Layout ========== */
@@ -165,28 +194,42 @@ body {
 }
 
 .logo-icon {
-    width: 40px;
-    height: 40px;
-    background: linear-gradient(135deg, var(--color-primary), #8b5cf6);
-    border-radius: var(--radius-lg);
+    width: 44px;
+    height: 44px;
     display: flex;
     align-items: center;
     justify-content: center;
-    color: white;
 }
 
+.logo-icon img,
 .logo-icon svg {
-    width: 22px;
-    height: 22px;
+    width: 44px;
+    height: 44px;
 }
 
 .logo-text {
-    font-size: 1.25rem;
+    font-family: var(--font-heading);
+    font-size: 1.35rem;
     font-weight: 700;
-    background: linear-gradient(135deg, var(--color-primary), #8b5cf6);
+    letter-spacing: 0.05em;
+    background: linear-gradient(135deg, var(--color-or-sahel), var(--color-terre-cuite));
     -webkit-background-clip: text;
     -webkit-text-fill-color: transparent;
     background-clip: text;
+}
+
+.logo-content {
+    display: flex;
+    flex-direction: column;
+}
+
+.logo-tagline {
+    font-family: var(--font-heading);
+    font-size: 0.65rem;
+    font-weight: 500;
+    color: var(--text-secondary);
+    letter-spacing: 0.02em;
+    margin-top: -2px;
 }
 
 .sidebar-close {
