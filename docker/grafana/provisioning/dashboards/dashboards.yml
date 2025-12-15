@@ -1,0 +1,17 @@
+# =============================================================================
+# AIOBS Grafana Dashboard Provisioning
+# =============================================================================
+
+apiVersion: 1
+
+providers:
+  - name: 'AIOBS Dashboards'
+    orgId: 1
+    folder: 'AIOBS'
+    folderUid: 'aiobs'
+    type: file
+    disableDeletion: false
+    updateIntervalSeconds: 30
+    allowUiUpdates: true
+    options:
+      path: /etc/grafana/provisioning/dashboards
