@@ -35,6 +35,10 @@ services:
       - REDIS_URL=redis://redis:6379
       - LOG_LEVEL=${LOG_LEVEL:-info}
       - DEFAULT_LANGUAGE=${DEFAULT_LANGUAGE:-en}
+      # Startup test configuration
+      - RUN_STARTUP_TESTS=${RUN_STARTUP_TESTS:-true}
+      - FAIL_ON_TEST_FAILURE=${FAIL_ON_TEST_FAILURE:-false}
+      - INJECT_TEST_DATA=${INJECT_TEST_DATA:-false}
     depends_on:
       backend:
         condition: service_healthy

@@ -21,10 +21,12 @@ ENV PATH="/opt/venv/bin:$PATH"
 
 # Copy requirements
 COPY visualization/requirements.txt ./requirements.txt
+COPY requirements-test.txt ./requirements-test.txt
 
-# Install Python dependencies
+# Install Python dependencies (including test dependencies)
 RUN pip install --no-cache-dir --upgrade pip && \
-    pip install --no-cache-dir -r requirements.txt
+    pip install --no-cache-dir -r requirements.txt && \
+    pip install --no-cache-dir -r requirements-test.txt
 
 # -----------------------------------------------------------------------------
 # Stage 2: Production
@@ -42,6 +44,11 @@ ENV PATH="/opt/venv/bin:$PATH"
 
 # Copy application code
 COPY visualization/ ./visualization/
+COPY scripts/ ./scripts/
+COPY pytest.ini ./pytest.ini
+
+# Make scripts executable
+RUN chmod +x scripts/*.sh scripts/*.py 2>/dev/null || true
 
 # Set ownership
 RUN chown -R aiobs:aiobs /app
@@ -54,6 +61,9 @@ ENV PYTHONUNBUFFERED=1
 ENV PYTHONDONTWRITEBYTECODE=1
 ENV PORT=8000
 ENV HOST=0.0.0.0
+ENV RUN_STARTUP_TESTS=true
+ENV FAIL_ON_TEST_FAILURE=false
+ENV INJECT_TEST_DATA=false
 
 # Expose port
 EXPOSE 8000
@@ -61,6 +71,9 @@ EXPOSE 8000
 # Health check
 HEALTHCHECK --interval=30s --timeout=10s --start-period=5s --retries=3 \
     CMD python -c "import urllib.request; urllib.request.urlopen('http://localhost:8000/health')" || exit 1
+
+# Entrypoint for startup tests
+ENTRYPOINT ["/bin/bash", "scripts/docker-entrypoint.sh"]
 
 # Start application with uvicorn
 CMD ["python", "-m", "uvicorn", "visualization.app:app", "--host", "0.0.0.0", "--port", "8000"]
