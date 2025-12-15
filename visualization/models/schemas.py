@@ -15,14 +15,22 @@ from uuid import UUID
 
 class UserProfile(str, Enum):
     """User profile types for adaptive UI"""
+    # Technical profiles
     TECH_ML_ENGINEER = "tech_ml_engineer"
     TECH_DEVOPS = "tech_devops"
     TECH_DATA_SCIENTIST = "tech_data_scientist"
+    # Business profiles
     BUSINESS_PRODUCT = "business_product"
     BUSINESS_EXECUTIVE = "business_executive"
+    # Specialist profiles
     SECURITY_SOC = "security_soc"
     COMPLIANCE_LEGAL = "compliance_legal"
     SUSTAINABILITY_ESG = "sustainability_esg"
+    # Governance profiles (French IT roles)
+    GOVERNANCE_DSI = "governance_dsi"          # Directeur des Systèmes d'Information
+    GOVERNANCE_RSI = "governance_rsi"          # Responsable des Systèmes d'Information
+    PRIVACY_DPO = "privacy_dpo"                # Data Protection Officer
+    LEGAL_COUNSEL = "legal_counsel"            # Juriste / Legal Counsel
 
 
 class RiskLevel(str, Enum):

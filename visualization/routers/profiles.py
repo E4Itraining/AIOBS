@@ -60,6 +60,50 @@ PROFILE_WIDGETS = {
         ),
     ],
 
+    # Data Scientist - Focus on data quality and experiments
+    UserProfile.TECH_DATA_SCIENTIST: [
+        DashboardWidget(
+            widget_id="data_quality_overview",
+            widget_type="kpi_row",
+            title="Data Quality Metrics",
+            data_source="/api/metrics/data_quality",
+            config={"metrics": ["completeness", "accuracy", "freshness", "consistency"]},
+            position={"x": 0, "y": 0, "w": 12, "h": 2}
+        ),
+        DashboardWidget(
+            widget_id="feature_drift",
+            widget_type="heatmap",
+            title="Feature Drift Analysis",
+            data_source="/api/metrics/drift",
+            config={"view": "features"},
+            position={"x": 0, "y": 2, "w": 8, "h": 3}
+        ),
+        DashboardWidget(
+            widget_id="experiment_tracker",
+            widget_type="table",
+            title="Active Experiments",
+            data_source="/api/experiments",
+            config={"sortable": True, "filterable": True},
+            position={"x": 8, "y": 2, "w": 4, "h": 3}
+        ),
+        DashboardWidget(
+            widget_id="statistical_summary",
+            widget_type="stats_grid",
+            title="Statistical Insights",
+            data_source="/api/metrics/statistics",
+            config={},
+            position={"x": 0, "y": 5, "w": 6, "h": 3}
+        ),
+        DashboardWidget(
+            widget_id="model_comparison",
+            widget_type="comparison_chart",
+            title="Model Comparison",
+            data_source="/api/metrics/models/compare",
+            config={"metrics": ["accuracy", "latency", "cost"]},
+            position={"x": 6, "y": 5, "w": 6, "h": 3}
+        ),
+    ],
+
     # DevOps - Focus on infrastructure and SLOs
     UserProfile.TECH_DEVOPS: [
         DashboardWidget(
@@ -275,6 +319,214 @@ PROFILE_WIDGETS = {
             position={"x": 0, "y": 5, "w": 12, "h": 2}
         ),
     ],
+
+    # DSI (CIO) - Strategic IT governance and AI portfolio
+    UserProfile.GOVERNANCE_DSI: [
+        DashboardWidget(
+            widget_id="strategic_kpi",
+            widget_type="kpi_row",
+            title="Strategic KPIs",
+            data_source="/api/dashboard/overview",
+            config={"metrics": ["ai_portfolio_health", "total_tco", "digital_maturity", "roi_index"]},
+            position={"x": 0, "y": 0, "w": 12, "h": 2}
+        ),
+        DashboardWidget(
+            widget_id="ai_portfolio",
+            widget_type="portfolio_grid",
+            title="AI Systems Portfolio",
+            data_source="/api/dashboard/services",
+            config={"view": "strategic", "group_by": "business_domain"},
+            position={"x": 0, "y": 2, "w": 8, "h": 3}
+        ),
+        DashboardWidget(
+            widget_id="budget_allocation",
+            widget_type="sankey",
+            title="IT Budget Allocation",
+            data_source="/api/dashboard/costs",
+            config={"field": "by_domain"},
+            position={"x": 8, "y": 2, "w": 4, "h": 3}
+        ),
+        DashboardWidget(
+            widget_id="risk_matrix",
+            widget_type="heatmap",
+            title="IT Risk Matrix",
+            data_source="/api/dashboard/compliance",
+            config={"axes": ["probability", "impact"]},
+            position={"x": 0, "y": 5, "w": 6, "h": 3}
+        ),
+        DashboardWidget(
+            widget_id="governance_score",
+            widget_type="gauge",
+            title="IT Governance Score",
+            data_source="/api/dashboard/compliance",
+            config={"field": "governance_score"},
+            position={"x": 6, "y": 5, "w": 3, "h": 3}
+        ),
+        DashboardWidget(
+            widget_id="transformation_roadmap",
+            widget_type="timeline",
+            title="Digital Transformation",
+            data_source="/api/dashboard/roadmap",
+            config={"view": "strategic"},
+            position={"x": 9, "y": 5, "w": 3, "h": 3}
+        ),
+    ],
+
+    # RSI - Operational IT management
+    UserProfile.GOVERNANCE_RSI: [
+        DashboardWidget(
+            widget_id="ops_kpi",
+            widget_type="kpi_row",
+            title="Operational KPIs",
+            data_source="/api/dashboard/overview",
+            config={"metrics": ["systems_uptime", "incidents_open", "sla_compliance", "team_capacity"]},
+            position={"x": 0, "y": 0, "w": 12, "h": 2}
+        ),
+        DashboardWidget(
+            widget_id="systems_status",
+            widget_type="status_grid",
+            title="AI Systems Status",
+            data_source="/api/dashboard/services",
+            config={"sortable": True, "show_health": True},
+            position={"x": 0, "y": 2, "w": 8, "h": 3}
+        ),
+        DashboardWidget(
+            widget_id="incidents_overview",
+            widget_type="table",
+            title="Active Incidents",
+            data_source="/api/dashboard/overview",
+            config={"field": "top_issues", "priority_sort": True},
+            position={"x": 8, "y": 2, "w": 4, "h": 3}
+        ),
+        DashboardWidget(
+            widget_id="project_tracker",
+            widget_type="kanban",
+            title="AI Projects Status",
+            data_source="/api/dashboard/projects",
+            config={"columns": ["backlog", "in_progress", "review", "done"]},
+            position={"x": 0, "y": 5, "w": 8, "h": 3}
+        ),
+        DashboardWidget(
+            widget_id="resource_allocation",
+            widget_type="bar_chart",
+            title="Team Allocation",
+            data_source="/api/dashboard/resources",
+            config={"stacked": True},
+            position={"x": 8, "y": 5, "w": 4, "h": 3}
+        ),
+    ],
+
+    # DPO - Data Protection Officer
+    UserProfile.PRIVACY_DPO: [
+        DashboardWidget(
+            widget_id="privacy_kpi",
+            widget_type="kpi_row",
+            title="Privacy KPIs",
+            data_source="/api/dashboard/privacy",
+            config={"metrics": ["gdpr_score", "data_breaches", "dsar_pending", "consent_rate"]},
+            position={"x": 0, "y": 0, "w": 12, "h": 2}
+        ),
+        DashboardWidget(
+            widget_id="processing_registry",
+            widget_type="table",
+            title="AI Processing Activities Registry",
+            data_source="/api/dashboard/privacy",
+            config={"field": "processing_activities", "filterable": True},
+            position={"x": 0, "y": 2, "w": 8, "h": 3}
+        ),
+        DashboardWidget(
+            widget_id="dpia_status",
+            widget_type="status_cards",
+            title="DPIA Status",
+            data_source="/api/dashboard/privacy",
+            config={"field": "dpia_assessments"},
+            position={"x": 8, "y": 2, "w": 4, "h": 3}
+        ),
+        DashboardWidget(
+            widget_id="dsar_tracker",
+            widget_type="timeline",
+            title="Data Subject Requests",
+            data_source="/api/dashboard/privacy",
+            config={"field": "dsar_requests", "show_deadlines": True},
+            position={"x": 0, "y": 5, "w": 6, "h": 3}
+        ),
+        DashboardWidget(
+            widget_id="data_flows",
+            widget_type="sankey",
+            title="Personal Data Flows",
+            data_source="/api/dashboard/privacy",
+            config={"field": "data_transfers"},
+            position={"x": 6, "y": 5, "w": 6, "h": 3}
+        ),
+        DashboardWidget(
+            widget_id="retention_compliance",
+            widget_type="bar_chart",
+            title="Data Retention Compliance",
+            data_source="/api/dashboard/privacy",
+            config={"field": "retention_status"},
+            position={"x": 0, "y": 8, "w": 12, "h": 2}
+        ),
+    ],
+
+    # Legal Counsel - Juriste
+    UserProfile.LEGAL_COUNSEL: [
+        DashboardWidget(
+            widget_id="legal_kpi",
+            widget_type="kpi_row",
+            title="Legal Risk KPIs",
+            data_source="/api/dashboard/legal",
+            config={"metrics": ["legal_risk_score", "pending_reviews", "contract_compliance", "liability_exposure"]},
+            position={"x": 0, "y": 0, "w": 12, "h": 2}
+        ),
+        DashboardWidget(
+            widget_id="ai_risk_assessment",
+            widget_type="risk_matrix",
+            title="AI Legal Risk Assessment",
+            data_source="/api/dashboard/legal",
+            config={"categories": ["bias", "discrimination", "liability", "ip", "transparency"]},
+            position={"x": 0, "y": 2, "w": 6, "h": 3}
+        ),
+        DashboardWidget(
+            widget_id="regulatory_watch",
+            widget_type="timeline",
+            title="Regulatory Watch",
+            data_source="/api/dashboard/legal",
+            config={"field": "regulatory_updates", "filter": ["eu_ai_act", "gdpr", "sector_specific"]},
+            position={"x": 6, "y": 2, "w": 6, "h": 3}
+        ),
+        DashboardWidget(
+            widget_id="contract_tracker",
+            widget_type="table",
+            title="AI Contracts & SLAs",
+            data_source="/api/dashboard/legal",
+            config={"field": "contracts", "show_alerts": True},
+            position={"x": 0, "y": 5, "w": 8, "h": 3}
+        ),
+        DashboardWidget(
+            widget_id="ip_portfolio",
+            widget_type="cards_grid",
+            title="AI IP Portfolio",
+            data_source="/api/dashboard/legal",
+            config={"field": "intellectual_property"},
+            position={"x": 8, "y": 5, "w": 4, "h": 3}
+        ),
+        DashboardWidget(
+            widget_id="litigation_risk",
+            widget_type="gauge",
+            title="Litigation Risk Index",
+            data_source="/api/dashboard/legal",
+            config={"field": "litigation_risk"},
+            position={"x": 0, "y": 8, "w": 4, "h": 2}
+        ),
+        DashboardWidget(
+            widget_id="eu_ai_act_compliance",
+            widget_type="compliance_grid",
+            title="EU AI Act Compliance",
+            data_source="/api/dashboard/compliance",
+            config={"framework": "eu_ai_act", "detailed": True},
+            position={"x": 4, "y": 8, "w": 8, "h": 2}
+        ),
+    ],
 }
 
 
@@ -286,6 +538,13 @@ PROFILE_NAVIGATION = {
         NavigationItem(id="reliability", label="nav.reliability", icon="shield", route="/reliability"),
         NavigationItem(id="experiments", label="nav.experiments", icon="flask", route="/experiments"),
         NavigationItem(id="causal", label="nav.causal_analysis", icon="git-branch", route="/causal"),
+    ],
+    UserProfile.TECH_DATA_SCIENTIST: [
+        NavigationItem(id="data-quality", label="nav.data_quality", icon="database", route="/data-quality"),
+        NavigationItem(id="features", label="nav.features", icon="layers", route="/features"),
+        NavigationItem(id="experiments", label="nav.experiments", icon="flask", route="/experiments"),
+        NavigationItem(id="statistics", label="nav.statistics", icon="bar-chart-2", route="/statistics"),
+        NavigationItem(id="models", label="nav.models", icon="cpu", route="/models"),
     ],
     UserProfile.TECH_DEVOPS: [
         NavigationItem(id="services", label="nav.services", icon="server", route="/services"),
@@ -323,7 +582,53 @@ PROFILE_NAVIGATION = {
         NavigationItem(id="sustainability", label="nav.sustainability", icon="leaf", route="/sustainability"),
         NavigationItem(id="esg-reports", label="nav.esg_reports", icon="file-text", route="/esg-reports"),
     ],
+    UserProfile.GOVERNANCE_DSI: [
+        NavigationItem(id="portfolio", label="nav.ai_portfolio", icon="grid", route="/portfolio"),
+        NavigationItem(id="governance", label="nav.governance", icon="landmark", route="/governance"),
+        NavigationItem(id="budget", label="nav.budget", icon="wallet", route="/budget"),
+        NavigationItem(id="risks", label="nav.risks", icon="alert-triangle", route="/risks"),
+        NavigationItem(id="transformation", label="nav.transformation", icon="refresh-cw", route="/transformation"),
+        NavigationItem(id="executive-reports", label="nav.executive_reports", icon="file-text", route="/executive-reports"),
+    ],
+    UserProfile.GOVERNANCE_RSI: [
+        NavigationItem(id="systems", label="nav.systems", icon="server", route="/systems"),
+        NavigationItem(id="projects", label="nav.projects", icon="folder-kanban", route="/projects"),
+        NavigationItem(id="incidents", label="nav.incidents", icon="alert-circle", route="/incidents"),
+        NavigationItem(id="resources", label="nav.resources", icon="users", route="/resources"),
+        NavigationItem(id="sla", label="nav.sla_monitoring", icon="target", route="/sla"),
+        NavigationItem(id="ops-reports", label="nav.ops_reports", icon="clipboard-list", route="/ops-reports"),
+    ],
+    UserProfile.PRIVACY_DPO: [
+        NavigationItem(id="privacy-dashboard", label="nav.privacy_dashboard", icon="shield", route="/privacy"),
+        NavigationItem(id="processing-registry", label="nav.processing_registry", icon="database", route="/processing-registry"),
+        NavigationItem(id="dpia", label="nav.dpia", icon="file-search", route="/dpia"),
+        NavigationItem(id="dsar", label="nav.dsar", icon="user-check", route="/dsar"),
+        NavigationItem(id="data-flows", label="nav.data_flows", icon="share-2", route="/data-flows"),
+        NavigationItem(id="privacy-incidents", label="nav.privacy_incidents", icon="alert-triangle", route="/privacy-incidents"),
+    ],
+    UserProfile.LEGAL_COUNSEL: [
+        NavigationItem(id="legal-dashboard", label="nav.legal_dashboard", icon="scale", route="/legal"),
+        NavigationItem(id="contracts", label="nav.contracts", icon="file-signature", route="/contracts"),
+        NavigationItem(id="regulatory", label="nav.regulatory_watch", icon="book-open", route="/regulatory"),
+        NavigationItem(id="ip", label="nav.intellectual_property", icon="lightbulb", route="/ip"),
+        NavigationItem(id="liability", label="nav.liability", icon="shield-alert", route="/liability"),
+        NavigationItem(id="legal-reports", label="nav.legal_reports", icon="file-text", route="/legal-reports"),
+    ],
 }
+
+
+def _get_profile_category(profile: UserProfile) -> str:
+    """Get profile category for grouping"""
+    if "TECH" in profile.name:
+        return "technical"
+    elif "BUSINESS" in profile.name:
+        return "business"
+    elif "GOVERNANCE" in profile.name:
+        return "governance"
+    elif "PRIVACY" in profile.name or "LEGAL" in profile.name:
+        return "legal_privacy"
+    else:
+        return "specialist"
 
 
 @router.get("/list")
@@ -334,10 +639,8 @@ async def list_profiles() -> APIResponse:
     profiles = [
         {
             "id": p.value,
-            "name": p.name.replace("_", " ").title(),
-            "category": "technical" if "TECH" in p.name else (
-                "business" if "BUSINESS" in p.name else "specialist"
-            ),
+            "name": _get_profile_name(p),
+            "category": _get_profile_category(p),
             "description": _get_profile_description(p)
         }
         for p in UserProfile
@@ -437,6 +740,10 @@ def _get_profile_name(profile: UserProfile) -> str:
         UserProfile.SECURITY_SOC: "Security Analyst",
         UserProfile.COMPLIANCE_LEGAL: "Compliance Officer",
         UserProfile.SUSTAINABILITY_ESG: "ESG Manager",
+        UserProfile.GOVERNANCE_DSI: "CIO / DSI",
+        UserProfile.GOVERNANCE_RSI: "IT Manager / RSI",
+        UserProfile.PRIVACY_DPO: "Data Protection Officer",
+        UserProfile.LEGAL_COUNSEL: "Legal Counsel",
     }
     return names.get(profile, profile.name)
 
@@ -452,5 +759,9 @@ def _get_profile_description(profile: UserProfile) -> str:
         UserProfile.SECURITY_SOC: "Security posture, threat detection, incident management, and access monitoring",
         UserProfile.COMPLIANCE_LEGAL: "Regulatory compliance, audit trails, governance status, and evidence management",
         UserProfile.SUSTAINABILITY_ESG: "Carbon footprint, energy consumption, sustainability metrics, and ESG reporting",
+        UserProfile.GOVERNANCE_DSI: "Strategic IT governance, AI portfolio management, budget allocation, and digital transformation",
+        UserProfile.GOVERNANCE_RSI: "Operational IT management, systems monitoring, projects tracking, and team resources",
+        UserProfile.PRIVACY_DPO: "GDPR compliance, data processing registry, DPIA management, and data subject rights",
+        UserProfile.LEGAL_COUNSEL: "Legal risk assessment, contracts management, regulatory watch, and IP protection",
     }
     return descriptions.get(profile, "")

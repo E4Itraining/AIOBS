@@ -191,6 +191,76 @@
                     </div>
                 </div>
             </div>
+
+            <!-- Governance Profiles (DSI, RSI) -->
+            <div class="profile-category">
+                <div class="category-header">
+                    <span class="category-badge governance">{{ t('onboarding.category_governance') or 'Governance' }}</span>
+                    <p class="category-desc">{{ t('onboarding.category_governance_desc') or 'For IT directors and managers' }}</p>
+                </div>
+                <div class="profile-grid">
+                    <div class="profile-card" data-profile="governance_dsi" onclick="selectProfile(this)">
+                        <div class="profile-icon">
+                            <i data-lucide="landmark"></i>
+                        </div>
+                        <h4>{{ t('profiles.dsi') or 'CIO / DSI' }}</h4>
+                        <p>{{ t('onboarding.dsi_desc') or 'Strategic IT governance, AI portfolio, budget, transformation' }}</p>
+                        <div class="profile-focus">
+                            <span class="tag">Portfolio</span>
+                            <span class="tag">Budget</span>
+                            <span class="tag">Strategy</span>
+                        </div>
+                    </div>
+
+                    <div class="profile-card" data-profile="governance_rsi" onclick="selectProfile(this)">
+                        <div class="profile-icon">
+                            <i data-lucide="settings"></i>
+                        </div>
+                        <h4>{{ t('profiles.rsi') or 'IT Manager / RSI' }}</h4>
+                        <p>{{ t('onboarding.rsi_desc') or 'Operational IT management, systems, projects, resources' }}</p>
+                        <div class="profile-focus">
+                            <span class="tag">Systems</span>
+                            <span class="tag">Projects</span>
+                            <span class="tag">Teams</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Legal & Privacy Profiles (DPO, Legal) -->
+            <div class="profile-category">
+                <div class="category-header">
+                    <span class="category-badge legal">{{ t('onboarding.category_legal') or 'Legal & Privacy' }}</span>
+                    <p class="category-desc">{{ t('onboarding.category_legal_desc') or 'For DPO and legal professionals' }}</p>
+                </div>
+                <div class="profile-grid">
+                    <div class="profile-card" data-profile="privacy_dpo" onclick="selectProfile(this)">
+                        <div class="profile-icon">
+                            <i data-lucide="user-check"></i>
+                        </div>
+                        <h4>{{ t('profiles.dpo') or 'Data Protection Officer' }}</h4>
+                        <p>{{ t('onboarding.dpo_desc') or 'GDPR compliance, data processing registry, DPIA, data rights' }}</p>
+                        <div class="profile-focus">
+                            <span class="tag">GDPR</span>
+                            <span class="tag">DPIA</span>
+                            <span class="tag">Rights</span>
+                        </div>
+                    </div>
+
+                    <div class="profile-card" data-profile="legal_counsel" onclick="selectProfile(this)">
+                        <div class="profile-icon">
+                            <i data-lucide="scale"></i>
+                        </div>
+                        <h4>{{ t('profiles.legal') or 'Legal Counsel' }}</h4>
+                        <p>{{ t('onboarding.legal_desc') or 'Legal risk assessment, contracts, regulatory watch, IP' }}</p>
+                        <div class="profile-focus">
+                            <span class="tag">Contracts</span>
+                            <span class="tag">AI Act</span>
+                            <span class="tag">IP</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
         </div>
 
         <button class="btn btn-primary btn-lg" id="profileContinueBtn" disabled onclick="nextStep('tour')">
@@ -314,6 +384,44 @@ const tourContent = {
             { icon: 'database', title: '{{ t("onboarding.tour_ds_1_title") or "Data Quality" }}', desc: '{{ t("onboarding.tour_ds_1_desc") or "Monitor data quality metrics and anomalies" }}' },
             { icon: 'flask', title: '{{ t("onboarding.tour_ds_2_title") or "Experiments" }}', desc: '{{ t("onboarding.tour_ds_2_desc") or "Track experiment results and A/B tests" }}' },
             { icon: 'pie-chart', title: '{{ t("onboarding.tour_ds_3_title") or "Statistical Insights" }}', desc: '{{ t("onboarding.tour_ds_3_desc") or "Deep statistical analysis of model behavior" }}' }
+        ]
+    },
+    governance_dsi: {
+        title: '{{ t("onboarding.tour_dsi_title") or "DSI / CIO Dashboard" }}',
+        description: '{{ t("onboarding.tour_dsi_desc") or "Strategic IT governance and AI portfolio management" }}',
+        features: [
+            { icon: 'grid', title: '{{ t("onboarding.tour_dsi_1_title") or "AI Portfolio" }}', desc: '{{ t("onboarding.tour_dsi_1_desc") or "Overview of all AI systems with strategic metrics" }}' },
+            { icon: 'wallet', title: '{{ t("onboarding.tour_dsi_2_title") or "Budget Allocation" }}', desc: '{{ t("onboarding.tour_dsi_2_desc") or "Track IT spending and ROI across AI initiatives" }}' },
+            { icon: 'alert-triangle', title: '{{ t("onboarding.tour_dsi_3_title") or "Risk Matrix" }}', desc: '{{ t("onboarding.tour_dsi_3_desc") or "Identify and manage IT risks with impact analysis" }}' },
+            { icon: 'refresh-cw', title: '{{ t("onboarding.tour_dsi_4_title") or "Digital Transformation" }}', desc: '{{ t("onboarding.tour_dsi_4_desc") or "Track transformation roadmap and maturity" }}' }
+        ]
+    },
+    governance_rsi: {
+        title: '{{ t("onboarding.tour_rsi_title") or "RSI / IT Manager Dashboard" }}',
+        description: '{{ t("onboarding.tour_rsi_desc") or "Operational IT management and team coordination" }}',
+        features: [
+            { icon: 'server', title: '{{ t("onboarding.tour_rsi_1_title") or "Systems Status" }}', desc: '{{ t("onboarding.tour_rsi_1_desc") or "Real-time health monitoring of all AI systems" }}' },
+            { icon: 'folder-kanban', title: '{{ t("onboarding.tour_rsi_2_title") or "Projects Tracker" }}', desc: '{{ t("onboarding.tour_rsi_2_desc") or "Manage AI projects with kanban-style tracking" }}' },
+            { icon: 'alert-circle', title: '{{ t("onboarding.tour_rsi_3_title") or "Incidents Management" }}', desc: '{{ t("onboarding.tour_rsi_3_desc") or "Track and resolve operational incidents" }}' }
+        ]
+    },
+    privacy_dpo: {
+        title: '{{ t("onboarding.tour_dpo_title") or "DPO Dashboard" }}',
+        description: '{{ t("onboarding.tour_dpo_desc") or "Data protection and GDPR compliance" }}',
+        features: [
+            { icon: 'database', title: '{{ t("onboarding.tour_dpo_1_title") or "Processing Registry" }}', desc: '{{ t("onboarding.tour_dpo_1_desc") or "Complete registry of AI data processing activities" }}' },
+            { icon: 'file-search', title: '{{ t("onboarding.tour_dpo_2_title") or "DPIA Management" }}', desc: '{{ t("onboarding.tour_dpo_2_desc") or "Track and manage Data Protection Impact Assessments" }}' },
+            { icon: 'user-check', title: '{{ t("onboarding.tour_dpo_3_title") or "Data Subject Requests" }}', desc: '{{ t("onboarding.tour_dpo_3_desc") or "Manage GDPR rights requests with deadline tracking" }}' },
+            { icon: 'share-2', title: '{{ t("onboarding.tour_dpo_4_title") or "Data Flows" }}', desc: '{{ t("onboarding.tour_dpo_4_desc") or "Visualize personal data flows and transfers" }}' }
+        ]
+    },
+    legal_counsel: {
+        title: '{{ t("onboarding.tour_legal_title") or "Legal Counsel Dashboard" }}',
+        description: '{{ t("onboarding.tour_legal_desc") or "Legal risk management and compliance" }}',
+        features: [
+            { icon: 'scale', title: '{{ t("onboarding.tour_legal_1_title") or "Legal Risk Assessment" }}', desc: '{{ t("onboarding.tour_legal_1_desc") or "Evaluate AI legal risks: bias, liability, IP" }}' },
+            { icon: 'book-open', title: '{{ t("onboarding.tour_legal_2_title") or "Regulatory Watch" }}', desc: '{{ t("onboarding.tour_legal_2_desc") or "Stay updated on EU AI Act and regulations" }}' },
+            { icon: 'file-signature', title: '{{ t("onboarding.tour_legal_3_title") or "Contracts Management" }}', desc: '{{ t("onboarding.tour_legal_3_desc") or "Track AI contracts, SLAs, and compliance" }}' }
         ]
     }
 };
