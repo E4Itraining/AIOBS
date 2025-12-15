@@ -76,7 +76,7 @@ services:
     depends_on:
       victoriametrics:
         condition: service_healthy
-      openobserve:
+      openobserve-healthcheck:
         condition: service_healthy
       redis:
         condition: service_healthy
@@ -122,9 +122,8 @@ services:
   # For: Audit Logs, Compliance Records, Traces
   # ===========================================================================
   openobserve:
-    # Using debug variant which includes shell and curl for healthcheck support
-    # See: https://github.com/openobserve/openobserve/issues/6154
-    image: public.ecr.aws/zinclabs/openobserve:v0.14.4-debug
+    # Using latest stable version
+    image: public.ecr.aws/zinclabs/openobserve:latest
     container_name: aiobs-openobserve
     ports:
       - "${OPENOBSERVE_PORT:-5080}:5080"
@@ -139,12 +138,27 @@ services:
     networks:
       - aiobs-network
     restart: unless-stopped
+    # No healthcheck in container - use openobserve-healthcheck sidecar instead
+    # OpenObserve minimal image doesn't include curl/wget/shell
+
+  # Sidecar container to provide healthcheck for OpenObserve
+  # This allows dependent services to wait for OpenObserve to be ready
+  openobserve-healthcheck:
+    image: busybox:stable
+    container_name: aiobs-openobserve-healthcheck
+    depends_on:
+      - openobserve
+    networks:
+      - aiobs-network
+    # Keep container running with a sleep loop
+    command: ["sh", "-c", "while true; do sleep 3600; done"]
+    restart: unless-stopped
     healthcheck:
-      test: ["CMD", "curl", "-f", "http://localhost:5080/healthz"]
+      test: ["CMD", "wget", "-q", "-O", "/dev/null", "http://openobserve:5080/healthz"]
       interval: 10s
       timeout: 5s
-      retries: 12
-      start_period: 30s
+      retries: 15
+      start_period: 60s
 
   # ===========================================================================
   # Redis - Caching and Real-time Pub/Sub
