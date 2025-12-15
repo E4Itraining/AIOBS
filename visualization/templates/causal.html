@@ -1,94 +1,80 @@
 {% extends "base.html" %}
 
+{% set active_page = 'causal' %}
+
+{% block page_title %}{{ t('nav.causal_analysis') }}{% endblock %}
+
+{% block page_subtitle %}
+<p>{{ t('causal.subtitle') or 'Root cause analysis linking infrastructure, data, and AI outcomes' }}</p>
+{% endblock %}
+
+{% block topbar_actions %}
+<select id="scenarioSelect" class="form-select" style="width: auto;" onchange="loadScenario(this.value)">
+    <option value="drift_incident">{{ t('causal.drift_incident') or 'Drift Incident' }}</option>
+    <option value="cost_spike">{{ t('causal.cost_spike') or 'Cost Spike' }}</option>
+</select>
+{% endblock %}
+
+{% block sidebar_extra %}
+<div class="nav-group">
+    <span class="nav-group-title">{{ t('causal.scenarios') or 'Scenarios' }}</span>
+    <button class="nav-link" onclick="loadScenario('drift_incident')">
+        <i data-lucide="alert-triangle"></i>
+        <span>{{ t('causal.drift_incident') or 'Drift Incident' }}</span>
+    </button>
+    <button class="nav-link" onclick="loadScenario('cost_spike')">
+        <i data-lucide="dollar-sign"></i>
+        <span>{{ t('causal.cost_spike') or 'Cost Spike' }}</span>
+    </button>
+</div>
+{% endblock %}
+
 {% block content %}
-<div class="dashboard-container">
-    <nav class="sidebar" id="sidebar">
-        <!-- Mobile close button -->
-        <button class="sidebar-close-btn" onclick="closeMobileSidebar()" aria-label="Fermer le menu">
-            <svg viewBox="0 0 24 24" width="24" height="24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                <line x1="18" y1="6" x2="6" y2="18"></line>
-                <line x1="6" y1="6" x2="18" y2="18"></line>
-            </svg>
-        </button>
-
-        <div class="sidebar-logo">
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true">
-                <circle cx="12" cy="12" r="10"/>
-                <path d="M12 6v6l4 2"/>
-                <circle cx="12" cy="12" r="3"/>
-            </svg>
-            {{ t('app.name') }}
-        </div>
-        <div class="nav-section">
-            <div class="nav-section-title">{{ t('nav.overview') }}</div>
-            <a href="/" class="nav-item"><i data-feather="home"></i> {{ t('nav.dashboard') }}</a>
-            <a href="/unified" class="nav-item"><i data-feather="layers"></i> {{ t('nav.unified_view') }}</a>
-            <a href="/causal" class="nav-item active"><i data-feather="git-branch"></i> {{ t('nav.causal_analysis') }}</a>
-            <a href="/impact" class="nav-item"><i data-feather="trending-up"></i> {{ t('nav.impact_analysis') }}</a>
-        </div>
-        <div class="nav-section">
-            <div class="nav-section-title">{{ t('causal.scenarios') }}</div>
-            <button class="nav-item" onclick="loadScenario('drift_incident')">
-                <i data-feather="alert-triangle"></i> {{ t('causal.drift_incident') }}
-            </button>
-            <button class="nav-item" onclick="loadScenario('cost_spike')">
-                <i data-feather="dollar-sign"></i> {{ t('causal.cost_spike') }}
+<!-- Causal Graph -->
+<div class="card mb-6">
+    <div class="card-header">
+        <h3 class="card-title">{{ t('causal.graph') or 'Causal Graph' }}</h3>
+        <div class="flex gap-2">
+            <button class="btn btn-secondary" onclick="resetGraph()">
+                <i data-lucide="refresh-cw"></i>
+                Reset
             </button>
         </div>
-    </nav>
+    </div>
+    <div id="causalGraph" class="graph-container" style="height: 450px;"></div>
+</div>
 
-    <main class="main-content">
-        <div class="header">
-            <h1 class="header-title">Causal Analysis</h1>
-            <p style="color: var(--text-secondary); margin: 0;">Root cause analysis linking infrastructure, data, and AI outcomes</p>
+<!-- Root Causes & Impact Path -->
+<div class="grid grid-2 mb-6">
+    <div class="card">
+        <div class="card-header">
+            <h3 class="card-title">{{ t('causal.root_causes') or 'Root Causes' }}</h3>
         </div>
-
-        <!-- Causal Graph -->
-        <div class="card">
-            <div class="card-header">
-                <h3 class="card-title">Causal Graph</h3>
-                <div>
-                    <select id="scenarioSelect" onchange="loadScenario(this.value)" style="padding: 0.5rem; border-radius: 0.25rem; border: 1px solid var(--border-color);">
-                        <option value="drift_incident">Drift Incident</option>
-                        <option value="cost_spike">Cost Spike</option>
-                    </select>
-                </div>
-            </div>
-            <div id="causalGraph" style="height: 450px; border: 1px solid var(--border-color); border-radius: 0.5rem;"></div>
+        <div id="rootCauses">
+            <div class="loader"><div class="spinner"></div></div>
         </div>
+    </div>
 
-        <div class="responsive-grid-2">
-            <!-- Root Causes -->
-            <div class="card">
-                <div class="card-header">
-                    <h3 class="card-title">{{ t('causal.root_causes') }}</h3>
-                </div>
-                <div id="rootCauses">
-                    <div class="loader"><div class="spinner"></div></div>
-                </div>
-            </div>
-
-            <!-- Impact Path -->
-            <div class="card">
-                <div class="card-header">
-                    <h3 class="card-title">{{ t('causal.impact_path') }}</h3>
-                </div>
-                <div id="impactPath">
-                    <div class="loader"><div class="spinner"></div></div>
-                </div>
-            </div>
+    <div class="card">
+        <div class="card-header">
+            <h3 class="card-title">{{ t('causal.impact_path') or 'Impact Path' }}</h3>
         </div>
-
-        <!-- Node Details -->
-        <div class="card">
-            <div class="card-header">
-                <h3 class="card-title">Node Details</h3>
-            </div>
-            <div id="nodeDetails" style="padding: 1rem; color: var(--text-secondary);">
-                Click on a node in the graph to see details
-            </div>
+        <div id="impactPath">
+            <div class="loader"><div class="spinner"></div></div>
         </div>
-    </main>
+    </div>
+</div>
+
+<!-- Node Details -->
+<div class="card">
+    <div class="card-header">
+        <h3 class="card-title">Node Details</h3>
+    </div>
+    <div id="nodeDetails" class="empty-state">
+        <i data-lucide="mouse-pointer-click"></i>
+        <h3>Click on a node</h3>
+        <p class="text-muted">Click on a node in the graph to see details</p>
+    </div>
 </div>
 {% endblock %}
 
@@ -98,7 +84,7 @@ let currentGraph = null;
 
 document.addEventListener('DOMContentLoaded', async () => {
     await loadScenario('drift_incident');
-    feather.replace();
+    lucide.createIcons();
 });
 
 async function loadScenario(scenario) {
@@ -116,6 +102,13 @@ async function loadScenario(scenario) {
         }
     } catch (error) {
         console.error('Error loading scenario:', error);
+        showToast('Failed to load scenario', 'error');
+    }
+}
+
+function resetGraph() {
+    if (currentGraph) {
+        renderCausalGraph(currentGraph);
     }
 }
 
@@ -123,15 +116,16 @@ function renderCausalGraph(data) {
     const container = document.getElementById('causalGraph');
     container.innerHTML = '';
 
-    const width = container.clientWidth;
+    const width = container.clientWidth || 800;
     const height = 450;
 
     const svg = d3.select(container)
         .append('svg')
-        .attr('width', width)
-        .attr('height', height);
+        .attr('width', '100%')
+        .attr('height', height)
+        .attr('viewBox', `0 0 ${width} ${height}`);
 
-    // Define arrow marker
+    // Arrow marker
     svg.append('defs').append('marker')
         .attr('id', 'arrow')
         .attr('viewBox', '0 -5 10 10')
@@ -142,9 +136,8 @@ function renderCausalGraph(data) {
         .attr('orient', 'auto')
         .append('path')
         .attr('d', 'M0,-5L10,0L0,5')
-        .attr('fill', 'var(--text-secondary)');
+        .attr('fill', '#94a3b8');
 
-    // Node type colors
     const typeColors = {
         data_source: '#3b82f6',
         feature: '#8b5cf6',
@@ -156,33 +149,27 @@ function renderCausalGraph(data) {
         external_event: '#64748b'
     };
 
-    // Create force simulation
     const simulation = d3.forceSimulation(data.nodes)
-        .force('link', d3.forceLink(data.edges)
-            .id(d => d.id)
-            .distance(150))
+        .force('link', d3.forceLink(data.edges).id(d => d.id).distance(150))
         .force('charge', d3.forceManyBody().strength(-500))
         .force('center', d3.forceCenter(width / 2, height / 2))
         .force('collision', d3.forceCollide().radius(50));
 
-    // Draw edges
-    const link = svg.append('g')
-        .selectAll('g')
-        .data(data.edges)
-        .join('g');
+    // Edges
+    const link = svg.append('g').selectAll('g').data(data.edges).join('g');
 
     link.append('line')
-        .attr('stroke', 'var(--border-color)')
+        .attr('stroke', '#e2e8f0')
         .attr('stroke-width', d => 2 + d.weight * 3)
         .attr('marker-end', 'url(#arrow)');
 
     link.append('text')
         .text(d => (d.confidence * 100).toFixed(0) + '%')
         .attr('font-size', '10px')
-        .attr('fill', 'var(--text-secondary)')
+        .attr('fill', '#64748b')
         .attr('text-anchor', 'middle');
 
-    // Draw nodes
+    // Nodes
     const node = svg.append('g')
         .selectAll('g')
         .data(data.nodes)
@@ -194,14 +181,12 @@ function renderCausalGraph(data) {
             .on('drag', dragged)
             .on('end', dragended));
 
-    // Node circles
     node.append('circle')
         .attr('r', 30)
         .attr('fill', d => typeColors[d.type] || '#6366f1')
         .attr('stroke', 'white')
         .attr('stroke-width', 3);
 
-    // Node icons (simplified)
     node.append('text')
         .text(d => d.name.substring(0, 3).toUpperCase())
         .attr('text-anchor', 'middle')
@@ -210,7 +195,6 @@ function renderCausalGraph(data) {
         .attr('font-size', '11px')
         .attr('font-weight', '600');
 
-    // Node labels
     node.append('text')
         .text(d => d.name)
         .attr('text-anchor', 'middle')
@@ -218,13 +202,13 @@ function renderCausalGraph(data) {
         .attr('fill', 'var(--text-primary)')
         .attr('font-size', '12px');
 
-    // Impact score indicator
+    // Impact indicator
     node.append('circle')
         .attr('cx', 20)
         .attr('cy', -20)
-        .attr('r', 10)
-        .attr('fill', d => d.impact_score > 0.7 ? 'var(--danger)' :
-            d.impact_score > 0.4 ? 'var(--warning)' : 'var(--success)');
+        .attr('r', 12)
+        .attr('fill', d => d.impact_score > 0.7 ? '#ef4444' :
+            d.impact_score > 0.4 ? '#f59e0b' : '#10b981');
 
     node.append('text')
         .text(d => (d.impact_score * 10).toFixed(0))
@@ -232,7 +216,7 @@ function renderCausalGraph(data) {
         .attr('y', -16)
         .attr('text-anchor', 'middle')
         .attr('fill', 'white')
-        .attr('font-size', '8px')
+        .attr('font-size', '9px')
         .attr('font-weight', '600');
 
     simulation.on('tick', () => {
@@ -268,70 +252,87 @@ function renderCausalGraph(data) {
 }
 
 function renderRootCauses(data) {
-    // Find root causes (nodes with no incoming edges)
     const targetIds = new Set(data.edges.map(e => e.target));
-    const sourceIds = new Set(data.edges.map(e => e.source));
     const rootCauses = data.nodes.filter(n => !targetIds.has(n.id));
+    const container = document.getElementById('rootCauses');
 
-    document.getElementById('rootCauses').innerHTML = rootCauses.length ? rootCauses.map(rc => `
-        <div style="display: flex; align-items: center; gap: 1rem; padding: 1rem; border-bottom: 1px solid var(--border-color);">
-            <div style="width: 40px; height: 40px; border-radius: 50%; background: ${rc.impact_score > 0.7 ? 'var(--danger)' : 'var(--warning)'}; display: flex; align-items: center; justify-content: center; color: white; font-weight: 600;">
+    if (!rootCauses.length) {
+        container.innerHTML = `
+            <div class="empty-state">
+                <i data-lucide="search"></i>
+                <h3>No root causes identified</h3>
+            </div>
+        `;
+        lucide.createIcons();
+        return;
+    }
+
+    container.innerHTML = rootCauses.map(rc => `
+        <div class="flex items-center gap-4" style="padding: 1rem; border-bottom: 1px solid var(--border-color);">
+            <div style="width: 48px; height: 48px; border-radius: 50%; background: ${rc.impact_score > 0.7 ? 'var(--color-danger)' : 'var(--color-warning)'}; display: flex; align-items: center; justify-content: center; color: white; font-weight: 700;">
                 ${(rc.impact_score * 100).toFixed(0)}%
             </div>
-            <div>
-                <div style="font-weight: 600;">${rc.name}</div>
-                <div style="font-size: 0.875rem; color: var(--text-secondary);">${rc.description || rc.type}</div>
+            <div style="flex: 1;">
+                <div class="font-semibold">${rc.name}</div>
+                <div class="text-sm text-muted">${rc.description || rc.type.replace(/_/g, ' ')}</div>
             </div>
         </div>
-    `).join('') : '<div style="padding: 1rem; color: var(--text-secondary);">No root causes identified</div>';
+    `).join('');
 }
 
 function renderImpactPath(data) {
-    // Build path from root to leaf
-    const paths = [];
-
-    data.edges.forEach(edge => {
+    const paths = data.edges.map(edge => {
         const source = data.nodes.find(n => n.id === edge.source);
         const target = data.nodes.find(n => n.id === edge.target);
-        if (source && target) {
-            paths.push({ source, target, ...edge });
-        }
-    });
+        return source && target ? { source, target, ...edge } : null;
+    }).filter(Boolean);
 
-    document.getElementById('impactPath').innerHTML = paths.map(p => `
-        <div style="display: flex; align-items: center; gap: 0.5rem; padding: 0.75rem; border-bottom: 1px solid var(--border-color);">
-            <span style="font-weight: 600;">${p.source.name}</span>
-            <span style="color: var(--text-secondary);">
-                <i data-feather="arrow-right"></i>
-            </span>
-            <span style="font-weight: 600;">${p.target.name}</span>
-            <span class="status-badge ${p.confidence > 0.8 ? 'status-healthy' : 'status-warning'}">
-                ${(p.confidence * 100).toFixed(0)}% confidence
+    const container = document.getElementById('impactPath');
+
+    if (!paths.length) {
+        container.innerHTML = `
+            <div class="empty-state">
+                <i data-lucide="git-branch"></i>
+                <h3>No impact paths</h3>
+            </div>
+        `;
+        lucide.createIcons();
+        return;
+    }
+
+    container.innerHTML = paths.map(p => `
+        <div class="flex items-center gap-2" style="padding: 0.75rem; border-bottom: 1px solid var(--border-color);">
+            <span class="font-semibold">${p.source.name}</span>
+            <i data-lucide="arrow-right" style="width: 16px; height: 16px; color: var(--text-tertiary);"></i>
+            <span class="font-semibold">${p.target.name}</span>
+            <span class="badge ${p.confidence > 0.8 ? 'badge-healthy' : 'badge-warning'}" style="margin-left: auto;">
+                ${(p.confidence * 100).toFixed(0)}%
             </span>
         </div>
     `).join('');
-    feather.replace();
+    lucide.createIcons();
 }
 
 function showNodeDetails(node) {
-    document.getElementById('nodeDetails').innerHTML = `
-        <div style="display: grid; grid-template-columns: repeat(2, 1fr); gap: 1rem;">
+    const container = document.getElementById('nodeDetails');
+    container.innerHTML = `
+        <div class="grid grid-2 gap-4">
             <div>
-                <div style="color: var(--text-secondary); font-size: 0.875rem;">Name</div>
-                <div style="font-weight: 600; font-size: 1.25rem;">${node.name}</div>
+                <div class="text-sm text-muted mb-1">Name</div>
+                <div class="font-semibold" style="font-size: 1.25rem;">${node.name}</div>
             </div>
             <div>
-                <div style="color: var(--text-secondary); font-size: 0.875rem;">Type</div>
-                <div style="font-weight: 600;">${node.type.replace(/_/g, ' ')}</div>
+                <div class="text-sm text-muted mb-1">Type</div>
+                <div class="font-semibold">${node.type.replace(/_/g, ' ')}</div>
             </div>
             <div>
-                <div style="color: var(--text-secondary); font-size: 0.875rem;">Impact Score</div>
-                <div style="font-weight: 600; font-size: 1.5rem; color: ${node.impact_score > 0.7 ? 'var(--danger)' : node.impact_score > 0.4 ? 'var(--warning)' : 'var(--success)'};">
+                <div class="text-sm text-muted mb-1">Impact Score</div>
+                <div class="kpi-value" style="color: ${node.impact_score > 0.7 ? 'var(--color-danger)' : node.impact_score > 0.4 ? 'var(--color-warning)' : 'var(--color-success)'};">
                     ${(node.impact_score * 100).toFixed(0)}%
                 </div>
             </div>
             <div>
-                <div style="color: var(--text-secondary); font-size: 0.875rem;">Description</div>
+                <div class="text-sm text-muted mb-1">Description</div>
                 <div>${node.description || 'No description available'}</div>
             </div>
         </div>
