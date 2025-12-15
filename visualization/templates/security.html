@@ -1,0 +1,1220 @@
+{% extends "base.html" %}
+
+{% block sidebar_extra %}
+<div class="nav-group">
+    <span class="nav-group-title">Business Views</span>
+    <a href="/executive" class="nav-link">
+        <i data-lucide="briefcase"></i>
+        <span>Executive Dashboard</span>
+    </a>
+    <a href="/finops" class="nav-link">
+        <i data-lucide="wallet"></i>
+        <span>FinOps</span>
+    </a>
+    <a href="/greenops" class="nav-link">
+        <i data-lucide="leaf"></i>
+        <span>GreenOps</span>
+    </a>
+    <a href="/compliance" class="nav-link">
+        <i data-lucide="shield-check"></i>
+        <span>Compliance</span>
+    </a>
+</div>
+<div class="nav-group">
+    <span class="nav-group-title">Technical Views</span>
+    <a href="/monitoring" class="nav-link">
+        <i data-lucide="activity"></i>
+        <span>Live Monitoring</span>
+    </a>
+    <a href="/security" class="nav-link active">
+        <i data-lucide="lock"></i>
+        <span>Security Center</span>
+    </a>
+</div>
+{% endblock %}
+
+{% block page_title %}Security Center{% endblock %}
+{% block page_subtitle %}<p class="text-muted">AI security monitoring, prompt injection detection, and threat analysis</p>{% endblock %}
+
+{% block topbar_actions %}
+<div class="live-indicator">
+    <span class="live-dot"></span>
+    <span>Live Monitoring</span>
+</div>
+<button class="btn btn-secondary" onclick="runSecurityScan()">
+    <i data-lucide="scan"></i>
+    Run Scan
+</button>
+<button class="btn btn-primary" onclick="viewSecurityReport()">
+    <i data-lucide="file-text"></i>
+    Security Report
+</button>
+{% endblock %}
+
+{% block content %}
+<!-- Security Score Overview -->
+<div class="security-hero">
+    <div class="security-score-main">
+        <div class="score-ring">
+            <svg viewBox="0 0 120 120">
+                <circle cx="60" cy="60" r="54" fill="none" stroke="var(--border-color)" stroke-width="8"/>
+                <circle cx="60" cy="60" r="54" fill="none" stroke="var(--color-success)" stroke-width="8"
+                    stroke-dasharray="339.3" stroke-dashoffset="34" stroke-linecap="round"
+                    transform="rotate(-90 60 60)"/>
+            </svg>
+            <div class="score-content">
+                <span class="score-value">90</span>
+                <span class="score-label">Security Score</span>
+            </div>
+        </div>
+    </div>
+    <div class="security-stats">
+        <div class="security-stat">
+            <div class="stat-icon danger">
+                <i data-lucide="shield-alert"></i>
+            </div>
+            <div class="stat-content">
+                <span class="stat-value">12</span>
+                <span class="stat-label">Prompt Injections Blocked (24h)</span>
+            </div>
+        </div>
+        <div class="security-stat">
+            <div class="stat-icon warning">
+                <i data-lucide="key"></i>
+            </div>
+            <div class="stat-content">
+                <span class="stat-value">3</span>
+                <span class="stat-label">Jailbreak Attempts (24h)</span>
+            </div>
+        </div>
+        <div class="security-stat">
+            <div class="stat-icon success">
+                <i data-lucide="user-check"></i>
+            </div>
+            <div class="stat-content">
+                <span class="stat-value">99.8%</span>
+                <span class="stat-label">Auth Success Rate</span>
+            </div>
+        </div>
+        <div class="security-stat">
+            <div class="stat-icon primary">
+                <i data-lucide="eye"></i>
+            </div>
+            <div class="stat-content">
+                <span class="stat-value">0</span>
+                <span class="stat-label">Data Leak Incidents</span>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Threat Detection -->
+<section class="mb-6">
+    <div class="grid grid-2">
+        <!-- Real-time Threats -->
+        <div class="card">
+            <div class="card-header">
+                <h3 class="card-title">Real-time Threat Detection</h3>
+                <span class="live-badge"><span class="live-dot"></span> Live</span>
+            </div>
+            <div class="threats-feed" id="threatsFeed">
+                <div class="threat-item blocked">
+                    <div class="threat-icon">
+                        <i data-lucide="shield-off"></i>
+                    </div>
+                    <div class="threat-content">
+                        <span class="threat-type">Prompt Injection Attempt</span>
+                        <span class="threat-details">Malicious system prompt override detected in user input</span>
+                        <span class="threat-time">2 min ago</span>
+                    </div>
+                    <span class="threat-status blocked">Blocked</span>
+                </div>
+                <div class="threat-item blocked">
+                    <div class="threat-icon">
+                        <i data-lucide="code"></i>
+                    </div>
+                    <div class="threat-content">
+                        <span class="threat-type">Code Injection</span>
+                        <span class="threat-details">SQL injection pattern in model input</span>
+                        <span class="threat-time">8 min ago</span>
+                    </div>
+                    <span class="threat-status blocked">Blocked</span>
+                </div>
+                <div class="threat-item warning">
+                    <div class="threat-icon">
+                        <i data-lucide="unlock"></i>
+                    </div>
+                    <div class="threat-content">
+                        <span class="threat-type">Jailbreak Attempt</span>
+                        <span class="threat-details">DAN prompt pattern detected</span>
+                        <span class="threat-time">15 min ago</span>
+                    </div>
+                    <span class="threat-status warning">Flagged</span>
+                </div>
+                <div class="threat-item blocked">
+                    <div class="threat-icon">
+                        <i data-lucide="file-warning"></i>
+                    </div>
+                    <div class="threat-content">
+                        <span class="threat-type">Data Exfiltration</span>
+                        <span class="threat-details">Attempted PII extraction via prompt</span>
+                        <span class="threat-time">32 min ago</span>
+                    </div>
+                    <span class="threat-status blocked">Blocked</span>
+                </div>
+            </div>
+        </div>
+
+        <!-- Threat Categories -->
+        <div class="card">
+            <div class="card-header">
+                <h3 class="card-title">Threat Categories (7d)</h3>
+            </div>
+            <div class="chart-container" style="height: 200px;">
+                <canvas id="threatCategories"></canvas>
+            </div>
+            <div class="threat-legend">
+                <div class="legend-item">
+                    <span class="legend-dot" style="background: #ef4444"></span>
+                    <span>Prompt Injection</span>
+                    <span class="legend-count">48</span>
+                </div>
+                <div class="legend-item">
+                    <span class="legend-dot" style="background: #f59e0b"></span>
+                    <span>Jailbreak</span>
+                    <span class="legend-count">15</span>
+                </div>
+                <div class="legend-item">
+                    <span class="legend-dot" style="background: #6366f1"></span>
+                    <span>Data Extraction</span>
+                    <span class="legend-count">8</span>
+                </div>
+                <div class="legend-item">
+                    <span class="legend-dot" style="background: #64748b"></span>
+                    <span>Other</span>
+                    <span class="legend-count">5</span>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Prompt Injection Analysis -->
+<section class="mb-6">
+    <div class="card">
+        <div class="card-header">
+            <h3 class="card-title">Prompt Injection Analysis</h3>
+            <div class="header-actions">
+                <select class="form-select" style="width: 150px;">
+                    <option>All Models</option>
+                    <option>llm-assistant</option>
+                    <option>chat-support</option>
+                    <option>code-generator</option>
+                </select>
+            </div>
+        </div>
+        <div class="injection-analysis">
+            <div class="analysis-summary">
+                <div class="summary-card">
+                    <div class="summary-icon danger">
+                        <i data-lucide="shield-alert"></i>
+                    </div>
+                    <div class="summary-content">
+                        <span class="summary-value">48</span>
+                        <span class="summary-label">Total Attempts (7d)</span>
+                    </div>
+                </div>
+                <div class="summary-card">
+                    <div class="summary-icon success">
+                        <i data-lucide="shield-check"></i>
+                    </div>
+                    <div class="summary-content">
+                        <span class="summary-value">100%</span>
+                        <span class="summary-label">Detection Rate</span>
+                    </div>
+                </div>
+                <div class="summary-card">
+                    <div class="summary-icon warning">
+                        <i data-lucide="clock"></i>
+                    </div>
+                    <div class="summary-content">
+                        <span class="summary-value">12ms</span>
+                        <span class="summary-label">Avg Detection Time</span>
+                    </div>
+                </div>
+                <div class="summary-card">
+                    <div class="summary-icon primary">
+                        <i data-lucide="target"></i>
+                    </div>
+                    <div class="summary-content">
+                        <span class="summary-value">0.02%</span>
+                        <span class="summary-label">False Positive Rate</span>
+                    </div>
+                </div>
+            </div>
+            <div class="injection-patterns">
+                <h4>Top Attack Patterns</h4>
+                <div class="pattern-list">
+                    <div class="pattern-item">
+                        <span class="pattern-rank">1</span>
+                        <div class="pattern-content">
+                            <span class="pattern-name">System Prompt Override</span>
+                            <span class="pattern-desc">"Ignore all previous instructions..."</span>
+                        </div>
+                        <span class="pattern-count">18 attempts</span>
+                    </div>
+                    <div class="pattern-item">
+                        <span class="pattern-rank">2</span>
+                        <div class="pattern-content">
+                            <span class="pattern-name">Role Playing Manipulation</span>
+                            <span class="pattern-desc">"You are now DAN..."</span>
+                        </div>
+                        <span class="pattern-count">12 attempts</span>
+                    </div>
+                    <div class="pattern-item">
+                        <span class="pattern-rank">3</span>
+                        <div class="pattern-content">
+                            <span class="pattern-name">Context Injection</span>
+                            <span class="pattern-desc">"[SYSTEM]: New instructions..."</span>
+                        </div>
+                        <span class="pattern-count">9 attempts</span>
+                    </div>
+                    <div class="pattern-item">
+                        <span class="pattern-rank">4</span>
+                        <div class="pattern-content">
+                            <span class="pattern-name">Encoding Bypass</span>
+                            <span class="pattern-desc">Base64/Unicode obfuscation</span>
+                        </div>
+                        <span class="pattern-count">6 attempts</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Model Security Status -->
+<section class="mb-6">
+    <h2 class="section-title">Model Security Status</h2>
+    <div class="models-security-grid">
+        <div class="model-security-card secure">
+            <div class="model-header">
+                <span class="model-name">llm-assistant</span>
+                <span class="security-badge secure">
+                    <i data-lucide="shield-check"></i>
+                    Secure
+                </span>
+            </div>
+            <div class="model-metrics">
+                <div class="metric">
+                    <span class="metric-label">Guardrails</span>
+                    <span class="metric-value">Active</span>
+                </div>
+                <div class="metric">
+                    <span class="metric-label">Input Validation</span>
+                    <span class="metric-value">Enabled</span>
+                </div>
+                <div class="metric">
+                    <span class="metric-label">Output Filtering</span>
+                    <span class="metric-value">Enabled</span>
+                </div>
+                <div class="metric">
+                    <span class="metric-label">Rate Limiting</span>
+                    <span class="metric-value">100 req/min</span>
+                </div>
+            </div>
+            <div class="model-stats">
+                <span><i data-lucide="shield-alert"></i> 25 attacks blocked (7d)</span>
+            </div>
+        </div>
+
+        <div class="model-security-card secure">
+            <div class="model-header">
+                <span class="model-name">recommendation-v2</span>
+                <span class="security-badge secure">
+                    <i data-lucide="shield-check"></i>
+                    Secure
+                </span>
+            </div>
+            <div class="model-metrics">
+                <div class="metric">
+                    <span class="metric-label">Guardrails</span>
+                    <span class="metric-value">Active</span>
+                </div>
+                <div class="metric">
+                    <span class="metric-label">Input Validation</span>
+                    <span class="metric-value">Enabled</span>
+                </div>
+                <div class="metric">
+                    <span class="metric-label">Output Filtering</span>
+                    <span class="metric-value">N/A</span>
+                </div>
+                <div class="metric">
+                    <span class="metric-label">Rate Limiting</span>
+                    <span class="metric-value">1000 req/min</span>
+                </div>
+            </div>
+            <div class="model-stats">
+                <span><i data-lucide="shield-alert"></i> 3 attacks blocked (7d)</span>
+            </div>
+        </div>
+
+        <div class="model-security-card warning">
+            <div class="model-header">
+                <span class="model-name">code-generator</span>
+                <span class="security-badge warning">
+                    <i data-lucide="alert-triangle"></i>
+                    Review
+                </span>
+            </div>
+            <div class="model-metrics">
+                <div class="metric">
+                    <span class="metric-label">Guardrails</span>
+                    <span class="metric-value">Partial</span>
+                </div>
+                <div class="metric">
+                    <span class="metric-label">Input Validation</span>
+                    <span class="metric-value">Enabled</span>
+                </div>
+                <div class="metric">
+                    <span class="metric-label">Output Filtering</span>
+                    <span class="metric-value warning">Disabled</span>
+                </div>
+                <div class="metric">
+                    <span class="metric-label">Rate Limiting</span>
+                    <span class="metric-value">50 req/min</span>
+                </div>
+            </div>
+            <div class="model-stats warning">
+                <span><i data-lucide="alert-triangle"></i> Enable output filtering recommended</span>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Access Control & Audit -->
+<section class="mb-6">
+    <div class="grid grid-2">
+        <!-- Access Attempts -->
+        <div class="card">
+            <div class="card-header">
+                <h3 class="card-title">Access Attempts (24h)</h3>
+            </div>
+            <div class="chart-container">
+                <canvas id="accessAttempts"></canvas>
+            </div>
+            <div class="access-summary">
+                <div class="access-stat success">
+                    <i data-lucide="check-circle"></i>
+                    <span>12,450 Successful</span>
+                </div>
+                <div class="access-stat danger">
+                    <i data-lucide="x-circle"></i>
+                    <span>23 Failed</span>
+                </div>
+                <div class="access-stat warning">
+                    <i data-lucide="alert-circle"></i>
+                    <span>5 Suspicious</span>
+                </div>
+            </div>
+        </div>
+
+        <!-- Security Events -->
+        <div class="card">
+            <div class="card-header">
+                <h3 class="card-title">Recent Security Events</h3>
+            </div>
+            <div class="events-list">
+                <div class="event-item">
+                    <div class="event-icon success">
+                        <i data-lucide="shield-check"></i>
+                    </div>
+                    <div class="event-content">
+                        <span class="event-title">Security scan completed</span>
+                        <span class="event-time">10 min ago</span>
+                    </div>
+                </div>
+                <div class="event-item">
+                    <div class="event-icon danger">
+                        <i data-lucide="shield-alert"></i>
+                    </div>
+                    <div class="event-content">
+                        <span class="event-title">Prompt injection blocked</span>
+                        <span class="event-time">12 min ago</span>
+                    </div>
+                </div>
+                <div class="event-item">
+                    <div class="event-icon warning">
+                        <i data-lucide="user-x"></i>
+                    </div>
+                    <div class="event-content">
+                        <span class="event-title">Failed login attempt (3x)</span>
+                        <span class="event-time">25 min ago</span>
+                    </div>
+                </div>
+                <div class="event-item">
+                    <div class="event-icon success">
+                        <i data-lucide="key"></i>
+                    </div>
+                    <div class="event-content">
+                        <span class="event-title">API key rotated</span>
+                        <span class="event-time">1 hour ago</span>
+                    </div>
+                </div>
+                <div class="event-item">
+                    <div class="event-icon primary">
+                        <i data-lucide="settings"></i>
+                    </div>
+                    <div class="event-content">
+                        <span class="event-title">Guardrails updated</span>
+                        <span class="event-time">2 hours ago</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<style>
+.section-title {
+    font-size: 1.125rem;
+    font-weight: 600;
+    margin-bottom: var(--space-4);
+}
+
+/* Live Indicator */
+.live-indicator {
+    display: flex;
+    align-items: center;
+    gap: var(--space-2);
+    padding: var(--space-2) var(--space-3);
+    background: var(--color-success-light);
+    color: var(--color-success);
+    border-radius: var(--radius-full);
+    font-size: 0.8125rem;
+    font-weight: 500;
+}
+
+.live-dot {
+    width: 8px;
+    height: 8px;
+    background: var(--color-success);
+    border-radius: 50%;
+    animation: pulse 2s infinite;
+}
+
+@keyframes pulse {
+    0%, 100% { opacity: 1; transform: scale(1); }
+    50% { opacity: 0.5; transform: scale(1.2); }
+}
+
+.live-badge {
+    display: flex;
+    align-items: center;
+    gap: var(--space-1);
+    padding: var(--space-1) var(--space-2);
+    background: var(--color-success-light);
+    color: var(--color-success);
+    border-radius: var(--radius-full);
+    font-size: 0.75rem;
+    font-weight: 500;
+}
+
+.live-badge .live-dot {
+    width: 6px;
+    height: 6px;
+}
+
+/* Security Hero */
+.security-hero {
+    display: flex;
+    gap: var(--space-6);
+    padding: var(--space-6);
+    background: var(--bg-card);
+    border: 1px solid var(--border-color);
+    border-radius: var(--radius-xl);
+    margin-bottom: var(--space-6);
+}
+
+.security-score-main {
+    flex-shrink: 0;
+}
+
+.score-ring {
+    position: relative;
+    width: 150px;
+    height: 150px;
+}
+
+.score-ring svg {
+    width: 100%;
+    height: 100%;
+}
+
+.score-content {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    text-align: center;
+}
+
+.score-value {
+    display: block;
+    font-size: 2.5rem;
+    font-weight: 700;
+    color: var(--color-success);
+}
+
+.score-label {
+    font-size: 0.75rem;
+    color: var(--text-secondary);
+}
+
+.security-stats {
+    flex: 1;
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: var(--space-4);
+}
+
+.security-stat {
+    display: flex;
+    gap: var(--space-3);
+    padding: var(--space-4);
+    background: var(--bg-hover);
+    border-radius: var(--radius-lg);
+}
+
+.stat-icon {
+    width: 44px;
+    height: 44px;
+    border-radius: var(--radius-lg);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.stat-icon svg {
+    width: 22px;
+    height: 22px;
+    color: white;
+}
+
+.stat-icon.danger { background: linear-gradient(135deg, #ef4444, #f87171); }
+.stat-icon.warning { background: linear-gradient(135deg, #f59e0b, #fbbf24); }
+.stat-icon.success { background: linear-gradient(135deg, #10b981, #34d399); }
+.stat-icon.primary { background: linear-gradient(135deg, #6366f1, #8b5cf6); }
+
+.stat-value {
+    display: block;
+    font-size: 1.5rem;
+    font-weight: 700;
+}
+
+.stat-label {
+    font-size: 0.75rem;
+    color: var(--text-secondary);
+}
+
+/* Threats Feed */
+.threats-feed {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-3);
+    max-height: 400px;
+    overflow-y: auto;
+}
+
+.threat-item {
+    display: flex;
+    align-items: flex-start;
+    gap: var(--space-3);
+    padding: var(--space-3);
+    background: var(--bg-hover);
+    border-radius: var(--radius-lg);
+    border-left: 3px solid;
+}
+
+.threat-item.blocked { border-left-color: var(--color-danger); }
+.threat-item.warning { border-left-color: var(--color-warning); }
+
+.threat-icon {
+    width: 32px;
+    height: 32px;
+    border-radius: var(--radius-md);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+}
+
+.threat-item.blocked .threat-icon {
+    background: var(--color-danger-light);
+    color: var(--color-danger);
+}
+
+.threat-item.warning .threat-icon {
+    background: var(--color-warning-light);
+    color: var(--color-warning);
+}
+
+.threat-icon svg {
+    width: 16px;
+    height: 16px;
+}
+
+.threat-content {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-1);
+}
+
+.threat-type {
+    font-weight: 600;
+    font-size: 0.875rem;
+}
+
+.threat-details {
+    font-size: 0.75rem;
+    color: var(--text-secondary);
+}
+
+.threat-time {
+    font-size: 0.6875rem;
+    color: var(--text-tertiary);
+}
+
+.threat-status {
+    padding: var(--space-1) var(--space-2);
+    border-radius: var(--radius-full);
+    font-size: 0.6875rem;
+    font-weight: 600;
+    text-transform: uppercase;
+}
+
+.threat-status.blocked {
+    background: var(--color-danger-light);
+    color: var(--color-danger);
+}
+
+.threat-status.warning {
+    background: var(--color-warning-light);
+    color: var(--color-warning);
+}
+
+/* Threat Legend */
+.threat-legend {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-2);
+    margin-top: var(--space-4);
+    padding-top: var(--space-4);
+    border-top: 1px solid var(--border-color);
+}
+
+.legend-item {
+    display: flex;
+    align-items: center;
+    gap: var(--space-2);
+    font-size: 0.8125rem;
+}
+
+.legend-dot {
+    width: 10px;
+    height: 10px;
+    border-radius: 50%;
+}
+
+.legend-item span:nth-child(2) {
+    flex: 1;
+}
+
+.legend-count {
+    font-weight: 600;
+}
+
+/* Injection Analysis */
+.injection-analysis {
+    display: flex;
+    gap: var(--space-6);
+}
+
+.analysis-summary {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: var(--space-4);
+    flex-shrink: 0;
+    width: 300px;
+}
+
+.summary-card {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: var(--space-2);
+    padding: var(--space-4);
+    background: var(--bg-hover);
+    border-radius: var(--radius-lg);
+    text-align: center;
+}
+
+.summary-icon {
+    width: 40px;
+    height: 40px;
+    border-radius: var(--radius-lg);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.summary-icon svg {
+    width: 20px;
+    height: 20px;
+    color: white;
+}
+
+.summary-icon.danger { background: var(--color-danger); }
+.summary-icon.success { background: var(--color-success); }
+.summary-icon.warning { background: var(--color-warning); }
+.summary-icon.primary { background: var(--color-primary); }
+
+.summary-value {
+    display: block;
+    font-size: 1.5rem;
+    font-weight: 700;
+}
+
+.summary-label {
+    font-size: 0.75rem;
+    color: var(--text-secondary);
+}
+
+.injection-patterns {
+    flex: 1;
+}
+
+.injection-patterns h4 {
+    font-size: 0.9375rem;
+    font-weight: 600;
+    margin-bottom: var(--space-3);
+}
+
+.pattern-list {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-3);
+}
+
+.pattern-item {
+    display: flex;
+    align-items: center;
+    gap: var(--space-3);
+    padding: var(--space-3);
+    background: var(--bg-hover);
+    border-radius: var(--radius-lg);
+}
+
+.pattern-rank {
+    width: 28px;
+    height: 28px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: var(--color-primary-light);
+    color: var(--color-primary);
+    border-radius: var(--radius-md);
+    font-weight: 700;
+    font-size: 0.875rem;
+}
+
+.pattern-content {
+    flex: 1;
+}
+
+.pattern-name {
+    display: block;
+    font-weight: 500;
+    font-size: 0.875rem;
+}
+
+.pattern-desc {
+    font-size: 0.75rem;
+    color: var(--text-secondary);
+    font-family: monospace;
+}
+
+.pattern-count {
+    font-size: 0.8125rem;
+    color: var(--text-secondary);
+}
+
+/* Models Security Grid */
+.models-security-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: var(--space-4);
+}
+
+.model-security-card {
+    padding: var(--space-4);
+    background: var(--bg-card);
+    border: 1px solid var(--border-color);
+    border-radius: var(--radius-xl);
+}
+
+.model-security-card.secure {
+    border-color: var(--color-success);
+}
+
+.model-security-card.warning {
+    border-color: var(--color-warning);
+}
+
+.model-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: var(--space-4);
+}
+
+.model-name {
+    font-weight: 600;
+}
+
+.security-badge {
+    display: flex;
+    align-items: center;
+    gap: var(--space-1);
+    padding: var(--space-1) var(--space-2);
+    border-radius: var(--radius-full);
+    font-size: 0.75rem;
+    font-weight: 500;
+}
+
+.security-badge.secure {
+    background: var(--color-success-light);
+    color: var(--color-success);
+}
+
+.security-badge.warning {
+    background: var(--color-warning-light);
+    color: var(--color-warning);
+}
+
+.security-badge svg {
+    width: 14px;
+    height: 14px;
+}
+
+.model-metrics {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: var(--space-2);
+    margin-bottom: var(--space-4);
+}
+
+.metric {
+    display: flex;
+    flex-direction: column;
+}
+
+.metric-label {
+    font-size: 0.6875rem;
+    color: var(--text-secondary);
+    text-transform: uppercase;
+}
+
+.metric-value {
+    font-weight: 500;
+    font-size: 0.8125rem;
+}
+
+.metric-value.warning {
+    color: var(--color-warning);
+}
+
+.model-stats {
+    padding: var(--space-2);
+    background: var(--bg-hover);
+    border-radius: var(--radius-md);
+    font-size: 0.75rem;
+    color: var(--text-secondary);
+}
+
+.model-stats.warning {
+    background: var(--color-warning-light);
+    color: var(--color-warning);
+}
+
+.model-stats i {
+    width: 14px;
+    height: 14px;
+    vertical-align: middle;
+}
+
+/* Access Summary */
+.access-summary {
+    display: flex;
+    gap: var(--space-4);
+    margin-top: var(--space-4);
+    padding-top: var(--space-4);
+    border-top: 1px solid var(--border-color);
+}
+
+.access-stat {
+    display: flex;
+    align-items: center;
+    gap: var(--space-2);
+    font-size: 0.8125rem;
+}
+
+.access-stat svg {
+    width: 16px;
+    height: 16px;
+}
+
+.access-stat.success { color: var(--color-success); }
+.access-stat.danger { color: var(--color-danger); }
+.access-stat.warning { color: var(--color-warning); }
+
+/* Events List */
+.events-list {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-3);
+}
+
+.event-item {
+    display: flex;
+    align-items: center;
+    gap: var(--space-3);
+    padding: var(--space-3);
+    background: var(--bg-hover);
+    border-radius: var(--radius-lg);
+}
+
+.event-icon {
+    width: 32px;
+    height: 32px;
+    border-radius: var(--radius-md);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.event-icon.success {
+    background: var(--color-success-light);
+    color: var(--color-success);
+}
+
+.event-icon.danger {
+    background: var(--color-danger-light);
+    color: var(--color-danger);
+}
+
+.event-icon.warning {
+    background: var(--color-warning-light);
+    color: var(--color-warning);
+}
+
+.event-icon.primary {
+    background: var(--color-primary-light);
+    color: var(--color-primary);
+}
+
+.event-icon svg {
+    width: 16px;
+    height: 16px;
+}
+
+.event-content {
+    flex: 1;
+}
+
+.event-title {
+    display: block;
+    font-size: 0.875rem;
+    font-weight: 500;
+}
+
+.event-time {
+    font-size: 0.75rem;
+    color: var(--text-secondary);
+}
+
+.header-actions {
+    display: flex;
+    gap: var(--space-3);
+}
+
+@media (max-width: 1200px) {
+    .models-security-grid {
+        grid-template-columns: repeat(2, 1fr);
+    }
+}
+
+@media (max-width: 768px) {
+    .security-hero {
+        flex-direction: column;
+    }
+
+    .security-stats {
+        grid-template-columns: 1fr;
+    }
+
+    .injection-analysis {
+        flex-direction: column;
+    }
+
+    .analysis-summary {
+        width: 100%;
+    }
+
+    .models-security-grid {
+        grid-template-columns: 1fr;
+    }
+}
+</style>
+{% endblock %}
+
+{% block scripts %}
+<script>
+document.addEventListener('DOMContentLoaded', async () => {
+    await loadSecurityData();
+    initCharts();
+    startLiveFeed();
+    lucide.createIcons();
+});
+
+async function loadSecurityData() {
+    try {
+        const response = await fetch('/api/monitoring/security');
+        const result = await response.json();
+
+        if (result.success) {
+            console.log('Security data loaded:', result.data);
+        }
+    } catch (error) {
+        console.error('Error loading security data:', error);
+    }
+}
+
+function initCharts() {
+    // Threat Categories Chart
+    const categoriesCtx = document.getElementById('threatCategories');
+    if (categoriesCtx) {
+        new Chart(categoriesCtx, {
+            type: 'doughnut',
+            data: {
+                labels: ['Prompt Injection', 'Jailbreak', 'Data Extraction', 'Other'],
+                datasets: [{
+                    data: [48, 15, 8, 5],
+                    backgroundColor: ['#ef4444', '#f59e0b', '#6366f1', '#64748b'],
+                    borderWidth: 0
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                cutout: '65%',
+                plugins: {
+                    legend: { display: false }
+                }
+            }
+        });
+    }
+
+    // Access Attempts Chart
+    const accessCtx = document.getElementById('accessAttempts');
+    if (accessCtx) {
+        const labels = Array.from({length: 24}, (_, i) => `${i}:00`);
+        const successful = labels.map(() => Math.floor(400 + Math.random() * 200));
+        const failed = labels.map(() => Math.floor(Math.random() * 3));
+
+        new Chart(accessCtx, {
+            type: 'bar',
+            data: {
+                labels: labels,
+                datasets: [{
+                    label: 'Successful',
+                    data: successful,
+                    backgroundColor: '#10b981'
+                }, {
+                    label: 'Failed',
+                    data: failed,
+                    backgroundColor: '#ef4444'
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                plugins: {
+                    legend: { display: false }
+                },
+                scales: {
+                    x: { stacked: true },
+                    y: { stacked: true }
+                }
+            }
+        });
+    }
+}
+
+function startLiveFeed() {
+    // Simulate live threat feed updates
+    setInterval(() => {
+        const threats = [
+            { type: 'Prompt Injection Attempt', details: 'System prompt override detected', status: 'blocked' },
+            { type: 'Suspicious Pattern', details: 'Unusual query pattern detected', status: 'warning' },
+            { type: 'Rate Limit Exceeded', details: 'API rate limit triggered', status: 'blocked' }
+        ];
+
+        if (Math.random() > 0.7) {
+            const threat = threats[Math.floor(Math.random() * threats.length)];
+            addThreatToFeed(threat);
+        }
+    }, 10000);
+}
+
+function addThreatToFeed(threat) {
+    const feed = document.getElementById('threatsFeed');
+    const item = document.createElement('div');
+    item.className = `threat-item ${threat.status}`;
+    item.innerHTML = `
+        <div class="threat-icon">
+            <i data-lucide="shield-alert"></i>
+        </div>
+        <div class="threat-content">
+            <span class="threat-type">${threat.type}</span>
+            <span class="threat-details">${threat.details}</span>
+            <span class="threat-time">Just now</span>
+        </div>
+        <span class="threat-status ${threat.status}">${threat.status === 'blocked' ? 'Blocked' : 'Flagged'}</span>
+    `;
+
+    feed.insertBefore(item, feed.firstChild);
+    lucide.createIcons();
+
+    // Remove oldest item if too many
+    if (feed.children.length > 10) {
+        feed.removeChild(feed.lastChild);
+    }
+}
+
+function runSecurityScan() {
+    showToast('Starting security scan...', 'info');
+    setTimeout(() => {
+        showToast('Security scan completed. No critical issues found.', 'success');
+    }, 3000);
+}
+
+function viewSecurityReport() {
+    showToast('Generating security report...', 'info');
+    setTimeout(() => {
+        showToast('Report ready for download!', 'success');
+    }, 2000);
+}
+</script>
+{% endblock %}

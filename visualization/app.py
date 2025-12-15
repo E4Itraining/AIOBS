@@ -13,7 +13,7 @@ import psutil
 
 from .routers import (
     dashboard_router, metrics_router, profiles_router, i18n_router,
-    realtime_router, assistant_router, ingestion_router
+    realtime_router, assistant_router, ingestion_router, monitoring_router
 )
 from .i18n import I18nMiddleware, SUPPORTED_LANGUAGES, get_translator
 from .i18n.middleware import create_i18n_context
@@ -95,6 +95,7 @@ app.include_router(i18n_router)
 app.include_router(realtime_router)
 app.include_router(assistant_router)
 app.include_router(ingestion_router)
+app.include_router(monitoring_router)
 
 
 # =============================================================================
@@ -186,6 +187,96 @@ async def impact_view(request: Request):
         {
             "request": request,
             "title": f"{APP_TITLE} - {i18n['t']('causal.impact')}",
+            **i18n
+        }
+    )
+
+
+@app.get("/executive", response_class=HTMLResponse)
+async def executive_view(request: Request):
+    """Executive/Business dashboard for non-technical users"""
+    i18n = create_i18n_context(request)
+    return templates.TemplateResponse(
+        "executive.html",
+        {
+            "request": request,
+            "title": f"{APP_TITLE} - Executive Dashboard",
+            "active_page": "executive",
+            **i18n
+        }
+    )
+
+
+@app.get("/compliance", response_class=HTMLResponse)
+async def compliance_view(request: Request):
+    """Compliance and governance dashboard"""
+    i18n = create_i18n_context(request)
+    return templates.TemplateResponse(
+        "compliance.html",
+        {
+            "request": request,
+            "title": f"{APP_TITLE} - Compliance & Governance",
+            "active_page": "compliance",
+            **i18n
+        }
+    )
+
+
+@app.get("/greenops", response_class=HTMLResponse)
+async def greenops_view(request: Request):
+    """GreenOps sustainability dashboard"""
+    i18n = create_i18n_context(request)
+    return templates.TemplateResponse(
+        "greenops.html",
+        {
+            "request": request,
+            "title": f"{APP_TITLE} - GreenOps Sustainability",
+            "active_page": "greenops",
+            **i18n
+        }
+    )
+
+
+@app.get("/finops", response_class=HTMLResponse)
+async def finops_view(request: Request):
+    """FinOps cost management dashboard"""
+    i18n = create_i18n_context(request)
+    return templates.TemplateResponse(
+        "finops.html",
+        {
+            "request": request,
+            "title": f"{APP_TITLE} - FinOps Cost Management",
+            "active_page": "finops",
+            **i18n
+        }
+    )
+
+
+@app.get("/monitoring", response_class=HTMLResponse)
+async def monitoring_view(request: Request):
+    """Live monitoring dashboard"""
+    i18n = create_i18n_context(request)
+    return templates.TemplateResponse(
+        "monitoring.html",
+        {
+            "request": request,
+            "title": f"{APP_TITLE} - Live Monitoring",
+            "active_page": "monitoring",
+            **i18n
+        }
+    )
+
+
+@app.get("/security", response_class=HTMLResponse)
+async def security_view(request: Request):
+    """Security center dashboard"""
+    i18n = create_i18n_context(request)
+    return templates.TemplateResponse(
+        "security.html",
+        {
+            "request": request,
+            "title": f"{APP_TITLE} - Security Center",
+            "active_page": "security",
             **i18n
         }
     )

@@ -1,0 +1,1209 @@
+{% extends "base.html" %}
+
+{% block sidebar_extra %}
+<div class="nav-group">
+    <span class="nav-group-title">Business Views</span>
+    <a href="/executive" class="nav-link">
+        <i data-lucide="briefcase"></i>
+        <span>Executive Dashboard</span>
+    </a>
+    <a href="/finops" class="nav-link">
+        <i data-lucide="wallet"></i>
+        <span>FinOps</span>
+    </a>
+    <a href="/greenops" class="nav-link active">
+        <i data-lucide="leaf"></i>
+        <span>GreenOps</span>
+    </a>
+    <a href="/compliance" class="nav-link">
+        <i data-lucide="shield-check"></i>
+        <span>Compliance</span>
+    </a>
+</div>
+<div class="nav-group">
+    <span class="nav-group-title">Technical Views</span>
+    <a href="/monitoring" class="nav-link">
+        <i data-lucide="activity"></i>
+        <span>Live Monitoring</span>
+    </a>
+    <a href="/security" class="nav-link">
+        <i data-lucide="lock"></i>
+        <span>Security Center</span>
+    </a>
+</div>
+{% endblock %}
+
+{% block page_title %}GreenOps - Sustainability{% endblock %}
+{% block page_subtitle %}<p class="text-muted">Carbon footprint, energy efficiency and environmental impact</p>{% endblock %}
+
+{% block topbar_actions %}
+<div class="time-range-selector">
+    <select class="form-select" id="timeRange" onchange="updateTimeRange()">
+        <option value="7d">Last 7 Days</option>
+        <option value="30d" selected>Last 30 Days</option>
+        <option value="90d">Last Quarter</option>
+        <option value="365d">Last Year</option>
+    </select>
+</div>
+<button class="btn btn-primary" onclick="generateSustainabilityReport()">
+    <i data-lucide="file-text"></i>
+    ESG Report
+</button>
+{% endblock %}
+
+{% block content %}
+<!-- Sustainability Score Hero -->
+<div class="sustainability-hero">
+    <div class="hero-left">
+        <div class="eco-score">
+            <div class="eco-circle">
+                <svg viewBox="0 0 120 120">
+                    <defs>
+                        <linearGradient id="ecoGradient" x1="0%" y1="0%" x2="100%" y2="0%">
+                            <stop offset="0%" style="stop-color:#10b981"/>
+                            <stop offset="100%" style="stop-color:#34d399"/>
+                        </linearGradient>
+                    </defs>
+                    <circle cx="60" cy="60" r="54" fill="none" stroke="var(--border-color)" stroke-width="8"/>
+                    <circle cx="60" cy="60" r="54" fill="none" stroke="url(#ecoGradient)" stroke-width="8"
+                        stroke-dasharray="339.3" stroke-dashoffset="68" stroke-linecap="round"
+                        transform="rotate(-90 60 60)"/>
+                </svg>
+                <div class="eco-value">
+                    <i data-lucide="leaf"></i>
+                    <span class="eco-number">B+</span>
+                </div>
+            </div>
+            <div class="eco-label">Sustainability Rating</div>
+        </div>
+    </div>
+    <div class="hero-right">
+        <div class="hero-stats">
+            <div class="hero-stat">
+                <div class="stat-icon carbon">
+                    <i data-lucide="cloud"></i>
+                </div>
+                <div class="stat-content">
+                    <span class="stat-value">1,250.5 kg</span>
+                    <span class="stat-label">CO2 Emissions (30d)</span>
+                    <span class="stat-trend down"><i data-lucide="trending-down"></i> -8% vs last period</span>
+                </div>
+            </div>
+            <div class="hero-stat">
+                <div class="stat-icon energy">
+                    <i data-lucide="zap"></i>
+                </div>
+                <div class="stat-content">
+                    <span class="stat-value">4,500 kWh</span>
+                    <span class="stat-label">Energy Consumed</span>
+                    <span class="stat-trend down"><i data-lucide="trending-down"></i> -5% vs last period</span>
+                </div>
+            </div>
+            <div class="hero-stat">
+                <div class="stat-icon green">
+                    <i data-lucide="sun"></i>
+                </div>
+                <div class="stat-content">
+                    <span class="stat-value">65%</span>
+                    <span class="stat-label">Renewable Energy</span>
+                    <span class="stat-trend up"><i data-lucide="trending-up"></i> +12% vs last period</span>
+                </div>
+            </div>
+            <div class="hero-stat">
+                <div class="stat-icon pue">
+                    <i data-lucide="gauge"></i>
+                </div>
+                <div class="stat-content">
+                    <span class="stat-value">1.35</span>
+                    <span class="stat-label">Avg. PUE</span>
+                    <span class="stat-trend down"><i data-lucide="trending-down"></i> -0.05 improved</span>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Carbon Breakdown -->
+<section class="mb-6">
+    <div class="grid grid-2">
+        <!-- Emissions by Activity -->
+        <div class="card">
+            <div class="card-header">
+                <h3 class="card-title">Emissions by Activity</h3>
+            </div>
+            <div class="chart-container">
+                <canvas id="emissionsByActivity"></canvas>
+            </div>
+            <div class="activity-legend">
+                <div class="legend-item">
+                    <span class="legend-color" style="background: #6366f1"></span>
+                    <span class="legend-label">Inference</span>
+                    <span class="legend-value">750 kg (60%)</span>
+                </div>
+                <div class="legend-item">
+                    <span class="legend-color" style="background: #8b5cf6"></span>
+                    <span class="legend-label">Training</span>
+                    <span class="legend-value">350 kg (28%)</span>
+                </div>
+                <div class="legend-item">
+                    <span class="legend-color" style="background: #a78bfa"></span>
+                    <span class="legend-label">Storage</span>
+                    <span class="legend-value">100 kg (8%)</span>
+                </div>
+                <div class="legend-item">
+                    <span class="legend-color" style="background: #c4b5fd"></span>
+                    <span class="legend-label">Network</span>
+                    <span class="legend-value">50 kg (4%)</span>
+                </div>
+            </div>
+        </div>
+
+        <!-- Emissions Trend -->
+        <div class="card">
+            <div class="card-header">
+                <h3 class="card-title">Emissions Trend</h3>
+                <div class="chart-toggle">
+                    <button class="toggle-btn active" data-view="daily">Daily</button>
+                    <button class="toggle-btn" data-view="weekly">Weekly</button>
+                </div>
+            </div>
+            <div class="chart-container">
+                <canvas id="emissionsTrend"></canvas>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Regional Carbon Intensity -->
+<section class="mb-6">
+    <div class="card">
+        <div class="card-header">
+            <h3 class="card-title">Regional Carbon Intensity</h3>
+            <span class="text-sm text-muted">gCO2/kWh - Lower is better</span>
+        </div>
+        <div class="regions-grid">
+            <div class="region-card best">
+                <div class="region-header">
+                    <span class="region-flag">🇪🇺</span>
+                    <span class="region-name">eu-west-1 (Ireland)</span>
+                    <span class="badge badge-success">Best</span>
+                </div>
+                <div class="region-stats">
+                    <div class="region-stat">
+                        <span class="stat-value">120</span>
+                        <span class="stat-unit">gCO2/kWh</span>
+                    </div>
+                    <div class="region-meta">
+                        <span><i data-lucide="sun"></i> 85% Renewable</span>
+                        <span><i data-lucide="cloud"></i> 350 kg emissions</span>
+                    </div>
+                </div>
+                <div class="region-recommendation">
+                    <i data-lucide="lightbulb"></i>
+                    <span>Recommended for new workloads</span>
+                </div>
+            </div>
+
+            <div class="region-card">
+                <div class="region-header">
+                    <span class="region-flag">🇺🇸</span>
+                    <span class="region-name">us-east-1 (Virginia)</span>
+                </div>
+                <div class="region-stats">
+                    <div class="region-stat">
+                        <span class="stat-value">350</span>
+                        <span class="stat-unit">gCO2/kWh</span>
+                    </div>
+                    <div class="region-meta">
+                        <span><i data-lucide="sun"></i> 45% Renewable</span>
+                        <span><i data-lucide="cloud"></i> 500 kg emissions</span>
+                    </div>
+                </div>
+            </div>
+
+            <div class="region-card">
+                <div class="region-header">
+                    <span class="region-flag">🇸🇬</span>
+                    <span class="region-name">ap-southeast-1 (Singapore)</span>
+                    <span class="badge badge-warning">High Impact</span>
+                </div>
+                <div class="region-stats">
+                    <div class="region-stat">
+                        <span class="stat-value">420</span>
+                        <span class="stat-unit">gCO2/kWh</span>
+                    </div>
+                    <div class="region-meta">
+                        <span><i data-lucide="sun"></i> 25% Renewable</span>
+                        <span><i data-lucide="cloud"></i> 400 kg emissions</span>
+                    </div>
+                </div>
+                <div class="region-recommendation warning">
+                    <i data-lucide="alert-triangle"></i>
+                    <span>Consider migrating batch jobs to EU</span>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Model-Level Emissions -->
+<section class="mb-6">
+    <div class="card">
+        <div class="card-header">
+            <h3 class="card-title">Model Carbon Footprint</h3>
+        </div>
+        <div class="table-container">
+            <table class="table">
+                <thead>
+                    <tr>
+                        <th>Model</th>
+                        <th>Daily Inferences</th>
+                        <th>Energy (kWh)</th>
+                        <th>CO2 (kg)</th>
+                        <th>Efficiency Score</th>
+                        <th>Trend</th>
+                        <th>Actions</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>
+                            <div class="model-cell">
+                                <span class="model-name">recommendation-v2</span>
+                                <span class="model-type">Production</span>
+                            </div>
+                        </td>
+                        <td>1.2M</td>
+                        <td>85.5</td>
+                        <td>25.8</td>
+                        <td>
+                            <div class="efficiency-bar">
+                                <div class="efficiency-fill high" style="width: 85%"></div>
+                            </div>
+                            <span class="efficiency-label">85%</span>
+                        </td>
+                        <td><span class="trend down"><i data-lucide="trending-down"></i> -12%</span></td>
+                        <td><button class="btn btn-ghost btn-sm"><i data-lucide="settings"></i></button></td>
+                    </tr>
+                    <tr>
+                        <td>
+                            <div class="model-cell">
+                                <span class="model-name">fraud-detector-v1</span>
+                                <span class="model-type">Production</span>
+                            </div>
+                        </td>
+                        <td>850K</td>
+                        <td>62.3</td>
+                        <td>18.7</td>
+                        <td>
+                            <div class="efficiency-bar">
+                                <div class="efficiency-fill medium" style="width: 72%"></div>
+                            </div>
+                            <span class="efficiency-label">72%</span>
+                        </td>
+                        <td><span class="trend stable"><i data-lucide="minus"></i> 0%</span></td>
+                        <td><button class="btn btn-ghost btn-sm"><i data-lucide="settings"></i></button></td>
+                    </tr>
+                    <tr>
+                        <td>
+                            <div class="model-cell">
+                                <span class="model-name">churn-predictor</span>
+                                <span class="model-type">Production</span>
+                            </div>
+                        </td>
+                        <td>450K</td>
+                        <td>28.1</td>
+                        <td>8.4</td>
+                        <td>
+                            <div class="efficiency-bar">
+                                <div class="efficiency-fill high" style="width: 92%"></div>
+                            </div>
+                            <span class="efficiency-label">92%</span>
+                        </td>
+                        <td><span class="trend down"><i data-lucide="trending-down"></i> -8%</span></td>
+                        <td><button class="btn btn-ghost btn-sm"><i data-lucide="settings"></i></button></td>
+                    </tr>
+                    <tr>
+                        <td>
+                            <div class="model-cell">
+                                <span class="model-name">llm-assistant</span>
+                                <span class="model-type badge badge-warning">High Impact</span>
+                            </div>
+                        </td>
+                        <td>50K</td>
+                        <td>180.2</td>
+                        <td>54.1</td>
+                        <td>
+                            <div class="efficiency-bar">
+                                <div class="efficiency-fill low" style="width: 35%"></div>
+                            </div>
+                            <span class="efficiency-label">35%</span>
+                        </td>
+                        <td><span class="trend up"><i data-lucide="trending-up"></i> +15%</span></td>
+                        <td><button class="btn btn-secondary btn-sm">Optimize</button></td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+</section>
+
+<!-- Optimization Recommendations -->
+<section class="mb-6">
+    <h2 class="section-title">Sustainability Recommendations</h2>
+    <div class="recommendations-grid">
+        <div class="recommendation-card high-impact">
+            <div class="rec-header">
+                <div class="rec-icon">
+                    <i data-lucide="moon"></i>
+                </div>
+                <div class="rec-badge">High Impact</div>
+            </div>
+            <h4>Enable GPU Sleep Mode</h4>
+            <p>Configure GPU instances to sleep during off-peak hours (2am-6am UTC) to reduce energy consumption.</p>
+            <div class="rec-impact">
+                <div class="impact-item">
+                    <i data-lucide="cloud-off"></i>
+                    <span>-125 kg CO2/month</span>
+                </div>
+                <div class="impact-item">
+                    <i data-lucide="wallet"></i>
+                    <span>-$850/month</span>
+                </div>
+            </div>
+            <button class="btn btn-primary btn-sm">Implement</button>
+        </div>
+
+        <div class="recommendation-card medium-impact">
+            <div class="rec-header">
+                <div class="rec-icon">
+                    <i data-lucide="globe"></i>
+                </div>
+                <div class="rec-badge">Medium Impact</div>
+            </div>
+            <h4>Migrate Batch Jobs to EU</h4>
+            <p>Move non-latency-sensitive batch processing to eu-west-1 with lower carbon intensity.</p>
+            <div class="rec-impact">
+                <div class="impact-item">
+                    <i data-lucide="cloud-off"></i>
+                    <span>-85 kg CO2/month</span>
+                </div>
+                <div class="impact-item">
+                    <i data-lucide="wallet"></i>
+                    <span>+$50/month</span>
+                </div>
+            </div>
+            <button class="btn btn-secondary btn-sm">Review</button>
+        </div>
+
+        <div class="recommendation-card medium-impact">
+            <div class="rec-header">
+                <div class="rec-icon">
+                    <i data-lucide="cpu"></i>
+                </div>
+                <div class="rec-badge">Medium Impact</div>
+            </div>
+            <h4>Optimize LLM Batching</h4>
+            <p>Implement request batching for LLM inference to improve GPU utilization efficiency.</p>
+            <div class="rec-impact">
+                <div class="impact-item">
+                    <i data-lucide="cloud-off"></i>
+                    <span>-65 kg CO2/month</span>
+                </div>
+                <div class="impact-item">
+                    <i data-lucide="zap"></i>
+                    <span>+40% efficiency</span>
+                </div>
+            </div>
+            <button class="btn btn-secondary btn-sm">Learn More</button>
+        </div>
+
+        <div class="recommendation-card low-impact">
+            <div class="rec-header">
+                <div class="rec-icon">
+                    <i data-lucide="trash-2"></i>
+                </div>
+                <div class="rec-badge">Quick Win</div>
+            </div>
+            <h4>Clean Up Old Checkpoints</h4>
+            <p>Remove 45 unused model checkpoints consuming storage and backup energy.</p>
+            <div class="rec-impact">
+                <div class="impact-item">
+                    <i data-lucide="cloud-off"></i>
+                    <span>-15 kg CO2/month</span>
+                </div>
+                <div class="impact-item">
+                    <i data-lucide="hard-drive"></i>
+                    <span>-250 GB storage</span>
+                </div>
+            </div>
+            <button class="btn btn-secondary btn-sm">Clean Up</button>
+        </div>
+    </div>
+</section>
+
+<!-- Carbon Credits & Offsets -->
+<section class="mb-6">
+    <div class="grid grid-2">
+        <div class="card">
+            <div class="card-header">
+                <h3 class="card-title">Carbon Offset Status</h3>
+            </div>
+            <div class="offset-summary">
+                <div class="offset-gauge">
+                    <div class="gauge-background"></div>
+                    <div class="gauge-fill" style="--percentage: 78%"></div>
+                    <div class="gauge-label">
+                        <span class="gauge-value">78%</span>
+                        <span class="gauge-text">Offset</span>
+                    </div>
+                </div>
+                <div class="offset-details">
+                    <div class="offset-row">
+                        <span>Total Emissions</span>
+                        <span>1,250.5 kg CO2</span>
+                    </div>
+                    <div class="offset-row">
+                        <span>Carbon Credits Used</span>
+                        <span>975 kg CO2</span>
+                    </div>
+                    <div class="offset-row">
+                        <span>Net Emissions</span>
+                        <span class="text-warning">275.5 kg CO2</span>
+                    </div>
+                    <div class="offset-row">
+                        <span>Credits Available</span>
+                        <span>2,500 kg CO2</span>
+                    </div>
+                </div>
+            </div>
+            <button class="btn btn-secondary btn-block mt-4">Manage Carbon Credits</button>
+        </div>
+
+        <div class="card">
+            <div class="card-header">
+                <h3 class="card-title">Sustainability Goals</h3>
+            </div>
+            <div class="goals-list">
+                <div class="goal-item">
+                    <div class="goal-header">
+                        <span class="goal-name">Net Zero by 2030</span>
+                        <span class="goal-progress">42% complete</span>
+                    </div>
+                    <div class="goal-bar">
+                        <div class="goal-fill" style="width: 42%"></div>
+                    </div>
+                </div>
+                <div class="goal-item">
+                    <div class="goal-header">
+                        <span class="goal-name">100% Renewable Energy</span>
+                        <span class="goal-progress">65% complete</span>
+                    </div>
+                    <div class="goal-bar">
+                        <div class="goal-fill" style="width: 65%"></div>
+                    </div>
+                </div>
+                <div class="goal-item">
+                    <div class="goal-header">
+                        <span class="goal-name">Reduce PUE to 1.2</span>
+                        <span class="goal-progress">75% complete</span>
+                    </div>
+                    <div class="goal-bar">
+                        <div class="goal-fill" style="width: 75%"></div>
+                    </div>
+                </div>
+                <div class="goal-item">
+                    <div class="goal-header">
+                        <span class="goal-name">ML Efficiency +50%</span>
+                        <span class="goal-progress">88% complete</span>
+                    </div>
+                    <div class="goal-bar">
+                        <div class="goal-fill" style="width: 88%"></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<style>
+.section-title {
+    font-size: 1.125rem;
+    font-weight: 600;
+    margin-bottom: var(--space-4);
+}
+
+/* Sustainability Hero */
+.sustainability-hero {
+    display: flex;
+    gap: var(--space-8);
+    padding: var(--space-6);
+    background: linear-gradient(135deg, var(--color-success-light), transparent);
+    border: 1px solid var(--color-success);
+    border-radius: var(--radius-xl);
+    margin-bottom: var(--space-6);
+}
+
+.hero-left {
+    flex-shrink: 0;
+}
+
+.eco-score {
+    text-align: center;
+}
+
+.eco-circle {
+    position: relative;
+    width: 160px;
+    height: 160px;
+}
+
+.eco-circle svg {
+    width: 100%;
+    height: 100%;
+}
+
+.eco-value {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+.eco-value svg {
+    width: 24px;
+    height: 24px;
+    color: var(--color-success);
+    margin-bottom: var(--space-1);
+}
+
+.eco-number {
+    font-size: 2.5rem;
+    font-weight: 700;
+    color: var(--color-success);
+}
+
+.eco-label {
+    margin-top: var(--space-2);
+    font-size: 0.875rem;
+    color: var(--text-secondary);
+}
+
+.hero-right {
+    flex: 1;
+}
+
+.hero-stats {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: var(--space-4);
+}
+
+.hero-stat {
+    display: flex;
+    gap: var(--space-3);
+    padding: var(--space-4);
+    background: var(--bg-card);
+    border-radius: var(--radius-lg);
+}
+
+.stat-icon {
+    width: 48px;
+    height: 48px;
+    border-radius: var(--radius-lg);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.stat-icon svg {
+    width: 24px;
+    height: 24px;
+    color: white;
+}
+
+.stat-icon.carbon { background: linear-gradient(135deg, #64748b, #94a3b8); }
+.stat-icon.energy { background: linear-gradient(135deg, #f59e0b, #fbbf24); }
+.stat-icon.green { background: linear-gradient(135deg, #10b981, #34d399); }
+.stat-icon.pue { background: linear-gradient(135deg, #6366f1, #8b5cf6); }
+
+.stat-value {
+    display: block;
+    font-size: 1.25rem;
+    font-weight: 700;
+}
+
+.stat-label {
+    font-size: 0.75rem;
+    color: var(--text-secondary);
+}
+
+.stat-trend {
+    display: flex;
+    align-items: center;
+    gap: var(--space-1);
+    font-size: 0.75rem;
+    margin-top: var(--space-1);
+}
+
+.stat-trend svg {
+    width: 14px;
+    height: 14px;
+}
+
+.stat-trend.down { color: var(--color-success); }
+.stat-trend.up { color: var(--color-danger); }
+
+/* Activity Legend */
+.activity-legend {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: var(--space-3);
+    margin-top: var(--space-4);
+    padding-top: var(--space-4);
+    border-top: 1px solid var(--border-color);
+}
+
+.legend-item {
+    display: flex;
+    align-items: center;
+    gap: var(--space-2);
+}
+
+.legend-color {
+    width: 12px;
+    height: 12px;
+    border-radius: var(--radius-sm);
+}
+
+.legend-label {
+    flex: 1;
+    font-size: 0.8125rem;
+}
+
+.legend-value {
+    font-size: 0.75rem;
+    color: var(--text-secondary);
+}
+
+/* Chart Toggle */
+.chart-toggle {
+    display: flex;
+    gap: var(--space-1);
+    background: var(--bg-hover);
+    padding: var(--space-1);
+    border-radius: var(--radius-md);
+}
+
+.toggle-btn {
+    padding: var(--space-1) var(--space-3);
+    border: none;
+    background: transparent;
+    border-radius: var(--radius-sm);
+    font-size: 0.75rem;
+    font-weight: 500;
+    color: var(--text-secondary);
+    cursor: pointer;
+    transition: all var(--transition-fast);
+}
+
+.toggle-btn.active {
+    background: var(--bg-card);
+    color: var(--text-primary);
+    box-shadow: var(--shadow-sm);
+}
+
+/* Regions Grid */
+.regions-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: var(--space-4);
+}
+
+.region-card {
+    padding: var(--space-4);
+    border: 1px solid var(--border-color);
+    border-radius: var(--radius-lg);
+}
+
+.region-card.best {
+    border-color: var(--color-success);
+    background: var(--color-success-light);
+}
+
+.region-header {
+    display: flex;
+    align-items: center;
+    gap: var(--space-2);
+    margin-bottom: var(--space-3);
+}
+
+.region-flag {
+    font-size: 1.5rem;
+}
+
+.region-name {
+    flex: 1;
+    font-weight: 500;
+    font-size: 0.875rem;
+}
+
+.region-stats {
+    margin-bottom: var(--space-3);
+}
+
+.region-stat {
+    display: flex;
+    align-items: baseline;
+    gap: var(--space-1);
+    margin-bottom: var(--space-2);
+}
+
+.region-stat .stat-value {
+    font-size: 1.5rem;
+}
+
+.region-stat .stat-unit {
+    font-size: 0.75rem;
+    color: var(--text-secondary);
+}
+
+.region-meta {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-1);
+}
+
+.region-meta span {
+    display: flex;
+    align-items: center;
+    gap: var(--space-1);
+    font-size: 0.75rem;
+    color: var(--text-secondary);
+}
+
+.region-meta svg {
+    width: 14px;
+    height: 14px;
+}
+
+.region-recommendation {
+    display: flex;
+    align-items: center;
+    gap: var(--space-2);
+    margin-top: var(--space-3);
+    padding: var(--space-2) var(--space-3);
+    background: var(--color-success);
+    color: white;
+    border-radius: var(--radius-md);
+    font-size: 0.75rem;
+}
+
+.region-recommendation.warning {
+    background: var(--color-warning);
+}
+
+.region-recommendation svg {
+    width: 14px;
+    height: 14px;
+}
+
+/* Efficiency Bar */
+.efficiency-bar {
+    width: 80px;
+    height: 8px;
+    background: var(--border-color);
+    border-radius: var(--radius-full);
+    display: inline-block;
+    vertical-align: middle;
+    margin-right: var(--space-2);
+}
+
+.efficiency-fill {
+    height: 100%;
+    border-radius: var(--radius-full);
+}
+
+.efficiency-fill.high { background: var(--color-success); }
+.efficiency-fill.medium { background: var(--color-warning); }
+.efficiency-fill.low { background: var(--color-danger); }
+
+.efficiency-label {
+    font-weight: 600;
+    font-size: 0.8125rem;
+}
+
+.model-cell {
+    display: flex;
+    flex-direction: column;
+}
+
+.model-name {
+    font-weight: 500;
+}
+
+.model-type {
+    font-size: 0.75rem;
+    color: var(--text-secondary);
+}
+
+.trend {
+    display: inline-flex;
+    align-items: center;
+    gap: var(--space-1);
+    font-weight: 500;
+    font-size: 0.8125rem;
+}
+
+.trend svg {
+    width: 14px;
+    height: 14px;
+}
+
+.trend.down { color: var(--color-success); }
+.trend.up { color: var(--color-danger); }
+.trend.stable { color: var(--text-secondary); }
+
+/* Recommendations Grid */
+.recommendations-grid {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: var(--space-4);
+}
+
+.recommendation-card {
+    padding: var(--space-4);
+    background: var(--bg-card);
+    border: 1px solid var(--border-color);
+    border-radius: var(--radius-xl);
+}
+
+.rec-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    margin-bottom: var(--space-3);
+}
+
+.rec-icon {
+    width: 40px;
+    height: 40px;
+    border-radius: var(--radius-lg);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: var(--bg-hover);
+}
+
+.rec-icon svg {
+    width: 20px;
+    height: 20px;
+    color: var(--text-secondary);
+}
+
+.high-impact .rec-icon {
+    background: var(--color-success-light);
+}
+
+.high-impact .rec-icon svg {
+    color: var(--color-success);
+}
+
+.rec-badge {
+    font-size: 0.625rem;
+    font-weight: 600;
+    text-transform: uppercase;
+    padding: var(--space-1) var(--space-2);
+    border-radius: var(--radius-full);
+    background: var(--bg-hover);
+    color: var(--text-secondary);
+}
+
+.high-impact .rec-badge {
+    background: var(--color-success-light);
+    color: var(--color-success);
+}
+
+.recommendation-card h4 {
+    font-size: 0.9375rem;
+    font-weight: 600;
+    margin-bottom: var(--space-2);
+}
+
+.recommendation-card p {
+    font-size: 0.8125rem;
+    color: var(--text-secondary);
+    margin-bottom: var(--space-3);
+    line-height: 1.5;
+}
+
+.rec-impact {
+    display: flex;
+    gap: var(--space-4);
+    margin-bottom: var(--space-3);
+    padding-top: var(--space-3);
+    border-top: 1px solid var(--border-color);
+}
+
+.impact-item {
+    display: flex;
+    align-items: center;
+    gap: var(--space-1);
+    font-size: 0.75rem;
+    color: var(--color-success);
+}
+
+.impact-item svg {
+    width: 14px;
+    height: 14px;
+}
+
+/* Offset Gauge */
+.offset-summary {
+    display: flex;
+    gap: var(--space-6);
+    align-items: center;
+}
+
+.offset-gauge {
+    position: relative;
+    width: 120px;
+    height: 120px;
+    flex-shrink: 0;
+}
+
+.gauge-background {
+    position: absolute;
+    inset: 0;
+    border-radius: 50%;
+    border: 12px solid var(--border-color);
+}
+
+.gauge-fill {
+    position: absolute;
+    inset: 0;
+    border-radius: 50%;
+    border: 12px solid var(--color-success);
+    clip-path: polygon(0 0, 100% 0, 100% 100%, 0 100%);
+    transform: rotate(calc((var(--percentage) * 3.6deg) - 90deg));
+    transform-origin: center;
+}
+
+.gauge-label {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    text-align: center;
+}
+
+.gauge-value {
+    display: block;
+    font-size: 1.5rem;
+    font-weight: 700;
+    color: var(--color-success);
+}
+
+.gauge-text {
+    font-size: 0.75rem;
+    color: var(--text-secondary);
+}
+
+.offset-details {
+    flex: 1;
+}
+
+.offset-row {
+    display: flex;
+    justify-content: space-between;
+    padding: var(--space-2) 0;
+    border-bottom: 1px solid var(--border-light);
+    font-size: 0.875rem;
+}
+
+.offset-row:last-child {
+    border-bottom: none;
+}
+
+/* Goals */
+.goals-list {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-4);
+}
+
+.goal-item {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-2);
+}
+
+.goal-header {
+    display: flex;
+    justify-content: space-between;
+    font-size: 0.875rem;
+}
+
+.goal-name {
+    font-weight: 500;
+}
+
+.goal-progress {
+    color: var(--text-secondary);
+}
+
+.goal-bar {
+    height: 8px;
+    background: var(--border-color);
+    border-radius: var(--radius-full);
+    overflow: hidden;
+}
+
+.goal-fill {
+    height: 100%;
+    background: linear-gradient(90deg, var(--color-success), #34d399);
+    border-radius: var(--radius-full);
+    transition: width 0.5s ease;
+}
+
+@media (max-width: 1200px) {
+    .regions-grid,
+    .recommendations-grid {
+        grid-template-columns: repeat(2, 1fr);
+    }
+}
+
+@media (max-width: 768px) {
+    .sustainability-hero {
+        flex-direction: column;
+    }
+
+    .hero-stats {
+        grid-template-columns: 1fr;
+    }
+
+    .regions-grid,
+    .recommendations-grid {
+        grid-template-columns: 1fr;
+    }
+
+    .offset-summary {
+        flex-direction: column;
+    }
+}
+</style>
+{% endblock %}
+
+{% block scripts %}
+<script>
+document.addEventListener('DOMContentLoaded', async () => {
+    await loadGreenOpsData();
+    initCharts();
+    lucide.createIcons();
+});
+
+async function loadGreenOpsData() {
+    try {
+        const response = await fetch('/api/dashboard/carbon');
+        const result = await response.json();
+
+        if (result.success) {
+            // Update UI with real data
+            console.log('GreenOps data loaded:', result.data);
+        }
+    } catch (error) {
+        console.error('Error loading GreenOps data:', error);
+    }
+}
+
+function initCharts() {
+    // Emissions by Activity
+    const activityCtx = document.getElementById('emissionsByActivity');
+    if (activityCtx) {
+        new Chart(activityCtx, {
+            type: 'doughnut',
+            data: {
+                labels: ['Inference', 'Training', 'Storage', 'Network'],
+                datasets: [{
+                    data: [750, 350, 100, 50],
+                    backgroundColor: ['#6366f1', '#8b5cf6', '#a78bfa', '#c4b5fd'],
+                    borderWidth: 0
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                cutout: '65%',
+                plugins: {
+                    legend: { display: false }
+                }
+            }
+        });
+    }
+
+    // Emissions Trend
+    const trendCtx = document.getElementById('emissionsTrend');
+    if (trendCtx) {
+        const labels = Array.from({length: 30}, (_, i) => {
+            const d = new Date();
+            d.setDate(d.getDate() - (29 - i));
+            return d.toLocaleDateString('en', {month: 'short', day: 'numeric'});
+        });
+
+        // Generate realistic emissions data with downward trend
+        const data = labels.map((_, i) => {
+            const base = 50 - (i * 0.3); // Slight downward trend
+            return Math.max(30, base + (Math.random() - 0.5) * 10);
+        });
+
+        new Chart(trendCtx, {
+            type: 'line',
+            data: {
+                labels: labels,
+                datasets: [{
+                    label: 'CO2 (kg/day)',
+                    data: data,
+                    borderColor: '#10b981',
+                    backgroundColor: 'rgba(16, 185, 129, 0.1)',
+                    fill: true,
+                    tension: 0.4
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                plugins: {
+                    legend: { display: false }
+                },
+                scales: {
+                    x: {
+                        display: true,
+                        ticks: {
+                            maxTicksLimit: 7
+                        }
+                    },
+                    y: {
+                        beginAtZero: false
+                    }
+                }
+            }
+        });
+    }
+}
+
+function updateTimeRange() {
+    showToast('Updating data...', 'info');
+    loadGreenOpsData();
+}
+
+function generateSustainabilityReport() {
+    showToast('Generating ESG report...', 'info');
+    setTimeout(() => {
+        showToast('ESG report ready for download!', 'success');
+    }, 2000);
+}
+</script>
+{% endblock %}

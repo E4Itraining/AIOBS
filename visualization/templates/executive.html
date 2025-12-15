@@ -1,0 +1,990 @@
+{% extends "base.html" %}
+
+{% block sidebar_extra %}
+<div class="nav-group">
+    <span class="nav-group-title">Business Views</span>
+    <a href="/executive" class="nav-link active">
+        <i data-lucide="briefcase"></i>
+        <span>Executive Dashboard</span>
+    </a>
+    <a href="/finops" class="nav-link">
+        <i data-lucide="wallet"></i>
+        <span>FinOps</span>
+    </a>
+    <a href="/greenops" class="nav-link">
+        <i data-lucide="leaf"></i>
+        <span>GreenOps</span>
+    </a>
+    <a href="/compliance" class="nav-link">
+        <i data-lucide="shield-check"></i>
+        <span>Compliance</span>
+    </a>
+</div>
+<div class="nav-group">
+    <span class="nav-group-title">Technical Views</span>
+    <a href="/monitoring" class="nav-link">
+        <i data-lucide="activity"></i>
+        <span>Live Monitoring</span>
+    </a>
+    <a href="/security" class="nav-link">
+        <i data-lucide="lock"></i>
+        <span>Security Center</span>
+    </a>
+</div>
+{% endblock %}
+
+{% block page_title %}Executive Dashboard{% endblock %}
+{% block page_subtitle %}<p class="text-muted">Business-focused AI operations overview</p>{% endblock %}
+
+{% block topbar_actions %}
+<div class="time-range-selector">
+    <select class="form-select" id="timeRange" onchange="updateTimeRange()">
+        <option value="24h">Last 24 Hours</option>
+        <option value="7d" selected>Last 7 Days</option>
+        <option value="30d">Last 30 Days</option>
+        <option value="90d">Last Quarter</option>
+    </select>
+</div>
+<button class="btn btn-secondary" onclick="exportReport()">
+    <i data-lucide="download"></i>
+    Export Report
+</button>
+{% endblock %}
+
+{% block content %}
+<!-- Risk Overview Banner -->
+<div class="risk-banner" id="riskBanner">
+    <div class="risk-banner-content">
+        <div class="risk-indicator">
+            <i data-lucide="shield-check"></i>
+            <span class="risk-level">LOW RISK</span>
+        </div>
+        <span class="risk-message">All AI systems operating within acceptable parameters</span>
+    </div>
+    <button class="btn btn-ghost" onclick="viewRiskDetails()">
+        View Details <i data-lucide="arrow-right"></i>
+    </button>
+</div>
+
+<!-- Business KPIs -->
+<section class="mb-6">
+    <h2 class="section-title">Business Performance</h2>
+    <div class="kpi-grid" id="businessKpis">
+        <div class="kpi-card">
+            <div class="kpi-icon success">
+                <i data-lucide="dollar-sign"></i>
+            </div>
+            <div class="kpi-label">AI-Driven Revenue</div>
+            <div class="kpi-value">$2.4M</div>
+            <div class="kpi-trend up">
+                <i data-lucide="trending-up"></i>
+                +12.5% vs last period
+            </div>
+        </div>
+        <div class="kpi-card">
+            <div class="kpi-icon primary">
+                <i data-lucide="target"></i>
+            </div>
+            <div class="kpi-label">Model Accuracy</div>
+            <div class="kpi-value">94.2%</div>
+            <div class="kpi-trend stable">
+                <i data-lucide="minus"></i>
+                Stable
+            </div>
+        </div>
+        <div class="kpi-card">
+            <div class="kpi-icon warning">
+                <i data-lucide="wallet"></i>
+            </div>
+            <div class="kpi-label">Monthly AI Costs</div>
+            <div class="kpi-value">$45.2K</div>
+            <div class="kpi-trend down">
+                <i data-lucide="trending-down"></i>
+                -8% optimized
+            </div>
+        </div>
+        <div class="kpi-card">
+            <div class="kpi-icon success">
+                <i data-lucide="zap"></i>
+            </div>
+            <div class="kpi-label">ROI</div>
+            <div class="kpi-value">5,210%</div>
+            <div class="kpi-trend up">
+                <i data-lucide="trending-up"></i>
+                +15% vs baseline
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- System Health Summary -->
+<section class="mb-6">
+    <div class="grid grid-2">
+        <!-- AI Trust Score -->
+        <div class="card">
+            <div class="card-header">
+                <h3 class="card-title">AI Trust Score</h3>
+                <span class="badge badge-success">
+                    <span class="badge-dot"></span>
+                    Healthy
+                </span>
+            </div>
+            <div class="trust-gauge-container">
+                <div class="trust-gauge" id="trustGauge">
+                    <svg viewBox="0 0 200 120">
+                        <defs>
+                            <linearGradient id="gaugeGradient" x1="0%" y1="0%" x2="100%" y2="0%">
+                                <stop offset="0%" style="stop-color:#ef4444"/>
+                                <stop offset="50%" style="stop-color:#f59e0b"/>
+                                <stop offset="100%" style="stop-color:#10b981"/>
+                            </linearGradient>
+                        </defs>
+                        <path d="M 20 100 A 80 80 0 0 1 180 100" fill="none" stroke="#e2e8f0" stroke-width="12" stroke-linecap="round"/>
+                        <path d="M 20 100 A 80 80 0 0 1 180 100" fill="none" stroke="url(#gaugeGradient)" stroke-width="12" stroke-linecap="round" stroke-dasharray="251.2" stroke-dashoffset="45" class="gauge-value"/>
+                        <text x="100" y="85" text-anchor="middle" font-size="32" font-weight="700" fill="var(--text-primary)">82%</text>
+                        <text x="100" y="105" text-anchor="middle" font-size="12" fill="var(--text-secondary)">Overall Trust</text>
+                    </svg>
+                </div>
+                <div class="trust-components">
+                    <div class="trust-component">
+                        <span class="component-label">Reliability</span>
+                        <div class="component-bar">
+                            <div class="component-fill success" style="width: 88%"></div>
+                        </div>
+                        <span class="component-value">88%</span>
+                    </div>
+                    <div class="trust-component">
+                        <span class="component-label">Drift Control</span>
+                        <div class="component-bar">
+                            <div class="component-fill success" style="width: 85%"></div>
+                        </div>
+                        <span class="component-value">85%</span>
+                    </div>
+                    <div class="trust-component">
+                        <span class="component-label">Security</span>
+                        <div class="component-bar">
+                            <div class="component-fill success" style="width: 92%"></div>
+                        </div>
+                        <span class="component-value">92%</span>
+                    </div>
+                    <div class="trust-component">
+                        <span class="component-label">Compliance</span>
+                        <div class="component-bar">
+                            <div class="component-fill warning" style="width: 78%"></div>
+                        </div>
+                        <span class="component-value">78%</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- System Status -->
+        <div class="card">
+            <div class="card-header">
+                <h3 class="card-title">System Status</h3>
+                <a href="/unified" class="btn btn-ghost btn-sm">View All</a>
+            </div>
+            <div class="status-summary">
+                <div class="status-item healthy">
+                    <div class="status-icon">
+                        <i data-lucide="check-circle"></i>
+                    </div>
+                    <div class="status-details">
+                        <span class="status-count">28</span>
+                        <span class="status-label">Systems Healthy</span>
+                    </div>
+                </div>
+                <div class="status-item warning">
+                    <div class="status-icon">
+                        <i data-lucide="alert-triangle"></i>
+                    </div>
+                    <div class="status-details">
+                        <span class="status-count">3</span>
+                        <span class="status-label">Need Attention</span>
+                    </div>
+                </div>
+                <div class="status-item critical">
+                    <div class="status-icon">
+                        <i data-lucide="alert-circle"></i>
+                    </div>
+                    <div class="status-details">
+                        <span class="status-count">1</span>
+                        <span class="status-label">Critical Issues</span>
+                    </div>
+                </div>
+            </div>
+            <div class="recent-issues mt-4">
+                <h4 class="text-sm font-semibold mb-2">Recent Issues</h4>
+                <div class="issue-list" id="recentIssues">
+                    <!-- Populated by JS -->
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Business Impact & Compliance -->
+<section class="mb-6">
+    <div class="grid grid-3">
+        <!-- SLA Performance -->
+        <div class="card">
+            <div class="card-header">
+                <h3 class="card-title">SLA Performance</h3>
+            </div>
+            <div class="sla-metrics">
+                <div class="sla-item">
+                    <div class="sla-header">
+                        <span>Availability</span>
+                        <span class="sla-value success">99.95%</span>
+                    </div>
+                    <div class="sla-bar">
+                        <div class="sla-fill success" style="width: 99.95%"></div>
+                        <div class="sla-target" style="left: 99.9%"></div>
+                    </div>
+                    <span class="text-xs text-muted">Target: 99.9%</span>
+                </div>
+                <div class="sla-item">
+                    <div class="sla-header">
+                        <span>Response Time</span>
+                        <span class="sla-value success">145ms</span>
+                    </div>
+                    <div class="sla-bar">
+                        <div class="sla-fill success" style="width: 72.5%"></div>
+                        <div class="sla-target" style="left: 100%"></div>
+                    </div>
+                    <span class="text-xs text-muted">Target: &lt;200ms</span>
+                </div>
+                <div class="sla-item">
+                    <div class="sla-header">
+                        <span>Error Rate</span>
+                        <span class="sla-value warning">0.8%</span>
+                    </div>
+                    <div class="sla-bar">
+                        <div class="sla-fill warning" style="width: 80%"></div>
+                        <div class="sla-target" style="left: 100%"></div>
+                    </div>
+                    <span class="text-xs text-muted">Target: &lt;1%</span>
+                </div>
+            </div>
+        </div>
+
+        <!-- Compliance Status -->
+        <div class="card">
+            <div class="card-header">
+                <h3 class="card-title">Compliance Status</h3>
+                <a href="/compliance" class="btn btn-ghost btn-sm">Details</a>
+            </div>
+            <div class="compliance-status">
+                <div class="compliance-item">
+                    <div class="compliance-badge success">
+                        <i data-lucide="check"></i>
+                    </div>
+                    <div class="compliance-details">
+                        <span class="compliance-name">EU AI Act</span>
+                        <span class="compliance-date">Last audit: 15 days ago</span>
+                    </div>
+                </div>
+                <div class="compliance-item">
+                    <div class="compliance-badge success">
+                        <i data-lucide="check"></i>
+                    </div>
+                    <div class="compliance-details">
+                        <span class="compliance-name">GDPR</span>
+                        <span class="compliance-date">Last audit: 10 days ago</span>
+                    </div>
+                </div>
+                <div class="compliance-item">
+                    <div class="compliance-badge warning">
+                        <i data-lucide="alert-triangle"></i>
+                    </div>
+                    <div class="compliance-details">
+                        <span class="compliance-name">SOC 2</span>
+                        <span class="compliance-date">Review pending</span>
+                    </div>
+                </div>
+                <div class="compliance-item">
+                    <div class="compliance-badge success">
+                        <i data-lucide="check"></i>
+                    </div>
+                    <div class="compliance-details">
+                        <span class="compliance-name">ISO 27001</span>
+                        <span class="compliance-date">Certified</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Cost vs Value -->
+        <div class="card">
+            <div class="card-header">
+                <h3 class="card-title">Cost vs Value</h3>
+            </div>
+            <div class="cost-value-chart">
+                <canvas id="costValueChart"></canvas>
+            </div>
+            <div class="cost-summary">
+                <div class="cost-item">
+                    <span class="cost-label">Total Investment</span>
+                    <span class="cost-amount">$542K</span>
+                </div>
+                <div class="cost-item">
+                    <span class="cost-label">Generated Value</span>
+                    <span class="cost-amount success">$2.8M</span>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Trends & Forecasts -->
+<section class="mb-6">
+    <div class="grid grid-2">
+        <div class="card">
+            <div class="card-header">
+                <h3 class="card-title">Performance Trends</h3>
+                <div class="chart-legend">
+                    <span class="legend-item"><span class="legend-dot" style="background: #6366f1"></span> Trust Score</span>
+                    <span class="legend-item"><span class="legend-dot" style="background: #10b981"></span> Accuracy</span>
+                </div>
+            </div>
+            <div class="chart-container">
+                <canvas id="performanceTrend"></canvas>
+            </div>
+        </div>
+
+        <div class="card">
+            <div class="card-header">
+                <h3 class="card-title">Cost Forecast</h3>
+            </div>
+            <div class="chart-container">
+                <canvas id="costForecast"></canvas>
+            </div>
+            <div class="forecast-summary">
+                <div class="forecast-item">
+                    <i data-lucide="trending-up"></i>
+                    <span>Projected next month: <strong>$48.5K</strong></span>
+                </div>
+                <div class="forecast-item savings">
+                    <i data-lucide="piggy-bank"></i>
+                    <span>Potential savings: <strong>$5.2K</strong> with optimizations</span>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Quick Actions -->
+<section class="quick-actions">
+    <h2 class="section-title">Quick Actions</h2>
+    <div class="action-grid">
+        <button class="action-card" onclick="window.location='/compliance'">
+            <i data-lucide="file-text"></i>
+            <span>Generate Compliance Report</span>
+        </button>
+        <button class="action-card" onclick="window.location='/finops'">
+            <i data-lucide="calculator"></i>
+            <span>Review Cost Optimization</span>
+        </button>
+        <button class="action-card" onclick="window.location='/greenops'">
+            <i data-lucide="leaf"></i>
+            <span>View Sustainability Report</span>
+        </button>
+        <button class="action-card" onclick="window.location='/causal'">
+            <i data-lucide="git-branch"></i>
+            <span>Investigate Issues</span>
+        </button>
+    </div>
+</section>
+
+<style>
+/* Executive Dashboard Specific Styles */
+.section-title {
+    font-size: 1.125rem;
+    font-weight: 600;
+    margin-bottom: var(--space-4);
+    color: var(--text-primary);
+}
+
+.risk-banner {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: var(--space-4) var(--space-5);
+    background: linear-gradient(135deg, var(--color-success-light), transparent);
+    border: 1px solid var(--color-success);
+    border-radius: var(--radius-xl);
+    margin-bottom: var(--space-6);
+}
+
+.risk-banner.warning {
+    background: linear-gradient(135deg, var(--color-warning-light), transparent);
+    border-color: var(--color-warning);
+}
+
+.risk-banner.critical {
+    background: linear-gradient(135deg, var(--color-danger-light), transparent);
+    border-color: var(--color-danger);
+}
+
+.risk-banner-content {
+    display: flex;
+    align-items: center;
+    gap: var(--space-4);
+}
+
+.risk-indicator {
+    display: flex;
+    align-items: center;
+    gap: var(--space-2);
+    padding: var(--space-2) var(--space-3);
+    background: var(--color-success);
+    color: white;
+    border-radius: var(--radius-full);
+    font-weight: 600;
+    font-size: 0.75rem;
+}
+
+.risk-indicator svg {
+    width: 16px;
+    height: 16px;
+}
+
+.risk-message {
+    color: var(--text-primary);
+    font-weight: 500;
+}
+
+/* Trust Gauge */
+.trust-gauge-container {
+    display: flex;
+    gap: var(--space-6);
+    align-items: center;
+}
+
+.trust-gauge {
+    flex-shrink: 0;
+    width: 200px;
+}
+
+.trust-components {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-3);
+}
+
+.trust-component {
+    display: flex;
+    align-items: center;
+    gap: var(--space-3);
+}
+
+.component-label {
+    width: 100px;
+    font-size: 0.8125rem;
+    color: var(--text-secondary);
+}
+
+.component-bar {
+    flex: 1;
+    height: 8px;
+    background: var(--border-color);
+    border-radius: var(--radius-full);
+    overflow: hidden;
+}
+
+.component-fill {
+    height: 100%;
+    border-radius: var(--radius-full);
+    transition: width 0.5s ease;
+}
+
+.component-fill.success { background: var(--color-success); }
+.component-fill.warning { background: var(--color-warning); }
+.component-fill.danger { background: var(--color-danger); }
+
+.component-value {
+    width: 40px;
+    text-align: right;
+    font-size: 0.8125rem;
+    font-weight: 600;
+}
+
+/* Status Summary */
+.status-summary {
+    display: flex;
+    gap: var(--space-4);
+}
+
+.status-item {
+    flex: 1;
+    display: flex;
+    align-items: center;
+    gap: var(--space-3);
+    padding: var(--space-4);
+    border-radius: var(--radius-lg);
+    background: var(--bg-hover);
+}
+
+.status-item.healthy .status-icon { color: var(--color-success); }
+.status-item.warning .status-icon { color: var(--color-warning); }
+.status-item.critical .status-icon { color: var(--color-danger); }
+
+.status-icon svg {
+    width: 24px;
+    height: 24px;
+}
+
+.status-count {
+    display: block;
+    font-size: 1.5rem;
+    font-weight: 700;
+    line-height: 1;
+}
+
+.status-label {
+    font-size: 0.75rem;
+    color: var(--text-secondary);
+}
+
+/* Issue List */
+.issue-list {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-2);
+}
+
+.issue-item {
+    display: flex;
+    align-items: center;
+    gap: var(--space-3);
+    padding: var(--space-2) var(--space-3);
+    background: var(--bg-hover);
+    border-radius: var(--radius-md);
+    font-size: 0.8125rem;
+}
+
+.issue-severity {
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+}
+
+.issue-severity.warning { background: var(--color-warning); }
+.issue-severity.critical { background: var(--color-danger); animation: pulse-dot 1.5s infinite; }
+
+/* SLA Metrics */
+.sla-metrics {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-4);
+}
+
+.sla-item {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-2);
+}
+
+.sla-header {
+    display: flex;
+    justify-content: space-between;
+    font-size: 0.875rem;
+}
+
+.sla-value {
+    font-weight: 600;
+}
+
+.sla-value.success { color: var(--color-success); }
+.sla-value.warning { color: var(--color-warning); }
+.sla-value.danger { color: var(--color-danger); }
+
+.sla-bar {
+    position: relative;
+    height: 8px;
+    background: var(--border-color);
+    border-radius: var(--radius-full);
+    overflow: visible;
+}
+
+.sla-fill {
+    height: 100%;
+    border-radius: var(--radius-full);
+}
+
+.sla-fill.success { background: var(--color-success); }
+.sla-fill.warning { background: var(--color-warning); }
+
+.sla-target {
+    position: absolute;
+    top: -4px;
+    width: 2px;
+    height: 16px;
+    background: var(--text-primary);
+    transform: translateX(-50%);
+}
+
+/* Compliance Status */
+.compliance-status {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-3);
+}
+
+.compliance-item {
+    display: flex;
+    align-items: center;
+    gap: var(--space-3);
+    padding: var(--space-2) 0;
+    border-bottom: 1px solid var(--border-light);
+}
+
+.compliance-item:last-child {
+    border-bottom: none;
+}
+
+.compliance-badge {
+    width: 28px;
+    height: 28px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.compliance-badge.success {
+    background: var(--color-success-light);
+    color: var(--color-success);
+}
+
+.compliance-badge.warning {
+    background: var(--color-warning-light);
+    color: var(--color-warning);
+}
+
+.compliance-badge svg {
+    width: 14px;
+    height: 14px;
+}
+
+.compliance-name {
+    display: block;
+    font-weight: 500;
+    font-size: 0.875rem;
+}
+
+.compliance-date {
+    font-size: 0.75rem;
+    color: var(--text-secondary);
+}
+
+/* Cost Summary */
+.cost-value-chart {
+    height: 150px;
+    margin-bottom: var(--space-4);
+}
+
+.cost-summary {
+    display: flex;
+    justify-content: space-between;
+    padding-top: var(--space-3);
+    border-top: 1px solid var(--border-color);
+}
+
+.cost-item {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-1);
+}
+
+.cost-label {
+    font-size: 0.75rem;
+    color: var(--text-secondary);
+}
+
+.cost-amount {
+    font-size: 1.25rem;
+    font-weight: 700;
+}
+
+.cost-amount.success { color: var(--color-success); }
+
+/* Chart Legend */
+.chart-legend {
+    display: flex;
+    gap: var(--space-4);
+}
+
+.legend-item {
+    display: flex;
+    align-items: center;
+    gap: var(--space-2);
+    font-size: 0.75rem;
+    color: var(--text-secondary);
+}
+
+.legend-dot {
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+}
+
+/* Forecast Summary */
+.forecast-summary {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-2);
+    margin-top: var(--space-4);
+    padding-top: var(--space-3);
+    border-top: 1px solid var(--border-color);
+}
+
+.forecast-item {
+    display: flex;
+    align-items: center;
+    gap: var(--space-2);
+    font-size: 0.875rem;
+    color: var(--text-secondary);
+}
+
+.forecast-item svg {
+    width: 16px;
+    height: 16px;
+}
+
+.forecast-item.savings {
+    color: var(--color-success);
+}
+
+/* Quick Actions */
+.action-grid {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: var(--space-4);
+}
+
+.action-card {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: var(--space-3);
+    padding: var(--space-5);
+    background: var(--bg-card);
+    border: 1px solid var(--border-color);
+    border-radius: var(--radius-xl);
+    cursor: pointer;
+    transition: all var(--transition-base);
+}
+
+.action-card:hover {
+    border-color: var(--color-primary);
+    box-shadow: var(--shadow-md);
+    transform: translateY(-2px);
+}
+
+.action-card svg {
+    width: 32px;
+    height: 32px;
+    color: var(--color-primary);
+}
+
+.action-card span {
+    font-size: 0.875rem;
+    font-weight: 500;
+    text-align: center;
+}
+
+@media (max-width: 1024px) {
+    .trust-gauge-container {
+        flex-direction: column;
+    }
+
+    .action-grid {
+        grid-template-columns: repeat(2, 1fr);
+    }
+}
+
+@media (max-width: 768px) {
+    .status-summary {
+        flex-direction: column;
+    }
+
+    .risk-banner {
+        flex-direction: column;
+        gap: var(--space-3);
+        text-align: center;
+    }
+
+    .risk-banner-content {
+        flex-direction: column;
+    }
+}
+</style>
+{% endblock %}
+
+{% block scripts %}
+<script>
+document.addEventListener('DOMContentLoaded', async () => {
+    await loadExecutiveData();
+    initCharts();
+    lucide.createIcons();
+});
+
+async function loadExecutiveData() {
+    try {
+        // Load overview data
+        const response = await fetch('/api/dashboard/overview');
+        const result = await response.json();
+
+        if (result.success) {
+            updateRiskBanner(result.data);
+            updateIssuesList(result.data.top_issues);
+        }
+    } catch (error) {
+        console.error('Error loading executive data:', error);
+    }
+}
+
+function updateRiskBanner(data) {
+    const banner = document.getElementById('riskBanner');
+    const indicator = banner.querySelector('.risk-indicator');
+    const message = banner.querySelector('.risk-message');
+
+    if (data.alerts.critical > 0) {
+        banner.className = 'risk-banner critical';
+        indicator.innerHTML = '<i data-lucide="alert-circle"></i><span class="risk-level">HIGH RISK</span>';
+        message.textContent = `${data.alerts.critical} critical issue(s) require immediate attention`;
+    } else if (data.alerts.warning > 2) {
+        banner.className = 'risk-banner warning';
+        indicator.innerHTML = '<i data-lucide="alert-triangle"></i><span class="risk-level">MEDIUM RISK</span>';
+        message.textContent = `${data.alerts.warning} warning(s) need review`;
+    }
+
+    lucide.createIcons();
+}
+
+function updateIssuesList(issues) {
+    const container = document.getElementById('recentIssues');
+    container.innerHTML = issues.slice(0, 3).map(issue => `
+        <div class="issue-item">
+            <span class="issue-severity ${issue.severity}"></span>
+            <span>${issue.title}</span>
+        </div>
+    `).join('');
+}
+
+function initCharts() {
+    // Cost vs Value Chart
+    const costValueCtx = document.getElementById('costValueChart');
+    if (costValueCtx) {
+        new Chart(costValueCtx, {
+            type: 'doughnut',
+            data: {
+                labels: ['Investment', 'Generated Value'],
+                datasets: [{
+                    data: [542, 2800],
+                    backgroundColor: ['#f59e0b', '#10b981'],
+                    borderWidth: 0
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                cutout: '70%',
+                plugins: {
+                    legend: { display: false }
+                }
+            }
+        });
+    }
+
+    // Performance Trend Chart
+    const perfCtx = document.getElementById('performanceTrend');
+    if (perfCtx) {
+        const labels = Array.from({length: 7}, (_, i) => {
+            const d = new Date();
+            d.setDate(d.getDate() - (6 - i));
+            return d.toLocaleDateString('en', {weekday: 'short'});
+        });
+
+        new Chart(perfCtx, {
+            type: 'line',
+            data: {
+                labels: labels,
+                datasets: [{
+                    label: 'Trust Score',
+                    data: [80, 82, 81, 83, 82, 84, 82],
+                    borderColor: '#6366f1',
+                    tension: 0.4,
+                    fill: false
+                }, {
+                    label: 'Accuracy',
+                    data: [93, 94, 93, 95, 94, 94, 94],
+                    borderColor: '#10b981',
+                    tension: 0.4,
+                    fill: false
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                plugins: {
+                    legend: { display: false }
+                },
+                scales: {
+                    y: {
+                        min: 70,
+                        max: 100
+                    }
+                }
+            }
+        });
+    }
+
+    // Cost Forecast Chart
+    const costCtx = document.getElementById('costForecast');
+    if (costCtx) {
+        const labels = ['Week 1', 'Week 2', 'Week 3', 'Week 4', 'Forecast'];
+
+        new Chart(costCtx, {
+            type: 'bar',
+            data: {
+                labels: labels,
+                datasets: [{
+                    label: 'Cost ($K)',
+                    data: [10.5, 11.2, 12.1, 11.4, 12.3],
+                    backgroundColor: labels.map((_, i) => i === 4 ? 'rgba(99, 102, 241, 0.5)' : '#6366f1'),
+                    borderColor: labels.map((_, i) => i === 4 ? '#6366f1' : 'transparent'),
+                    borderWidth: labels.map((_, i) => i === 4 ? 2 : 0),
+                    borderDash: labels.map((_, i) => i === 4 ? [5, 5] : [])
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                plugins: {
+                    legend: { display: false }
+                }
+            }
+        });
+    }
+}
+
+function updateTimeRange() {
+    loadExecutiveData();
+}
+
+function exportReport() {
+    showToast('Generating executive report...', 'info');
+    // Simulate report generation
+    setTimeout(() => {
+        showToast('Report generated successfully!', 'success');
+    }, 2000);
+}
+
+function viewRiskDetails() {
+    window.location = '/unified';
+}
+</script>
+{% endblock %}
