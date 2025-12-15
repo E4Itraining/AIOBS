@@ -31,9 +31,6 @@ import { ISO8601, TimeRange } from '../core/types/common';
 import { VictoriaMetricsConnector } from './victoriametrics-connector';
 import { OpenObserveConnector } from './openobserve-connector';
 
-// Declare globals for Node.js compatibility
-declare const setInterval: (callback: () => void, ms: number) => unknown;
-
 /** Hybrid backend configuration */
 export interface HybridBackendConfig {
   /** VictoriaMetrics configuration for metrics */
