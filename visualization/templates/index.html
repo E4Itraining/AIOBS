@@ -1,0 +1,429 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="dashboard-container">
+    <!-- Sidebar -->
+    <nav class="sidebar">
+        <div class="sidebar-logo">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <circle cx="12" cy="12" r="10"/>
+                <path d="M12 6v6l4 2"/>
+                <circle cx="12" cy="12" r="3"/>
+            </svg>
+            AIOBS
+        </div>
+
+        <div class="nav-section">
+            <div class="nav-section-title">Overview</div>
+            <a href="/" class="nav-item active">
+                <i data-feather="home"></i>
+                Dashboard
+            </a>
+            <a href="/unified" class="nav-item">
+                <i data-feather="layers"></i>
+                Unified View
+            </a>
+        </div>
+
+        <div class="nav-section">
+            <div class="nav-section-title">Analysis</div>
+            <a href="/causal" class="nav-item">
+                <i data-feather="git-branch"></i>
+                Causal Analysis
+            </a>
+            <a href="/impact" class="nav-item">
+                <i data-feather="trending-up"></i>
+                Impact Analysis
+            </a>
+        </div>
+
+        <div class="nav-section">
+            <div class="nav-section-title">Configuration</div>
+            <a href="#" class="nav-item" onclick="toggleTheme()">
+                <i data-feather="moon"></i>
+                Toggle Theme
+            </a>
+        </div>
+    </nav>
+
+    <!-- Main Content -->
+    <main class="main-content">
+        <div class="header">
+            <h1 class="header-title">AI Observability Dashboard</h1>
+            <div class="header-actions">
+                <div class="profile-selector" id="profileSelector">
+                    <!-- Populated by JS -->
+                </div>
+            </div>
+        </div>
+
+        <!-- KPI Cards -->
+        <div class="kpi-grid" id="kpiGrid">
+            <div class="kpi-card">
+                <div class="kpi-label">Trust Score</div>
+                <div class="kpi-value" id="trustScore">--</div>
+                <div class="kpi-trend stable" id="trustTrend">
+                    <i data-feather="minus"></i> Stable
+                </div>
+            </div>
+            <div class="kpi-card">
+                <div class="kpi-label">Daily Inferences</div>
+                <div class="kpi-value" id="inferences">--</div>
+                <div class="kpi-trend up">
+                    <i data-feather="trending-up"></i> +12%
+                </div>
+            </div>
+            <div class="kpi-card">
+                <div class="kpi-label">Daily Cost</div>
+                <div class="kpi-value" id="dailyCost">--</div>
+                <div class="kpi-trend" id="costTrend">
+                    <i data-feather="trending-up"></i> +8%
+                </div>
+            </div>
+            <div class="kpi-card">
+                <div class="kpi-label">Carbon (kgCO2)</div>
+                <div class="kpi-value" id="carbonKg">--</div>
+                <div class="kpi-trend down" id="carbonTrend">
+                    <i data-feather="trending-down"></i> -5%
+                </div>
+            </div>
+        </div>
+
+        <!-- Health Summary & Alerts -->
+        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1rem;">
+            <div class="card">
+                <div class="card-header">
+                    <h3 class="card-title">System Health</h3>
+                </div>
+                <div style="display: flex; justify-content: space-around; text-align: center;">
+                    <div>
+                        <div style="font-size: 2.5rem; font-weight: 700; color: var(--success);" id="healthyCount">--</div>
+                        <div style="color: var(--text-secondary);">Healthy</div>
+                    </div>
+                    <div>
+                        <div style="font-size: 2.5rem; font-weight: 700; color: var(--warning);" id="degradedCount">--</div>
+                        <div style="color: var(--text-secondary);">Degraded</div>
+                    </div>
+                    <div>
+                        <div style="font-size: 2.5rem; font-weight: 700; color: var(--danger);" id="unhealthyCount">--</div>
+                        <div style="color: var(--text-secondary);">Unhealthy</div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="card">
+                <div class="card-header">
+                    <h3 class="card-title">Active Alerts</h3>
+                </div>
+                <div style="display: flex; justify-content: space-around; text-align: center;">
+                    <div>
+                        <div style="font-size: 2.5rem; font-weight: 700; color: var(--danger);" id="criticalAlerts">--</div>
+                        <div style="color: var(--text-secondary);">Critical</div>
+                    </div>
+                    <div>
+                        <div style="font-size: 2.5rem; font-weight: 700; color: var(--warning);" id="warningAlerts">--</div>
+                        <div style="color: var(--text-secondary);">Warning</div>
+                    </div>
+                    <div>
+                        <div style="font-size: 2.5rem; font-weight: 700; color: var(--info);" id="infoAlerts">--</div>
+                        <div style="color: var(--text-secondary);">Info</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Charts Row -->
+        <div style="display: grid; grid-template-columns: 2fr 1fr; gap: 1rem;">
+            <div class="card">
+                <div class="card-header">
+                    <h3 class="card-title">Trust Score Trend</h3>
+                    <select id="chartTimeRange" style="padding: 0.25rem 0.5rem; border-radius: 0.25rem; border: 1px solid var(--border-color);">
+                        <option value="24">Last 24h</option>
+                        <option value="168">Last 7d</option>
+                        <option value="720">Last 30d</option>
+                    </select>
+                </div>
+                <div class="chart-container">
+                    <canvas id="trustChart"></canvas>
+                </div>
+            </div>
+
+            <div class="card">
+                <div class="card-header">
+                    <h3 class="card-title">SLO Compliance</h3>
+                </div>
+                <div class="chart-container">
+                    <canvas id="sloChart"></canvas>
+                </div>
+            </div>
+        </div>
+
+        <!-- Services Table -->
+        <div class="card">
+            <div class="card-header">
+                <h3 class="card-title">Services Status</h3>
+                <div>
+                    <input type="search" placeholder="Search services..." style="padding: 0.5rem; border-radius: 0.25rem; border: 1px solid var(--border-color);">
+                </div>
+            </div>
+            <table class="services-table">
+                <thead>
+                    <tr>
+                        <th>Service</th>
+                        <th>Type</th>
+                        <th>Status</th>
+                        <th>Uptime</th>
+                        <th>Error Rate</th>
+                        <th>Latency P99</th>
+                    </tr>
+                </thead>
+                <tbody id="servicesTableBody">
+                    <tr>
+                        <td colspan="6" class="loader"><div class="spinner"></div></td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+
+        <!-- Top Issues -->
+        <div class="card">
+            <div class="card-header">
+                <h3 class="card-title">Top Issues</h3>
+            </div>
+            <div id="topIssues">
+                <div class="loader"><div class="spinner"></div></div>
+            </div>
+        </div>
+    </main>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script>
+// Initialize dashboard
+document.addEventListener('DOMContentLoaded', async () => {
+    await loadProfiles();
+    await loadDashboardData();
+    await loadServices();
+    initCharts();
+    feather.replace();
+});
+
+// Load available profiles
+async function loadProfiles() {
+    try {
+        const response = await fetch('/api/profiles/list');
+        const result = await response.json();
+
+        if (result.success) {
+            const selector = document.getElementById('profileSelector');
+            const techProfiles = result.data.filter(p => p.category === 'technical');
+            const businessProfiles = result.data.filter(p => p.category === 'business');
+            const specialistProfiles = result.data.filter(p => p.category === 'specialist');
+
+            selector.innerHTML = `
+                <button class="profile-btn active" data-profile="all">All</button>
+                ${techProfiles.map(p => `<button class="profile-btn" data-profile="${p.id}">${p.name}</button>`).join('')}
+                ${businessProfiles.map(p => `<button class="profile-btn" data-profile="${p.id}">${p.name}</button>`).join('')}
+            `;
+
+            // Add click handlers
+            selector.querySelectorAll('.profile-btn').forEach(btn => {
+                btn.addEventListener('click', () => {
+                    selector.querySelectorAll('.profile-btn').forEach(b => b.classList.remove('active'));
+                    btn.classList.add('active');
+
+                    const profile = btn.dataset.profile;
+                    if (profile !== 'all') {
+                        window.location.href = `/profile/${profile}`;
+                    }
+                });
+            });
+        }
+    } catch (error) {
+        console.error('Error loading profiles:', error);
+    }
+}
+
+// Load main dashboard data
+async function loadDashboardData() {
+    try {
+        const response = await fetch('/api/dashboard/overview');
+        const result = await response.json();
+
+        if (result.success) {
+            const data = result.data;
+
+            // Update KPIs
+            document.getElementById('trustScore').textContent = (data.key_metrics.avg_trust_score * 100).toFixed(0) + '%';
+            document.getElementById('inferences').textContent = formatNumber(data.key_metrics.total_daily_inferences);
+            document.getElementById('dailyCost').textContent = '$' + data.key_metrics.total_daily_cost.toFixed(0);
+            document.getElementById('carbonKg').textContent = data.key_metrics.total_daily_carbon_kg.toFixed(1);
+
+            // Update health
+            document.getElementById('healthyCount').textContent = data.health.healthy;
+            document.getElementById('degradedCount').textContent = data.health.degraded;
+            document.getElementById('unhealthyCount').textContent = data.health.unhealthy;
+
+            // Update alerts
+            document.getElementById('criticalAlerts').textContent = data.alerts.critical;
+            document.getElementById('warningAlerts').textContent = data.alerts.warning;
+            document.getElementById('infoAlerts').textContent = data.alerts.info;
+
+            // Update trends
+            updateTrend('trustTrend', data.trends.trust);
+            updateTrend('costTrend', data.trends.cost);
+            updateTrend('carbonTrend', data.trends.carbon);
+
+            // Update top issues
+            updateTopIssues(data.top_issues);
+        }
+    } catch (error) {
+        console.error('Error loading dashboard:', error);
+    }
+}
+
+// Load services
+async function loadServices() {
+    try {
+        const response = await fetch('/api/dashboard/services');
+        const result = await response.json();
+
+        if (result.success) {
+            const tbody = document.getElementById('servicesTableBody');
+            tbody.innerHTML = result.data.map(service => `
+                <tr>
+                    <td><strong>${service.name}</strong></td>
+                    <td>${service.type}</td>
+                    <td><span class="status-badge status-${service.status}">${service.status}</span></td>
+                    <td>${service.uptime_pct}%</td>
+                    <td>${service.error_rate_pct}%</td>
+                    <td>${service.latency_p99_ms}ms</td>
+                </tr>
+            `).join('');
+        }
+    } catch (error) {
+        console.error('Error loading services:', error);
+    }
+}
+
+// Initialize charts
+function initCharts() {
+    // Trust Score Trend Chart
+    const trustCtx = document.getElementById('trustChart').getContext('2d');
+    const trustChart = new Chart(trustCtx, {
+        type: 'line',
+        data: {
+            labels: generateTimeLabels(24),
+            datasets: [{
+                label: 'Trust Score',
+                data: generateDemoData(24, 0.75, 0.85),
+                borderColor: '#6366f1',
+                backgroundColor: 'rgba(99, 102, 241, 0.1)',
+                fill: true,
+                tension: 0.4
+            }]
+        },
+        options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            plugins: {
+                legend: { display: false }
+            },
+            scales: {
+                y: {
+                    min: 0,
+                    max: 1,
+                    ticks: {
+                        callback: v => (v * 100) + '%'
+                    }
+                }
+            }
+        }
+    });
+
+    // SLO Compliance Chart
+    const sloCtx = document.getElementById('sloChart').getContext('2d');
+    const sloChart = new Chart(sloCtx, {
+        type: 'doughnut',
+        data: {
+            labels: ['Compliant', 'At Risk', 'Violated'],
+            datasets: [{
+                data: [85, 10, 5],
+                backgroundColor: ['#10b981', '#f59e0b', '#ef4444'],
+                borderWidth: 0
+            }]
+        },
+        options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            plugins: {
+                legend: {
+                    position: 'bottom'
+                }
+            }
+        }
+    });
+
+    // Time range change handler
+    document.getElementById('chartTimeRange').addEventListener('change', async (e) => {
+        const hours = parseInt(e.target.value);
+        trustChart.data.labels = generateTimeLabels(hours);
+        trustChart.data.datasets[0].data = generateDemoData(hours, 0.75, 0.85);
+        trustChart.update();
+    });
+}
+
+// Helper functions
+function formatNumber(num) {
+    if (num >= 1000000) return (num / 1000000).toFixed(1) + 'M';
+    if (num >= 1000) return (num / 1000).toFixed(1) + 'K';
+    return num.toString();
+}
+
+function generateTimeLabels(hours) {
+    const labels = [];
+    const now = new Date();
+    for (let i = hours; i >= 0; i--) {
+        const d = new Date(now - i * 3600000);
+        labels.push(d.getHours() + ':00');
+    }
+    return labels;
+}
+
+function generateDemoData(count, min, max) {
+    const data = [];
+    let value = (min + max) / 2;
+    for (let i = 0; i < count; i++) {
+        value += (Math.random() - 0.5) * 0.05;
+        value = Math.max(min, Math.min(max, value));
+        data.push(value);
+    }
+    return data;
+}
+
+function updateTrend(elementId, trend) {
+    const el = document.getElementById(elementId);
+    el.className = 'kpi-trend ' + trend;
+    const icon = trend === 'up' ? 'trending-up' : trend === 'down' ? 'trending-down' : 'minus';
+    el.innerHTML = `<i data-feather="${icon}"></i> ${trend.charAt(0).toUpperCase() + trend.slice(1)}`;
+    feather.replace();
+}
+
+function updateTopIssues(issues) {
+    const container = document.getElementById('topIssues');
+    container.innerHTML = issues.map(issue => `
+        <div style="display: flex; align-items: center; gap: 1rem; padding: 0.75rem; border-bottom: 1px solid var(--border-color);">
+            <span class="status-badge status-${issue.severity}">${issue.severity}</span>
+            <div style="flex: 1;">
+                <strong>${issue.title}</strong>
+                <div style="color: var(--text-secondary); font-size: 0.875rem;">${issue.affected_service} - ${issue.duration_minutes} min</div>
+            </div>
+            <button style="padding: 0.25rem 0.75rem; border-radius: 0.25rem; border: 1px solid var(--border-color); background: var(--bg-card); cursor: pointer;">
+                Investigate
+            </button>
+        </div>
+    `).join('');
+}
+</script>
+{% endblock %}
