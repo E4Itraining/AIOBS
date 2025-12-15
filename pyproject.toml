@@ -1,0 +1,173 @@
+# AIOBS - Python Project Configuration
+# Modern Python packaging with pyproject.toml
+
+[build-system]
+requires = ["setuptools>=68.0", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "aiobs"
+version = "1.0.0"
+description = "AI Observability Hub - Trust Control Layer for AI Systems"
+readme = "README.md"
+license = {text = "MIT"}
+requires-python = ">=3.10"
+authors = [
+    {name = "AIOBS Team"}
+]
+keywords = [
+    "ai",
+    "observability",
+    "mlops",
+    "governance",
+    "compliance",
+    "ai-act",
+    "drift-detection",
+    "hallucination",
+    "slo",
+    "finops",
+    "greenops"
+]
+classifiers = [
+    "Development Status :: 4 - Beta",
+    "Intended Audience :: Developers",
+    "License :: OSI Approved :: MIT License",
+    "Programming Language :: Python :: 3",
+    "Programming Language :: Python :: 3.10",
+    "Programming Language :: Python :: 3.11",
+    "Programming Language :: Python :: 3.12",
+    "Topic :: Scientific/Engineering :: Artificial Intelligence",
+    "Topic :: System :: Monitoring",
+]
+dependencies = [
+    "fastapi>=0.109.0",
+    "uvicorn[standard]>=0.27.0",
+    "pydantic>=2.5.0",
+    "pydantic-settings>=2.1.0",
+    "httpx>=0.26.0",
+    "redis>=5.0.0",
+    "jinja2>=3.1.0",
+    "websockets>=12.0",
+    "prometheus-client>=0.19.0",
+]
+
+[project.optional-dependencies]
+test = [
+    "pytest>=8.0.0",
+    "pytest-asyncio>=0.23.0",
+    "pytest-cov>=4.1.0",
+    "pytest-html>=4.1.0",
+    "pytest-timeout>=2.2.0",
+    "pytest-xdist>=3.5.0",
+]
+dev = [
+    "black>=24.0.0",
+    "isort>=5.13.0",
+    "flake8>=7.0.0",
+    "mypy>=1.8.0",
+    "pre-commit>=3.6.0",
+]
+docs = [
+    "mkdocs>=1.5.0",
+    "mkdocs-material>=9.5.0",
+]
+all = [
+    "aiobs[test,dev,docs]",
+]
+
+[project.urls]
+Homepage = "https://github.com/your-org/aiobs"
+Documentation = "https://github.com/your-org/aiobs#readme"
+Repository = "https://github.com/your-org/aiobs.git"
+Issues = "https://github.com/your-org/aiobs/issues"
+
+[project.scripts]
+aiobs = "visualization.app:main"
+
+# Tool configurations
+
+[tool.setuptools.packages.find]
+where = ["."]
+include = ["visualization*", "tests*"]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+python_files = ["test_*.py"]
+python_classes = ["Test*"]
+python_functions = ["test_*"]
+addopts = "-v --tb=short"
+asyncio_mode = "auto"
+timeout = 300
+markers = [
+    "unit: Unit tests",
+    "integration: Integration tests",
+    "security: Security tests (prompt injection, SQL injection, XSS)",
+    "drift: Drift detection tests (data, concept, prediction)",
+    "performance: Performance tests",
+    "slow: Slow running tests",
+    "stress: Stress and load tests",
+    "reliability: Reliability and hallucination tests",
+    "causal: Causal analysis tests",
+    "impact: Business impact tests",
+    "api: API integration tests",
+]
+filterwarnings = [
+    "ignore::DeprecationWarning",
+    "ignore::PendingDeprecationWarning",
+]
+
+[tool.black]
+line-length = 100
+target-version = ["py310", "py311", "py312"]
+include = '\.pyi?$'
+extend-exclude = '''
+/(
+    \.git
+    | \.hg
+    | \.mypy_cache
+    | \.tox
+    | \.venv
+    | _build
+    | buck-out
+    | build
+    | dist
+    | node_modules
+)/
+'''
+
+[tool.isort]
+profile = "black"
+line_length = 100
+known_first_party = ["visualization", "tests"]
+skip_glob = ["node_modules/*", ".venv/*", "venv/*"]
+
+[tool.mypy]
+python_version = "3.10"
+warn_return_any = true
+warn_unused_configs = true
+ignore_missing_imports = true
+exclude = [
+    "node_modules",
+    "dist",
+    ".venv",
+    "venv",
+]
+
+[tool.coverage.run]
+source = ["visualization"]
+branch = true
+omit = [
+    "*/tests/*",
+    "*/__pycache__/*",
+    "*/node_modules/*",
+]
+
+[tool.coverage.report]
+exclude_lines = [
+    "pragma: no cover",
+    "def __repr__",
+    "raise AssertionError",
+    "raise NotImplementedError",
+    "if __name__ == .__main__.:",
+    "if TYPE_CHECKING:",
+]
