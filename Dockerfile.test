@@ -12,9 +12,12 @@ LABEL version="1.0.0"
 WORKDIR /app
 
 # Install system dependencies required for testing
+# gcc and python3-dev are needed to build psutil from source on ARM64
 RUN apt-get update && apt-get install -y --no-install-recommends \
     curl \
     git \
+    gcc \
+    python3-dev \
     && rm -rf /var/lib/apt/lists/*
 
 # Environment variables for Python
