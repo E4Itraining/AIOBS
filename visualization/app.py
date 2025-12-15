@@ -6,8 +6,10 @@ from fastapi import FastAPI, Request
 from fastapi.staticfiles import StaticFiles
 from fastapi.templating import Jinja2Templates
 from fastapi.middleware.cors import CORSMiddleware
-from fastapi.responses import HTMLResponse
+from fastapi.responses import HTMLResponse, PlainTextResponse
 import os
+import time
+import psutil
 
 from .routers import (
     dashboard_router, metrics_router, profiles_router, i18n_router,
@@ -31,6 +33,30 @@ AIOBS provides unified observability for AI systems with:
 - **Unified Monitoring**: Single pane of glass for all AI operations
 """
 APP_VERSION = "1.0.0"
+
+# Metrics state for tracking
+class MetricsState:
+    def __init__(self):
+        self.start_time = time.time()
+        self.request_count = 0
+        self.request_durations: list[float] = []
+
+    def record_request(self, duration: float):
+        self.request_count += 1
+        self.request_durations.append(duration)
+        # Keep only last 1000 samples
+        if len(self.request_durations) > 1000:
+            self.request_durations.pop(0)
+
+    def avg_duration(self) -> float:
+        if not self.request_durations:
+            return 0.0
+        return sum(self.request_durations) / len(self.request_durations)
+
+    def uptime(self) -> float:
+        return time.time() - self.start_time
+
+metrics_state = MetricsState()
 
 # Create FastAPI application
 app = FastAPI(
@@ -166,6 +192,20 @@ async def impact_view(request: Request):
 
 
 # ============================================================================
+# Request tracking middleware
+# ============================================================================
+
+@app.middleware("http")
+async def track_requests(request: Request, call_next):
+    """Track request metrics"""
+    start_time = time.time()
+    response = await call_next(request)
+    duration = (time.time() - start_time) * 1000  # Convert to ms
+    metrics_state.record_request(duration)
+    return response
+
+
+# ============================================================================
 # Health Check
 # ============================================================================
 
@@ -177,6 +217,58 @@ async def health_check():
         "version": APP_VERSION,
         "service": "aiobs-visualization"
     }
+
+
+# ============================================================================
+# Prometheus-compatible Metrics Endpoint
+# ============================================================================
+
+@app.get("/metrics", response_class=PlainTextResponse)
+async def prometheus_metrics():
+    """Prometheus-compatible metrics endpoint for VictoriaMetrics scraping"""
+    try:
+        process = psutil.Process()
+        memory_info = process.memory_info()
+        cpu_percent = process.cpu_percent()
+    except Exception:
+        memory_info = None
+        cpu_percent = 0.0
+
+    metrics_lines = [
+        "# HELP aiobs_visualization_info Visualization service information",
+        "# TYPE aiobs_visualization_info gauge",
+        f'aiobs_visualization_info{{version="{APP_VERSION}",service="aiobs-visualization"}} 1',
+        "",
+        "# HELP aiobs_visualization_uptime_seconds Visualization uptime in seconds",
+        "# TYPE aiobs_visualization_uptime_seconds counter",
+        f"aiobs_visualization_uptime_seconds {metrics_state.uptime():.2f}",
+        "",
+        "# HELP aiobs_visualization_requests_total Total number of HTTP requests",
+        "# TYPE aiobs_visualization_requests_total counter",
+        f"aiobs_visualization_requests_total {metrics_state.request_count}",
+        "",
+        "# HELP aiobs_visualization_request_duration_ms Average request duration in milliseconds",
+        "# TYPE aiobs_visualization_request_duration_ms gauge",
+        f"aiobs_visualization_request_duration_ms {metrics_state.avg_duration():.2f}",
+    ]
+
+    if memory_info:
+        metrics_lines.extend([
+            "",
+            "# HELP aiobs_visualization_memory_rss_bytes Resident set size",
+            "# TYPE aiobs_visualization_memory_rss_bytes gauge",
+            f"aiobs_visualization_memory_rss_bytes {memory_info.rss}",
+            "",
+            "# HELP aiobs_visualization_memory_vms_bytes Virtual memory size",
+            "# TYPE aiobs_visualization_memory_vms_bytes gauge",
+            f"aiobs_visualization_memory_vms_bytes {memory_info.vms}",
+            "",
+            "# HELP aiobs_visualization_cpu_percent CPU usage percentage",
+            "# TYPE aiobs_visualization_cpu_percent gauge",
+            f"aiobs_visualization_cpu_percent {cpu_percent:.2f}",
+        ])
+
+    return "\n".join(metrics_lines) + "\n"
 
 
 # ============================================================================

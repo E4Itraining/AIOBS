@@ -1,0 +1,34 @@
+# =============================================================================
+# AIOBS Grafana Datasources Configuration
+# VictoriaMetrics as the primary datasource
+# =============================================================================
+
+apiVersion: 1
+
+datasources:
+  # VictoriaMetrics - Primary metrics datasource
+  - name: VictoriaMetrics
+    type: prometheus
+    access: proxy
+    url: http://victoriametrics:8428
+    isDefault: true
+    editable: true
+    jsonData:
+      httpMethod: POST
+      manageAlerts: true
+      prometheusType: VictoriaMetrics
+      prometheusVersion: 1.96.0
+
+  # OpenObserve - Logs datasource (optional)
+  - name: OpenObserve
+    type: elasticsearch
+    access: proxy
+    url: http://openobserve:5080
+    editable: true
+    jsonData:
+      esVersion: "7.10+"
+      includeFrozen: false
+      logLevelField: level
+      logMessageField: message
+      maxConcurrentShardRequests: 5
+      timeField: _timestamp

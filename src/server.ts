@@ -73,6 +73,76 @@ app.get('/health', (req: Request, res: Response) => {
   });
 });
 
+// Metrics state for tracking
+const metricsState = {
+  requestCount: 0,
+  requestDuration: [] as number[],
+  lastReset: Date.now(),
+};
+
+// Track requests for metrics
+app.use((req: Request, res: Response, next: NextFunction) => {
+  metricsState.requestCount++;
+  const start = Date.now();
+  res.on('finish', () => {
+    metricsState.requestDuration.push(Date.now() - start);
+    // Keep only last 1000 samples
+    if (metricsState.requestDuration.length > 1000) {
+      metricsState.requestDuration.shift();
+    }
+  });
+  next();
+});
+
+// Prometheus-compatible metrics endpoint
+app.get('/metrics', (req: Request, res: Response) => {
+  const uptime = process.uptime();
+  const memUsage = process.memoryUsage();
+  const avgDuration = metricsState.requestDuration.length > 0
+    ? metricsState.requestDuration.reduce((a, b) => a + b, 0) / metricsState.requestDuration.length
+    : 0;
+
+  const metrics = `# HELP aiobs_backend_info Backend service information
+# TYPE aiobs_backend_info gauge
+aiobs_backend_info{version="${VERSION}",service="aiobs-backend"} 1
+
+# HELP aiobs_backend_uptime_seconds Backend uptime in seconds
+# TYPE aiobs_backend_uptime_seconds counter
+aiobs_backend_uptime_seconds ${uptime.toFixed(2)}
+
+# HELP aiobs_backend_requests_total Total number of HTTP requests
+# TYPE aiobs_backend_requests_total counter
+aiobs_backend_requests_total ${metricsState.requestCount}
+
+# HELP aiobs_backend_request_duration_ms Average request duration in milliseconds
+# TYPE aiobs_backend_request_duration_ms gauge
+aiobs_backend_request_duration_ms ${avgDuration.toFixed(2)}
+
+# HELP aiobs_backend_memory_heap_used_bytes Heap memory used
+# TYPE aiobs_backend_memory_heap_used_bytes gauge
+aiobs_backend_memory_heap_used_bytes ${memUsage.heapUsed}
+
+# HELP aiobs_backend_memory_heap_total_bytes Heap memory total
+# TYPE aiobs_backend_memory_heap_total_bytes gauge
+aiobs_backend_memory_heap_total_bytes ${memUsage.heapTotal}
+
+# HELP aiobs_backend_memory_rss_bytes Resident set size
+# TYPE aiobs_backend_memory_rss_bytes gauge
+aiobs_backend_memory_rss_bytes ${memUsage.rss}
+
+# HELP aiobs_backend_memory_external_bytes External memory
+# TYPE aiobs_backend_memory_external_bytes gauge
+aiobs_backend_memory_external_bytes ${memUsage.external}
+
+# HELP aiobs_backend_datastore_ready Data store ready status
+# TYPE aiobs_backend_datastore_ready gauge
+aiobs_backend_datastore_ready ${dataStore.isReady() ? 1 : 0}
+`;
+
+  res.set('Content-Type', 'text/plain; charset=utf-8');
+  res.send(metrics);
+});
+
 // Platform info
 app.get('/', (req: Request, res: Response) => {
   res.json({
