@@ -122,7 +122,9 @@ services:
   # For: Audit Logs, Compliance Records, Traces
   # ===========================================================================
   openobserve:
-    image: public.ecr.aws/zinclabs/openobserve:latest
+    # Using debug variant which includes shell and curl for healthcheck support
+    # See: https://github.com/openobserve/openobserve/issues/6154
+    image: public.ecr.aws/zinclabs/openobserve:v0.14.4-debug
     container_name: aiobs-openobserve
     ports:
       - "${OPENOBSERVE_PORT:-5080}:5080"
@@ -138,11 +140,11 @@ services:
       - aiobs-network
     restart: unless-stopped
     healthcheck:
-      test: ["CMD", "sh", "-c", "wget -q -O /dev/null http://127.0.0.1:5080/healthz"]
-      interval: 15s
-      timeout: 10s
-      retries: 15
-      start_period: 120s
+      test: ["CMD", "curl", "-f", "http://localhost:5080/healthz"]
+      interval: 10s
+      timeout: 5s
+      retries: 12
+      start_period: 30s
 
   # ===========================================================================
   # Redis - Caching and Real-time Pub/Sub
