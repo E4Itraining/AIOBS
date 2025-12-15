@@ -2,29 +2,37 @@
 
 {% block content %}
 <div class="dashboard-container">
-    <nav class="sidebar">
+    <nav class="sidebar" id="sidebar">
+        <!-- Mobile close button -->
+        <button class="sidebar-close-btn" onclick="closeMobileSidebar()" aria-label="Fermer le menu">
+            <svg viewBox="0 0 24 24" width="24" height="24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <line x1="18" y1="6" x2="6" y2="18"></line>
+                <line x1="6" y1="6" x2="18" y2="18"></line>
+            </svg>
+        </button>
+
         <div class="sidebar-logo">
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true">
                 <circle cx="12" cy="12" r="10"/>
                 <path d="M12 6v6l4 2"/>
                 <circle cx="12" cy="12" r="3"/>
             </svg>
-            AIOBS
+            {{ t('app.name') }}
         </div>
         <div class="nav-section">
-            <div class="nav-section-title">Views</div>
-            <a href="/" class="nav-item"><i data-feather="home"></i> Dashboard</a>
-            <a href="/unified" class="nav-item active"><i data-feather="layers"></i> Unified View</a>
-            <a href="/causal" class="nav-item"><i data-feather="git-branch"></i> Causal</a>
-            <a href="/impact" class="nav-item"><i data-feather="trending-up"></i> Impact</a>
+            <div class="nav-section-title">{{ t('nav.overview') }}</div>
+            <a href="/" class="nav-item"><i data-feather="home"></i> {{ t('nav.dashboard') }}</a>
+            <a href="/unified" class="nav-item active"><i data-feather="layers"></i> {{ t('nav.unified_view') }}</a>
+            <a href="/causal" class="nav-item"><i data-feather="git-branch"></i> {{ t('nav.causal_analysis') }}</a>
+            <a href="/impact" class="nav-item"><i data-feather="trending-up"></i> {{ t('nav.impact_analysis') }}</a>
         </div>
         <div class="nav-section">
-            <div class="nav-section-title">Domains</div>
-            <a href="#models" class="nav-item"><i data-feather="cpu"></i> Models</a>
-            <a href="#infrastructure" class="nav-item"><i data-feather="server"></i> Infrastructure</a>
-            <a href="#costs" class="nav-item"><i data-feather="dollar-sign"></i> Costs</a>
-            <a href="#carbon" class="nav-item"><i data-feather="cloud"></i> Carbon</a>
-            <a href="#compliance" class="nav-item"><i data-feather="shield"></i> Compliance</a>
+            <div class="nav-section-title">{{ t('nav.domains') }}</div>
+            <a href="#models" class="nav-item"><i data-feather="cpu"></i> {{ t('nav.models') }}</a>
+            <a href="#infrastructure" class="nav-item"><i data-feather="server"></i> {{ t('nav.infrastructure') }}</a>
+            <a href="#costs" class="nav-item"><i data-feather="dollar-sign"></i> {{ t('nav.costs') }}</a>
+            <a href="#carbon" class="nav-item"><i data-feather="cloud"></i> {{ t('nav.carbon') }}</a>
+            <a href="#compliance" class="nav-item"><i data-feather="shield"></i> {{ t('nav.compliance') }}</a>
         </div>
     </nav>
 

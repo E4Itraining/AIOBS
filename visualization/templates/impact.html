@@ -2,35 +2,43 @@
 
 {% block content %}
 <div class="dashboard-container">
-    <nav class="sidebar">
+    <nav class="sidebar" id="sidebar">
+        <!-- Mobile close button -->
+        <button class="sidebar-close-btn" onclick="closeMobileSidebar()" aria-label="Fermer le menu">
+            <svg viewBox="0 0 24 24" width="24" height="24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <line x1="18" y1="6" x2="6" y2="18"></line>
+                <line x1="6" y1="6" x2="18" y2="18"></line>
+            </svg>
+        </button>
+
         <div class="sidebar-logo">
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true">
                 <circle cx="12" cy="12" r="10"/>
                 <path d="M12 6v6l4 2"/>
                 <circle cx="12" cy="12" r="3"/>
             </svg>
-            AIOBS
+            {{ t('app.name') }}
         </div>
         <div class="nav-section">
-            <div class="nav-section-title">Views</div>
-            <a href="/" class="nav-item"><i data-feather="home"></i> Dashboard</a>
-            <a href="/unified" class="nav-item"><i data-feather="layers"></i> Unified View</a>
-            <a href="/causal" class="nav-item"><i data-feather="git-branch"></i> Causal</a>
-            <a href="/impact" class="nav-item active"><i data-feather="trending-up"></i> Impact</a>
+            <div class="nav-section-title">{{ t('nav.overview') }}</div>
+            <a href="/" class="nav-item"><i data-feather="home"></i> {{ t('nav.dashboard') }}</a>
+            <a href="/unified" class="nav-item"><i data-feather="layers"></i> {{ t('nav.unified_view') }}</a>
+            <a href="/causal" class="nav-item"><i data-feather="git-branch"></i> {{ t('nav.causal_analysis') }}</a>
+            <a href="/impact" class="nav-item active"><i data-feather="trending-up"></i> {{ t('nav.impact_analysis') }}</a>
         </div>
         <div class="nav-section">
-            <div class="nav-section-title">Event Types</div>
+            <div class="nav-section-title">{{ t('impact.event_types') }}</div>
             <button class="nav-item" onclick="analyzeEvent('model_drift')">
-                <i data-feather="activity"></i> Model Drift
+                <i data-feather="activity"></i> {{ t('impact.model_drift') }}
             </button>
             <button class="nav-item" onclick="analyzeEvent('model_degradation')">
-                <i data-feather="trending-down"></i> Degradation
+                <i data-feather="trending-down"></i> {{ t('impact.degradation') }}
             </button>
             <button class="nav-item" onclick="analyzeEvent('cost_anomaly')">
-                <i data-feather="dollar-sign"></i> Cost Anomaly
+                <i data-feather="dollar-sign"></i> {{ t('impact.cost_anomaly') }}
             </button>
             <button class="nav-item" onclick="analyzeEvent('latency_spike')">
-                <i data-feather="clock"></i> Latency Spike
+                <i data-feather="clock"></i> {{ t('impact.latency_spike') }}
             </button>
         </div>
     </nav>
@@ -64,9 +72,9 @@
         <!-- Analysis Form -->
         <div class="card">
             <div class="card-header">
-                <h3 class="card-title">Analyze Event Impact</h3>
+                <h3 class="card-title">{{ t('impact.analyze_event') }}</h3>
             </div>
-            <div style="display: grid; grid-template-columns: repeat(3, 1fr) auto; gap: 1rem; align-items: end;">
+            <div class="analysis-form-grid">
                 <div>
                     <label style="display: block; margin-bottom: 0.5rem; font-size: 0.875rem; color: var(--text-secondary);">Event Type</label>
                     <select id="eventType" style="width: 100%; padding: 0.75rem; border-radius: 0.5rem; border: 1px solid var(--border-color);">
@@ -98,11 +106,11 @@
         </div>
 
         <!-- Impact Results -->
-        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1rem;">
+        <div class="responsive-grid-2">
             <!-- Impact Breakdown -->
             <div class="card">
                 <div class="card-header">
-                    <h3 class="card-title">Impact Breakdown</h3>
+                    <h3 class="card-title">{{ t('impact.breakdown') }}</h3>
                 </div>
                 <div id="impactBreakdown">
                     <div style="padding: 2rem; text-align: center; color: var(--text-secondary);">

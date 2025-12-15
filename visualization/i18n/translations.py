@@ -145,6 +145,7 @@ TRANSLATIONS = {
             'settings': 'Settings',
             'language': 'Language',
             # Profile navigation items
+            'domains': 'Domains',
             'models': 'Models',
             'drift': 'Drift Detection',
             'reliability': 'Reliability',
@@ -246,12 +247,31 @@ TRANSLATIONS = {
         'causal': {
             'title': 'Causal Analysis',
             'root_cause': 'Root Cause',
+            'root_causes': 'Root Causes',
             'impact': 'Impact',
+            'impact_path': 'Impact Path',
             'correlation': 'Correlation',
             'dependency': 'Dependency',
             'run_analysis': 'Run Analysis',
             'graph': 'Causal Graph',
-            'timeline': 'Timeline'
+            'timeline': 'Timeline',
+            'scenarios': 'Scenarios',
+            'drift_incident': 'Drift Incident',
+            'cost_spike': 'Cost Spike'
+        },
+        'impact': {
+            'title': 'Business Impact Analysis',
+            'event_types': 'Event Types',
+            'model_drift': 'Model Drift',
+            'degradation': 'Degradation',
+            'cost_anomaly': 'Cost Anomaly',
+            'latency_spike': 'Latency Spike',
+            'analyze_event': 'Analyze Event Impact',
+            'breakdown': 'Impact Breakdown'
+        },
+        'errors': {
+            'load_failed': 'Failed to load data',
+            'connection': 'Server connection error'
         },
         'unified': {
             'title': 'Unified Monitoring View',
@@ -299,6 +319,7 @@ TRANSLATIONS = {
             'toggle_theme': 'Changer le thème',
             'settings': 'Paramètres',
             'language': 'Langue',
+            'domains': 'Domaines',
             'models': 'Modèles',
             'drift': 'Détection de Dérive',
             'reliability': 'Fiabilité',
@@ -400,12 +421,31 @@ TRANSLATIONS = {
         'causal': {
             'title': 'Analyse Causale',
             'root_cause': 'Cause Racine',
+            'root_causes': 'Causes Racines',
             'impact': 'Impact',
+            'impact_path': 'Chemin d\'Impact',
             'correlation': 'Corrélation',
             'dependency': 'Dépendance',
             'run_analysis': 'Lancer l\'Analyse',
             'graph': 'Graphe Causal',
-            'timeline': 'Chronologie'
+            'timeline': 'Chronologie',
+            'scenarios': 'Scénarios',
+            'drift_incident': 'Incident de Dérive',
+            'cost_spike': 'Pic de Coût'
+        },
+        'impact': {
+            'title': 'Analyse d\'Impact Commercial',
+            'event_types': 'Types d\'Événements',
+            'model_drift': 'Dérive du Modèle',
+            'degradation': 'Dégradation',
+            'cost_anomaly': 'Anomalie de Coût',
+            'latency_spike': 'Pic de Latence',
+            'analyze_event': 'Analyser l\'Impact de l\'Événement',
+            'breakdown': 'Répartition de l\'Impact'
+        },
+        'errors': {
+            'load_failed': 'Erreur de chargement des données',
+            'connection': 'Erreur de connexion au serveur'
         },
         'unified': {
             'title': 'Vue de Monitoring Unifiée',
