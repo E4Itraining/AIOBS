@@ -23,7 +23,8 @@ import { ingestionRouter } from './api/routes/ingestion';
 import { DataStore } from './api/services/data-store';
 import { RealtimeService } from './api/services/realtime';
 
-const PORT = parseInt(process.env.PORT || '3000', 10);
+const DEFAULT_PORT = parseInt(process.env.PORT || '3000', 10);
+const MAX_PORT_ATTEMPTS = 10;
 const VERSION = '1.0.0';
 
 // Initialize Express app
@@ -145,55 +146,109 @@ app.use((err: Error, req: Request, res: Response, next: NextFunction) => {
   });
 });
 
-// Create HTTP server
-const server = createServer(app);
+// Server and WebSocket instances (initialized in startServer)
+let server: ReturnType<typeof createServer>;
+let wss: WebSocketServer;
 
-// Initialize WebSocket server
-const wss = new WebSocketServer({ server, path: '/ws' });
-const realtimeService = RealtimeService.getInstance(wss);
+// Function to check if a port is available
+function isPortAvailable(port: number): Promise<boolean> {
+  return new Promise((resolve) => {
+    const testServer = createServer();
+    testServer.once('error', () => {
+      resolve(false);
+    });
+    testServer.once('listening', () => {
+      testServer.close(() => resolve(true));
+    });
+    testServer.listen(port, '0.0.0.0');
+  });
+}
 
-wss.on('connection', (ws: WebSocket, req) => {
-  console.log('WebSocket client connected');
-
-  // Send welcome message
-  ws.send(JSON.stringify({
-    type: 'connected',
-    timestamp: new Date().toISOString(),
-    message: 'Connected to AIOBS real-time feed',
-  }));
-
-  // Handle incoming messages
-  ws.on('message', (data) => {
-    try {
-      const message = JSON.parse(data.toString());
-      realtimeService.handleMessage(ws, message);
-    } catch (err) {
-      ws.send(JSON.stringify({ type: 'error', message: 'Invalid message format' }));
+// Function to find an available port starting from the default
+async function findAvailablePort(startPort: number): Promise<number> {
+  for (let attempt = 0; attempt < MAX_PORT_ATTEMPTS; attempt++) {
+    const port = startPort + attempt;
+    if (await isPortAvailable(port)) {
+      return port;
     }
-  });
+    console.log(`Port ${port} is in use, trying port ${port + 1}...`);
+  }
+  throw new Error(`Could not find an available port after ${MAX_PORT_ATTEMPTS} attempts`);
+}
 
-  ws.on('close', () => {
-    console.log('WebSocket client disconnected');
-    realtimeService.removeClient(ws);
-  });
-});
+// Function to initialize and start the server
+async function startServer(): Promise<void> {
+  try {
+    const port = await findAvailablePort(DEFAULT_PORT);
 
-// Start server
-server.listen(PORT, '0.0.0.0', () => {
-  console.log(`
+    // Create HTTP server
+    server = createServer(app);
+
+    // Initialize WebSocket server
+    wss = new WebSocketServer({ server, path: '/ws' });
+    const realtimeService = RealtimeService.getInstance(wss);
+
+    wss.on('connection', (ws: WebSocket) => {
+      console.log('WebSocket client connected');
+
+      // Send welcome message
+      ws.send(JSON.stringify({
+        type: 'connected',
+        timestamp: new Date().toISOString(),
+        message: 'Connected to AIOBS real-time feed',
+      }));
+
+      // Handle incoming messages
+      ws.on('message', (data) => {
+        try {
+          const message = JSON.parse(data.toString());
+          realtimeService.handleMessage(ws, message);
+        } catch (err) {
+          ws.send(JSON.stringify({ type: 'error', message: 'Invalid message format' }));
+        }
+      });
+
+      ws.on('close', () => {
+        console.log('WebSocket client disconnected');
+        realtimeService.removeClient(ws);
+      });
+    });
+
+    // Handle server errors
+    server.on('error', (err: NodeJS.ErrnoException) => {
+      console.error('Server error:', err);
+      process.exit(1);
+    });
+
+    // Start listening
+    server.listen(port, '0.0.0.0', () => {
+      const portStr = port.toString().padEnd(5, ' ');
+      console.log(`
 ╔══════════════════════════════════════════════════════════════╗
 ║                    AIOBS Platform v${VERSION}                     ║
 ║              AI Observability Hub - Backend API              ║
 ╠══════════════════════════════════════════════════════════════╣
-║  HTTP Server:    http://localhost:${PORT}                       ║
-║  WebSocket:      ws://localhost:${PORT}/ws                      ║
-║  Health Check:   http://localhost:${PORT}/health                ║
-║  API Docs:       http://localhost:${PORT}/api/docs              ║
+║  HTTP Server:    http://localhost:${portStr}                      ║
+║  WebSocket:      ws://localhost:${portStr}/ws                     ║
+║  Health Check:   http://localhost:${portStr}/health               ║
+║  API Docs:       http://localhost:${portStr}/api/docs             ║
 ╚══════════════════════════════════════════════════════════════╝
-  `);
+      `);
 
-  // Initialize demo data
-  dataStore.initialize();
-});
+      // Initialize demo data
+      dataStore.initialize();
+    });
+  } catch (err) {
+    console.error(`\nError: ${(err as Error).message}`);
+    console.error(`Ports ${DEFAULT_PORT}-${DEFAULT_PORT + MAX_PORT_ATTEMPTS - 1} are all in use.`);
+    console.error('\nSuggestions:');
+    console.error('  1. Stop other processes using these ports');
+    console.error('  2. Set a different PORT environment variable: PORT=4000 npm start');
+    process.exit(1);
+  }
+}
+
+// Start server with automatic port resolution
+startServer();
 
 export { app, server, wss };
