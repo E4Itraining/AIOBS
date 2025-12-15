@@ -1,0 +1,1102 @@
+{% extends "base.html" %}
+
+{% block sidebar_extra %}
+<div class="nav-group">
+    <span class="nav-group-title">Business Views</span>
+    <a href="/executive" class="nav-link">
+        <i data-lucide="briefcase"></i>
+        <span>Executive Dashboard</span>
+    </a>
+    <a href="/finops" class="nav-link">
+        <i data-lucide="wallet"></i>
+        <span>FinOps</span>
+    </a>
+    <a href="/greenops" class="nav-link">
+        <i data-lucide="leaf"></i>
+        <span>GreenOps</span>
+    </a>
+    <a href="/compliance" class="nav-link">
+        <i data-lucide="shield-check"></i>
+        <span>Compliance</span>
+    </a>
+</div>
+<div class="nav-group">
+    <span class="nav-group-title">Technical Views</span>
+    <a href="/monitoring" class="nav-link active">
+        <i data-lucide="activity"></i>
+        <span>Live Monitoring</span>
+    </a>
+    <a href="/security" class="nav-link">
+        <i data-lucide="lock"></i>
+        <span>Security Center</span>
+    </a>
+</div>
+{% endblock %}
+
+{% block page_title %}Live Monitoring{% endblock %}
+{% block page_subtitle %}<p class="text-muted">Real-time API health, drift detection, and model performance</p>{% endblock %}
+
+{% block topbar_actions %}
+<div class="live-indicator">
+    <span class="live-dot"></span>
+    <span>Live Data</span>
+</div>
+<select class="form-select" id="refreshRate" style="width: 120px;" onchange="updateRefreshRate()">
+    <option value="5">5s refresh</option>
+    <option value="10" selected>10s refresh</option>
+    <option value="30">30s refresh</option>
+    <option value="60">1m refresh</option>
+</select>
+<button class="btn btn-secondary" onclick="togglePause()">
+    <i data-lucide="pause" id="pauseIcon"></i>
+    <span id="pauseText">Pause</span>
+</button>
+{% endblock %}
+
+{% block content %}
+<!-- System Health Overview -->
+<section class="mb-6">
+    <div class="health-grid">
+        <div class="health-card healthy">
+            <div class="health-header">
+                <span class="health-status">
+                    <span class="status-dot healthy"></span>
+                    API Gateway
+                </span>
+                <span class="health-uptime">99.99% uptime</span>
+            </div>
+            <div class="health-metrics">
+                <div class="metric">
+                    <span class="metric-value">12.5K</span>
+                    <span class="metric-label">req/min</span>
+                </div>
+                <div class="metric">
+                    <span class="metric-value">45ms</span>
+                    <span class="metric-label">p99 latency</span>
+                </div>
+                <div class="metric">
+                    <span class="metric-value">0.02%</span>
+                    <span class="metric-label">error rate</span>
+                </div>
+            </div>
+        </div>
+
+        <div class="health-card healthy">
+            <div class="health-header">
+                <span class="health-status">
+                    <span class="status-dot healthy"></span>
+                    Model Router
+                </span>
+                <span class="health-uptime">99.95% uptime</span>
+            </div>
+            <div class="health-metrics">
+                <div class="metric">
+                    <span class="metric-value">8.2K</span>
+                    <span class="metric-label">req/min</span>
+                </div>
+                <div class="metric">
+                    <span class="metric-value">12ms</span>
+                    <span class="metric-label">p99 latency</span>
+                </div>
+                <div class="metric">
+                    <span class="metric-value">0.01%</span>
+                    <span class="metric-label">error rate</span>
+                </div>
+            </div>
+        </div>
+
+        <div class="health-card degraded">
+            <div class="health-header">
+                <span class="health-status">
+                    <span class="status-dot degraded"></span>
+                    Inference Cluster
+                </span>
+                <span class="health-uptime">98.5% uptime</span>
+            </div>
+            <div class="health-metrics">
+                <div class="metric">
+                    <span class="metric-value">5.8K</span>
+                    <span class="metric-label">req/min</span>
+                </div>
+                <div class="metric">
+                    <span class="metric-value">185ms</span>
+                    <span class="metric-label warning">p99 latency</span>
+                </div>
+                <div class="metric">
+                    <span class="metric-value">0.8%</span>
+                    <span class="metric-label warning">error rate</span>
+                </div>
+            </div>
+        </div>
+
+        <div class="health-card healthy">
+            <div class="health-header">
+                <span class="health-status">
+                    <span class="status-dot healthy"></span>
+                    Feature Store
+                </span>
+                <span class="health-uptime">99.99% uptime</span>
+            </div>
+            <div class="health-metrics">
+                <div class="metric">
+                    <span class="metric-value">25K</span>
+                    <span class="metric-label">reads/min</span>
+                </div>
+                <div class="metric">
+                    <span class="metric-value">5ms</span>
+                    <span class="metric-label">p99 latency</span>
+                </div>
+                <div class="metric">
+                    <span class="metric-value">0%</span>
+                    <span class="metric-label">error rate</span>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Real-time Metrics -->
+<section class="mb-6">
+    <div class="grid grid-2">
+        <!-- Live Latency -->
+        <div class="card">
+            <div class="card-header">
+                <h3 class="card-title">Inference Latency (Live)</h3>
+                <div class="metric-badges">
+                    <span class="metric-badge">p50: <strong>42ms</strong></span>
+                    <span class="metric-badge">p99: <strong>145ms</strong></span>
+                </div>
+            </div>
+            <div class="chart-container">
+                <canvas id="latencyChart"></canvas>
+            </div>
+        </div>
+
+        <!-- Live Throughput -->
+        <div class="card">
+            <div class="card-header">
+                <h3 class="card-title">Request Throughput (Live)</h3>
+                <div class="metric-badges">
+                    <span class="metric-badge">Current: <strong>8,250 req/min</strong></span>
+                </div>
+            </div>
+            <div class="chart-container">
+                <canvas id="throughputChart"></canvas>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Drift Detection -->
+<section class="mb-6">
+    <div class="card">
+        <div class="card-header">
+            <h3 class="card-title">Model Drift Detection</h3>
+            <div class="header-actions">
+                <select class="form-select" style="width: 180px;">
+                    <option>All Models</option>
+                    <option>recommendation-v2</option>
+                    <option>fraud-detector-v1</option>
+                    <option>churn-predictor</option>
+                </select>
+            </div>
+        </div>
+        <div class="drift-dashboard">
+            <div class="drift-summary">
+                <div class="drift-score-card">
+                    <div class="drift-gauge">
+                        <svg viewBox="0 0 100 50">
+                            <path d="M 10 45 A 40 40 0 0 1 90 45" fill="none" stroke="var(--border-color)" stroke-width="8" stroke-linecap="round"/>
+                            <path d="M 10 45 A 40 40 0 0 1 90 45" fill="none" stroke="var(--color-success)" stroke-width="8" stroke-linecap="round"
+                                stroke-dasharray="125.6" stroke-dashoffset="31.4" class="drift-indicator"/>
+                        </svg>
+                        <div class="drift-value">
+                            <span class="value">0.12</span>
+                            <span class="label">Data Drift Score</span>
+                        </div>
+                    </div>
+                    <div class="drift-status healthy">
+                        <i data-lucide="check-circle"></i>
+                        <span>Within Threshold (&lt; 0.3)</span>
+                    </div>
+                </div>
+                <div class="drift-metrics">
+                    <div class="drift-metric">
+                        <span class="metric-name">Concept Drift</span>
+                        <div class="metric-bar">
+                            <div class="bar-fill success" style="width: 15%"></div>
+                        </div>
+                        <span class="metric-score">0.08</span>
+                    </div>
+                    <div class="drift-metric">
+                        <span class="metric-name">Prediction Drift</span>
+                        <div class="metric-bar">
+                            <div class="bar-fill warning" style="width: 35%"></div>
+                        </div>
+                        <span class="metric-score">0.18</span>
+                    </div>
+                    <div class="drift-metric">
+                        <span class="metric-name">Feature Drift (avg)</span>
+                        <div class="metric-bar">
+                            <div class="bar-fill success" style="width: 22%"></div>
+                        </div>
+                        <span class="metric-score">0.11</span>
+                    </div>
+                </div>
+            </div>
+            <div class="feature-drift-table">
+                <h4>Top Drifting Features</h4>
+                <table class="table">
+                    <thead>
+                        <tr>
+                            <th>Feature</th>
+                            <th>Drift Score</th>
+                            <th>Change Type</th>
+                            <th>Status</th>
+                            <th>Last Check</th>
+                        </tr>
+                    </thead>
+                    <tbody id="featureDriftTable">
+                        <tr>
+                            <td><code>user_engagement_score</code></td>
+                            <td>
+                                <div class="inline-bar">
+                                    <div class="bar-fill warning" style="width: 42%"></div>
+                                </div>
+                                <span>0.21</span>
+                            </td>
+                            <td><span class="change-type shift">Distribution Shift</span></td>
+                            <td><span class="badge badge-warning">Monitor</span></td>
+                            <td>2 min ago</td>
+                        </tr>
+                        <tr>
+                            <td><code>purchase_frequency</code></td>
+                            <td>
+                                <div class="inline-bar">
+                                    <div class="bar-fill warning" style="width: 36%"></div>
+                                </div>
+                                <span>0.18</span>
+                            </td>
+                            <td><span class="change-type outlier">New Outliers</span></td>
+                            <td><span class="badge badge-warning">Monitor</span></td>
+                            <td>2 min ago</td>
+                        </tr>
+                        <tr>
+                            <td><code>session_duration</code></td>
+                            <td>
+                                <div class="inline-bar">
+                                    <div class="bar-fill success" style="width: 28%"></div>
+                                </div>
+                                <span>0.14</span>
+                            </td>
+                            <td><span class="change-type normal">Normal</span></td>
+                            <td><span class="badge badge-success">OK</span></td>
+                            <td>2 min ago</td>
+                        </tr>
+                        <tr>
+                            <td><code>click_through_rate</code></td>
+                            <td>
+                                <div class="inline-bar">
+                                    <div class="bar-fill success" style="width: 18%"></div>
+                                </div>
+                                <span>0.09</span>
+                            </td>
+                            <td><span class="change-type normal">Normal</span></td>
+                            <td><span class="badge badge-success">OK</span></td>
+                            <td>2 min ago</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- API Health Checks -->
+<section class="mb-6">
+    <div class="card">
+        <div class="card-header">
+            <h3 class="card-title">API Health Checks</h3>
+            <span class="badge badge-success">All endpoints healthy</span>
+        </div>
+        <div class="api-health-grid">
+            <div class="api-endpoint healthy">
+                <div class="endpoint-header">
+                    <span class="method get">GET</span>
+                    <span class="path">/api/v1/recommend</span>
+                </div>
+                <div class="endpoint-stats">
+                    <span class="stat"><i data-lucide="clock"></i> 42ms</span>
+                    <span class="stat"><i data-lucide="check-circle"></i> 100%</span>
+                    <span class="stat"><i data-lucide="activity"></i> 3.2K/min</span>
+                </div>
+                <div class="endpoint-history" id="endpoint1History"></div>
+            </div>
+
+            <div class="api-endpoint healthy">
+                <div class="endpoint-header">
+                    <span class="method post">POST</span>
+                    <span class="path">/api/v1/predict/fraud</span>
+                </div>
+                <div class="endpoint-stats">
+                    <span class="stat"><i data-lucide="clock"></i> 85ms</span>
+                    <span class="stat"><i data-lucide="check-circle"></i> 99.9%</span>
+                    <span class="stat"><i data-lucide="activity"></i> 1.8K/min</span>
+                </div>
+                <div class="endpoint-history" id="endpoint2History"></div>
+            </div>
+
+            <div class="api-endpoint healthy">
+                <div class="endpoint-header">
+                    <span class="method post">POST</span>
+                    <span class="path">/api/v1/predict/churn</span>
+                </div>
+                <div class="endpoint-stats">
+                    <span class="stat"><i data-lucide="clock"></i> 35ms</span>
+                    <span class="stat"><i data-lucide="check-circle"></i> 100%</span>
+                    <span class="stat"><i data-lucide="activity"></i> 950/min</span>
+                </div>
+                <div class="endpoint-history" id="endpoint3History"></div>
+            </div>
+
+            <div class="api-endpoint degraded">
+                <div class="endpoint-header">
+                    <span class="method post">POST</span>
+                    <span class="path">/api/v1/chat/completion</span>
+                </div>
+                <div class="endpoint-stats">
+                    <span class="stat warning"><i data-lucide="clock"></i> 1.2s</span>
+                    <span class="stat"><i data-lucide="check-circle"></i> 99.5%</span>
+                    <span class="stat"><i data-lucide="activity"></i> 120/min</span>
+                </div>
+                <div class="endpoint-history" id="endpoint4History"></div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Model Performance -->
+<section class="mb-6">
+    <div class="grid grid-2">
+        <!-- Trust Score Trend -->
+        <div class="card">
+            <div class="card-header">
+                <h3 class="card-title">Trust Score Trend (24h)</h3>
+            </div>
+            <div class="chart-container">
+                <canvas id="trustTrendChart"></canvas>
+            </div>
+        </div>
+
+        <!-- Error Distribution -->
+        <div class="card">
+            <div class="card-header">
+                <h3 class="card-title">Error Distribution</h3>
+            </div>
+            <div class="error-distribution">
+                <div class="error-type">
+                    <div class="error-header">
+                        <span class="error-code">4xx</span>
+                        <span class="error-pct">0.5%</span>
+                    </div>
+                    <div class="error-bar">
+                        <div class="error-fill client" style="width: 50%"></div>
+                    </div>
+                    <span class="error-count">125 errors</span>
+                </div>
+                <div class="error-type">
+                    <div class="error-header">
+                        <span class="error-code">5xx</span>
+                        <span class="error-pct">0.1%</span>
+                    </div>
+                    <div class="error-bar">
+                        <div class="error-fill server" style="width: 10%"></div>
+                    </div>
+                    <span class="error-count">25 errors</span>
+                </div>
+                <div class="error-type">
+                    <div class="error-header">
+                        <span class="error-code">Timeout</span>
+                        <span class="error-pct">0.2%</span>
+                    </div>
+                    <div class="error-bar">
+                        <div class="error-fill timeout" style="width: 20%"></div>
+                    </div>
+                    <span class="error-count">50 errors</span>
+                </div>
+            </div>
+            <div class="error-breakdown mt-4">
+                <h4 class="text-sm font-semibold mb-2">Top Errors (1h)</h4>
+                <div class="top-errors">
+                    <div class="error-item">
+                        <span class="error-badge">429</span>
+                        <span class="error-msg">Rate limit exceeded</span>
+                        <span class="error-num">45</span>
+                    </div>
+                    <div class="error-item">
+                        <span class="error-badge">500</span>
+                        <span class="error-msg">Internal server error</span>
+                        <span class="error-num">12</span>
+                    </div>
+                    <div class="error-item">
+                        <span class="error-badge">408</span>
+                        <span class="error-msg">Request timeout</span>
+                        <span class="error-num">8</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<style>
+/* Live Indicator */
+.live-indicator {
+    display: flex;
+    align-items: center;
+    gap: var(--space-2);
+    padding: var(--space-2) var(--space-3);
+    background: var(--color-success-light);
+    color: var(--color-success);
+    border-radius: var(--radius-full);
+    font-size: 0.8125rem;
+    font-weight: 500;
+}
+
+.live-dot {
+    width: 8px;
+    height: 8px;
+    background: var(--color-success);
+    border-radius: 50%;
+    animation: pulse 2s infinite;
+}
+
+@keyframes pulse {
+    0%, 100% { opacity: 1; transform: scale(1); }
+    50% { opacity: 0.5; transform: scale(1.2); }
+}
+
+/* Health Grid */
+.health-grid {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: var(--space-4);
+}
+
+.health-card {
+    padding: var(--space-4);
+    background: var(--bg-card);
+    border: 1px solid var(--border-color);
+    border-radius: var(--radius-xl);
+    border-top: 3px solid;
+}
+
+.health-card.healthy { border-top-color: var(--color-success); }
+.health-card.degraded { border-top-color: var(--color-warning); }
+.health-card.unhealthy { border-top-color: var(--color-danger); }
+
+.health-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: var(--space-3);
+}
+
+.health-status {
+    display: flex;
+    align-items: center;
+    gap: var(--space-2);
+    font-weight: 600;
+    font-size: 0.9375rem;
+}
+
+.status-dot {
+    width: 10px;
+    height: 10px;
+    border-radius: 50%;
+}
+
+.status-dot.healthy { background: var(--color-success); }
+.status-dot.degraded { background: var(--color-warning); animation: pulse 2s infinite; }
+.status-dot.unhealthy { background: var(--color-danger); animation: pulse 1s infinite; }
+
+.health-uptime {
+    font-size: 0.75rem;
+    color: var(--text-secondary);
+}
+
+.health-metrics {
+    display: flex;
+    gap: var(--space-4);
+}
+
+.health-metrics .metric {
+    display: flex;
+    flex-direction: column;
+}
+
+.health-metrics .metric-value {
+    font-size: 1.125rem;
+    font-weight: 700;
+}
+
+.health-metrics .metric-label {
+    font-size: 0.6875rem;
+    color: var(--text-secondary);
+}
+
+.health-metrics .metric-label.warning {
+    color: var(--color-warning);
+}
+
+/* Metric Badges */
+.metric-badges {
+    display: flex;
+    gap: var(--space-2);
+}
+
+.metric-badge {
+    padding: var(--space-1) var(--space-2);
+    background: var(--bg-hover);
+    border-radius: var(--radius-sm);
+    font-size: 0.75rem;
+    color: var(--text-secondary);
+}
+
+/* Drift Dashboard */
+.drift-dashboard {
+    display: grid;
+    grid-template-columns: 350px 1fr;
+    gap: var(--space-6);
+}
+
+.drift-score-card {
+    padding: var(--space-4);
+    background: var(--bg-hover);
+    border-radius: var(--radius-lg);
+    text-align: center;
+}
+
+.drift-gauge {
+    position: relative;
+    width: 150px;
+    height: 80px;
+    margin: 0 auto var(--space-3);
+}
+
+.drift-gauge svg {
+    width: 100%;
+    height: 100%;
+}
+
+.drift-value {
+    position: absolute;
+    bottom: 0;
+    left: 50%;
+    transform: translateX(-50%);
+    text-align: center;
+}
+
+.drift-value .value {
+    display: block;
+    font-size: 1.75rem;
+    font-weight: 700;
+    color: var(--color-success);
+}
+
+.drift-value .label {
+    font-size: 0.75rem;
+    color: var(--text-secondary);
+}
+
+.drift-status {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: var(--space-2);
+    padding: var(--space-2);
+    border-radius: var(--radius-md);
+    font-size: 0.8125rem;
+}
+
+.drift-status.healthy {
+    background: var(--color-success-light);
+    color: var(--color-success);
+}
+
+.drift-status svg {
+    width: 16px;
+    height: 16px;
+}
+
+.drift-metrics {
+    margin-top: var(--space-4);
+}
+
+.drift-metric {
+    display: flex;
+    align-items: center;
+    gap: var(--space-3);
+    margin-bottom: var(--space-3);
+}
+
+.drift-metric .metric-name {
+    width: 120px;
+    font-size: 0.8125rem;
+    color: var(--text-secondary);
+}
+
+.drift-metric .metric-bar {
+    flex: 1;
+    height: 8px;
+    background: var(--border-color);
+    border-radius: var(--radius-full);
+    overflow: hidden;
+}
+
+.bar-fill {
+    height: 100%;
+    border-radius: var(--radius-full);
+}
+
+.bar-fill.success { background: var(--color-success); }
+.bar-fill.warning { background: var(--color-warning); }
+.bar-fill.danger { background: var(--color-danger); }
+
+.drift-metric .metric-score {
+    width: 40px;
+    text-align: right;
+    font-weight: 600;
+    font-size: 0.875rem;
+}
+
+.feature-drift-table h4 {
+    font-size: 0.9375rem;
+    font-weight: 600;
+    margin-bottom: var(--space-3);
+}
+
+.inline-bar {
+    display: inline-block;
+    width: 80px;
+    height: 6px;
+    background: var(--border-color);
+    border-radius: var(--radius-full);
+    margin-right: var(--space-2);
+    vertical-align: middle;
+}
+
+.change-type {
+    padding: var(--space-1) var(--space-2);
+    border-radius: var(--radius-sm);
+    font-size: 0.6875rem;
+    font-weight: 500;
+}
+
+.change-type.shift {
+    background: var(--color-warning-light);
+    color: var(--color-warning);
+}
+
+.change-type.outlier {
+    background: var(--color-info-light);
+    color: var(--color-info);
+}
+
+.change-type.normal {
+    background: var(--bg-hover);
+    color: var(--text-secondary);
+}
+
+/* API Health Grid */
+.api-health-grid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: var(--space-4);
+}
+
+.api-endpoint {
+    padding: var(--space-4);
+    background: var(--bg-hover);
+    border-radius: var(--radius-lg);
+    border-left: 3px solid var(--color-success);
+}
+
+.api-endpoint.degraded {
+    border-left-color: var(--color-warning);
+}
+
+.endpoint-header {
+    display: flex;
+    align-items: center;
+    gap: var(--space-2);
+    margin-bottom: var(--space-3);
+}
+
+.method {
+    padding: var(--space-1) var(--space-2);
+    border-radius: var(--radius-sm);
+    font-size: 0.6875rem;
+    font-weight: 700;
+    text-transform: uppercase;
+}
+
+.method.get { background: #10b981; color: white; }
+.method.post { background: #3b82f6; color: white; }
+.method.put { background: #f59e0b; color: white; }
+.method.delete { background: #ef4444; color: white; }
+
+.path {
+    font-family: monospace;
+    font-size: 0.8125rem;
+}
+
+.endpoint-stats {
+    display: flex;
+    gap: var(--space-4);
+    margin-bottom: var(--space-3);
+}
+
+.endpoint-stats .stat {
+    display: flex;
+    align-items: center;
+    gap: var(--space-1);
+    font-size: 0.75rem;
+    color: var(--text-secondary);
+}
+
+.endpoint-stats .stat.warning {
+    color: var(--color-warning);
+}
+
+.endpoint-stats .stat svg {
+    width: 14px;
+    height: 14px;
+}
+
+.endpoint-history {
+    display: flex;
+    gap: 2px;
+    height: 24px;
+}
+
+.history-bar {
+    flex: 1;
+    border-radius: 2px;
+    min-width: 3px;
+}
+
+.history-bar.success { background: var(--color-success); }
+.history-bar.warning { background: var(--color-warning); }
+.history-bar.error { background: var(--color-danger); }
+
+/* Error Distribution */
+.error-distribution {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-4);
+}
+
+.error-type {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-2);
+}
+
+.error-header {
+    display: flex;
+    justify-content: space-between;
+}
+
+.error-code {
+    font-weight: 600;
+    font-size: 0.875rem;
+}
+
+.error-pct {
+    color: var(--text-secondary);
+    font-size: 0.8125rem;
+}
+
+.error-bar {
+    height: 8px;
+    background: var(--border-color);
+    border-radius: var(--radius-full);
+    overflow: hidden;
+}
+
+.error-fill.client { background: var(--color-warning); }
+.error-fill.server { background: var(--color-danger); }
+.error-fill.timeout { background: var(--color-info); }
+
+.error-count {
+    font-size: 0.75rem;
+    color: var(--text-secondary);
+}
+
+.top-errors {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-2);
+}
+
+.error-item {
+    display: flex;
+    align-items: center;
+    gap: var(--space-3);
+    padding: var(--space-2) var(--space-3);
+    background: var(--bg-hover);
+    border-radius: var(--radius-md);
+}
+
+.error-badge {
+    padding: var(--space-1) var(--space-2);
+    background: var(--color-danger-light);
+    color: var(--color-danger);
+    border-radius: var(--radius-sm);
+    font-size: 0.6875rem;
+    font-weight: 700;
+}
+
+.error-msg {
+    flex: 1;
+    font-size: 0.8125rem;
+}
+
+.error-num {
+    font-weight: 600;
+    font-size: 0.8125rem;
+}
+
+.header-actions {
+    display: flex;
+    gap: var(--space-3);
+}
+
+@media (max-width: 1200px) {
+    .health-grid {
+        grid-template-columns: repeat(2, 1fr);
+    }
+
+    .drift-dashboard {
+        grid-template-columns: 1fr;
+    }
+}
+
+@media (max-width: 768px) {
+    .health-grid {
+        grid-template-columns: 1fr;
+    }
+
+    .api-health-grid {
+        grid-template-columns: 1fr;
+    }
+}
+</style>
+{% endblock %}
+
+{% block scripts %}
+<script>
+let isPaused = false;
+let refreshInterval = 10000;
+let latencyChart, throughputChart, trustChart;
+let latencyData = [];
+let throughputData = [];
+let trustData = [];
+
+document.addEventListener('DOMContentLoaded', async () => {
+    initCharts();
+    initEndpointHistory();
+    startLiveUpdates();
+    lucide.createIcons();
+});
+
+function initCharts() {
+    // Initialize with empty data
+    const timeLabels = Array.from({length: 60}, (_, i) => '');
+
+    // Latency Chart
+    const latencyCtx = document.getElementById('latencyChart');
+    if (latencyCtx) {
+        latencyChart = new Chart(latencyCtx, {
+            type: 'line',
+            data: {
+                labels: timeLabels,
+                datasets: [{
+                    label: 'p50',
+                    data: [],
+                    borderColor: '#10b981',
+                    tension: 0.4,
+                    fill: false,
+                    pointRadius: 0
+                }, {
+                    label: 'p99',
+                    data: [],
+                    borderColor: '#6366f1',
+                    tension: 0.4,
+                    fill: false,
+                    pointRadius: 0
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                animation: { duration: 0 },
+                plugins: { legend: { display: false } },
+                scales: {
+                    x: { display: false },
+                    y: { min: 0, max: 200, title: { display: true, text: 'ms' } }
+                }
+            }
+        });
+    }
+
+    // Throughput Chart
+    const throughputCtx = document.getElementById('throughputChart');
+    if (throughputCtx) {
+        throughputChart = new Chart(throughputCtx, {
+            type: 'line',
+            data: {
+                labels: timeLabels,
+                datasets: [{
+                    label: 'Requests/min',
+                    data: [],
+                    borderColor: '#6366f1',
+                    backgroundColor: 'rgba(99, 102, 241, 0.1)',
+                    fill: true,
+                    tension: 0.4,
+                    pointRadius: 0
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                animation: { duration: 0 },
+                plugins: { legend: { display: false } },
+                scales: {
+                    x: { display: false },
+                    y: { min: 0, title: { display: true, text: 'req/min' } }
+                }
+            }
+        });
+    }
+
+    // Trust Score Chart
+    const trustCtx = document.getElementById('trustTrendChart');
+    if (trustCtx) {
+        const labels = Array.from({length: 24}, (_, i) => `${i}:00`);
+        const data = labels.map(() => 0.78 + Math.random() * 0.1);
+
+        trustChart = new Chart(trustCtx, {
+            type: 'line',
+            data: {
+                labels: labels,
+                datasets: [{
+                    label: 'Trust Score',
+                    data: data,
+                    borderColor: '#10b981',
+                    backgroundColor: 'rgba(16, 185, 129, 0.1)',
+                    fill: true,
+                    tension: 0.4
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                plugins: { legend: { display: false } },
+                scales: {
+                    y: { min: 0.5, max: 1, title: { display: true, text: 'Score' } }
+                }
+            }
+        });
+    }
+}
+
+function initEndpointHistory() {
+    const endpoints = ['endpoint1History', 'endpoint2History', 'endpoint3History', 'endpoint4History'];
+
+    endpoints.forEach((id, idx) => {
+        const container = document.getElementById(id);
+        if (container) {
+            for (let i = 0; i < 30; i++) {
+                const bar = document.createElement('div');
+                bar.className = 'history-bar';
+
+                // Mostly success, occasional warning/error
+                const rand = Math.random();
+                if (idx === 3 && rand > 0.9) {
+                    bar.className += ' warning';
+                } else if (rand > 0.98) {
+                    bar.className += ' error';
+                } else {
+                    bar.className += ' success';
+                }
+
+                container.appendChild(bar);
+            }
+        }
+    });
+}
+
+function startLiveUpdates() {
+    // Initial data
+    for (let i = 0; i < 60; i++) {
+        latencyData.push({ p50: 40 + Math.random() * 10, p99: 120 + Math.random() * 40 });
+        throughputData.push(7500 + Math.random() * 1500);
+    }
+
+    updateCharts();
+
+    // Start interval
+    setInterval(() => {
+        if (!isPaused) {
+            // Add new data points
+            latencyData.push({
+                p50: 40 + Math.random() * 10,
+                p99: 120 + Math.random() * 40
+            });
+            throughputData.push(7500 + Math.random() * 1500);
+
+            // Keep last 60 points
+            if (latencyData.length > 60) latencyData.shift();
+            if (throughputData.length > 60) throughputData.shift();
+
+            updateCharts();
+        }
+    }, refreshInterval);
+}
+
+function updateCharts() {
+    if (latencyChart) {
+        latencyChart.data.datasets[0].data = latencyData.map(d => d.p50);
+        latencyChart.data.datasets[1].data = latencyData.map(d => d.p99);
+        latencyChart.update('none');
+    }
+
+    if (throughputChart) {
+        throughputChart.data.datasets[0].data = throughputData;
+        throughputChart.update('none');
+    }
+}
+
+function updateRefreshRate() {
+    refreshInterval = parseInt(document.getElementById('refreshRate').value) * 1000;
+}
+
+function togglePause() {
+    isPaused = !isPaused;
+    const icon = document.getElementById('pauseIcon');
+    const text = document.getElementById('pauseText');
+
+    if (isPaused) {
+        icon.setAttribute('data-lucide', 'play');
+        text.textContent = 'Resume';
+    } else {
+        icon.setAttribute('data-lucide', 'pause');
+        text.textContent = 'Pause';
+    }
+
+    lucide.createIcons();
+}
+</script>
+{% endblock %}

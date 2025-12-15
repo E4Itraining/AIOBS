@@ -1,0 +1,1332 @@
+{% extends "base.html" %}
+
+{% block sidebar_extra %}
+<div class="nav-group">
+    <span class="nav-group-title">Business Views</span>
+    <a href="/executive" class="nav-link">
+        <i data-lucide="briefcase"></i>
+        <span>Executive Dashboard</span>
+    </a>
+    <a href="/finops" class="nav-link active">
+        <i data-lucide="wallet"></i>
+        <span>FinOps</span>
+    </a>
+    <a href="/greenops" class="nav-link">
+        <i data-lucide="leaf"></i>
+        <span>GreenOps</span>
+    </a>
+    <a href="/compliance" class="nav-link">
+        <i data-lucide="shield-check"></i>
+        <span>Compliance</span>
+    </a>
+</div>
+<div class="nav-group">
+    <span class="nav-group-title">Technical Views</span>
+    <a href="/monitoring" class="nav-link">
+        <i data-lucide="activity"></i>
+        <span>Live Monitoring</span>
+    </a>
+    <a href="/security" class="nav-link">
+        <i data-lucide="lock"></i>
+        <span>Security Center</span>
+    </a>
+</div>
+{% endblock %}
+
+{% block page_title %}FinOps - Cost Management{% endblock %}
+{% block page_subtitle %}<p class="text-muted">AI infrastructure costs, budget tracking and optimization</p>{% endblock %}
+
+{% block topbar_actions %}
+<div class="time-range-selector">
+    <select class="form-select" id="timeRange" onchange="updateTimeRange()">
+        <option value="7d">Last 7 Days</option>
+        <option value="30d" selected>Last 30 Days</option>
+        <option value="90d">Last Quarter</option>
+        <option value="ytd">Year to Date</option>
+    </select>
+</div>
+<button class="btn btn-secondary" onclick="exportCostReport()">
+    <i data-lucide="download"></i>
+    Export
+</button>
+<button class="btn btn-primary" onclick="openBudgetSettings()">
+    <i data-lucide="settings"></i>
+    Budget Settings
+</button>
+{% endblock %}
+
+{% block content %}
+<!-- Budget Overview -->
+<div class="budget-hero">
+    <div class="budget-card main">
+        <div class="budget-header">
+            <span class="budget-label">Monthly Budget</span>
+            <span class="badge badge-warning">75% Used</span>
+        </div>
+        <div class="budget-amount">
+            <span class="amount-spent">$45,230</span>
+            <span class="amount-separator">/</span>
+            <span class="amount-total">$60,000</span>
+        </div>
+        <div class="budget-bar">
+            <div class="budget-fill warning" style="width: 75%">
+                <div class="budget-marker forecast" style="left: 85%"></div>
+            </div>
+        </div>
+        <div class="budget-meta">
+            <span>Forecast: $51,000 (85%)</span>
+            <span>15 days remaining</span>
+        </div>
+    </div>
+
+    <div class="budget-stats">
+        <div class="budget-stat">
+            <div class="stat-icon success">
+                <i data-lucide="trending-down"></i>
+            </div>
+            <div class="stat-content">
+                <span class="stat-value">-12%</span>
+                <span class="stat-label">vs Last Month</span>
+            </div>
+        </div>
+        <div class="budget-stat">
+            <div class="stat-icon primary">
+                <i data-lucide="cpu"></i>
+            </div>
+            <div class="stat-content">
+                <span class="stat-value">$0.0023</span>
+                <span class="stat-label">Cost per Inference</span>
+            </div>
+        </div>
+        <div class="budget-stat">
+            <div class="stat-icon warning">
+                <i data-lucide="alert-triangle"></i>
+            </div>
+            <div class="stat-content">
+                <span class="stat-value">3</span>
+                <span class="stat-label">Cost Anomalies</span>
+            </div>
+        </div>
+        <div class="budget-stat">
+            <div class="stat-icon success">
+                <i data-lucide="piggy-bank"></i>
+            </div>
+            <div class="stat-content">
+                <span class="stat-value">$8,200</span>
+                <span class="stat-label">Saved This Month</span>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Cost Breakdown -->
+<section class="mb-6">
+    <div class="grid grid-2">
+        <!-- By Category -->
+        <div class="card">
+            <div class="card-header">
+                <h3 class="card-title">Cost by Category</h3>
+            </div>
+            <div class="chart-container" style="height: 250px;">
+                <canvas id="costByCategory"></canvas>
+            </div>
+            <div class="cost-breakdown-list">
+                <div class="breakdown-item">
+                    <span class="breakdown-color" style="background: #6366f1"></span>
+                    <span class="breakdown-name">Inference</span>
+                    <span class="breakdown-value">$28,500</span>
+                    <span class="breakdown-pct">63%</span>
+                </div>
+                <div class="breakdown-item">
+                    <span class="breakdown-color" style="background: #8b5cf6"></span>
+                    <span class="breakdown-name">Training</span>
+                    <span class="breakdown-value">$8,200</span>
+                    <span class="breakdown-pct">18%</span>
+                </div>
+                <div class="breakdown-item">
+                    <span class="breakdown-color" style="background: #a78bfa"></span>
+                    <span class="breakdown-name">Storage</span>
+                    <span class="breakdown-value">$4,530</span>
+                    <span class="breakdown-pct">10%</span>
+                </div>
+                <div class="breakdown-item">
+                    <span class="breakdown-color" style="background: #c4b5fd"></span>
+                    <span class="breakdown-name">Networking</span>
+                    <span class="breakdown-value">$2,500</span>
+                    <span class="breakdown-pct">6%</span>
+                </div>
+                <div class="breakdown-item">
+                    <span class="breakdown-color" style="background: #ddd6fe"></span>
+                    <span class="breakdown-name">Monitoring</span>
+                    <span class="breakdown-value">$1,500</span>
+                    <span class="breakdown-pct">3%</span>
+                </div>
+            </div>
+        </div>
+
+        <!-- Cost Trend -->
+        <div class="card">
+            <div class="card-header">
+                <h3 class="card-title">Daily Cost Trend</h3>
+                <div class="trend-summary">
+                    <span class="trend-badge down">
+                        <i data-lucide="trending-down"></i>
+                        -8% trend
+                    </span>
+                </div>
+            </div>
+            <div class="chart-container">
+                <canvas id="costTrend"></canvas>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Model-Level Costs -->
+<section class="mb-6">
+    <div class="card">
+        <div class="card-header">
+            <h3 class="card-title">Cost by Model</h3>
+            <div class="header-actions">
+                <input type="text" class="form-input" placeholder="Search models..." style="width: 200px;">
+                <select class="form-select" style="width: 150px;">
+                    <option>All Environments</option>
+                    <option>Production</option>
+                    <option>Staging</option>
+                    <option>Development</option>
+                </select>
+            </div>
+        </div>
+        <div class="table-container">
+            <table class="table">
+                <thead>
+                    <tr>
+                        <th>Model</th>
+                        <th>Environment</th>
+                        <th>Daily Inferences</th>
+                        <th>Cost/1K Inferences</th>
+                        <th>Daily Cost</th>
+                        <th>Monthly Cost</th>
+                        <th>Trend</th>
+                        <th>Actions</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>
+                            <div class="model-cell">
+                                <span class="model-name">recommendation-v2</span>
+                                <span class="model-version">v2.3.1</span>
+                            </div>
+                        </td>
+                        <td><span class="badge badge-success">Production</span></td>
+                        <td>1.2M</td>
+                        <td>$2.85</td>
+                        <td>$3,420</td>
+                        <td>$18,500</td>
+                        <td><span class="trend down"><i data-lucide="trending-down"></i> -5%</span></td>
+                        <td>
+                            <button class="btn btn-ghost btn-sm" onclick="viewModelDetails('recommendation-v2')">
+                                <i data-lucide="eye"></i>
+                            </button>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>
+                            <div class="model-cell">
+                                <span class="model-name">fraud-detector-v1</span>
+                                <span class="model-version">v1.8.2</span>
+                            </div>
+                        </td>
+                        <td><span class="badge badge-success">Production</span></td>
+                        <td>850K</td>
+                        <td>$3.12</td>
+                        <td>$2,652</td>
+                        <td>$12,000</td>
+                        <td><span class="trend up"><i data-lucide="trending-up"></i> +8%</span></td>
+                        <td>
+                            <button class="btn btn-ghost btn-sm" onclick="viewModelDetails('fraud-detector-v1')">
+                                <i data-lucide="eye"></i>
+                            </button>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>
+                            <div class="model-cell">
+                                <span class="model-name">churn-predictor</span>
+                                <span class="model-version">v3.1.0</span>
+                            </div>
+                        </td>
+                        <td><span class="badge badge-success">Production</span></td>
+                        <td>450K</td>
+                        <td>$2.15</td>
+                        <td>$968</td>
+                        <td>$8,730</td>
+                        <td><span class="trend stable"><i data-lucide="minus"></i> 0%</span></td>
+                        <td>
+                            <button class="btn btn-ghost btn-sm" onclick="viewModelDetails('churn-predictor')">
+                                <i data-lucide="eye"></i>
+                            </button>
+                        </td>
+                    </tr>
+                    <tr class="highlight-warning">
+                        <td>
+                            <div class="model-cell">
+                                <span class="model-name">llm-assistant</span>
+                                <span class="model-version">v1.0.0</span>
+                            </div>
+                        </td>
+                        <td><span class="badge badge-success">Production</span></td>
+                        <td>50K</td>
+                        <td>$45.00</td>
+                        <td>$2,250</td>
+                        <td>$15,000</td>
+                        <td><span class="trend up"><i data-lucide="trending-up"></i> +25%</span></td>
+                        <td>
+                            <button class="btn btn-warning btn-sm" onclick="optimizeModel('llm-assistant')">
+                                Optimize
+                            </button>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>
+                            <div class="model-cell">
+                                <span class="model-name">sentiment-analyzer</span>
+                                <span class="model-version">v2.0.1</span>
+                            </div>
+                        </td>
+                        <td><span class="badge badge-info">Staging</span></td>
+                        <td>15K</td>
+                        <td>$1.80</td>
+                        <td>$27</td>
+                        <td>$580</td>
+                        <td><span class="trend down"><i data-lucide="trending-down"></i> -12%</span></td>
+                        <td>
+                            <button class="btn btn-ghost btn-sm" onclick="viewModelDetails('sentiment-analyzer')">
+                                <i data-lucide="eye"></i>
+                            </button>
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+</section>
+
+<!-- Cost Anomalies -->
+<section class="mb-6">
+    <div class="card">
+        <div class="card-header">
+            <h3 class="card-title">Cost Anomalies</h3>
+            <span class="badge badge-warning">3 Active</span>
+        </div>
+        <div class="anomalies-list">
+            <div class="anomaly-item critical">
+                <div class="anomaly-indicator">
+                    <i data-lucide="alert-circle"></i>
+                </div>
+                <div class="anomaly-content">
+                    <div class="anomaly-header">
+                        <span class="anomaly-title">LLM Assistant Cost Spike</span>
+                        <span class="anomaly-time">2 hours ago</span>
+                    </div>
+                    <p class="anomaly-desc">Cost increased by 45% compared to baseline. Potential cause: increased token usage per request.</p>
+                    <div class="anomaly-impact">
+                        <span><i data-lucide="dollar-sign"></i> +$850/day impact</span>
+                        <span><i data-lucide="target"></i> llm-assistant</span>
+                    </div>
+                </div>
+                <div class="anomaly-actions">
+                    <button class="btn btn-secondary btn-sm">Investigate</button>
+                    <button class="btn btn-ghost btn-sm">Dismiss</button>
+                </div>
+            </div>
+
+            <div class="anomaly-item warning">
+                <div class="anomaly-indicator">
+                    <i data-lucide="alert-triangle"></i>
+                </div>
+                <div class="anomaly-content">
+                    <div class="anomaly-header">
+                        <span class="anomaly-title">Unusual Storage Growth</span>
+                        <span class="anomaly-time">1 day ago</span>
+                    </div>
+                    <p class="anomaly-desc">Storage costs growing 2x faster than expected. Review checkpoint retention policies.</p>
+                    <div class="anomaly-impact">
+                        <span><i data-lucide="dollar-sign"></i> +$120/day impact</span>
+                        <span><i data-lucide="target"></i> model-checkpoints</span>
+                    </div>
+                </div>
+                <div class="anomaly-actions">
+                    <button class="btn btn-secondary btn-sm">Review</button>
+                    <button class="btn btn-ghost btn-sm">Dismiss</button>
+                </div>
+            </div>
+
+            <div class="anomaly-item info">
+                <div class="anomaly-indicator">
+                    <i data-lucide="info"></i>
+                </div>
+                <div class="anomaly-content">
+                    <div class="anomaly-header">
+                        <span class="anomaly-title">Network Egress Increase</span>
+                        <span class="anomaly-time">3 days ago</span>
+                    </div>
+                    <p class="anomaly-desc">Cross-region data transfer increased by 15%. May be related to new EU deployment.</p>
+                    <div class="anomaly-impact">
+                        <span><i data-lucide="dollar-sign"></i> +$45/day impact</span>
+                        <span><i data-lucide="target"></i> eu-west-1</span>
+                    </div>
+                </div>
+                <div class="anomaly-actions">
+                    <button class="btn btn-secondary btn-sm">Review</button>
+                    <button class="btn btn-ghost btn-sm">Expected</button>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Optimization Opportunities -->
+<section class="mb-6">
+    <h2 class="section-title">Cost Optimization Opportunities</h2>
+    <div class="optimization-grid">
+        <div class="optimization-card high-savings">
+            <div class="opt-header">
+                <div class="opt-icon">
+                    <i data-lucide="server"></i>
+                </div>
+                <div class="opt-savings">
+                    <span class="savings-value">$3,200</span>
+                    <span class="savings-label">/month</span>
+                </div>
+            </div>
+            <h4>Right-size GPU Instances</h4>
+            <p>3 inference clusters are underutilized (avg. 35% GPU usage). Downgrade to smaller instance types.</p>
+            <div class="opt-details">
+                <span><i data-lucide="cpu"></i> 3 instances affected</span>
+                <span><i data-lucide="clock"></i> ~2 hours to implement</span>
+            </div>
+            <div class="opt-actions">
+                <button class="btn btn-primary btn-sm">Apply Now</button>
+                <button class="btn btn-ghost btn-sm">Learn More</button>
+            </div>
+        </div>
+
+        <div class="optimization-card medium-savings">
+            <div class="opt-header">
+                <div class="opt-icon">
+                    <i data-lucide="clock"></i>
+                </div>
+                <div class="opt-savings">
+                    <span class="savings-value">$1,800</span>
+                    <span class="savings-label">/month</span>
+                </div>
+            </div>
+            <h4>Schedule Off-Peak Training</h4>
+            <p>Move training jobs to off-peak hours (2am-6am) to benefit from spot pricing.</p>
+            <div class="opt-details">
+                <span><i data-lucide="calendar"></i> 12 training jobs</span>
+                <span><i data-lucide="percent"></i> 40% cost reduction</span>
+            </div>
+            <div class="opt-actions">
+                <button class="btn btn-secondary btn-sm">Configure</button>
+                <button class="btn btn-ghost btn-sm">Learn More</button>
+            </div>
+        </div>
+
+        <div class="optimization-card medium-savings">
+            <div class="opt-header">
+                <div class="opt-icon">
+                    <i data-lucide="layers"></i>
+                </div>
+                <div class="opt-savings">
+                    <span class="savings-value">$1,500</span>
+                    <span class="savings-label">/month</span>
+                </div>
+            </div>
+            <h4>Enable Request Batching</h4>
+            <p>Batch inference requests for LLM models to improve GPU utilization efficiency.</p>
+            <div class="opt-details">
+                <span><i data-lucide="zap"></i> +45% throughput</span>
+                <span><i data-lucide="clock"></i> ~4 hours to implement</span>
+            </div>
+            <div class="opt-actions">
+                <button class="btn btn-secondary btn-sm">Review</button>
+                <button class="btn btn-ghost btn-sm">Learn More</button>
+            </div>
+        </div>
+
+        <div class="optimization-card low-savings">
+            <div class="opt-header">
+                <div class="opt-icon">
+                    <i data-lucide="trash-2"></i>
+                </div>
+                <div class="opt-savings">
+                    <span class="savings-value">$450</span>
+                    <span class="savings-label">/month</span>
+                </div>
+            </div>
+            <h4>Clean Up Unused Resources</h4>
+            <p>Delete 45 unused model checkpoints and 8 orphaned storage volumes.</p>
+            <div class="opt-details">
+                <span><i data-lucide="hard-drive"></i> 850 GB storage</span>
+                <span><i data-lucide="clock"></i> ~30 mins to implement</span>
+            </div>
+            <div class="opt-actions">
+                <button class="btn btn-secondary btn-sm">Clean Up</button>
+                <button class="btn btn-ghost btn-sm">Review List</button>
+            </div>
+        </div>
+    </div>
+
+    <div class="total-savings-banner">
+        <i data-lucide="piggy-bank"></i>
+        <span>Total potential savings: <strong>$6,950/month</strong> ($83,400/year)</span>
+        <button class="btn btn-primary" onclick="viewAllOptimizations()">View All Recommendations</button>
+    </div>
+</section>
+
+<!-- Forecast & Budget -->
+<section class="mb-6">
+    <div class="grid grid-2">
+        <!-- Cost Forecast -->
+        <div class="card">
+            <div class="card-header">
+                <h3 class="card-title">Cost Forecast</h3>
+            </div>
+            <div class="chart-container">
+                <canvas id="costForecast"></canvas>
+            </div>
+            <div class="forecast-details">
+                <div class="forecast-row">
+                    <span>Current Month Projection</span>
+                    <span class="forecast-value">$51,000</span>
+                </div>
+                <div class="forecast-row">
+                    <span>Next Month Forecast</span>
+                    <span class="forecast-value">$48,500</span>
+                </div>
+                <div class="forecast-row">
+                    <span>Q1 Total Forecast</span>
+                    <span class="forecast-value">$152,000</span>
+                </div>
+            </div>
+        </div>
+
+        <!-- Budget Allocation -->
+        <div class="card">
+            <div class="card-header">
+                <h3 class="card-title">Budget Allocation</h3>
+            </div>
+            <div class="budget-allocation">
+                <div class="allocation-item">
+                    <div class="allocation-header">
+                        <span class="allocation-name">Production Inference</span>
+                        <span class="allocation-status on-track">On Track</span>
+                    </div>
+                    <div class="allocation-bar">
+                        <div class="allocation-fill" style="width: 72%"></div>
+                    </div>
+                    <div class="allocation-meta">
+                        <span>$28,800 / $40,000</span>
+                        <span>72%</span>
+                    </div>
+                </div>
+                <div class="allocation-item">
+                    <div class="allocation-header">
+                        <span class="allocation-name">Model Training</span>
+                        <span class="allocation-status on-track">On Track</span>
+                    </div>
+                    <div class="allocation-bar">
+                        <div class="allocation-fill" style="width: 65%"></div>
+                    </div>
+                    <div class="allocation-meta">
+                        <span>$6,500 / $10,000</span>
+                        <span>65%</span>
+                    </div>
+                </div>
+                <div class="allocation-item">
+                    <div class="allocation-header">
+                        <span class="allocation-name">Storage & Data</span>
+                        <span class="allocation-status warning">At Risk</span>
+                    </div>
+                    <div class="allocation-bar warning">
+                        <div class="allocation-fill warning" style="width: 91%"></div>
+                    </div>
+                    <div class="allocation-meta">
+                        <span>$4,550 / $5,000</span>
+                        <span>91%</span>
+                    </div>
+                </div>
+                <div class="allocation-item">
+                    <div class="allocation-header">
+                        <span class="allocation-name">Development</span>
+                        <span class="allocation-status under">Under Budget</span>
+                    </div>
+                    <div class="allocation-bar">
+                        <div class="allocation-fill" style="width: 40%"></div>
+                    </div>
+                    <div class="allocation-meta">
+                        <span>$2,000 / $5,000</span>
+                        <span>40%</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<style>
+.section-title {
+    font-size: 1.125rem;
+    font-weight: 600;
+    margin-bottom: var(--space-4);
+}
+
+/* Budget Hero */
+.budget-hero {
+    display: flex;
+    gap: var(--space-6);
+    margin-bottom: var(--space-6);
+}
+
+.budget-card.main {
+    flex: 1;
+    padding: var(--space-6);
+    background: var(--bg-card);
+    border: 1px solid var(--border-color);
+    border-radius: var(--radius-xl);
+}
+
+.budget-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: var(--space-3);
+}
+
+.budget-label {
+    font-size: 0.875rem;
+    color: var(--text-secondary);
+}
+
+.budget-amount {
+    display: flex;
+    align-items: baseline;
+    gap: var(--space-2);
+    margin-bottom: var(--space-4);
+}
+
+.amount-spent {
+    font-size: 2.5rem;
+    font-weight: 700;
+}
+
+.amount-separator {
+    font-size: 1.5rem;
+    color: var(--text-tertiary);
+}
+
+.amount-total {
+    font-size: 1.5rem;
+    color: var(--text-secondary);
+}
+
+.budget-bar {
+    position: relative;
+    height: 12px;
+    background: var(--border-color);
+    border-radius: var(--radius-full);
+    overflow: visible;
+    margin-bottom: var(--space-3);
+}
+
+.budget-fill {
+    height: 100%;
+    border-radius: var(--radius-full);
+    position: relative;
+}
+
+.budget-fill.success { background: var(--color-success); }
+.budget-fill.warning { background: var(--color-warning); }
+.budget-fill.danger { background: var(--color-danger); }
+
+.budget-marker {
+    position: absolute;
+    top: -4px;
+    width: 4px;
+    height: 20px;
+    background: var(--text-primary);
+    border-radius: 2px;
+    transform: translateX(-50%);
+}
+
+.budget-marker.forecast {
+    background: var(--color-primary);
+    opacity: 0.5;
+}
+
+.budget-meta {
+    display: flex;
+    justify-content: space-between;
+    font-size: 0.8125rem;
+    color: var(--text-secondary);
+}
+
+.budget-stats {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: var(--space-4);
+}
+
+.budget-stat {
+    display: flex;
+    gap: var(--space-3);
+    padding: var(--space-4);
+    background: var(--bg-card);
+    border: 1px solid var(--border-color);
+    border-radius: var(--radius-lg);
+}
+
+.stat-icon {
+    width: 44px;
+    height: 44px;
+    border-radius: var(--radius-lg);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.stat-icon svg {
+    width: 22px;
+    height: 22px;
+    color: white;
+}
+
+.stat-icon.success { background: linear-gradient(135deg, #10b981, #34d399); }
+.stat-icon.primary { background: linear-gradient(135deg, #6366f1, #8b5cf6); }
+.stat-icon.warning { background: linear-gradient(135deg, #f59e0b, #fbbf24); }
+
+.stat-value {
+    display: block;
+    font-size: 1.25rem;
+    font-weight: 700;
+}
+
+.stat-label {
+    font-size: 0.75rem;
+    color: var(--text-secondary);
+}
+
+/* Cost Breakdown */
+.cost-breakdown-list {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-2);
+    margin-top: var(--space-4);
+    padding-top: var(--space-4);
+    border-top: 1px solid var(--border-color);
+}
+
+.breakdown-item {
+    display: flex;
+    align-items: center;
+    gap: var(--space-3);
+    padding: var(--space-2) 0;
+}
+
+.breakdown-color {
+    width: 12px;
+    height: 12px;
+    border-radius: var(--radius-sm);
+}
+
+.breakdown-name {
+    flex: 1;
+    font-size: 0.875rem;
+}
+
+.breakdown-value {
+    font-weight: 600;
+    font-size: 0.875rem;
+}
+
+.breakdown-pct {
+    width: 40px;
+    text-align: right;
+    font-size: 0.75rem;
+    color: var(--text-secondary);
+}
+
+/* Trend Badge */
+.trend-summary {
+    display: flex;
+    gap: var(--space-2);
+}
+
+.trend-badge {
+    display: flex;
+    align-items: center;
+    gap: var(--space-1);
+    padding: var(--space-1) var(--space-2);
+    border-radius: var(--radius-full);
+    font-size: 0.75rem;
+    font-weight: 500;
+}
+
+.trend-badge.down {
+    background: var(--color-success-light);
+    color: var(--color-success);
+}
+
+.trend-badge.up {
+    background: var(--color-danger-light);
+    color: var(--color-danger);
+}
+
+.trend-badge svg {
+    width: 14px;
+    height: 14px;
+}
+
+/* Model Cell */
+.model-cell {
+    display: flex;
+    flex-direction: column;
+}
+
+.model-name {
+    font-weight: 500;
+}
+
+.model-version {
+    font-size: 0.75rem;
+    color: var(--text-secondary);
+}
+
+.trend {
+    display: inline-flex;
+    align-items: center;
+    gap: var(--space-1);
+    font-weight: 500;
+    font-size: 0.8125rem;
+}
+
+.trend svg {
+    width: 14px;
+    height: 14px;
+}
+
+.trend.down { color: var(--color-success); }
+.trend.up { color: var(--color-danger); }
+.trend.stable { color: var(--text-secondary); }
+
+.highlight-warning {
+    background: var(--color-warning-light);
+}
+
+/* Anomalies */
+.anomalies-list {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-4);
+}
+
+.anomaly-item {
+    display: flex;
+    gap: var(--space-4);
+    padding: var(--space-4);
+    border: 1px solid var(--border-color);
+    border-radius: var(--radius-lg);
+    border-left: 4px solid;
+}
+
+.anomaly-item.critical { border-left-color: var(--color-danger); }
+.anomaly-item.warning { border-left-color: var(--color-warning); }
+.anomaly-item.info { border-left-color: var(--color-info); }
+
+.anomaly-indicator {
+    width: 40px;
+    height: 40px;
+    border-radius: var(--radius-lg);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+}
+
+.anomaly-item.critical .anomaly-indicator {
+    background: var(--color-danger-light);
+    color: var(--color-danger);
+}
+
+.anomaly-item.warning .anomaly-indicator {
+    background: var(--color-warning-light);
+    color: var(--color-warning);
+}
+
+.anomaly-item.info .anomaly-indicator {
+    background: var(--color-info-light);
+    color: var(--color-info);
+}
+
+.anomaly-indicator svg {
+    width: 20px;
+    height: 20px;
+}
+
+.anomaly-content {
+    flex: 1;
+}
+
+.anomaly-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: var(--space-1);
+}
+
+.anomaly-title {
+    font-weight: 600;
+    font-size: 0.9375rem;
+}
+
+.anomaly-time {
+    font-size: 0.75rem;
+    color: var(--text-secondary);
+}
+
+.anomaly-desc {
+    font-size: 0.8125rem;
+    color: var(--text-secondary);
+    margin-bottom: var(--space-2);
+}
+
+.anomaly-impact {
+    display: flex;
+    gap: var(--space-4);
+}
+
+.anomaly-impact span {
+    display: flex;
+    align-items: center;
+    gap: var(--space-1);
+    font-size: 0.75rem;
+    color: var(--text-secondary);
+}
+
+.anomaly-impact svg {
+    width: 14px;
+    height: 14px;
+}
+
+.anomaly-actions {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-2);
+}
+
+/* Optimization Grid */
+.optimization-grid {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: var(--space-4);
+    margin-bottom: var(--space-4);
+}
+
+.optimization-card {
+    padding: var(--space-4);
+    background: var(--bg-card);
+    border: 1px solid var(--border-color);
+    border-radius: var(--radius-xl);
+}
+
+.opt-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    margin-bottom: var(--space-3);
+}
+
+.opt-icon {
+    width: 40px;
+    height: 40px;
+    border-radius: var(--radius-lg);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: var(--bg-hover);
+}
+
+.opt-icon svg {
+    width: 20px;
+    height: 20px;
+    color: var(--text-secondary);
+}
+
+.high-savings .opt-icon {
+    background: var(--color-success-light);
+}
+
+.high-savings .opt-icon svg {
+    color: var(--color-success);
+}
+
+.opt-savings {
+    text-align: right;
+}
+
+.savings-value {
+    display: block;
+    font-size: 1.25rem;
+    font-weight: 700;
+    color: var(--color-success);
+}
+
+.savings-label {
+    font-size: 0.75rem;
+    color: var(--text-secondary);
+}
+
+.optimization-card h4 {
+    font-size: 0.9375rem;
+    font-weight: 600;
+    margin-bottom: var(--space-2);
+}
+
+.optimization-card p {
+    font-size: 0.8125rem;
+    color: var(--text-secondary);
+    line-height: 1.5;
+    margin-bottom: var(--space-3);
+}
+
+.opt-details {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-1);
+    margin-bottom: var(--space-3);
+    padding-top: var(--space-3);
+    border-top: 1px solid var(--border-color);
+}
+
+.opt-details span {
+    display: flex;
+    align-items: center;
+    gap: var(--space-2);
+    font-size: 0.75rem;
+    color: var(--text-secondary);
+}
+
+.opt-details svg {
+    width: 14px;
+    height: 14px;
+}
+
+.opt-actions {
+    display: flex;
+    gap: var(--space-2);
+}
+
+.total-savings-banner {
+    display: flex;
+    align-items: center;
+    gap: var(--space-4);
+    padding: var(--space-4) var(--space-5);
+    background: linear-gradient(135deg, var(--color-success-light), transparent);
+    border: 1px solid var(--color-success);
+    border-radius: var(--radius-xl);
+}
+
+.total-savings-banner svg {
+    width: 24px;
+    height: 24px;
+    color: var(--color-success);
+}
+
+.total-savings-banner span {
+    flex: 1;
+}
+
+/* Forecast Details */
+.forecast-details {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-2);
+    margin-top: var(--space-4);
+    padding-top: var(--space-4);
+    border-top: 1px solid var(--border-color);
+}
+
+.forecast-row {
+    display: flex;
+    justify-content: space-between;
+    font-size: 0.875rem;
+}
+
+.forecast-value {
+    font-weight: 600;
+}
+
+/* Budget Allocation */
+.budget-allocation {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-4);
+}
+
+.allocation-item {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-2);
+}
+
+.allocation-header {
+    display: flex;
+    justify-content: space-between;
+    font-size: 0.875rem;
+}
+
+.allocation-status {
+    font-size: 0.75rem;
+    font-weight: 500;
+    padding: var(--space-1) var(--space-2);
+    border-radius: var(--radius-full);
+}
+
+.allocation-status.on-track {
+    background: var(--color-success-light);
+    color: var(--color-success);
+}
+
+.allocation-status.warning {
+    background: var(--color-warning-light);
+    color: var(--color-warning);
+}
+
+.allocation-status.under {
+    background: var(--color-info-light);
+    color: var(--color-info);
+}
+
+.allocation-bar {
+    height: 8px;
+    background: var(--border-color);
+    border-radius: var(--radius-full);
+    overflow: hidden;
+}
+
+.allocation-fill {
+    height: 100%;
+    background: var(--color-success);
+    border-radius: var(--radius-full);
+}
+
+.allocation-bar.warning .allocation-fill {
+    background: var(--color-warning);
+}
+
+.allocation-meta {
+    display: flex;
+    justify-content: space-between;
+    font-size: 0.75rem;
+    color: var(--text-secondary);
+}
+
+.header-actions {
+    display: flex;
+    gap: var(--space-3);
+}
+
+@media (max-width: 1200px) {
+    .optimization-grid {
+        grid-template-columns: repeat(2, 1fr);
+    }
+}
+
+@media (max-width: 768px) {
+    .budget-hero {
+        flex-direction: column;
+    }
+
+    .budget-stats {
+        grid-template-columns: 1fr;
+    }
+
+    .optimization-grid {
+        grid-template-columns: 1fr;
+    }
+
+    .anomaly-item {
+        flex-direction: column;
+    }
+
+    .anomaly-actions {
+        flex-direction: row;
+    }
+
+    .total-savings-banner {
+        flex-direction: column;
+        text-align: center;
+    }
+}
+</style>
+{% endblock %}
+
+{% block scripts %}
+<script>
+document.addEventListener('DOMContentLoaded', async () => {
+    await loadFinOpsData();
+    initCharts();
+    lucide.createIcons();
+});
+
+async function loadFinOpsData() {
+    try {
+        const response = await fetch('/api/dashboard/costs');
+        const result = await response.json();
+
+        if (result.success) {
+            console.log('FinOps data loaded:', result.data);
+        }
+    } catch (error) {
+        console.error('Error loading FinOps data:', error);
+    }
+}
+
+function initCharts() {
+    // Cost by Category
+    const categoryCtx = document.getElementById('costByCategory');
+    if (categoryCtx) {
+        new Chart(categoryCtx, {
+            type: 'doughnut',
+            data: {
+                labels: ['Inference', 'Training', 'Storage', 'Networking', 'Monitoring'],
+                datasets: [{
+                    data: [28500, 8200, 4530, 2500, 1500],
+                    backgroundColor: ['#6366f1', '#8b5cf6', '#a78bfa', '#c4b5fd', '#ddd6fe'],
+                    borderWidth: 0
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                cutout: '65%',
+                plugins: {
+                    legend: { display: false }
+                }
+            }
+        });
+    }
+
+    // Cost Trend
+    const trendCtx = document.getElementById('costTrend');
+    if (trendCtx) {
+        const labels = Array.from({length: 30}, (_, i) => {
+            const d = new Date();
+            d.setDate(d.getDate() - (29 - i));
+            return d.toLocaleDateString('en', {month: 'short', day: 'numeric'});
+        });
+
+        // Generate realistic cost data with slight downward trend
+        const data = labels.map((_, i) => {
+            const base = 1600 - (i * 3);
+            return Math.max(1300, base + (Math.random() - 0.5) * 200);
+        });
+
+        new Chart(trendCtx, {
+            type: 'line',
+            data: {
+                labels: labels,
+                datasets: [{
+                    label: 'Daily Cost ($)',
+                    data: data,
+                    borderColor: '#6366f1',
+                    backgroundColor: 'rgba(99, 102, 241, 0.1)',
+                    fill: true,
+                    tension: 0.4
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                plugins: {
+                    legend: { display: false }
+                },
+                scales: {
+                    x: {
+                        ticks: { maxTicksLimit: 7 }
+                    }
+                }
+            }
+        });
+    }
+
+    // Cost Forecast
+    const forecastCtx = document.getElementById('costForecast');
+    if (forecastCtx) {
+        const labels = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun'];
+        const actual = [48000, 52000, 49000, 51000, null, null];
+        const forecast = [null, null, null, 51000, 48500, 47000];
+
+        new Chart(forecastCtx, {
+            type: 'line',
+            data: {
+                labels: labels,
+                datasets: [{
+                    label: 'Actual',
+                    data: actual,
+                    borderColor: '#6366f1',
+                    backgroundColor: 'rgba(99, 102, 241, 0.1)',
+                    fill: true,
+                    tension: 0.4
+                }, {
+                    label: 'Forecast',
+                    data: forecast,
+                    borderColor: '#6366f1',
+                    borderDash: [5, 5],
+                    backgroundColor: 'transparent',
+                    tension: 0.4
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                plugins: {
+                    legend: { display: false }
+                }
+            }
+        });
+    }
+}
+
+function updateTimeRange() {
+    showToast('Updating data...', 'info');
+    loadFinOpsData();
+}
+
+function exportCostReport() {
+    showToast('Generating cost report...', 'info');
+    setTimeout(() => {
+        showToast('Report ready for download!', 'success');
+    }, 1500);
+}
+
+function openBudgetSettings() {
+    showToast('Opening budget settings...', 'info');
+}
+
+function viewModelDetails(modelId) {
+    showToast(`Loading ${modelId} details...`, 'info');
+}
+
+function optimizeModel(modelId) {
+    showToast(`Opening optimization wizard for ${modelId}...`, 'info');
+}
+
+function viewAllOptimizations() {
+    showToast('Loading all optimization opportunities...', 'info');
+}
+</script>
+{% endblock %}
