@@ -261,7 +261,10 @@ services:
       # Optional: mount tests for live changes during development
       # - ./tests:/app/tests:ro
     networks:
-      - aiobs-network
+      # Use dedicated test network to avoid conflicts with main services
+      # This prevents "network has active endpoints" errors when running
+      # tests while other services are running
+      - test-network
     # Test runner exits after completion
     restart: "no"
 
@@ -274,6 +277,9 @@ networks:
     ipam:
       config:
         - subnet: 172.28.0.0/16
+  # Dedicated network for test runner to avoid conflicts with main services
+  test-network:
+    driver: bridge
 
 # =============================================================================
 # Volumes
