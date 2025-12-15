@@ -1,233 +1,213 @@
 {% extends "base.html" %}
 
+{% set active_page = 'dashboard' %}
+
+{% block page_title %}{{ t('dashboard.title') }}{% endblock %}
+
+{% block page_subtitle %}
+<p>{{ t('dashboard.subtitle') or 'AI Trust Control Layer - Overview' }}</p>
+{% endblock %}
+
+{% block topbar_actions %}
+<div class="profile-selector" id="profileSelector">
+    <button class="btn btn-secondary" data-profile="all">
+        <i data-lucide="users"></i>
+        <span>All Profiles</span>
+    </button>
+</div>
+{% endblock %}
+
 {% block content %}
-<div class="dashboard-container">
-    <!-- Sidebar -->
-    <nav class="sidebar" id="sidebar">
-        <!-- Mobile close button -->
-        <button class="sidebar-close-btn" onclick="closeMobileSidebar()" aria-label="Fermer le menu">
-            <svg viewBox="0 0 24 24" width="24" height="24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                <line x1="18" y1="6" x2="6" y2="18"></line>
-                <line x1="6" y1="6" x2="18" y2="18"></line>
-            </svg>
-        </button>
-
-        <div class="sidebar-logo">
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true">
-                <circle cx="12" cy="12" r="10"/>
-                <path d="M12 6v6l4 2"/>
-                <circle cx="12" cy="12" r="3"/>
-            </svg>
-            {{ t('app.name') }}
+<!-- KPI Grid -->
+<div class="kpi-grid">
+    <div class="kpi-card" id="kpiTrust">
+        <div class="kpi-icon primary">
+            <i data-lucide="shield-check"></i>
         </div>
-
-        <div class="nav-section">
-            <div class="nav-section-title">{{ t('nav.overview') }}</div>
-            <a href="/" class="nav-item active">
-                <i data-feather="home"></i>
-                {{ t('nav.dashboard') }}
-            </a>
-            <a href="/unified" class="nav-item">
-                <i data-feather="layers"></i>
-                {{ t('nav.unified_view') }}
-            </a>
+        <div class="kpi-label">{{ t('dashboard.trust_score') }}</div>
+        <div class="kpi-value" id="trustScore">
+            <span class="skeleton" style="display: inline-block; width: 80px; height: 32px;"></span>
         </div>
-
-        <div class="nav-section">
-            <div class="nav-section-title">{{ t('nav.analysis') }}</div>
-            <a href="/causal" class="nav-item">
-                <i data-feather="git-branch"></i>
-                {{ t('nav.causal_analysis') }}
-            </a>
-            <a href="/impact" class="nav-item">
-                <i data-feather="trending-up"></i>
-                {{ t('nav.impact_analysis') }}
-            </a>
+        <div class="kpi-trend stable" id="trustTrend">
+            <i data-lucide="minus"></i>
+            <span>{{ t('trends.stable') }}</span>
         </div>
+    </div>
 
-        <div class="nav-section">
-            <div class="nav-section-title">{{ t('nav.configuration') }}</div>
-            <a href="#" class="nav-item" onclick="toggleTheme()">
-                <i data-feather="moon"></i>
-                {{ t('nav.toggle_theme') }}
-            </a>
-            <div class="nav-item" style="padding: 0.5rem;">
-                <div id="sidebarLanguageSelector"></div>
-            </div>
+    <div class="kpi-card" id="kpiInferences">
+        <div class="kpi-icon success">
+            <i data-lucide="zap"></i>
         </div>
-    </nav>
-
-    <!-- Main Content -->
-    <main class="main-content">
-        <div class="header">
-            <h1 class="header-title">{{ t('dashboard.title') }}</h1>
-            <div class="header-actions">
-                <div id="headerLanguageSelector"></div>
-                <div class="profile-selector" id="profileSelector">
-                    <!-- Populated by JS -->
-                </div>
-            </div>
+        <div class="kpi-label">{{ t('dashboard.daily_inferences') }}</div>
+        <div class="kpi-value" id="inferences">
+            <span class="skeleton" style="display: inline-block; width: 80px; height: 32px;"></span>
         </div>
+        <div class="kpi-trend up">
+            <i data-lucide="trending-up"></i>
+            <span>+12%</span>
+        </div>
+    </div>
 
-        <!-- KPI Cards -->
-        <div class="kpi-grid" id="kpiGrid">
-            <div class="kpi-card" data-loading="true">
-                <div class="kpi-label">{{ t('dashboard.trust_score') }}</div>
-                <div class="kpi-value skeleton-text" id="trustScore">--</div>
-                <div class="kpi-trend stable" id="trustTrend">
-                    <i data-feather="minus"></i> {{ t('trends.stable') }}
-                </div>
+    <div class="kpi-card" id="kpiCost">
+        <div class="kpi-icon warning">
+            <i data-lucide="dollar-sign"></i>
+        </div>
+        <div class="kpi-label">{{ t('dashboard.daily_cost') }}</div>
+        <div class="kpi-value" id="dailyCost">
+            <span class="skeleton" style="display: inline-block; width: 80px; height: 32px;"></span>
+        </div>
+        <div class="kpi-trend" id="costTrend">
+            <i data-lucide="trending-up"></i>
+            <span>+8%</span>
+        </div>
+    </div>
+
+    <div class="kpi-card" id="kpiCarbon">
+        <div class="kpi-icon danger">
+            <i data-lucide="leaf"></i>
+        </div>
+        <div class="kpi-label">{{ t('dashboard.carbon_footprint') }}</div>
+        <div class="kpi-value" id="carbonKg">
+            <span class="skeleton" style="display: inline-block; width: 80px; height: 32px;"></span>
+        </div>
+        <div class="kpi-trend down" id="carbonTrend">
+            <i data-lucide="trending-down"></i>
+            <span>-5%</span>
+        </div>
+    </div>
+</div>
+
+<!-- Health & Alerts Row -->
+<div class="grid grid-2 mb-6">
+    <div class="card">
+        <div class="card-header">
+            <h3 class="card-title">{{ t('dashboard.system_health') }}</h3>
+        </div>
+        <div class="flex justify-between" style="text-align: center;">
+            <div style="flex: 1;">
+                <div class="kpi-value" style="color: var(--color-success);" id="healthyCount">--</div>
+                <div class="text-sm text-muted">{{ t('dashboard.healthy') }}</div>
             </div>
-            <div class="kpi-card" data-loading="true">
-                <div class="kpi-label">{{ t('dashboard.daily_inferences') }}</div>
-                <div class="kpi-value skeleton-text" id="inferences">--</div>
-                <div class="kpi-trend up">
-                    <i data-feather="trending-up"></i> +12%
-                </div>
+            <div style="flex: 1;">
+                <div class="kpi-value" style="color: var(--color-warning);" id="degradedCount">--</div>
+                <div class="text-sm text-muted">{{ t('dashboard.degraded') }}</div>
             </div>
-            <div class="kpi-card" data-loading="true">
-                <div class="kpi-label">{{ t('dashboard.daily_cost') }}</div>
-                <div class="kpi-value skeleton-text" id="dailyCost">--</div>
-                <div class="kpi-trend" id="costTrend">
-                    <i data-feather="trending-up"></i> +8%
-                </div>
-            </div>
-            <div class="kpi-card" data-loading="true">
-                <div class="kpi-label">{{ t('dashboard.carbon_footprint') }}</div>
-                <div class="kpi-value skeleton-text" id="carbonKg">--</div>
-                <div class="kpi-trend down" id="carbonTrend">
-                    <i data-feather="trending-down"></i> -5%
-                </div>
+            <div style="flex: 1;">
+                <div class="kpi-value" style="color: var(--color-danger);" id="unhealthyCount">--</div>
+                <div class="text-sm text-muted">{{ t('dashboard.unhealthy') }}</div>
             </div>
         </div>
+    </div>
 
-        <!-- Health Summary & Alerts -->
-        <div class="responsive-grid-2">
-            <div class="card">
-                <div class="card-header">
-                    <h3 class="card-title">{{ t('dashboard.system_health') }}</h3>
-                </div>
-                <div style="display: flex; justify-content: space-around; text-align: center;">
-                    <div>
-                        <div style="font-size: 2.5rem; font-weight: 700; color: var(--success);" id="healthyCount">--</div>
-                        <div style="color: var(--text-secondary);">{{ t('dashboard.healthy') }}</div>
-                    </div>
-                    <div>
-                        <div style="font-size: 2.5rem; font-weight: 700; color: var(--warning);" id="degradedCount">--</div>
-                        <div style="color: var(--text-secondary);">{{ t('dashboard.degraded') }}</div>
-                    </div>
-                    <div>
-                        <div style="font-size: 2.5rem; font-weight: 700; color: var(--danger);" id="unhealthyCount">--</div>
-                        <div style="color: var(--text-secondary);">{{ t('dashboard.unhealthy') }}</div>
-                    </div>
-                </div>
+    <div class="card">
+        <div class="card-header">
+            <h3 class="card-title">{{ t('dashboard.active_alerts') }}</h3>
+        </div>
+        <div class="flex justify-between" style="text-align: center;">
+            <div style="flex: 1;">
+                <div class="kpi-value" style="color: var(--color-danger);" id="criticalAlerts">--</div>
+                <div class="text-sm text-muted">{{ t('dashboard.critical') }}</div>
             </div>
-
-            <div class="card">
-                <div class="card-header">
-                    <h3 class="card-title">{{ t('dashboard.active_alerts') }}</h3>
-                </div>
-                <div style="display: flex; justify-content: space-around; text-align: center;">
-                    <div>
-                        <div style="font-size: 2.5rem; font-weight: 700; color: var(--danger);" id="criticalAlerts">--</div>
-                        <div style="color: var(--text-secondary);">{{ t('dashboard.critical') }}</div>
-                    </div>
-                    <div>
-                        <div style="font-size: 2.5rem; font-weight: 700; color: var(--warning);" id="warningAlerts">--</div>
-                        <div style="color: var(--text-secondary);">{{ t('dashboard.warning') }}</div>
-                    </div>
-                    <div>
-                        <div style="font-size: 2.5rem; font-weight: 700; color: var(--info);" id="infoAlerts">--</div>
-                        <div style="color: var(--text-secondary);">{{ t('dashboard.info') }}</div>
-                    </div>
-                </div>
+            <div style="flex: 1;">
+                <div class="kpi-value" style="color: var(--color-warning);" id="warningAlerts">--</div>
+                <div class="text-sm text-muted">{{ t('dashboard.warning') }}</div>
+            </div>
+            <div style="flex: 1;">
+                <div class="kpi-value" style="color: var(--color-info);" id="infoAlerts">--</div>
+                <div class="text-sm text-muted">{{ t('dashboard.info') }}</div>
             </div>
         </div>
+    </div>
+</div>
 
-        <!-- Charts Row -->
-        <div class="responsive-grid-chart">
-            <div class="card">
-                <div class="card-header">
-                    <h3 class="card-title">{{ t('dashboard.trust_score_trend') }}</h3>
-                    <select id="chartTimeRange" style="padding: 0.25rem 0.5rem; border-radius: 0.25rem; border: 1px solid var(--border-color);">
-                        <option value="24">{{ t('time.last_24h') }}</option>
-                        <option value="168">{{ t('time.last_7d') }}</option>
-                        <option value="720">{{ t('time.last_30d') }}</option>
-                    </select>
-                </div>
-                <div class="chart-container">
-                    <canvas id="trustChart"></canvas>
-                </div>
-            </div>
-
-            <div class="card">
-                <div class="card-header">
-                    <h3 class="card-title">{{ t('dashboard.slo_compliance') }}</h3>
-                </div>
-                <div class="chart-container">
-                    <canvas id="sloChart"></canvas>
-                </div>
-            </div>
+<!-- Charts Row -->
+<div class="grid grid-2 mb-6">
+    <div class="card">
+        <div class="card-header">
+            <h3 class="card-title">{{ t('dashboard.trust_score_trend') }}</h3>
+            <select id="chartTimeRange" class="form-select" style="width: auto;">
+                <option value="24">{{ t('time.last_24h') }}</option>
+                <option value="168">{{ t('time.last_7d') }}</option>
+                <option value="720">{{ t('time.last_30d') }}</option>
+            </select>
         </div>
-
-        <!-- Services Table -->
-        <div class="card">
-            <div class="card-header">
-                <h3 class="card-title">{{ t('dashboard.services_status') }}</h3>
-                <div>
-                    <input type="search" placeholder="{{ t('dashboard.search_services') }}" style="padding: 0.5rem; border-radius: 0.25rem; border: 1px solid var(--border-color);">
-                </div>
-            </div>
-            <table class="services-table">
-                <thead>
-                    <tr>
-                        <th>{{ t('table.service') }}</th>
-                        <th>{{ t('table.type') }}</th>
-                        <th>{{ t('table.status') }}</th>
-                        <th>{{ t('table.uptime') }}</th>
-                        <th>{{ t('table.error_rate') }}</th>
-                        <th>{{ t('table.latency_p99') }}</th>
-                    </tr>
-                </thead>
-                <tbody id="servicesTableBody">
-                    <tr>
-                        <td colspan="6" class="loader"><div class="spinner"></div></td>
-                    </tr>
-                </tbody>
-            </table>
+        <div class="chart-container">
+            <canvas id="trustChart"></canvas>
         </div>
+    </div>
 
-        <!-- Top Issues -->
-        <div class="card">
-            <div class="card-header">
-                <h3 class="card-title">{{ t('dashboard.top_issues') }}</h3>
-            </div>
-            <div id="topIssues">
-                <div class="loader"><div class="spinner"></div></div>
-            </div>
+    <div class="card">
+        <div class="card-header">
+            <h3 class="card-title">{{ t('dashboard.slo_compliance') }}</h3>
         </div>
-    </main>
+        <div class="chart-container">
+            <canvas id="sloChart"></canvas>
+        </div>
+    </div>
+</div>
+
+<!-- Services Table -->
+<div class="card mb-6">
+    <div class="card-header">
+        <h3 class="card-title">{{ t('dashboard.services_status') }}</h3>
+        <div class="flex gap-2">
+            <input type="search"
+                   id="serviceSearch"
+                   class="form-input"
+                   placeholder="{{ t('dashboard.search_services') }}"
+                   style="width: 200px;">
+        </div>
+    </div>
+    <div class="table-container">
+        <table class="table">
+            <thead>
+                <tr>
+                    <th>{{ t('table.service') }}</th>
+                    <th>{{ t('table.type') }}</th>
+                    <th>{{ t('table.status') }}</th>
+                    <th>{{ t('table.uptime') }}</th>
+                    <th>{{ t('table.error_rate') }}</th>
+                    <th>{{ t('table.latency_p99') }}</th>
+                </tr>
+            </thead>
+            <tbody id="servicesTableBody">
+                <tr>
+                    <td colspan="6">
+                        <div class="loader"><div class="spinner"></div></div>
+                    </td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+</div>
+
+<!-- Top Issues -->
+<div class="card">
+    <div class="card-header">
+        <h3 class="card-title">{{ t('dashboard.top_issues') }}</h3>
+    </div>
+    <div id="topIssues">
+        <div class="loader"><div class="spinner"></div></div>
+    </div>
 </div>
 {% endblock %}
 
 {% block scripts %}
 <script>
-// Initialize dashboard
-document.addEventListener('DOMContentLoaded', async () => {
-    // Render language selector
-    const headerSelector = document.getElementById('headerLanguageSelector');
-    if (headerSelector && typeof renderLanguageSelector === 'function') {
-        headerSelector.innerHTML = renderLanguageSelector();
-    }
+let trustChart = null;
+let sloChart = null;
 
-    await loadProfiles();
-    await loadDashboardData();
-    await loadServices();
+document.addEventListener('DOMContentLoaded', async () => {
+    await Promise.all([
+        loadProfiles(),
+        loadDashboardData(),
+        loadServices()
+    ]);
     initCharts();
-    feather.replace();
+    lucide.createIcons();
 });
 
-// Load available profiles
+// Load profiles
 async function loadProfiles() {
     try {
         const response = await fetch('/api/profiles/list');
@@ -235,72 +215,24 @@ async function loadProfiles() {
 
         if (result.success) {
             const selector = document.getElementById('profileSelector');
-            const techProfiles = result.data.filter(p => p.category === 'technical');
-            const businessProfiles = result.data.filter(p => p.category === 'business');
-            const specialistProfiles = result.data.filter(p => p.category === 'specialist');
+            const profiles = result.data.slice(0, 4);
 
             selector.innerHTML = `
-                <button class="profile-btn active" data-profile="all">All</button>
-                ${techProfiles.map(p => `<button class="profile-btn" data-profile="${p.id}">${p.name}</button>`).join('')}
-                ${businessProfiles.map(p => `<button class="profile-btn" data-profile="${p.id}">${p.name}</button>`).join('')}
+                <button class="btn btn-primary" data-profile="all">All</button>
+                ${profiles.map(p => `
+                    <button class="btn btn-secondary" data-profile="${p.id}" onclick="window.location.href='/profile/${p.id}'">
+                        ${p.name}
+                    </button>
+                `).join('')}
             `;
-
-            // Add click handlers
-            selector.querySelectorAll('.profile-btn').forEach(btn => {
-                btn.addEventListener('click', () => {
-                    selector.querySelectorAll('.profile-btn').forEach(b => b.classList.remove('active'));
-                    btn.classList.add('active');
-
-                    const profile = btn.dataset.profile;
-                    if (profile !== 'all') {
-                        window.location.href = `/profile/${profile}`;
-                    }
-                });
-            });
+            lucide.createIcons();
         }
     } catch (error) {
         console.error('Error loading profiles:', error);
     }
 }
 
-// Remove skeleton loading state from an element
-function removeSkeletonLoading(elementId) {
-    const el = document.getElementById(elementId);
-    if (el) {
-        el.classList.remove('skeleton-text');
-        const card = el.closest('.kpi-card');
-        if (card) {
-            card.removeAttribute('data-loading');
-        }
-    }
-}
-
-// Show error toast
-function showToast(message, type = 'error') {
-    let container = document.querySelector('.toast-container');
-    if (!container) {
-        container = document.createElement('div');
-        container.className = 'toast-container';
-        document.body.appendChild(container);
-    }
-
-    const toast = document.createElement('div');
-    toast.className = `toast ${type}`;
-    toast.innerHTML = `
-        <i data-feather="${type === 'error' ? 'alert-circle' : 'check-circle'}"></i>
-        <span>${message}</span>
-    `;
-    container.appendChild(toast);
-    feather.replace();
-
-    setTimeout(() => {
-        toast.style.opacity = '0';
-        toast.style.transform = 'translateX(100%)';
-        setTimeout(() => toast.remove(), 300);
-    }, 5000);
-}
-
-// Load main dashboard data
+// Load dashboard data
 async function loadDashboardData() {
     try {
         const response = await fetch('/api/dashboard/overview');
@@ -309,18 +241,11 @@ async function loadDashboardData() {
         if (result.success) {
             const data = result.data;
 
-            // Update KPIs and remove skeleton states
-            document.getElementById('trustScore').textContent = (data.key_metrics.avg_trust_score * 100).toFixed(0) + '%';
-            removeSkeletonLoading('trustScore');
-
-            document.getElementById('inferences').textContent = formatNumber(data.key_metrics.total_daily_inferences);
-            removeSkeletonLoading('inferences');
-
-            document.getElementById('dailyCost').textContent = '$' + data.key_metrics.total_daily_cost.toFixed(0);
-            removeSkeletonLoading('dailyCost');
-
-            document.getElementById('carbonKg').textContent = data.key_metrics.total_daily_carbon_kg.toFixed(1);
-            removeSkeletonLoading('carbonKg');
+            // Update KPIs
+            updateKPI('trustScore', (data.key_metrics.avg_trust_score * 100).toFixed(0) + '%');
+            updateKPI('inferences', formatNumber(data.key_metrics.total_daily_inferences));
+            updateKPI('dailyCost', '$' + data.key_metrics.total_daily_cost.toFixed(0));
+            updateKPI('carbonKg', data.key_metrics.total_daily_carbon_kg.toFixed(1) + ' kg');
 
             // Update health
             document.getElementById('healthyCount').textContent = data.health.healthy;
@@ -340,19 +265,24 @@ async function loadDashboardData() {
             // Update top issues
             updateTopIssues(data.top_issues);
         } else {
-            showToast(t('errors.load_failed') || 'Erreur de chargement des données');
+            showToast(t('errors.load_failed') || 'Failed to load data', 'error');
         }
     } catch (error) {
         console.error('Error loading dashboard:', error);
-        showToast(t('errors.connection') || 'Erreur de connexion au serveur');
-        // Remove skeleton states even on error
+        showToast(t('errors.connection') || 'Connection error', 'error');
+
+        // Remove skeletons on error
         ['trustScore', 'inferences', 'dailyCost', 'carbonKg'].forEach(id => {
-            removeSkeletonLoading(id);
-            const el = document.getElementById(id);
-            if (el && el.textContent === '--') {
-                el.textContent = '-';
-            }
+            updateKPI(id, '-');
         });
+    }
+}
+
+// Update KPI with value
+function updateKPI(id, value) {
+    const el = document.getElementById(id);
+    if (el) {
+        el.innerHTML = value;
     }
 }
 
@@ -363,28 +293,52 @@ async function loadServices() {
         const result = await response.json();
 
         if (result.success) {
-            const tbody = document.getElementById('servicesTableBody');
-            tbody.innerHTML = result.data.map(service => `
-                <tr>
-                    <td><strong>${service.name}</strong></td>
-                    <td>${service.type}</td>
-                    <td><span class="status-badge status-${service.status}">${service.status}</span></td>
-                    <td>${service.uptime_pct}%</td>
-                    <td>${service.error_rate_pct}%</td>
-                    <td>${service.latency_p99_ms}ms</td>
-                </tr>
-            `).join('');
+            renderServicesTable(result.data);
         }
     } catch (error) {
         console.error('Error loading services:', error);
     }
 }
 
+// Render services table
+function renderServicesTable(services) {
+    const tbody = document.getElementById('servicesTableBody');
+
+    if (!services || services.length === 0) {
+        tbody.innerHTML = `
+            <tr>
+                <td colspan="6" class="empty-state">
+                    <i data-lucide="server-off"></i>
+                    <h3>No services found</h3>
+                </td>
+            </tr>
+        `;
+        lucide.createIcons();
+        return;
+    }
+
+    tbody.innerHTML = services.map(service => `
+        <tr>
+            <td><strong>${service.name}</strong></td>
+            <td class="text-muted">${service.type}</td>
+            <td>
+                <span class="badge badge-${service.status}">
+                    <span class="badge-dot"></span>
+                    ${service.status}
+                </span>
+            </td>
+            <td>${service.uptime_pct}%</td>
+            <td>${service.error_rate_pct}%</td>
+            <td>${service.latency_p99_ms}ms</td>
+        </tr>
+    `).join('');
+}
+
 // Initialize charts
 function initCharts() {
-    // Trust Score Trend Chart
+    // Trust Score Chart
     const trustCtx = document.getElementById('trustChart').getContext('2d');
-    const trustChart = new Chart(trustCtx, {
+    trustChart = new Chart(trustCtx, {
         type: 'line',
         data: {
             labels: generateTimeLabels(24),
@@ -394,7 +348,10 @@ function initCharts() {
                 borderColor: '#6366f1',
                 backgroundColor: 'rgba(99, 102, 241, 0.1)',
                 fill: true,
-                tension: 0.4
+                tension: 0.4,
+                borderWidth: 2,
+                pointRadius: 0,
+                pointHoverRadius: 4
             }]
         },
         options: {
@@ -404,10 +361,17 @@ function initCharts() {
                 legend: { display: false }
             },
             scales: {
+                x: {
+                    grid: { display: false },
+                    ticks: { color: '#64748b', font: { size: 11 } }
+                },
                 y: {
                     min: 0,
                     max: 1,
+                    grid: { color: '#e2e8f0' },
                     ticks: {
+                        color: '#64748b',
+                        font: { size: 11 },
                         callback: v => (v * 100) + '%'
                     }
                 }
@@ -415,31 +379,39 @@ function initCharts() {
         }
     });
 
-    // SLO Compliance Chart
+    // SLO Chart
     const sloCtx = document.getElementById('sloChart').getContext('2d');
-    const sloChart = new Chart(sloCtx, {
+    sloChart = new Chart(sloCtx, {
         type: 'doughnut',
         data: {
             labels: ['Compliant', 'At Risk', 'Violated'],
             datasets: [{
                 data: [85, 10, 5],
                 backgroundColor: ['#10b981', '#f59e0b', '#ef4444'],
-                borderWidth: 0
+                borderWidth: 0,
+                spacing: 2
             }]
         },
         options: {
             responsive: true,
             maintainAspectRatio: false,
+            cutout: '70%',
             plugins: {
                 legend: {
-                    position: 'bottom'
+                    position: 'bottom',
+                    labels: {
+                        padding: 20,
+                        usePointStyle: true,
+                        pointStyle: 'circle',
+                        font: { size: 12 }
+                    }
                 }
             }
         }
     });
 
-    // Time range change handler
-    document.getElementById('chartTimeRange').addEventListener('change', async (e) => {
+    // Time range handler
+    document.getElementById('chartTimeRange').addEventListener('change', (e) => {
         const hours = parseInt(e.target.value);
         trustChart.data.labels = generateTimeLabels(hours);
         trustChart.data.datasets[0].data = generateDemoData(hours, 0.75, 0.85);
@@ -447,23 +419,27 @@ function initCharts() {
     });
 }
 
-// Helper functions
+// Helper: Format number
 function formatNumber(num) {
     if (num >= 1000000) return (num / 1000000).toFixed(1) + 'M';
     if (num >= 1000) return (num / 1000).toFixed(1) + 'K';
     return num.toString();
 }
 
+// Helper: Generate time labels
 function generateTimeLabels(hours) {
     const labels = [];
     const now = new Date();
-    for (let i = hours; i >= 0; i--) {
+    const step = hours > 48 ? 24 : hours > 24 ? 6 : 1;
+
+    for (let i = hours; i >= 0; i -= step) {
         const d = new Date(now - i * 3600000);
-        labels.push(d.getHours() + ':00');
+        labels.push(hours > 24 ? d.toLocaleDateString('en', { month: 'short', day: 'numeric' }) : d.getHours() + ':00');
     }
     return labels;
 }
 
+// Helper: Generate demo data
 function generateDemoData(count, min, max) {
     const data = [];
     let value = (min + max) / 2;
@@ -475,28 +451,69 @@ function generateDemoData(count, min, max) {
     return data;
 }
 
+// Update trend display
 function updateTrend(elementId, trend) {
     const el = document.getElementById(elementId);
+    if (!el) return;
+
     el.className = 'kpi-trend ' + trend;
     const icon = trend === 'up' ? 'trending-up' : trend === 'down' ? 'trending-down' : 'minus';
-    el.innerHTML = `<i data-feather="${icon}"></i> ${trend.charAt(0).toUpperCase() + trend.slice(1)}`;
-    feather.replace();
+    el.innerHTML = `
+        <i data-lucide="${icon}"></i>
+        <span>${trend.charAt(0).toUpperCase() + trend.slice(1)}</span>
+    `;
+    lucide.createIcons();
 }
 
+// Update top issues
 function updateTopIssues(issues) {
     const container = document.getElementById('topIssues');
+
+    if (!issues || issues.length === 0) {
+        container.innerHTML = `
+            <div class="empty-state">
+                <i data-lucide="check-circle"></i>
+                <h3>No issues detected</h3>
+                <p class="text-muted">All systems are running smoothly</p>
+            </div>
+        `;
+        lucide.createIcons();
+        return;
+    }
+
     container.innerHTML = issues.map(issue => `
-        <div style="display: flex; align-items: center; gap: 1rem; padding: 0.75rem; border-bottom: 1px solid var(--border-color);">
-            <span class="status-badge status-${issue.severity}">${issue.severity}</span>
+        <div class="flex items-center gap-4" style="padding: 1rem; border-bottom: 1px solid var(--border-color);">
+            <span class="badge badge-${issue.severity}">
+                <span class="badge-dot"></span>
+                ${issue.severity}
+            </span>
             <div style="flex: 1;">
                 <strong>${issue.title}</strong>
-                <div style="color: var(--text-secondary); font-size: 0.875rem;">${issue.affected_service} - ${issue.duration_minutes} min</div>
+                <div class="text-sm text-muted">${issue.affected_service} - ${issue.duration_minutes} min</div>
             </div>
-            <button style="padding: 0.25rem 0.75rem; border-radius: 0.25rem; border: 1px solid var(--border-color); background: var(--bg-card); cursor: pointer;">
+            <button class="btn btn-secondary" onclick="investigateIssue('${issue.id}')">
+                <i data-lucide="search"></i>
                 Investigate
             </button>
         </div>
     `).join('');
+    lucide.createIcons();
 }
+
+// Investigate issue
+function investigateIssue(issueId) {
+    window.location.href = `/causal?issue=${issueId}`;
+}
+
+// Search services
+document.getElementById('serviceSearch')?.addEventListener('input', (e) => {
+    const query = e.target.value.toLowerCase();
+    const rows = document.querySelectorAll('#servicesTableBody tr');
+
+    rows.forEach(row => {
+        const text = row.textContent.toLowerCase();
+        row.style.display = text.includes(query) ? '' : 'none';
+    });
+});
 </script>
 {% endblock %}

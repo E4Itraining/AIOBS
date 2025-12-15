@@ -1,154 +1,154 @@
 {% extends "base.html" %}
 
+{% set active_page = 'unified' %}
+
+{% block page_title %}{{ t('nav.unified_view') }}{% endblock %}
+
+{% block page_subtitle %}
+<p>{{ t('unified.subtitle') or 'Cross-domain monitoring and observability' }}</p>
+{% endblock %}
+
+{% block topbar_actions %}
+<select id="timeRange" class="form-select" style="width: auto;">
+    <option value="1">Last 1h</option>
+    <option value="24" selected>Last 24h</option>
+    <option value="168">Last 7d</option>
+    <option value="720">Last 30d</option>
+</select>
+<button class="btn btn-primary" onclick="refreshData()">
+    <i data-lucide="refresh-cw"></i>
+    <span>Refresh</span>
+</button>
+{% endblock %}
+
+{% block sidebar_extra %}
+<div class="nav-group">
+    <span class="nav-group-title">{{ t('nav.domains') }}</span>
+    <a href="#models" class="nav-link">
+        <i data-lucide="cpu"></i>
+        <span>{{ t('nav.models') or 'Models' }}</span>
+    </a>
+    <a href="#infrastructure" class="nav-link">
+        <i data-lucide="server"></i>
+        <span>{{ t('nav.infrastructure') or 'Infrastructure' }}</span>
+    </a>
+    <a href="#costs" class="nav-link">
+        <i data-lucide="dollar-sign"></i>
+        <span>{{ t('nav.costs') or 'Costs' }}</span>
+    </a>
+    <a href="#carbon" class="nav-link">
+        <i data-lucide="leaf"></i>
+        <span>{{ t('nav.carbon') or 'Carbon' }}</span>
+    </a>
+    <a href="#compliance" class="nav-link">
+        <i data-lucide="shield"></i>
+        <span>{{ t('nav.compliance') or 'Compliance' }}</span>
+    </a>
+</div>
+{% endblock %}
+
 {% block content %}
-<div class="dashboard-container">
-    <nav class="sidebar" id="sidebar">
-        <!-- Mobile close button -->
-        <button class="sidebar-close-btn" onclick="closeMobileSidebar()" aria-label="Fermer le menu">
-            <svg viewBox="0 0 24 24" width="24" height="24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                <line x1="18" y1="6" x2="6" y2="18"></line>
-                <line x1="6" y1="6" x2="18" y2="18"></line>
-            </svg>
-        </button>
-
-        <div class="sidebar-logo">
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true">
-                <circle cx="12" cy="12" r="10"/>
-                <path d="M12 6v6l4 2"/>
-                <circle cx="12" cy="12" r="3"/>
-            </svg>
-            {{ t('app.name') }}
+<!-- Service Topology -->
+<div class="card mb-6" id="models">
+    <div class="card-header">
+        <h3 class="card-title">Service Topology</h3>
+        <div class="flex gap-2">
+            <span class="badge badge-healthy">
+                <span class="badge-dot"></span>
+                Healthy: <span id="healthyNodes">-</span>
+            </span>
+            <span class="badge badge-warning">
+                <span class="badge-dot"></span>
+                Degraded: <span id="degradedNodes">-</span>
+            </span>
         </div>
-        <div class="nav-section">
-            <div class="nav-section-title">{{ t('nav.overview') }}</div>
-            <a href="/" class="nav-item"><i data-feather="home"></i> {{ t('nav.dashboard') }}</a>
-            <a href="/unified" class="nav-item active"><i data-feather="layers"></i> {{ t('nav.unified_view') }}</a>
-            <a href="/causal" class="nav-item"><i data-feather="git-branch"></i> {{ t('nav.causal_analysis') }}</a>
-            <a href="/impact" class="nav-item"><i data-feather="trending-up"></i> {{ t('nav.impact_analysis') }}</a>
+    </div>
+    <div id="topologyGraph" class="graph-container"></div>
+</div>
+
+<!-- Metrics Grid -->
+<div class="grid grid-3 mb-6" id="infrastructure">
+    <div class="card">
+        <div class="card-header">
+            <h3 class="card-title">Latency P99</h3>
         </div>
-        <div class="nav-section">
-            <div class="nav-section-title">{{ t('nav.domains') }}</div>
-            <a href="#models" class="nav-item"><i data-feather="cpu"></i> {{ t('nav.models') }}</a>
-            <a href="#infrastructure" class="nav-item"><i data-feather="server"></i> {{ t('nav.infrastructure') }}</a>
-            <a href="#costs" class="nav-item"><i data-feather="dollar-sign"></i> {{ t('nav.costs') }}</a>
-            <a href="#carbon" class="nav-item"><i data-feather="cloud"></i> {{ t('nav.carbon') }}</a>
-            <a href="#compliance" class="nav-item"><i data-feather="shield"></i> {{ t('nav.compliance') }}</a>
+        <div class="chart-container" style="height: 200px;">
+            <canvas id="latencyChart"></canvas>
         </div>
-    </nav>
+    </div>
 
-    <main class="main-content">
-        <div class="header">
-            <h1 class="header-title">Unified Monitoring & Observability</h1>
-            <div class="header-actions">
-                <select id="timeRange" style="padding: 0.5rem; border-radius: 0.25rem; border: 1px solid var(--border-color);">
-                    <option value="1">Last 1h</option>
-                    <option value="24" selected>Last 24h</option>
-                    <option value="168">Last 7d</option>
-                    <option value="720">Last 30d</option>
-                </select>
-                <button onclick="refreshData()" style="padding: 0.5rem 1rem; background: var(--primary); color: white; border: none; border-radius: 0.25rem; cursor: pointer;">
-                    <i data-feather="refresh-cw"></i> Refresh
-                </button>
-            </div>
+    <div class="card">
+        <div class="card-header">
+            <h3 class="card-title">Throughput</h3>
         </div>
-
-        <!-- Service Topology -->
-        <div class="card" id="models">
-            <div class="card-header">
-                <h3 class="card-title">Service Topology</h3>
-                <div>
-                    <span class="status-badge status-healthy">Healthy: <span id="healthyNodes">-</span></span>
-                    <span class="status-badge status-degraded">Degraded: <span id="degradedNodes">-</span></span>
-                </div>
-            </div>
-            <div id="topologyGraph" class="topology-graph"></div>
+        <div class="chart-container" style="height: 200px;">
+            <canvas id="throughputChart"></canvas>
         </div>
+    </div>
 
-        <!-- Metrics Grid -->
-        <div class="metrics-grid" id="infrastructure">
-            <!-- Latency -->
-            <div class="card">
-                <div class="card-header">
-                    <h3 class="card-title">Latency P99</h3>
-                </div>
-                <div class="chart-container" style="height: 200px;">
-                    <canvas id="latencyChart"></canvas>
-                </div>
-            </div>
-
-            <!-- Throughput -->
-            <div class="card">
-                <div class="card-header">
-                    <h3 class="card-title">Throughput</h3>
-                </div>
-                <div class="chart-container" style="height: 200px;">
-                    <canvas id="throughputChart"></canvas>
-                </div>
-            </div>
-
-            <!-- Error Rate -->
-            <div class="card">
-                <div class="card-header">
-                    <h3 class="card-title">Error Rate</h3>
-                </div>
-                <div class="chart-container" style="height: 200px;">
-                    <canvas id="errorChart"></canvas>
-                </div>
-            </div>
+    <div class="card">
+        <div class="card-header">
+            <h3 class="card-title">Error Rate</h3>
         </div>
-
-        <!-- Cost & Carbon Row -->
-        <div class="cost-carbon-grid">
-            <div class="card" id="costs">
-                <div class="card-header">
-                    <h3 class="card-title">Cost Breakdown</h3>
-                </div>
-                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1rem;">
-                    <div class="chart-container" style="height: 200px;">
-                        <canvas id="costChart"></canvas>
-                    </div>
-                    <div id="costDetails" style="padding: 1rem;">
-                        <div class="loader"><div class="spinner"></div></div>
-                    </div>
-                </div>
-            </div>
-
-            <div class="card" id="carbon">
-                <div class="card-header">
-                    <h3 class="card-title">Carbon Metrics</h3>
-                </div>
-                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1rem;">
-                    <div class="chart-container" style="height: 200px;">
-                        <canvas id="carbonChart"></canvas>
-                    </div>
-                    <div id="carbonDetails" style="padding: 1rem;">
-                        <div class="loader"><div class="spinner"></div></div>
-                    </div>
-                </div>
-            </div>
+        <div class="chart-container" style="height: 200px;">
+            <canvas id="errorChart"></canvas>
         </div>
+    </div>
+</div>
 
-        <!-- SLO Status -->
-        <div class="card">
-            <div class="card-header">
-                <h3 class="card-title">SLO Status</h3>
-                <span id="sloOverall" class="status-badge status-healthy">98.7% Compliant</span>
+<!-- Cost & Carbon Row -->
+<div class="grid grid-2 mb-6">
+    <div class="card" id="costs">
+        <div class="card-header">
+            <h3 class="card-title">Cost Breakdown</h3>
+        </div>
+        <div class="grid grid-2">
+            <div class="chart-container" style="height: 200px;">
+                <canvas id="costChart"></canvas>
             </div>
-            <div id="sloGrid" style="display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 1rem;">
+            <div id="costDetails" class="flex flex-col justify-center">
                 <div class="loader"><div class="spinner"></div></div>
             </div>
         </div>
+    </div>
 
-        <!-- Compliance Status -->
-        <div class="card" id="compliance">
-            <div class="card-header">
-                <h3 class="card-title">Compliance Status</h3>
+    <div class="card" id="carbon">
+        <div class="card-header">
+            <h3 class="card-title">Carbon Metrics</h3>
+        </div>
+        <div class="grid grid-2">
+            <div class="chart-container" style="height: 200px;">
+                <canvas id="carbonChart"></canvas>
             </div>
-            <div id="complianceGrid" style="display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: 1rem;">
+            <div id="carbonDetails" class="flex flex-col justify-center">
                 <div class="loader"><div class="spinner"></div></div>
             </div>
         </div>
-    </main>
+    </div>
+</div>
+
+<!-- SLO Status -->
+<div class="card mb-6">
+    <div class="card-header">
+        <h3 class="card-title">SLO Status</h3>
+        <span id="sloOverall" class="badge badge-healthy">
+            <span class="badge-dot"></span>
+            98.7% Compliant
+        </span>
+    </div>
+    <div id="sloGrid" class="grid grid-auto">
+        <div class="loader"><div class="spinner"></div></div>
+    </div>
+</div>
+
+<!-- Compliance Status -->
+<div class="card" id="compliance">
+    <div class="card-header">
+        <h3 class="card-title">Compliance Status</h3>
+    </div>
+    <div id="complianceGrid" class="grid grid-4">
+        <div class="loader"><div class="spinner"></div></div>
+    </div>
 </div>
 {% endblock %}
 
@@ -157,46 +157,59 @@
 let charts = {};
 
 document.addEventListener('DOMContentLoaded', async () => {
-    await loadTopology();
-    await loadMetrics();
-    await loadCosts();
-    await loadCarbon();
-    await loadSLO();
-    await loadCompliance();
-    feather.replace();
+    await Promise.all([
+        loadTopology(),
+        loadMetrics(),
+        loadCosts(),
+        loadCarbon(),
+        loadSLO(),
+        loadCompliance()
+    ]);
+    lucide.createIcons();
 });
 
 async function refreshData() {
-    await loadMetrics();
-    await loadCosts();
-    await loadCarbon();
+    await Promise.all([
+        loadMetrics(),
+        loadCosts(),
+        loadCarbon()
+    ]);
+    showToast('Data refreshed', 'success');
 }
 
 async function loadTopology() {
     const container = document.getElementById('topologyGraph');
+
     try {
         const response = await fetch('/api/dashboard/topology');
         const result = await response.json();
 
-        if (result.success && result.data && result.data.nodes && result.data.nodes.length > 0) {
+        if (result.success && result.data?.nodes?.length > 0) {
             renderTopology(result.data);
 
-            // Update counts
             const healthy = result.data.nodes.filter(n => n.status === 'healthy').length;
-            const degraded = result.data.nodes.filter(n => n.status === 'degraded').length;
-            const unhealthy = result.data.nodes.filter(n => n.status === 'unhealthy').length;
+            const degraded = result.data.nodes.filter(n => n.status !== 'healthy').length;
             document.getElementById('healthyNodes').textContent = healthy;
-            document.getElementById('degradedNodes').textContent = degraded + unhealthy;
+            document.getElementById('degradedNodes').textContent = degraded;
         } else {
-            container.innerHTML = '<div style="display: flex; align-items: center; justify-content: center; height: 100%; color: var(--text-secondary);">No topology data available</div>';
-            document.getElementById('healthyNodes').textContent = '0';
-            document.getElementById('degradedNodes').textContent = '0';
+            container.innerHTML = `
+                <div class="empty-state">
+                    <i data-lucide="network"></i>
+                    <h3>No topology data</h3>
+                    <p class="text-muted">Connect services to view the topology</p>
+                </div>
+            `;
+            lucide.createIcons();
         }
     } catch (error) {
         console.error('Error loading topology:', error);
-        container.innerHTML = '<div style="display: flex; align-items: center; justify-content: center; height: 100%; color: var(--danger);">Error loading topology</div>';
-        document.getElementById('healthyNodes').textContent = '-';
-        document.getElementById('degradedNodes').textContent = '-';
+        container.innerHTML = `
+            <div class="empty-state">
+                <i data-lucide="alert-circle"></i>
+                <h3>Error loading topology</h3>
+            </div>
+        `;
+        lucide.createIcons();
     }
 }
 
@@ -204,21 +217,15 @@ function renderTopology(data) {
     const container = document.getElementById('topologyGraph');
     container.innerHTML = '';
 
-    // Ensure container has proper dimensions
-    const width = container.clientWidth || container.offsetWidth || 800;
+    const width = container.clientWidth || 800;
     const height = 400;
-
-    // If width is still 0, use parent width or fallback
-    const effectiveWidth = width > 0 ? width : (container.parentElement?.clientWidth || 800);
 
     const svg = d3.select(container)
         .append('svg')
         .attr('width', '100%')
         .attr('height', height)
-        .attr('viewBox', `0 0 ${effectiveWidth} ${height}`)
-        .attr('preserveAspectRatio', 'xMidYMid meet');
+        .attr('viewBox', `0 0 ${width} ${height}`);
 
-    // Create arrow marker
     svg.append('defs').append('marker')
         .attr('id', 'arrowhead')
         .attr('viewBox', '-0 -5 10 10')
@@ -229,19 +236,28 @@ function renderTopology(data) {
         .attr('markerHeight', 8)
         .append('path')
         .attr('d', 'M 0,-5 L 10,0 L 0,5')
-        .attr('fill', 'var(--text-secondary)');
+        .attr('fill', '#94a3b8');
+
+    const typeColors = {
+        endpoint: '#6366f1',
+        router: '#8b5cf6',
+        model: '#10b981',
+        data: '#3b82f6',
+        infrastructure: '#f59e0b',
+        monitoring: '#ef4444'
+    };
 
     const simulation = d3.forceSimulation(data.nodes)
         .force('link', d3.forceLink(data.edges).id(d => d.id).distance(120))
         .force('charge', d3.forceManyBody().strength(-400))
-        .force('center', d3.forceCenter(effectiveWidth / 2, height / 2))
+        .force('center', d3.forceCenter(width / 2, height / 2))
         .force('collision', d3.forceCollide().radius(40));
 
     const link = svg.append('g')
         .selectAll('line')
         .data(data.edges)
         .join('line')
-        .attr('stroke', 'var(--border-color)')
+        .attr('stroke', '#e2e8f0')
         .attr('stroke-width', 2)
         .attr('marker-end', 'url(#arrowhead)');
 
@@ -254,44 +270,31 @@ function renderTopology(data) {
             .on('drag', dragged)
             .on('end', dragended));
 
-    // Node colors by type
-    const typeColors = {
-        endpoint: '#6366f1',
-        router: '#8b5cf6',
-        model: '#10b981',
-        data: '#3b82f6',
-        infrastructure: '#f59e0b',
-        monitoring: '#ef4444'
-    };
-
     node.append('circle')
         .attr('r', 25)
         .attr('fill', d => d.status === 'healthy' ? typeColors[d.type] || '#6366f1' :
             d.status === 'degraded' ? '#f59e0b' : '#ef4444')
         .attr('stroke', 'white')
-        .attr('stroke-width', 2);
+        .attr('stroke-width', 3);
 
     node.append('text')
-        .text(d => d.label.substring(0, 6))
+        .text(d => d.label.substring(0, 4))
         .attr('text-anchor', 'middle')
         .attr('dy', 4)
         .attr('fill', 'white')
         .attr('font-size', '10px')
         .attr('font-weight', '600');
 
-    // Tooltip
     node.append('title')
         .text(d => `${d.label}\nType: ${d.type}\nStatus: ${d.status}`);
 
     simulation.on('tick', () => {
-        // Keep nodes within bounds
         data.nodes.forEach(d => {
-            d.x = Math.max(30, Math.min(effectiveWidth - 30, d.x));
+            d.x = Math.max(30, Math.min(width - 30, d.x));
             d.y = Math.max(30, Math.min(height - 30, d.y));
         });
 
-        link
-            .attr('x1', d => d.source.x)
+        link.attr('x1', d => d.source.x)
             .attr('y1', d => d.source.y)
             .attr('x2', d => d.target.x)
             .attr('y2', d => d.target.y);
@@ -318,56 +321,70 @@ function renderTopology(data) {
 }
 
 async function loadMetrics() {
-    const hours = document.getElementById('timeRange').value;
+    const chartOptions = (unit) => ({
+        responsive: true,
+        maintainAspectRatio: false,
+        plugins: { legend: { display: false } },
+        scales: {
+            x: { grid: { display: false }, ticks: { color: '#64748b', font: { size: 10 } } },
+            y: { grid: { color: '#e2e8f0' }, ticks: { color: '#64748b', callback: v => v + unit } }
+        }
+    });
 
-    // Latency chart
+    const labels = generateLabels(24);
+
+    // Latency
     if (charts.latency) charts.latency.destroy();
-    const latencyCtx = document.getElementById('latencyChart').getContext('2d');
-    charts.latency = new Chart(latencyCtx, {
+    charts.latency = new Chart(document.getElementById('latencyChart').getContext('2d'), {
         type: 'line',
         data: {
-            labels: generateLabels(24),
+            labels,
             datasets: [{
-                label: 'P99',
                 data: generateData(24, 80, 150),
                 borderColor: '#6366f1',
-                tension: 0.4
+                backgroundColor: 'rgba(99, 102, 241, 0.1)',
+                fill: true,
+                tension: 0.4,
+                borderWidth: 2,
+                pointRadius: 0
             }]
         },
         options: chartOptions('ms')
     });
 
-    // Throughput chart
+    // Throughput
     if (charts.throughput) charts.throughput.destroy();
-    const throughputCtx = document.getElementById('throughputChart').getContext('2d');
-    charts.throughput = new Chart(throughputCtx, {
+    charts.throughput = new Chart(document.getElementById('throughputChart').getContext('2d'), {
         type: 'line',
         data: {
-            labels: generateLabels(24),
+            labels,
             datasets: [{
-                label: 'Requests/s',
                 data: generateData(24, 800, 1500),
                 borderColor: '#10b981',
-                tension: 0.4
+                backgroundColor: 'rgba(16, 185, 129, 0.1)',
+                fill: true,
+                tension: 0.4,
+                borderWidth: 2,
+                pointRadius: 0
             }]
         },
-        options: chartOptions('req/s')
+        options: chartOptions('/s')
     });
 
-    // Error rate chart
+    // Error Rate
     if (charts.error) charts.error.destroy();
-    const errorCtx = document.getElementById('errorChart').getContext('2d');
-    charts.error = new Chart(errorCtx, {
+    charts.error = new Chart(document.getElementById('errorChart').getContext('2d'), {
         type: 'line',
         data: {
-            labels: generateLabels(24),
+            labels,
             datasets: [{
-                label: 'Error Rate',
                 data: generateData(24, 0.1, 1.5),
                 borderColor: '#ef4444',
                 backgroundColor: 'rgba(239, 68, 68, 0.1)',
                 fill: true,
-                tension: 0.4
+                tension: 0.4,
+                borderWidth: 2,
+                pointRadius: 0
             }]
         },
         options: chartOptions('%')
@@ -382,36 +399,40 @@ async function loadCosts() {
         if (result.success) {
             const data = result.data;
 
-            // Cost pie chart
             if (charts.cost) charts.cost.destroy();
-            const costCtx = document.getElementById('costChart').getContext('2d');
-            charts.cost = new Chart(costCtx, {
+            charts.cost = new Chart(document.getElementById('costChart').getContext('2d'), {
                 type: 'doughnut',
                 data: {
                     labels: Object.keys(data.by_category),
                     datasets: [{
                         data: Object.values(data.by_category),
-                        backgroundColor: ['#6366f1', '#10b981', '#f59e0b', '#ef4444', '#3b82f6']
+                        backgroundColor: ['#6366f1', '#10b981', '#f59e0b', '#ef4444', '#3b82f6'],
+                        borderWidth: 0
                     }]
                 },
-                options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { position: 'bottom' } } }
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    cutout: '60%',
+                    plugins: { legend: { display: false } }
+                }
             });
 
-            // Cost details
             document.getElementById('costDetails').innerHTML = `
-                <div style="margin-bottom: 1rem;">
-                    <div style="color: var(--text-secondary); font-size: 0.875rem;">Total (30d)</div>
-                    <div style="font-size: 1.5rem; font-weight: 700;">$${data.total.toLocaleString()}</div>
+                <div class="mb-4">
+                    <div class="text-sm text-muted">Total (30d)</div>
+                    <div class="kpi-value">$${data.total.toLocaleString()}</div>
                 </div>
-                <div style="margin-bottom: 1rem;">
-                    <div style="color: var(--text-secondary); font-size: 0.875rem;">Forecast</div>
-                    <div style="font-size: 1.25rem; font-weight: 600;">$${data.forecast_next_month.toLocaleString()}</div>
+                <div class="mb-4">
+                    <div class="text-sm text-muted">Forecast</div>
+                    <div class="font-semibold" style="font-size: 1.25rem;">$${data.forecast_next_month.toLocaleString()}</div>
                 </div>
                 <div class="kpi-trend ${data.trend}">
-                    <i data-feather="trending-${data.trend}"></i> ${data.trend_pct}% vs last period
+                    <i data-lucide="trending-${data.trend}"></i>
+                    <span>${data.trend_pct}% vs last period</span>
                 </div>
             `;
-            feather.replace();
+            lucide.createIcons();
         }
     } catch (error) {
         console.error('Error loading costs:', error);
@@ -426,36 +447,40 @@ async function loadCarbon() {
         if (result.success) {
             const data = result.data;
 
-            // Carbon pie chart
             if (charts.carbon) charts.carbon.destroy();
-            const carbonCtx = document.getElementById('carbonChart').getContext('2d');
-            charts.carbon = new Chart(carbonCtx, {
+            charts.carbon = new Chart(document.getElementById('carbonChart').getContext('2d'), {
                 type: 'doughnut',
                 data: {
                     labels: Object.keys(data.by_activity),
                     datasets: [{
                         data: Object.values(data.by_activity),
-                        backgroundColor: ['#10b981', '#22c55e', '#4ade80', '#86efac']
+                        backgroundColor: ['#10b981', '#22c55e', '#4ade80', '#86efac'],
+                        borderWidth: 0
                     }]
                 },
-                options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { position: 'bottom' } } }
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    cutout: '60%',
+                    plugins: { legend: { display: false } }
+                }
             });
 
-            // Carbon details
             document.getElementById('carbonDetails').innerHTML = `
-                <div style="margin-bottom: 1rem;">
-                    <div style="color: var(--text-secondary); font-size: 0.875rem;">Total (30d)</div>
-                    <div style="font-size: 1.5rem; font-weight: 700;">${data.total_carbon_kg.toLocaleString()} kgCO2</div>
+                <div class="mb-4">
+                    <div class="text-sm text-muted">Total (30d)</div>
+                    <div class="kpi-value">${data.total_carbon_kg.toLocaleString()} kg</div>
                 </div>
-                <div style="margin-bottom: 1rem;">
-                    <div style="color: var(--text-secondary); font-size: 0.875rem;">Green Energy</div>
-                    <div style="font-size: 1.25rem; font-weight: 600; color: var(--success);">${data.green_energy_pct}%</div>
+                <div class="mb-4">
+                    <div class="text-sm text-muted">Green Energy</div>
+                    <div class="font-semibold" style="font-size: 1.25rem; color: var(--color-success);">${data.green_energy_pct}%</div>
                 </div>
                 <div class="kpi-trend ${data.trend}">
-                    <i data-feather="trending-${data.trend}"></i> ${data.trend_pct}% vs last period
+                    <i data-lucide="trending-${data.trend}"></i>
+                    <span>${data.trend_pct}% vs last period</span>
                 </div>
             `;
-            feather.replace();
+            lucide.createIcons();
         }
     } catch (error) {
         console.error('Error loading carbon:', error);
@@ -470,22 +495,23 @@ async function loadSLO() {
         if (result.success) {
             const data = result.data;
 
-            document.getElementById('sloOverall').textContent = `${data.overall_compliance_pct}% Compliant`;
+            document.getElementById('sloOverall').innerHTML = `
+                <span class="badge-dot"></span>
+                ${data.overall_compliance_pct}% Compliant
+            `;
 
             document.getElementById('sloGrid').innerHTML = data.slos.map(slo => `
-                <div style="padding: 1rem; border: 1px solid var(--border-color); border-radius: 0.5rem;">
-                    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.5rem;">
-                        <span style="font-size: 0.875rem; font-weight: 600;">${slo.name}</span>
-                        <span class="status-badge status-${slo.status}">${slo.status}</span>
+                <div class="card" style="padding: 1rem;">
+                    <div class="flex justify-between items-center mb-2">
+                        <span class="font-semibold text-sm">${slo.name}</span>
+                        <span class="badge badge-${slo.status}">${slo.status}</span>
                     </div>
-                    <div style="font-size: 1.5rem; font-weight: 700;">${slo.current}${slo.unit}</div>
-                    <div style="margin-top: 0.5rem;">
+                    <div class="kpi-value" style="font-size: 1.5rem;">${slo.current}${slo.unit}</div>
+                    <div class="mt-4">
                         <div style="height: 6px; background: var(--border-color); border-radius: 3px; overflow: hidden;">
-                            <div style="height: 100%; width: ${slo.error_budget_remaining_pct}%; background: ${slo.error_budget_remaining_pct > 50 ? 'var(--success)' : slo.error_budget_remaining_pct > 20 ? 'var(--warning)' : 'var(--danger)'}; border-radius: 3px;"></div>
+                            <div style="height: 100%; width: ${slo.error_budget_remaining_pct}%; background: ${slo.error_budget_remaining_pct > 50 ? 'var(--color-success)' : slo.error_budget_remaining_pct > 20 ? 'var(--color-warning)' : 'var(--color-danger)'}; border-radius: 3px;"></div>
                         </div>
-                        <div style="font-size: 0.75rem; color: var(--text-secondary); margin-top: 0.25rem;">
-                            Error budget: ${slo.error_budget_remaining_pct}% remaining
-                        </div>
+                        <div class="text-xs text-muted mt-1">Error budget: ${slo.error_budget_remaining_pct}% remaining</div>
                     </div>
                 </div>
             `).join('');
@@ -504,10 +530,14 @@ async function loadCompliance() {
             const data = result.data;
 
             document.getElementById('complianceGrid').innerHTML = Object.entries(data.categories).map(([key, cat]) => `
-                <div style="padding: 1rem; border: 1px solid var(--border-color); border-radius: 0.5rem; text-align: center;">
-                    <div style="font-size: 2rem; font-weight: 700; color: ${cat.status === 'compliant' ? 'var(--success)' : 'var(--warning)'};">${cat.score}</div>
-                    <div style="font-size: 0.875rem; color: var(--text-secondary);">${key.replace(/_/g, ' ')}</div>
-                    <span class="status-badge status-${cat.status === 'compliant' ? 'healthy' : 'warning'}" style="margin-top: 0.5rem;">${cat.status}</span>
+                <div class="card text-center" style="padding: 1rem;">
+                    <div class="kpi-value" style="color: ${cat.status === 'compliant' ? 'var(--color-success)' : 'var(--color-warning)'};">
+                        ${cat.score}
+                    </div>
+                    <div class="text-sm text-muted mb-2">${key.replace(/_/g, ' ')}</div>
+                    <span class="badge badge-${cat.status === 'compliant' ? 'healthy' : 'warning'}">
+                        ${cat.status}
+                    </span>
                 </div>
             `).join('');
         }
@@ -532,22 +562,9 @@ function generateData(count, min, max) {
     for (let i = 0; i < count; i++) {
         value += (Math.random() - 0.5) * (max - min) * 0.2;
         value = Math.max(min, Math.min(max, value));
-        data.push(value.toFixed(2));
+        data.push(parseFloat(value.toFixed(2)));
     }
     return data;
-}
-
-function chartOptions(unit) {
-    return {
-        responsive: true,
-        maintainAspectRatio: false,
-        plugins: { legend: { display: false } },
-        scales: {
-            y: {
-                ticks: { callback: v => v + unit }
-            }
-        }
-    };
 }
 </script>
 {% endblock %}

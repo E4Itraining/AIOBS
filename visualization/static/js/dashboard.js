@@ -1,5 +1,6 @@
 /**
- * AIOBS Dashboard - JavaScript Utilities
+ * AIOBS Dashboard v2.0 - JavaScript Utilities
+ * Modern, Clean, Professional Interface
  */
 
 // API helper
@@ -79,7 +80,7 @@ const format = {
     }
 };
 
-// Chart utilities
+// Chart utilities with modern design tokens
 const charts = {
     defaultOptions: {
         responsive: true,
@@ -91,17 +92,32 @@ const charts = {
         plugins: {
             legend: {
                 display: false
+            },
+            tooltip: {
+                backgroundColor: 'rgba(15, 23, 42, 0.9)',
+                titleFont: { size: 12, weight: '600' },
+                bodyFont: { size: 11 },
+                padding: 12,
+                cornerRadius: 8,
+                displayColors: false
             }
         }
     },
 
     colors: {
         primary: '#6366f1',
+        primaryLight: 'rgba(99, 102, 241, 0.1)',
         success: '#10b981',
+        successLight: 'rgba(16, 185, 129, 0.1)',
         warning: '#f59e0b',
+        warningLight: 'rgba(245, 158, 11, 0.1)',
         danger: '#ef4444',
+        dangerLight: 'rgba(239, 68, 68, 0.1)',
         info: '#3b82f6',
-        gray: '#64748b'
+        infoLight: 'rgba(59, 130, 246, 0.1)',
+        gray: '#64748b',
+        grayLight: 'rgba(100, 116, 139, 0.1)',
+        border: '#e2e8f0'
     },
 
     generateLabels(count, unit = 'hour') {
@@ -116,6 +132,9 @@ const charts = {
             } else if (unit === 'day') {
                 d.setDate(d.getDate() - i);
                 labels.push(d.toLocaleDateString('en-US', { weekday: 'short' }));
+            } else if (unit === 'month') {
+                d.setDate(d.getDate() - i);
+                labels.push(d.toLocaleDateString('en-US', { month: 'short', day: 'numeric' }));
             }
         }
 
@@ -133,6 +152,71 @@ const charts = {
         }
 
         return data;
+    },
+
+    // Preset chart configurations
+    lineChartConfig(data, label, color = 'primary') {
+        return {
+            type: 'line',
+            data: {
+                labels: data.labels,
+                datasets: [{
+                    label: label,
+                    data: data.values,
+                    borderColor: this.colors[color],
+                    backgroundColor: this.colors[color + 'Light'] || this.colors.primaryLight,
+                    fill: true,
+                    tension: 0.4,
+                    borderWidth: 2,
+                    pointRadius: 0,
+                    pointHoverRadius: 4
+                }]
+            },
+            options: {
+                ...this.defaultOptions,
+                scales: {
+                    x: {
+                        grid: { display: false },
+                        ticks: { color: '#64748b', font: { size: 11 } }
+                    },
+                    y: {
+                        grid: { color: '#e2e8f0' },
+                        ticks: { color: '#64748b', font: { size: 11 } }
+                    }
+                }
+            }
+        };
+    },
+
+    doughnutChartConfig(data, labels, colors) {
+        return {
+            type: 'doughnut',
+            data: {
+                labels: labels,
+                datasets: [{
+                    data: data,
+                    backgroundColor: colors || Object.values(this.colors).slice(0, data.length),
+                    borderWidth: 0,
+                    spacing: 2
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                cutout: '70%',
+                plugins: {
+                    legend: {
+                        position: 'bottom',
+                        labels: {
+                            padding: 20,
+                            usePointStyle: true,
+                            pointStyle: 'circle',
+                            font: { size: 12 }
+                        }
+                    }
+                }
+            }
+        };
     }
 };
 
@@ -161,17 +245,44 @@ const dom = {
         }
     },
 
+    skeleton(containerId, lines = 3) {
+        const container = document.getElementById(containerId);
+        if (!container) return;
+
+        let html = '';
+        for (let i = 0; i < lines; i++) {
+            const width = 60 + Math.random() * 40;
+            html += `<div class="skeleton" style="height: 16px; width: ${width}%; margin-bottom: 8px;"></div>`;
+        }
+        container.innerHTML = html;
+    },
+
     renderError(containerId, message) {
         const container = document.getElementById(containerId);
         if (!container) return;
 
         container.innerHTML = `
-            <div style="text-align: center; padding: 2rem; color: var(--danger);">
-                <i data-feather="alert-circle"></i>
-                <p>${message}</p>
+            <div class="empty-state">
+                <i data-lucide="alert-circle"></i>
+                <h3>Error</h3>
+                <p class="text-muted">${message}</p>
             </div>
         `;
-        feather.replace();
+        if (window.lucide) lucide.createIcons();
+    },
+
+    renderEmpty(containerId, title = 'No data', message = '') {
+        const container = document.getElementById(containerId);
+        if (!container) return;
+
+        container.innerHTML = `
+            <div class="empty-state">
+                <i data-lucide="inbox"></i>
+                <h3>${title}</h3>
+                ${message ? `<p class="text-muted">${message}</p>` : ''}
+            </div>
+        `;
+        if (window.lucide) lucide.createIcons();
     }
 };
 
@@ -181,11 +292,15 @@ class AutoRefresh {
         this.callback = callback;
         this.interval = interval;
         this.timer = null;
+        this.paused = false;
     }
 
     start() {
         this.stop();
-        this.timer = setInterval(() => this.callback(), this.interval);
+        this.paused = false;
+        this.timer = setInterval(() => {
+            if (!this.paused) this.callback();
+        }, this.interval);
     }
 
     stop() {
@@ -193,6 +308,14 @@ class AutoRefresh {
             clearInterval(this.timer);
             this.timer = null;
         }
+    }
+
+    pause() {
+        this.paused = true;
+    }
+
+    resume() {
+        this.paused = false;
     }
 
     setInterval(interval) {
@@ -256,25 +379,25 @@ window.aiobs = {
     RealtimeUpdater
 };
 
-// Theme management
-function toggleTheme() {
-    const html = document.documentElement;
-    const currentTheme = html.getAttribute('data-theme');
-    const newTheme = currentTheme === 'light' ? 'dark' : 'light';
-    html.setAttribute('data-theme', newTheme);
-    localStorage.setItem('aiobs-theme', newTheme);
-
-    // Update chart colors if Chart.js is loaded
+// Update Chart.js defaults based on theme
+function updateChartTheme(theme) {
     if (window.Chart) {
-        Chart.defaults.color = newTheme === 'dark' ? '#94a3b8' : '#64748b';
-        Chart.defaults.borderColor = newTheme === 'dark' ? '#334155' : '#e2e8f0';
+        const isDark = theme === 'dark';
+        Chart.defaults.color = isDark ? '#94a3b8' : '#64748b';
+        Chart.defaults.borderColor = isDark ? '#334155' : '#e2e8f0';
     }
 }
 
 // Initialize theme from localStorage
 (function initTheme() {
-    const savedTheme = localStorage.getItem('aiobs-theme') || 'light';
-    document.documentElement.setAttribute('data-theme', savedTheme);
+    const savedTheme = localStorage.getItem('aiobs-theme');
+    if (savedTheme) {
+        document.documentElement.setAttribute('data-theme', savedTheme);
+        updateChartTheme(savedTheme);
+    } else if (window.matchMedia('(prefers-color-scheme: dark)').matches) {
+        document.documentElement.setAttribute('data-theme', 'dark');
+        updateChartTheme('dark');
+    }
 })();
 
 // Keyboard shortcuts
@@ -282,15 +405,41 @@ document.addEventListener('keydown', (e) => {
     // Ctrl/Cmd + K for search
     if ((e.ctrlKey || e.metaKey) && e.key === 'k') {
         e.preventDefault();
-        const searchInput = document.querySelector('input[type="search"]');
+        const searchInput = document.querySelector('input[type="search"], .form-input[type="search"]');
         if (searchInput) searchInput.focus();
     }
 
     // Ctrl/Cmd + D for dark mode toggle
     if ((e.ctrlKey || e.metaKey) && e.key === 'd') {
         e.preventDefault();
-        toggleTheme();
+        if (typeof toggleTheme === 'function') toggleTheme();
+    }
+
+    // Escape to close modals/sidebars
+    if (e.key === 'Escape') {
+        const sidebar = document.getElementById('sidebar');
+        if (sidebar && sidebar.classList.contains('open')) {
+            if (typeof closeSidebar === 'function') closeSidebar();
+        }
     }
 });
 
-console.log('AIOBS Dashboard initialized');
+// Visibility change handling for auto-refresh
+document.addEventListener('visibilitychange', () => {
+    if (window.aiobs?.autoRefresh) {
+        if (document.hidden) {
+            window.aiobs.autoRefresh.pause();
+        } else {
+            window.aiobs.autoRefresh.resume();
+        }
+    }
+});
+
+// Initialize Lucide icons when DOM is ready
+document.addEventListener('DOMContentLoaded', () => {
+    if (window.lucide) {
+        lucide.createIcons();
+    }
+});
+
+console.log('AIOBS Dashboard v2.0 initialized');
