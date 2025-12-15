@@ -12,34 +12,6 @@
  * - Automatic retry with exponential backoff
  */
 
-// Node.js/Browser globals declarations
-declare const Buffer: {
-  from(str: string): { toString(encoding: string): string };
-};
-declare const AbortController: {
-  new (): { signal: unknown; abort(): void };
-};
-declare const AbortSignal: {
-  timeout(ms: number): unknown;
-};
-declare function setTimeout(callback: () => void, ms: number): unknown;
-declare function clearTimeout(id: unknown): void;
-declare function fetch(
-  url: string,
-  options?: {
-    method?: string;
-    headers?: Record<string, string>;
-    body?: string;
-    signal?: unknown;
-  }
-): Promise<{
-  ok: boolean;
-  status: number;
-  text(): Promise<string>;
-  json(): Promise<unknown>;
-  headers: { get(name: string): string | null };
-}>;
-
 import {
   LogsBackend,
   TracesBackend,

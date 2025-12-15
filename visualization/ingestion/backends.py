@@ -25,8 +25,22 @@ class BackendConfig:
     verify_ssl: bool = True
 
 
-class BackendConnector(ABC):
-    """Abstract base class for backend connectors"""
+class BaseConnector(ABC):
+    """Base abstract class for all connectors"""
+
+    @abstractmethod
+    async def health_check(self) -> bool:
+        """Check if backend is healthy"""
+        pass
+
+    @abstractmethod
+    async def close(self):
+        """Close the connection"""
+        pass
+
+
+class BackendConnector(BaseConnector):
+    """Abstract base class for HTTP-based backend connectors (VictoriaMetrics, OpenObserve)"""
 
     def __init__(self, config: BackendConfig):
         self.config = config
@@ -90,6 +104,30 @@ class BackendConnector(ABC):
     @abstractmethod
     async def query(self, query: str) -> Any:
         """Query data from backend"""
+        pass
+
+
+class CacheConnector(BaseConnector):
+    """Abstract base class for cache/pub-sub connectors (Redis, etc.)"""
+
+    @abstractmethod
+    async def set(self, key: str, value: Any, ttl_seconds: Optional[int] = None) -> bool:
+        """Set a value in cache"""
+        pass
+
+    @abstractmethod
+    async def get(self, key: str) -> Optional[Any]:
+        """Get a value from cache"""
+        pass
+
+    @abstractmethod
+    async def delete(self, key: str) -> bool:
+        """Delete a key from cache"""
+        pass
+
+    @abstractmethod
+    async def publish(self, channel: str, message: Any) -> int:
+        """Publish message to channel"""
         pass
 
 
@@ -405,9 +443,10 @@ class OpenObserveClient(BackendConnector):
             return False
 
 
-class RedisClient:
+class RedisClient(CacheConnector):
     """
     Async Redis client for caching and pub/sub
+    Implements CacheConnector interface for consistent architecture
     """
 
     def __init__(

@@ -53,7 +53,7 @@ function validateSecurity(data: any): { valid: boolean; issues: string[] } {
 }
 
 // API Key validation middleware
-function validateApiKey(req: Request, res: Response, next: Function): void {
+function validateApiKey(req: Request, res: Response, next: () => void): void {
   const apiKey = req.headers['x-api-key'];
   const devMode = process.env.AIOBS_DEV_MODE === 'true';
 
