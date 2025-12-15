@@ -11,11 +11,12 @@ import os
 
 from .routers import (
     dashboard_router, metrics_router, profiles_router, i18n_router,
-    realtime_router, assistant_router
+    realtime_router, assistant_router, ingestion_router
 )
 from .i18n import I18nMiddleware, SUPPORTED_LANGUAGES, get_translator
 from .i18n.middleware import create_i18n_context
 from .routers.realtime import start_background_tasks, stop_background_tasks
+from .routers.ingestion import startup as ingestion_startup, shutdown as ingestion_shutdown
 
 # Application metadata
 APP_TITLE = "AIOBS - AI Observability Hub"
@@ -67,6 +68,7 @@ app.include_router(profiles_router)
 app.include_router(i18n_router)
 app.include_router(realtime_router)
 app.include_router(assistant_router)
+app.include_router(ingestion_router)
 
 
 # =============================================================================
@@ -75,14 +77,16 @@ app.include_router(assistant_router)
 
 @app.on_event("startup")
 async def startup_event():
-    """Start background tasks on application startup"""
+    """Start background tasks and services on application startup"""
     start_background_tasks()
+    await ingestion_startup()
 
 
 @app.on_event("shutdown")
 async def shutdown_event():
-    """Stop background tasks on application shutdown"""
+    """Stop background tasks and services on application shutdown"""
     stop_background_tasks()
+    await ingestion_shutdown()
 
 
 # ============================================================================
