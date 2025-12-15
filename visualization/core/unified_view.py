@@ -56,6 +56,11 @@ class AlertStatus:
     info: int
     acknowledged: int
     silenced: int
+    # Priority breakdown
+    p1: int = 0
+    p2: int = 0
+    p3: int = 0
+    p4: int = 0
 
 
 @dataclass
@@ -386,6 +391,193 @@ class UnifiedObservabilityView:
             ]
         }
 
+    def get_incidents(
+        self,
+        priority: Optional[str] = None,
+        status: Optional[str] = None,
+        limit: int = 20
+    ) -> Dict:
+        """
+        Get incidents with optional filtering by priority and status.
+
+        Args:
+            priority: Filter by priority level (p1, p2, p3, p4)
+            status: Filter by status (detected, acknowledged, investigating, etc.)
+            limit: Maximum number of incidents to return
+        """
+        # Generate demo incidents with full priority breakdown
+        all_incidents = [
+            {
+                "id": "INC-001",
+                "title": "Database connection pool exhaustion",
+                "description": "PostgreSQL connection pool reaching maximum capacity",
+                "priority": "p1",
+                "severity": "critical",
+                "status": "mitigating",
+                "affected_service": "postgresql",
+                "affected_models": ["fraud-detector-v1", "recommendation-v2"],
+                "detected_at": "2024-01-15T10:30:00Z",
+                "acknowledged_at": "2024-01-15T10:32:00Z",
+                "duration_minutes": 5,
+                "impact": {
+                    "users_affected": 15000,
+                    "revenue_impact": 5200,
+                    "error_rate_increase": 2.5
+                }
+            },
+            {
+                "id": "INC-002",
+                "title": "Fraud model drift detected",
+                "description": "Significant drift detected in fraud detection model output distribution",
+                "priority": "p2",
+                "severity": "high",
+                "status": "investigating",
+                "affected_service": "fraud-detector-v1",
+                "affected_models": ["fraud-detector-v1"],
+                "detected_at": "2024-01-15T09:45:00Z",
+                "acknowledged_at": "2024-01-15T09:50:00Z",
+                "duration_minutes": 45,
+                "impact": {
+                    "users_affected": 0,
+                    "revenue_impact": 0,
+                    "false_positive_increase": 12.5
+                }
+            },
+            {
+                "id": "INC-003",
+                "title": "Increased latency on recommendation service",
+                "description": "P99 latency increased from 45ms to 185ms",
+                "priority": "p2",
+                "severity": "high",
+                "status": "acknowledged",
+                "affected_service": "recommendation-v2",
+                "affected_models": ["recommendation-v2"],
+                "detected_at": "2024-01-15T10:10:00Z",
+                "acknowledged_at": "2024-01-15T10:15:00Z",
+                "duration_minutes": 20,
+                "impact": {
+                    "users_affected": 8500,
+                    "revenue_impact": 1200,
+                    "latency_increase_pct": 311
+                }
+            },
+            {
+                "id": "INC-004",
+                "title": "High memory usage on inference nodes",
+                "description": "Memory usage on inference cluster nodes exceeding 85%",
+                "priority": "p2",
+                "severity": "medium",
+                "status": "investigating",
+                "affected_service": "inference-cluster",
+                "affected_models": ["recommendation-v2", "churn-predictor"],
+                "detected_at": "2024-01-15T09:55:00Z",
+                "acknowledged_at": "2024-01-15T10:00:00Z",
+                "duration_minutes": 35,
+                "impact": {
+                    "users_affected": 0,
+                    "revenue_impact": 0,
+                    "memory_usage_pct": 87
+                }
+            },
+            {
+                "id": "INC-005",
+                "title": "Cost spike detected",
+                "description": "Unusual cost increase detected on inference cluster",
+                "priority": "p3",
+                "severity": "medium",
+                "status": "monitoring",
+                "affected_service": "inference-cluster",
+                "affected_models": [],
+                "detected_at": "2024-01-15T08:00:00Z",
+                "acknowledged_at": "2024-01-15T08:30:00Z",
+                "duration_minutes": 120,
+                "impact": {
+                    "users_affected": 0,
+                    "cost_increase_pct": 25,
+                    "estimated_overspend": 850
+                }
+            },
+            {
+                "id": "INC-006",
+                "title": "Feature store cache miss rate elevated",
+                "description": "Cache miss rate increased from 2% to 8%",
+                "priority": "p3",
+                "severity": "low",
+                "status": "monitoring",
+                "affected_service": "feature-store",
+                "affected_models": ["recommendation-v2"],
+                "detected_at": "2024-01-15T07:30:00Z",
+                "acknowledged_at": None,
+                "duration_minutes": 180,
+                "impact": {
+                    "users_affected": 0,
+                    "cache_miss_rate_pct": 8
+                }
+            },
+            {
+                "id": "INC-007",
+                "title": "Model retraining job delayed",
+                "description": "Scheduled retraining for churn-predictor delayed by 2 hours",
+                "priority": "p4",
+                "severity": "low",
+                "status": "acknowledged",
+                "affected_service": "training-pipeline",
+                "affected_models": ["churn-predictor"],
+                "detected_at": "2024-01-15T06:00:00Z",
+                "acknowledged_at": "2024-01-15T08:00:00Z",
+                "duration_minutes": 240,
+                "impact": {
+                    "users_affected": 0,
+                    "delay_hours": 2
+                }
+            },
+            {
+                "id": "INC-008",
+                "title": "Minor logging delay",
+                "description": "OpenObserve ingestion experiencing 30s delay",
+                "priority": "p4",
+                "severity": "low",
+                "status": "resolved",
+                "affected_service": "openobserve",
+                "affected_models": [],
+                "detected_at": "2024-01-15T05:00:00Z",
+                "acknowledged_at": "2024-01-15T05:30:00Z",
+                "resolved_at": "2024-01-15T06:00:00Z",
+                "duration_minutes": 60,
+                "impact": {
+                    "users_affected": 0,
+                    "logging_delay_seconds": 30
+                }
+            }
+        ]
+
+        # Filter by priority
+        if priority:
+            all_incidents = [i for i in all_incidents if i["priority"] == priority]
+
+        # Filter by status
+        if status:
+            all_incidents = [i for i in all_incidents if i["status"] == status]
+
+        # Priority counts
+        priority_counts = {"p1": 0, "p2": 0, "p3": 0, "p4": 0}
+        for inc in all_incidents:
+            priority_counts[inc["priority"]] = priority_counts.get(inc["priority"], 0) + 1
+
+        return {
+            "total": len(all_incidents),
+            "incidents": all_incidents[:limit],
+            "by_priority": priority_counts,
+            "by_status": {
+                "detected": len([i for i in all_incidents if i["status"] == "detected"]),
+                "acknowledged": len([i for i in all_incidents if i["status"] == "acknowledged"]),
+                "investigating": len([i for i in all_incidents if i["status"] == "investigating"]),
+                "mitigating": len([i for i in all_incidents if i["status"] == "mitigating"]),
+                "monitoring": len([i for i in all_incidents if i["status"] == "monitoring"]),
+                "resolved": len([i for i in all_incidents if i["status"] == "resolved"])
+            }
+        }
+
     # =========================================================================
     # Private Helper Methods
     # =========================================================================
@@ -414,29 +606,57 @@ class UnifiedObservabilityView:
                 warning=4,
                 info=10,
                 acknowledged=8,
-                silenced=2
+                silenced=2,
+                p1=1,
+                p2=3,
+                p3=6,
+                p4=5
             ),
             top_issues=[
                 {
                     "id": "ISS-001",
                     "title": "Fraud model drift detected",
                     "severity": "warning",
+                    "priority": "p2",
                     "affected_service": "fraud-detector-v1",
-                    "duration_minutes": 45
+                    "duration_minutes": 45,
+                    "status": "investigating"
                 },
                 {
                     "id": "ISS-002",
                     "title": "Increased latency on recommendation service",
                     "severity": "warning",
+                    "priority": "p2",
                     "affected_service": "recommendation-v2",
-                    "duration_minutes": 20
+                    "duration_minutes": 20,
+                    "status": "acknowledged"
                 },
                 {
                     "id": "ISS-003",
                     "title": "Cost spike detected",
                     "severity": "info",
+                    "priority": "p3",
                     "affected_service": "inference-cluster",
-                    "duration_minutes": 120
+                    "duration_minutes": 120,
+                    "status": "monitoring"
+                },
+                {
+                    "id": "ISS-004",
+                    "title": "Database connection pool exhaustion",
+                    "severity": "critical",
+                    "priority": "p1",
+                    "affected_service": "postgresql",
+                    "duration_minutes": 5,
+                    "status": "mitigating"
+                },
+                {
+                    "id": "ISS-005",
+                    "title": "High memory usage on inference nodes",
+                    "severity": "warning",
+                    "priority": "p2",
+                    "affected_service": "inference-cluster",
+                    "duration_minutes": 35,
+                    "status": "investigating"
                 }
             ],
             trust_trend="stable",

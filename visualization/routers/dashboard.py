@@ -136,3 +136,16 @@ async def get_compliance_dashboard() -> APIResponse:
     """
     compliance = unified_view.get_compliance_dashboard()
     return APIResponse(success=True, data=compliance)
+
+
+@router.get("/incidents")
+async def get_incidents(
+    priority: Optional[str] = Query(None, description="Filter by priority: p1, p2, p3, p4"),
+    status: Optional[str] = Query(None, description="Filter by status: detected, acknowledged, investigating, mitigating, monitoring, resolved"),
+    limit: int = Query(20, ge=1, le=100, description="Maximum number of incidents to return")
+) -> APIResponse:
+    """
+    Get incidents with optional filtering by priority and status.
+    """
+    incidents = unified_view.get_incidents(priority=priority, status=status, limit=limit)
+    return APIResponse(success=True, data=incidents)

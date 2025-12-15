@@ -32,6 +32,10 @@
         <i data-lucide="server"></i>
         <span>{{ t('nav.infrastructure') or 'Infrastructure' }}</span>
     </a>
+    <a href="#incidents" class="nav-link">
+        <i data-lucide="alert-triangle"></i>
+        <span>{{ t('nav.incidents') or 'Incidents' }}</span>
+    </a>
     <a href="#costs" class="nav-link">
         <i data-lucide="dollar-sign"></i>
         <span>{{ t('nav.costs') or 'Costs' }}</span>
@@ -141,6 +145,57 @@
     </div>
 </div>
 
+<!-- Active Incidents by Priority -->
+<div class="card mb-6" id="incidents">
+    <div class="card-header">
+        <h3 class="card-title">Active Incidents</h3>
+        <div class="flex gap-2">
+            <select id="priorityFilter" class="form-select" style="width: auto;" onchange="loadIncidents()">
+                <option value="">All Priorities</option>
+                <option value="p1">P1 - Critical</option>
+                <option value="p2">P2 - High</option>
+                <option value="p3">P3 - Medium</option>
+                <option value="p4">P4 - Low</option>
+            </select>
+        </div>
+    </div>
+    <!-- Priority Summary Cards -->
+    <div class="grid grid-4 mb-4" id="prioritySummary">
+        <div class="priority-card p1">
+            <div class="priority-header">
+                <span class="priority-badge p1">P1</span>
+                <span class="priority-label">Critical</span>
+            </div>
+            <div class="priority-count" id="p1Count">-</div>
+        </div>
+        <div class="priority-card p2">
+            <div class="priority-header">
+                <span class="priority-badge p2">P2</span>
+                <span class="priority-label">High</span>
+            </div>
+            <div class="priority-count" id="p2Count">-</div>
+        </div>
+        <div class="priority-card p3">
+            <div class="priority-header">
+                <span class="priority-badge p3">P3</span>
+                <span class="priority-label">Medium</span>
+            </div>
+            <div class="priority-count" id="p3Count">-</div>
+        </div>
+        <div class="priority-card p4">
+            <div class="priority-header">
+                <span class="priority-badge p4">P4</span>
+                <span class="priority-label">Low</span>
+            </div>
+            <div class="priority-count" id="p4Count">-</div>
+        </div>
+    </div>
+    <!-- Incidents Table -->
+    <div id="incidentsTable">
+        <div class="loader"><div class="spinner"></div></div>
+    </div>
+</div>
+
 <!-- Compliance Status -->
 <div class="card" id="compliance">
     <div class="card-header">
@@ -150,6 +205,128 @@
         <div class="loader"><div class="spinner"></div></div>
     </div>
 </div>
+
+<style>
+/* Priority Cards */
+.priority-card {
+    padding: var(--space-4);
+    border-radius: var(--radius-lg);
+    background: var(--bg-hover);
+    border-left: 4px solid;
+    text-align: center;
+}
+
+.priority-card.p1 { border-left-color: var(--color-danger); }
+.priority-card.p2 { border-left-color: var(--color-warning); }
+.priority-card.p3 { border-left-color: var(--color-info); }
+.priority-card.p4 { border-left-color: var(--color-muted); }
+
+.priority-header {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: var(--space-2);
+    margin-bottom: var(--space-2);
+}
+
+.priority-badge {
+    padding: var(--space-1) var(--space-2);
+    border-radius: var(--radius-sm);
+    font-size: 0.75rem;
+    font-weight: 700;
+    color: white;
+}
+
+.priority-badge.p1 { background: var(--color-danger); }
+.priority-badge.p2 { background: var(--color-warning); }
+.priority-badge.p3 { background: var(--color-info); }
+.priority-badge.p4 { background: var(--color-muted); }
+
+.priority-label {
+    font-size: 0.875rem;
+    color: var(--text-secondary);
+}
+
+.priority-count {
+    font-size: 2rem;
+    font-weight: 700;
+}
+
+/* Incidents Table */
+.incident-row {
+    display: flex;
+    align-items: center;
+    padding: var(--space-3) var(--space-4);
+    border-bottom: 1px solid var(--border-color);
+    gap: var(--space-4);
+}
+
+.incident-row:last-child {
+    border-bottom: none;
+}
+
+.incident-row:hover {
+    background: var(--bg-hover);
+}
+
+.incident-priority {
+    flex-shrink: 0;
+}
+
+.incident-info {
+    flex: 1;
+    min-width: 0;
+}
+
+.incident-title {
+    font-weight: 600;
+    margin-bottom: var(--space-1);
+}
+
+.incident-meta {
+    display: flex;
+    gap: var(--space-3);
+    font-size: 0.75rem;
+    color: var(--text-secondary);
+}
+
+.incident-status {
+    flex-shrink: 0;
+}
+
+.incident-duration {
+    flex-shrink: 0;
+    text-align: right;
+    font-size: 0.875rem;
+}
+
+.status-badge {
+    padding: var(--space-1) var(--space-2);
+    border-radius: var(--radius-full);
+    font-size: 0.6875rem;
+    font-weight: 500;
+    text-transform: uppercase;
+}
+
+.status-badge.mitigating { background: var(--color-danger-light); color: var(--color-danger); }
+.status-badge.investigating { background: var(--color-warning-light); color: var(--color-warning); }
+.status-badge.acknowledged { background: var(--color-info-light); color: var(--color-info); }
+.status-badge.monitoring { background: var(--bg-hover); color: var(--text-secondary); }
+.status-badge.resolved { background: var(--color-success-light); color: var(--color-success); }
+
+.empty-incidents {
+    padding: var(--space-8);
+    text-align: center;
+    color: var(--text-secondary);
+}
+
+.empty-incidents i {
+    width: 48px;
+    height: 48px;
+    margin-bottom: var(--space-3);
+    opacity: 0.5;
+}
+</style>
 {% endblock %}
 
 {% block scripts %}
@@ -163,6 +340,7 @@ document.addEventListener('DOMContentLoaded', async () => {
         loadCosts(),
         loadCarbon(),
         loadSLO(),
+        loadIncidents(),
         loadCompliance()
     ]);
     lucide.createIcons();
@@ -543,6 +721,80 @@ async function loadCompliance() {
         }
     } catch (error) {
         console.error('Error loading compliance:', error);
+    }
+}
+
+async function loadIncidents() {
+    const container = document.getElementById('incidentsTable');
+    const priorityFilter = document.getElementById('priorityFilter').value;
+
+    try {
+        let url = '/api/dashboard/incidents';
+        if (priorityFilter) {
+            url += `?priority=${priorityFilter}`;
+        }
+
+        const response = await fetch(url);
+        const result = await response.json();
+
+        if (result.success) {
+            const data = result.data;
+
+            // Update priority counts
+            document.getElementById('p1Count').textContent = data.by_priority.p1 || 0;
+            document.getElementById('p2Count').textContent = data.by_priority.p2 || 0;
+            document.getElementById('p3Count').textContent = data.by_priority.p3 || 0;
+            document.getElementById('p4Count').textContent = data.by_priority.p4 || 0;
+
+            if (data.incidents && data.incidents.length > 0) {
+                container.innerHTML = data.incidents.map(incident => `
+                    <div class="incident-row">
+                        <div class="incident-priority">
+                            <span class="priority-badge ${incident.priority}">${incident.priority.toUpperCase()}</span>
+                        </div>
+                        <div class="incident-info">
+                            <div class="incident-title">${incident.title}</div>
+                            <div class="incident-meta">
+                                <span><i data-lucide="server" style="width: 12px; height: 12px;"></i> ${incident.affected_service}</span>
+                                <span><i data-lucide="clock" style="width: 12px; height: 12px;"></i> ${incident.duration_minutes}m</span>
+                                ${incident.impact?.users_affected ? `<span><i data-lucide="users" style="width: 12px; height: 12px;"></i> ${incident.impact.users_affected.toLocaleString()} users</span>` : ''}
+                            </div>
+                        </div>
+                        <div class="incident-status">
+                            <span class="status-badge ${incident.status}">${incident.status}</span>
+                        </div>
+                    </div>
+                `).join('');
+                lucide.createIcons();
+            } else {
+                container.innerHTML = `
+                    <div class="empty-incidents">
+                        <i data-lucide="check-circle"></i>
+                        <h3>No incidents</h3>
+                        <p class="text-muted">${priorityFilter ? `No ${priorityFilter.toUpperCase()} incidents found` : 'All systems operating normally'}</p>
+                    </div>
+                `;
+                lucide.createIcons();
+            }
+        } else {
+            container.innerHTML = `
+                <div class="empty-incidents">
+                    <i data-lucide="alert-circle"></i>
+                    <h3>Error loading incidents</h3>
+                </div>
+            `;
+            lucide.createIcons();
+        }
+    } catch (error) {
+        console.error('Error loading incidents:', error);
+        container.innerHTML = `
+            <div class="empty-incidents">
+                <i data-lucide="alert-circle"></i>
+                <h3>Error loading incidents</h3>
+                <p class="text-muted">${error.message}</p>
+            </div>
+        `;
+        lucide.createIcons();
     }
 }
 
