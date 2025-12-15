@@ -121,6 +121,8 @@ class SecurityMetrics(BaseModel):
 
 class ModelSnapshot(BaseModel):
     """Complete model health snapshot"""
+    model_config = ConfigDict(protected_namespaces=())
+
     model_id: str
     model_name: str
     model_version: str
