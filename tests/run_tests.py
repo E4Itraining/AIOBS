@@ -18,12 +18,37 @@ import json
 import argparse
 import threading
 import signal
+import shutil
 from datetime import datetime, timedelta
 from typing import List, Dict, Optional, Callable
 from dataclasses import dataclass, field, asdict
 from enum import Enum
 from pathlib import Path
 import concurrent.futures
+
+
+def find_pytest() -> str:
+    """Find the pytest executable, checking multiple locations"""
+    # First, try to find pytest in PATH
+    pytest_path = shutil.which("pytest")
+    if pytest_path:
+        return pytest_path
+
+    # Try python -m pytest with system python
+    try:
+        result = subprocess.run(
+            [sys.executable, "-m", "pytest", "--version"],
+            capture_output=True,
+            text=True,
+            timeout=10
+        )
+        if result.returncode == 0:
+            return f"{sys.executable} -m pytest"
+    except Exception:
+        pass
+
+    # Fallback to pytest command (will fail if not found)
+    return "pytest"
 
 
 # =============================================================================
@@ -166,11 +191,19 @@ class TestRunner:
             )
 
         # Build pytest command
-        cmd = [
-            sys.executable, "-m", "pytest",
-            str(test_path),
-            "-v" if self.config.verbose else "-q",
-        ]
+        pytest_cmd = find_pytest()
+        if " " in pytest_cmd:
+            # Handle "python -m pytest" case
+            cmd = pytest_cmd.split() + [
+                str(test_path),
+                "-v" if self.config.verbose else "-q",
+            ]
+        else:
+            cmd = [
+                pytest_cmd,
+                str(test_path),
+                "-v" if self.config.verbose else "-q",
+            ]
 
         # Add markers
         if self.config.markers:
@@ -194,8 +227,17 @@ class TestRunner:
             report_file = report_dir / f"report_{suite.value}_{timestamp}.html"
             cmd.extend([f"--html={report_file}", "--self-contained-html"])
 
-        # Add timeout
-        cmd.extend([f"--timeout={self.config.timeout_seconds}"])
+        # Add timeout (only if pytest-timeout is available)
+        # Note: subprocess timeout is always enforced regardless
+        try:
+            timeout_check = subprocess.run(
+                [pytest_cmd.split()[0] if " " in pytest_cmd else pytest_cmd, "--help"],
+                capture_output=True, text=True, timeout=5
+            )
+            if "--timeout" in timeout_check.stdout:
+                cmd.extend([f"--timeout={self.config.timeout_seconds}"])
+        except Exception:
+            pass  # Skip if we can't check
 
         # Add max failures
         if self.config.max_failures > 0:
