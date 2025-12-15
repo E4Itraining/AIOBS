@@ -1,0 +1,98 @@
+# =============================================================================
+# AIOBS - Version Simplifiée (Python uniquement, SANS Node.js)
+# =============================================================================
+#
+# Démarrage: docker-compose -f docker-compose.simple.yml up -d
+#
+# Services:
+#   - visualization: Dashboard FastAPI (port 8000)
+#   - victoriametrics: Base de données métriques (port 8428)
+#   - redis: Cache (port 6379)
+#
+# =============================================================================
+
+services:
+  # ===========================================================================
+  # AIOBS Dashboard (FastAPI) - Le seul service nécessaire!
+  # ===========================================================================
+  visualization:
+    build:
+      context: .
+      dockerfile: Dockerfile.simple
+    container_name: aiobs-dashboard
+    ports:
+      - "8000:8000"
+    environment:
+      - PORT=8000
+      - HOST=0.0.0.0
+      - VICTORIA_METRICS_URL=http://victoriametrics:8428
+      - REDIS_URL=redis://redis:6379
+      - LOG_LEVEL=info
+      - DEFAULT_LANGUAGE=fr
+    depends_on:
+      victoriametrics:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+    networks:
+      - aiobs-network
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD", "python", "-c", "import urllib.request; urllib.request.urlopen('http://localhost:8000/health')"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 10s
+
+  # ===========================================================================
+  # VictoriaMetrics - Stockage des métriques
+  # ===========================================================================
+  victoriametrics:
+    image: victoriametrics/victoria-metrics:v1.96.0
+    container_name: aiobs-metrics
+    ports:
+      - "8428:8428"
+    volumes:
+      - vm-data:/victoria-metrics-data
+    command:
+      - "--storageDataPath=/victoria-metrics-data"
+      - "--httpListenAddr=:8428"
+      - "--retentionPeriod=30d"
+    networks:
+      - aiobs-network
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD", "sh", "-c", "wget -q -O /dev/null http://127.0.0.1:8428/health"]
+      interval: 15s
+      timeout: 10s
+      retries: 5
+      start_period: 10s
+
+  # ===========================================================================
+  # Redis - Cache et WebSocket
+  # ===========================================================================
+  redis:
+    image: redis:7-alpine
+    container_name: aiobs-redis
+    ports:
+      - "6379:6379"
+    volumes:
+      - redis-data:/data
+    command: redis-server --appendonly yes --maxmemory 128mb --maxmemory-policy allkeys-lru
+    networks:
+      - aiobs-network
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 10s
+      timeout: 5s
+      retries: 3
+      start_period: 5s
+
+networks:
+  aiobs-network:
+    driver: bridge
+
+volumes:
+  vm-data:
+  redis-data:
