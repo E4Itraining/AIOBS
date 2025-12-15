@@ -5,6 +5,8 @@
  * @packageDocumentation
  */
 
+import * as http from 'http';
+
 // Core Types
 export * from './core/types';
 
@@ -126,4 +128,73 @@ export interface AIBOSInstance {
   slo: any;
   /** Storage backend (if configured) */
   storage?: any;
+}
+
+// =============================================================================
+// HTTP Server for Docker deployment
+// =============================================================================
+
+const PORT = parseInt(process.env.PORT || '3000', 10);
+
+/**
+ * Start the AIOBS HTTP server
+ */
+function startServer(): void {
+  const server = http.createServer((req, res) => {
+    // Health check endpoint
+    if (req.url === '/health' && req.method === 'GET') {
+      res.writeHead(200, { 'Content-Type': 'application/json' });
+      res.end(JSON.stringify({
+        status: 'healthy',
+        version: VERSION,
+        timestamp: new Date().toISOString(),
+      }));
+      return;
+    }
+
+    // Root endpoint - platform info
+    if (req.url === '/' && req.method === 'GET') {
+      res.writeHead(200, { 'Content-Type': 'application/json' });
+      res.end(JSON.stringify({
+        name: 'AIOBS Platform',
+        version: VERSION,
+        description: 'AI Observability Hub - Trust Control Layer for AI Systems',
+        endpoints: {
+          health: '/health',
+          api: '/api',
+        },
+      }));
+      return;
+    }
+
+    // API status endpoint
+    if (req.url === '/api' && req.method === 'GET') {
+      res.writeHead(200, { 'Content-Type': 'application/json' });
+      res.end(JSON.stringify({
+        status: 'ready',
+        version: VERSION,
+        services: {
+          cognitive: 'available',
+          causal: 'available',
+          audit: 'available',
+          slo: 'available',
+        },
+      }));
+      return;
+    }
+
+    // 404 for unknown routes
+    res.writeHead(404, { 'Content-Type': 'application/json' });
+    res.end(JSON.stringify({ error: 'Not Found' }));
+  });
+
+  server.listen(PORT, '0.0.0.0', () => {
+    console.log(`AIOBS Platform v${VERSION} running on port ${PORT}`);
+    console.log(`Health check available at http://localhost:${PORT}/health`);
+  });
+}
+
+// Start server when run directly (not when imported as module)
+if (require.main === module) {
+  startServer();
 }
