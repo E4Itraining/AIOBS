@@ -1,0 +1,333 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="dashboard-container">
+    <nav class="sidebar">
+        <div class="sidebar-logo">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <circle cx="12" cy="12" r="10"/>
+                <path d="M12 6v6l4 2"/>
+                <circle cx="12" cy="12" r="3"/>
+            </svg>
+            AIOBS
+        </div>
+        <div class="nav-section">
+            <div class="nav-section-title">Views</div>
+            <a href="/" class="nav-item"><i data-feather="home"></i> Dashboard</a>
+            <a href="/unified" class="nav-item"><i data-feather="layers"></i> Unified View</a>
+            <a href="/causal" class="nav-item active"><i data-feather="git-branch"></i> Causal</a>
+            <a href="/impact" class="nav-item"><i data-feather="trending-up"></i> Impact</a>
+        </div>
+        <div class="nav-section">
+            <div class="nav-section-title">Scenarios</div>
+            <button class="nav-item" onclick="loadScenario('drift_incident')">
+                <i data-feather="alert-triangle"></i> Drift Incident
+            </button>
+            <button class="nav-item" onclick="loadScenario('cost_spike')">
+                <i data-feather="dollar-sign"></i> Cost Spike
+            </button>
+        </div>
+    </nav>
+
+    <main class="main-content">
+        <div class="header">
+            <h1 class="header-title">Causal Analysis</h1>
+            <p style="color: var(--text-secondary); margin: 0;">Root cause analysis linking infrastructure, data, and AI outcomes</p>
+        </div>
+
+        <!-- Causal Graph -->
+        <div class="card">
+            <div class="card-header">
+                <h3 class="card-title">Causal Graph</h3>
+                <div>
+                    <select id="scenarioSelect" onchange="loadScenario(this.value)" style="padding: 0.5rem; border-radius: 0.25rem; border: 1px solid var(--border-color);">
+                        <option value="drift_incident">Drift Incident</option>
+                        <option value="cost_spike">Cost Spike</option>
+                    </select>
+                </div>
+            </div>
+            <div id="causalGraph" style="height: 450px; border: 1px solid var(--border-color); border-radius: 0.5rem;"></div>
+        </div>
+
+        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1rem;">
+            <!-- Root Causes -->
+            <div class="card">
+                <div class="card-header">
+                    <h3 class="card-title">Root Causes</h3>
+                </div>
+                <div id="rootCauses">
+                    <div class="loader"><div class="spinner"></div></div>
+                </div>
+            </div>
+
+            <!-- Impact Path -->
+            <div class="card">
+                <div class="card-header">
+                    <h3 class="card-title">Impact Path</h3>
+                </div>
+                <div id="impactPath">
+                    <div class="loader"><div class="spinner"></div></div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Node Details -->
+        <div class="card">
+            <div class="card-header">
+                <h3 class="card-title">Node Details</h3>
+            </div>
+            <div id="nodeDetails" style="padding: 1rem; color: var(--text-secondary);">
+                Click on a node in the graph to see details
+            </div>
+        </div>
+    </main>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script>
+let currentGraph = null;
+
+document.addEventListener('DOMContentLoaded', async () => {
+    await loadScenario('drift_incident');
+    feather.replace();
+});
+
+async function loadScenario(scenario) {
+    document.getElementById('scenarioSelect').value = scenario;
+
+    try {
+        const response = await fetch(`/api/metrics/causal/graph/${scenario}`);
+        const result = await response.json();
+
+        if (result.success) {
+            currentGraph = result.data;
+            renderCausalGraph(result.data);
+            renderRootCauses(result.data);
+            renderImpactPath(result.data);
+        }
+    } catch (error) {
+        console.error('Error loading scenario:', error);
+    }
+}
+
+function renderCausalGraph(data) {
+    const container = document.getElementById('causalGraph');
+    container.innerHTML = '';
+
+    const width = container.clientWidth;
+    const height = 450;
+
+    const svg = d3.select(container)
+        .append('svg')
+        .attr('width', width)
+        .attr('height', height);
+
+    // Define arrow marker
+    svg.append('defs').append('marker')
+        .attr('id', 'arrow')
+        .attr('viewBox', '0 -5 10 10')
+        .attr('refX', 35)
+        .attr('refY', 0)
+        .attr('markerWidth', 6)
+        .attr('markerHeight', 6)
+        .attr('orient', 'auto')
+        .append('path')
+        .attr('d', 'M0,-5L10,0L0,5')
+        .attr('fill', 'var(--text-secondary)');
+
+    // Node type colors
+    const typeColors = {
+        data_source: '#3b82f6',
+        feature: '#8b5cf6',
+        model: '#10b981',
+        configuration: '#f59e0b',
+        infrastructure: '#6366f1',
+        business_metric: '#ef4444',
+        incident: '#dc2626',
+        external_event: '#64748b'
+    };
+
+    // Create force simulation
+    const simulation = d3.forceSimulation(data.nodes)
+        .force('link', d3.forceLink(data.edges)
+            .id(d => d.id)
+            .distance(150))
+        .force('charge', d3.forceManyBody().strength(-500))
+        .force('center', d3.forceCenter(width / 2, height / 2))
+        .force('collision', d3.forceCollide().radius(50));
+
+    // Draw edges
+    const link = svg.append('g')
+        .selectAll('g')
+        .data(data.edges)
+        .join('g');
+
+    link.append('line')
+        .attr('stroke', 'var(--border-color)')
+        .attr('stroke-width', d => 2 + d.weight * 3)
+        .attr('marker-end', 'url(#arrow)');
+
+    link.append('text')
+        .text(d => (d.confidence * 100).toFixed(0) + '%')
+        .attr('font-size', '10px')
+        .attr('fill', 'var(--text-secondary)')
+        .attr('text-anchor', 'middle');
+
+    // Draw nodes
+    const node = svg.append('g')
+        .selectAll('g')
+        .data(data.nodes)
+        .join('g')
+        .style('cursor', 'pointer')
+        .on('click', (event, d) => showNodeDetails(d))
+        .call(d3.drag()
+            .on('start', dragstarted)
+            .on('drag', dragged)
+            .on('end', dragended));
+
+    // Node circles
+    node.append('circle')
+        .attr('r', 30)
+        .attr('fill', d => typeColors[d.type] || '#6366f1')
+        .attr('stroke', 'white')
+        .attr('stroke-width', 3);
+
+    // Node icons (simplified)
+    node.append('text')
+        .text(d => d.name.substring(0, 3).toUpperCase())
+        .attr('text-anchor', 'middle')
+        .attr('dy', 4)
+        .attr('fill', 'white')
+        .attr('font-size', '11px')
+        .attr('font-weight', '600');
+
+    // Node labels
+    node.append('text')
+        .text(d => d.name)
+        .attr('text-anchor', 'middle')
+        .attr('dy', 50)
+        .attr('fill', 'var(--text-primary)')
+        .attr('font-size', '12px');
+
+    // Impact score indicator
+    node.append('circle')
+        .attr('cx', 20)
+        .attr('cy', -20)
+        .attr('r', 10)
+        .attr('fill', d => d.impact_score > 0.7 ? 'var(--danger)' :
+            d.impact_score > 0.4 ? 'var(--warning)' : 'var(--success)');
+
+    node.append('text')
+        .text(d => (d.impact_score * 10).toFixed(0))
+        .attr('x', 20)
+        .attr('y', -16)
+        .attr('text-anchor', 'middle')
+        .attr('fill', 'white')
+        .attr('font-size', '8px')
+        .attr('font-weight', '600');
+
+    simulation.on('tick', () => {
+        link.selectAll('line')
+            .attr('x1', d => d.source.x)
+            .attr('y1', d => d.source.y)
+            .attr('x2', d => d.target.x)
+            .attr('y2', d => d.target.y);
+
+        link.selectAll('text')
+            .attr('x', d => (d.source.x + d.target.x) / 2)
+            .attr('y', d => (d.source.y + d.target.y) / 2 - 10);
+
+        node.attr('transform', d => `translate(${d.x},${d.y})`);
+    });
+
+    function dragstarted(event) {
+        if (!event.active) simulation.alphaTarget(0.3).restart();
+        event.subject.fx = event.subject.x;
+        event.subject.fy = event.subject.y;
+    }
+
+    function dragged(event) {
+        event.subject.fx = event.x;
+        event.subject.fy = event.y;
+    }
+
+    function dragended(event) {
+        if (!event.active) simulation.alphaTarget(0);
+        event.subject.fx = null;
+        event.subject.fy = null;
+    }
+}
+
+function renderRootCauses(data) {
+    // Find root causes (nodes with no incoming edges)
+    const targetIds = new Set(data.edges.map(e => e.target));
+    const sourceIds = new Set(data.edges.map(e => e.source));
+    const rootCauses = data.nodes.filter(n => !targetIds.has(n.id));
+
+    document.getElementById('rootCauses').innerHTML = rootCauses.length ? rootCauses.map(rc => `
+        <div style="display: flex; align-items: center; gap: 1rem; padding: 1rem; border-bottom: 1px solid var(--border-color);">
+            <div style="width: 40px; height: 40px; border-radius: 50%; background: ${rc.impact_score > 0.7 ? 'var(--danger)' : 'var(--warning)'}; display: flex; align-items: center; justify-content: center; color: white; font-weight: 600;">
+                ${(rc.impact_score * 100).toFixed(0)}%
+            </div>
+            <div>
+                <div style="font-weight: 600;">${rc.name}</div>
+                <div style="font-size: 0.875rem; color: var(--text-secondary);">${rc.description || rc.type}</div>
+            </div>
+        </div>
+    `).join('') : '<div style="padding: 1rem; color: var(--text-secondary);">No root causes identified</div>';
+}
+
+function renderImpactPath(data) {
+    // Build path from root to leaf
+    const paths = [];
+
+    data.edges.forEach(edge => {
+        const source = data.nodes.find(n => n.id === edge.source);
+        const target = data.nodes.find(n => n.id === edge.target);
+        if (source && target) {
+            paths.push({ source, target, ...edge });
+        }
+    });
+
+    document.getElementById('impactPath').innerHTML = paths.map(p => `
+        <div style="display: flex; align-items: center; gap: 0.5rem; padding: 0.75rem; border-bottom: 1px solid var(--border-color);">
+            <span style="font-weight: 600;">${p.source.name}</span>
+            <span style="color: var(--text-secondary);">
+                <i data-feather="arrow-right"></i>
+            </span>
+            <span style="font-weight: 600;">${p.target.name}</span>
+            <span class="status-badge ${p.confidence > 0.8 ? 'status-healthy' : 'status-warning'}">
+                ${(p.confidence * 100).toFixed(0)}% confidence
+            </span>
+        </div>
+    `).join('');
+    feather.replace();
+}
+
+function showNodeDetails(node) {
+    document.getElementById('nodeDetails').innerHTML = `
+        <div style="display: grid; grid-template-columns: repeat(2, 1fr); gap: 1rem;">
+            <div>
+                <div style="color: var(--text-secondary); font-size: 0.875rem;">Name</div>
+                <div style="font-weight: 600; font-size: 1.25rem;">${node.name}</div>
+            </div>
+            <div>
+                <div style="color: var(--text-secondary); font-size: 0.875rem;">Type</div>
+                <div style="font-weight: 600;">${node.type.replace(/_/g, ' ')}</div>
+            </div>
+            <div>
+                <div style="color: var(--text-secondary); font-size: 0.875rem;">Impact Score</div>
+                <div style="font-weight: 600; font-size: 1.5rem; color: ${node.impact_score > 0.7 ? 'var(--danger)' : node.impact_score > 0.4 ? 'var(--warning)' : 'var(--success)'};">
+                    ${(node.impact_score * 100).toFixed(0)}%
+                </div>
+            </div>
+            <div>
+                <div style="color: var(--text-secondary); font-size: 0.875rem;">Description</div>
+                <div>${node.description || 'No description available'}</div>
+            </div>
+        </div>
+    `;
+}
+</script>
+{% endblock %}

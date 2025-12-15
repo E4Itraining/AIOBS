@@ -1,0 +1,351 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="dashboard-container">
+    <nav class="sidebar">
+        <div class="sidebar-logo">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <circle cx="12" cy="12" r="10"/>
+                <path d="M12 6v6l4 2"/>
+                <circle cx="12" cy="12" r="3"/>
+            </svg>
+            AIOBS
+        </div>
+        <div class="nav-section">
+            <div class="nav-section-title">Views</div>
+            <a href="/" class="nav-item"><i data-feather="home"></i> Dashboard</a>
+            <a href="/unified" class="nav-item"><i data-feather="layers"></i> Unified View</a>
+            <a href="/causal" class="nav-item"><i data-feather="git-branch"></i> Causal</a>
+            <a href="/impact" class="nav-item active"><i data-feather="trending-up"></i> Impact</a>
+        </div>
+        <div class="nav-section">
+            <div class="nav-section-title">Event Types</div>
+            <button class="nav-item" onclick="analyzeEvent('model_drift')">
+                <i data-feather="activity"></i> Model Drift
+            </button>
+            <button class="nav-item" onclick="analyzeEvent('model_degradation')">
+                <i data-feather="trending-down"></i> Degradation
+            </button>
+            <button class="nav-item" onclick="analyzeEvent('cost_anomaly')">
+                <i data-feather="dollar-sign"></i> Cost Anomaly
+            </button>
+            <button class="nav-item" onclick="analyzeEvent('latency_spike')">
+                <i data-feather="clock"></i> Latency Spike
+            </button>
+        </div>
+    </nav>
+
+    <main class="main-content">
+        <div class="header">
+            <h1 class="header-title">Business Impact Analysis</h1>
+            <p style="color: var(--text-secondary); margin: 0;">Quantify the business impact of AI system events</p>
+        </div>
+
+        <!-- Impact Summary -->
+        <div class="kpi-grid">
+            <div class="kpi-card">
+                <div class="kpi-label">Total Impact (24h)</div>
+                <div class="kpi-value" style="color: var(--danger);" id="totalImpact">-$--</div>
+            </div>
+            <div class="kpi-card">
+                <div class="kpi-label">Events Analyzed</div>
+                <div class="kpi-value" id="eventsCount">--</div>
+            </div>
+            <div class="kpi-card">
+                <div class="kpi-label">Most Affected</div>
+                <div class="kpi-value" style="font-size: 1.25rem;" id="mostAffected">--</div>
+            </div>
+            <div class="kpi-card">
+                <div class="kpi-label">Trend vs Previous</div>
+                <div class="kpi-value kpi-trend" id="impactTrend">--</div>
+            </div>
+        </div>
+
+        <!-- Analysis Form -->
+        <div class="card">
+            <div class="card-header">
+                <h3 class="card-title">Analyze Event Impact</h3>
+            </div>
+            <div style="display: grid; grid-template-columns: repeat(3, 1fr) auto; gap: 1rem; align-items: end;">
+                <div>
+                    <label style="display: block; margin-bottom: 0.5rem; font-size: 0.875rem; color: var(--text-secondary);">Event Type</label>
+                    <select id="eventType" style="width: 100%; padding: 0.75rem; border-radius: 0.5rem; border: 1px solid var(--border-color);">
+                        <option value="model_drift">Model Drift</option>
+                        <option value="model_degradation">Model Degradation</option>
+                        <option value="cost_anomaly">Cost Anomaly</option>
+                        <option value="latency_spike">Latency Spike</option>
+                        <option value="error_rate_increase">Error Rate Increase</option>
+                        <option value="security_incident">Security Incident</option>
+                        <option value="compliance_violation">Compliance Violation</option>
+                    </select>
+                </div>
+                <div>
+                    <label style="display: block; margin-bottom: 0.5rem; font-size: 0.875rem; color: var(--text-secondary);">Affected Models</label>
+                    <input type="text" id="affectedModels" placeholder="e.g., recommendation-v2, fraud-v1" style="width: 100%; padding: 0.75rem; border-radius: 0.5rem; border: 1px solid var(--border-color);">
+                </div>
+                <div>
+                    <label style="display: block; margin-bottom: 0.5rem; font-size: 0.875rem; color: var(--text-secondary);">Time Window</label>
+                    <select id="timeWindow" style="width: 100%; padding: 0.75rem; border-radius: 0.5rem; border: 1px solid var(--border-color);">
+                        <option value="1">Last 1 hour</option>
+                        <option value="24" selected>Last 24 hours</option>
+                        <option value="168">Last 7 days</option>
+                    </select>
+                </div>
+                <button onclick="runAnalysis()" style="padding: 0.75rem 2rem; background: var(--primary); color: white; border: none; border-radius: 0.5rem; cursor: pointer; font-weight: 600;">
+                    Analyze
+                </button>
+            </div>
+        </div>
+
+        <!-- Impact Results -->
+        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1rem;">
+            <!-- Impact Breakdown -->
+            <div class="card">
+                <div class="card-header">
+                    <h3 class="card-title">Impact Breakdown</h3>
+                </div>
+                <div id="impactBreakdown">
+                    <div style="padding: 2rem; text-align: center; color: var(--text-secondary);">
+                        Select an event type and run analysis to see results
+                    </div>
+                </div>
+            </div>
+
+            <!-- Impact by Domain -->
+            <div class="card">
+                <div class="card-header">
+                    <h3 class="card-title">Impact by Domain</h3>
+                </div>
+                <div class="chart-container" style="height: 300px;">
+                    <canvas id="domainChart"></canvas>
+                </div>
+            </div>
+        </div>
+
+        <!-- Recommendations -->
+        <div class="card">
+            <div class="card-header">
+                <h3 class="card-title">Recommendations & Mitigations</h3>
+            </div>
+            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 2rem;">
+                <div>
+                    <h4 style="color: var(--text-secondary); font-size: 0.875rem; margin-bottom: 1rem;">Recommendations</h4>
+                    <ul id="recommendations" style="list-style: none; padding: 0;">
+                        <li style="color: var(--text-secondary);">Run an analysis to see recommendations</li>
+                    </ul>
+                </div>
+                <div>
+                    <h4 style="color: var(--text-secondary); font-size: 0.875rem; margin-bottom: 1rem;">Mitigation Actions</h4>
+                    <ul id="mitigations" style="list-style: none; padding: 0;">
+                        <li style="color: var(--text-secondary);">Run an analysis to see mitigations</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+
+        <!-- Impact History -->
+        <div class="card">
+            <div class="card-header">
+                <h3 class="card-title">Impact Trend</h3>
+            </div>
+            <div class="chart-container">
+                <canvas id="impactTrendChart"></canvas>
+            </div>
+        </div>
+    </main>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script>
+let domainChart = null;
+let trendChart = null;
+
+document.addEventListener('DOMContentLoaded', async () => {
+    await loadSummary();
+    initTrendChart();
+    feather.replace();
+});
+
+async function loadSummary() {
+    try {
+        const response = await fetch('/api/metrics/impact/summary');
+        const result = await response.json();
+
+        if (result.success) {
+            const data = result.data;
+
+            document.getElementById('totalImpact').textContent = '-$' + Math.abs(data.total_monetary_impact).toLocaleString();
+            document.getElementById('eventsCount').textContent = data.total_events;
+
+            // Find most affected
+            const topModel = data.top_affected_models?.[0];
+            if (topModel) {
+                document.getElementById('mostAffected').textContent = topModel.model;
+            }
+
+            // Trend
+            const trendEl = document.getElementById('impactTrend');
+            trendEl.textContent = data.trend_pct + '%';
+            trendEl.className = 'kpi-value kpi-trend ' + (data.trend_pct < 0 ? 'down' : 'up');
+        }
+    } catch (error) {
+        console.error('Error loading summary:', error);
+    }
+}
+
+async function runAnalysis() {
+    const eventType = document.getElementById('eventType').value;
+    const models = document.getElementById('affectedModels').value;
+    const hours = document.getElementById('timeWindow').value;
+
+    try {
+        const response = await fetch(`/api/metrics/impact/analyze?event_type=${eventType}&affected_models=${models}&hours=${hours}`, {
+            method: 'POST'
+        });
+        const result = await response.json();
+
+        if (result.success) {
+            displayResults(result.data);
+        }
+    } catch (error) {
+        console.error('Error running analysis:', error);
+    }
+}
+
+function analyzeEvent(eventType) {
+    document.getElementById('eventType').value = eventType;
+    runAnalysis();
+}
+
+function displayResults(data) {
+    // Impact breakdown
+    document.getElementById('impactBreakdown').innerHTML = `
+        <div style="margin-bottom: 1rem;">
+            <div style="display: flex; justify-content: space-between; align-items: center; padding: 1rem; background: ${data.overall_severity === 'critical' ? 'var(--danger)' : data.overall_severity === 'high' ? 'var(--warning)' : 'var(--info)'}; color: white; border-radius: 0.5rem;">
+                <span style="font-weight: 600;">${data.overall_severity.toUpperCase()}</span>
+                <span style="font-size: 1.5rem; font-weight: 700;">-$${Math.abs(data.total_monetary_impact).toLocaleString()}</span>
+            </div>
+        </div>
+        ${data.impacts.map(impact => `
+            <div style="display: flex; justify-content: space-between; align-items: center; padding: 0.75rem; border-bottom: 1px solid var(--border-color);">
+                <div>
+                    <div style="font-weight: 600;">${impact.metric}</div>
+                    <div style="font-size: 0.875rem; color: var(--text-secondary);">${impact.domain}</div>
+                </div>
+                <div style="text-align: right;">
+                    <div style="font-weight: 600; color: ${impact.monetary_impact < 0 ? 'var(--danger)' : 'var(--success)'};">
+                        ${impact.monetary_impact < 0 ? '-' : '+'}$${Math.abs(impact.monetary_impact).toLocaleString()}
+                    </div>
+                    <span class="status-badge status-${impact.severity === 'critical' ? 'critical' : impact.severity === 'high' ? 'warning' : 'healthy'}">
+                        ${impact.severity}
+                    </span>
+                </div>
+            </div>
+        `).join('')}
+    `;
+
+    // Update domain chart
+    updateDomainChart(data.impacts);
+
+    // Recommendations
+    document.getElementById('recommendations').innerHTML = data.recommendations.map(rec => `
+        <li style="display: flex; align-items: start; gap: 0.5rem; margin-bottom: 0.75rem;">
+            <i data-feather="check-circle" style="color: var(--success); flex-shrink: 0; margin-top: 2px;"></i>
+            <span>${rec}</span>
+        </li>
+    `).join('');
+
+    // Mitigations
+    document.getElementById('mitigations').innerHTML = data.mitigations.map(mit => `
+        <li style="display: flex; align-items: start; gap: 0.5rem; margin-bottom: 0.75rem;">
+            <i data-feather="shield" style="color: var(--primary); flex-shrink: 0; margin-top: 2px;"></i>
+            <span>${mit}</span>
+        </li>
+    `).join('');
+
+    feather.replace();
+}
+
+function updateDomainChart(impacts) {
+    const domains = {};
+    impacts.forEach(i => {
+        domains[i.domain] = (domains[i.domain] || 0) + Math.abs(i.monetary_impact || 0);
+    });
+
+    if (domainChart) domainChart.destroy();
+
+    const ctx = document.getElementById('domainChart').getContext('2d');
+    domainChart = new Chart(ctx, {
+        type: 'bar',
+        data: {
+            labels: Object.keys(domains),
+            datasets: [{
+                label: 'Impact ($)',
+                data: Object.values(domains),
+                backgroundColor: ['#ef4444', '#f59e0b', '#3b82f6', '#10b981', '#6366f1']
+            }]
+        },
+        options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            indexAxis: 'y',
+            plugins: {
+                legend: { display: false }
+            },
+            scales: {
+                x: {
+                    ticks: {
+                        callback: v => '$' + v.toLocaleString()
+                    }
+                }
+            }
+        }
+    });
+}
+
+function initTrendChart() {
+    const ctx = document.getElementById('impactTrendChart').getContext('2d');
+
+    // Generate demo trend data
+    const labels = [];
+    const data = [];
+    const now = new Date();
+
+    for (let i = 23; i >= 0; i--) {
+        const d = new Date(now - i * 3600000);
+        labels.push(d.getHours() + ':00');
+        data.push(Math.random() * 10000 + 2000);
+    }
+
+    trendChart = new Chart(ctx, {
+        type: 'line',
+        data: {
+            labels: labels,
+            datasets: [{
+                label: 'Hourly Impact',
+                data: data,
+                borderColor: '#ef4444',
+                backgroundColor: 'rgba(239, 68, 68, 0.1)',
+                fill: true,
+                tension: 0.4
+            }]
+        },
+        options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            plugins: {
+                legend: { display: false }
+            },
+            scales: {
+                y: {
+                    ticks: {
+                        callback: v => '$' + v.toLocaleString()
+                    }
+                }
+            }
+        }
+    });
+}
+</script>
+{% endblock %}

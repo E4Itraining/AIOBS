@@ -1,0 +1,524 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="dashboard-container">
+    <nav class="sidebar">
+        <div class="sidebar-logo">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <circle cx="12" cy="12" r="10"/>
+                <path d="M12 6v6l4 2"/>
+                <circle cx="12" cy="12" r="3"/>
+            </svg>
+            AIOBS
+        </div>
+        <div class="nav-section">
+            <div class="nav-section-title">Views</div>
+            <a href="/" class="nav-item"><i data-feather="home"></i> Dashboard</a>
+            <a href="/unified" class="nav-item active"><i data-feather="layers"></i> Unified View</a>
+            <a href="/causal" class="nav-item"><i data-feather="git-branch"></i> Causal</a>
+            <a href="/impact" class="nav-item"><i data-feather="trending-up"></i> Impact</a>
+        </div>
+        <div class="nav-section">
+            <div class="nav-section-title">Domains</div>
+            <a href="#models" class="nav-item"><i data-feather="cpu"></i> Models</a>
+            <a href="#infrastructure" class="nav-item"><i data-feather="server"></i> Infrastructure</a>
+            <a href="#costs" class="nav-item"><i data-feather="dollar-sign"></i> Costs</a>
+            <a href="#carbon" class="nav-item"><i data-feather="cloud"></i> Carbon</a>
+            <a href="#compliance" class="nav-item"><i data-feather="shield"></i> Compliance</a>
+        </div>
+    </nav>
+
+    <main class="main-content">
+        <div class="header">
+            <h1 class="header-title">Unified Monitoring & Observability</h1>
+            <div class="header-actions">
+                <select id="timeRange" style="padding: 0.5rem; border-radius: 0.25rem; border: 1px solid var(--border-color);">
+                    <option value="1">Last 1h</option>
+                    <option value="24" selected>Last 24h</option>
+                    <option value="168">Last 7d</option>
+                    <option value="720">Last 30d</option>
+                </select>
+                <button onclick="refreshData()" style="padding: 0.5rem 1rem; background: var(--primary); color: white; border: none; border-radius: 0.25rem; cursor: pointer;">
+                    <i data-feather="refresh-cw"></i> Refresh
+                </button>
+            </div>
+        </div>
+
+        <!-- Service Topology -->
+        <div class="card" id="models">
+            <div class="card-header">
+                <h3 class="card-title">Service Topology</h3>
+                <div>
+                    <span class="status-badge status-healthy">Healthy: <span id="healthyNodes">-</span></span>
+                    <span class="status-badge status-degraded">Degraded: <span id="degradedNodes">-</span></span>
+                </div>
+            </div>
+            <div id="topologyGraph" class="topology-graph"></div>
+        </div>
+
+        <!-- Metrics Grid -->
+        <div style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 1rem;" id="infrastructure">
+            <!-- Latency -->
+            <div class="card">
+                <div class="card-header">
+                    <h3 class="card-title">Latency P99</h3>
+                </div>
+                <div class="chart-container" style="height: 200px;">
+                    <canvas id="latencyChart"></canvas>
+                </div>
+            </div>
+
+            <!-- Throughput -->
+            <div class="card">
+                <div class="card-header">
+                    <h3 class="card-title">Throughput</h3>
+                </div>
+                <div class="chart-container" style="height: 200px;">
+                    <canvas id="throughputChart"></canvas>
+                </div>
+            </div>
+
+            <!-- Error Rate -->
+            <div class="card">
+                <div class="card-header">
+                    <h3 class="card-title">Error Rate</h3>
+                </div>
+                <div class="chart-container" style="height: 200px;">
+                    <canvas id="errorChart"></canvas>
+                </div>
+            </div>
+        </div>
+
+        <!-- Cost & Carbon Row -->
+        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1rem;">
+            <div class="card" id="costs">
+                <div class="card-header">
+                    <h3 class="card-title">Cost Breakdown</h3>
+                </div>
+                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1rem;">
+                    <div class="chart-container" style="height: 200px;">
+                        <canvas id="costChart"></canvas>
+                    </div>
+                    <div id="costDetails" style="padding: 1rem;">
+                        <div class="loader"><div class="spinner"></div></div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="card" id="carbon">
+                <div class="card-header">
+                    <h3 class="card-title">Carbon Metrics</h3>
+                </div>
+                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1rem;">
+                    <div class="chart-container" style="height: 200px;">
+                        <canvas id="carbonChart"></canvas>
+                    </div>
+                    <div id="carbonDetails" style="padding: 1rem;">
+                        <div class="loader"><div class="spinner"></div></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- SLO Status -->
+        <div class="card">
+            <div class="card-header">
+                <h3 class="card-title">SLO Status</h3>
+                <span id="sloOverall" class="status-badge status-healthy">98.7% Compliant</span>
+            </div>
+            <div id="sloGrid" style="display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 1rem;">
+                <div class="loader"><div class="spinner"></div></div>
+            </div>
+        </div>
+
+        <!-- Compliance Status -->
+        <div class="card" id="compliance">
+            <div class="card-header">
+                <h3 class="card-title">Compliance Status</h3>
+            </div>
+            <div id="complianceGrid" style="display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: 1rem;">
+                <div class="loader"><div class="spinner"></div></div>
+            </div>
+        </div>
+    </main>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script>
+let charts = {};
+
+document.addEventListener('DOMContentLoaded', async () => {
+    await loadTopology();
+    await loadMetrics();
+    await loadCosts();
+    await loadCarbon();
+    await loadSLO();
+    await loadCompliance();
+    feather.replace();
+});
+
+async function refreshData() {
+    await loadMetrics();
+    await loadCosts();
+    await loadCarbon();
+}
+
+async function loadTopology() {
+    try {
+        const response = await fetch('/api/dashboard/topology');
+        const result = await response.json();
+
+        if (result.success) {
+            renderTopology(result.data);
+
+            // Update counts
+            const healthy = result.data.nodes.filter(n => n.status === 'healthy').length;
+            const degraded = result.data.nodes.filter(n => n.status === 'degraded').length;
+            document.getElementById('healthyNodes').textContent = healthy;
+            document.getElementById('degradedNodes').textContent = degraded;
+        }
+    } catch (error) {
+        console.error('Error loading topology:', error);
+    }
+}
+
+function renderTopology(data) {
+    const container = document.getElementById('topologyGraph');
+    container.innerHTML = '';
+
+    const width = container.clientWidth;
+    const height = 400;
+
+    const svg = d3.select(container)
+        .append('svg')
+        .attr('width', width)
+        .attr('height', height);
+
+    // Create arrow marker
+    svg.append('defs').append('marker')
+        .attr('id', 'arrowhead')
+        .attr('viewBox', '-0 -5 10 10')
+        .attr('refX', 25)
+        .attr('refY', 0)
+        .attr('orient', 'auto')
+        .attr('markerWidth', 8)
+        .attr('markerHeight', 8)
+        .append('path')
+        .attr('d', 'M 0,-5 L 10,0 L 0,5')
+        .attr('fill', 'var(--text-secondary)');
+
+    const simulation = d3.forceSimulation(data.nodes)
+        .force('link', d3.forceLink(data.edges).id(d => d.id).distance(120))
+        .force('charge', d3.forceManyBody().strength(-400))
+        .force('center', d3.forceCenter(width / 2, height / 2))
+        .force('collision', d3.forceCollide().radius(40));
+
+    const link = svg.append('g')
+        .selectAll('line')
+        .data(data.edges)
+        .join('line')
+        .attr('stroke', 'var(--border-color)')
+        .attr('stroke-width', 2)
+        .attr('marker-end', 'url(#arrowhead)');
+
+    const node = svg.append('g')
+        .selectAll('g')
+        .data(data.nodes)
+        .join('g')
+        .call(d3.drag()
+            .on('start', dragstarted)
+            .on('drag', dragged)
+            .on('end', dragended));
+
+    // Node colors by type
+    const typeColors = {
+        endpoint: '#6366f1',
+        router: '#8b5cf6',
+        model: '#10b981',
+        data: '#3b82f6',
+        infrastructure: '#f59e0b',
+        monitoring: '#ef4444'
+    };
+
+    node.append('circle')
+        .attr('r', 25)
+        .attr('fill', d => d.status === 'healthy' ? typeColors[d.type] || '#6366f1' :
+            d.status === 'degraded' ? '#f59e0b' : '#ef4444')
+        .attr('stroke', 'white')
+        .attr('stroke-width', 2);
+
+    node.append('text')
+        .text(d => d.label.substring(0, 6))
+        .attr('text-anchor', 'middle')
+        .attr('dy', 4)
+        .attr('fill', 'white')
+        .attr('font-size', '10px')
+        .attr('font-weight', '600');
+
+    // Tooltip
+    node.append('title')
+        .text(d => `${d.label}\nType: ${d.type}\nStatus: ${d.status}`);
+
+    simulation.on('tick', () => {
+        link
+            .attr('x1', d => d.source.x)
+            .attr('y1', d => d.source.y)
+            .attr('x2', d => d.target.x)
+            .attr('y2', d => d.target.y);
+
+        node.attr('transform', d => `translate(${d.x},${d.y})`);
+    });
+
+    function dragstarted(event) {
+        if (!event.active) simulation.alphaTarget(0.3).restart();
+        event.subject.fx = event.subject.x;
+        event.subject.fy = event.subject.y;
+    }
+
+    function dragged(event) {
+        event.subject.fx = event.x;
+        event.subject.fy = event.y;
+    }
+
+    function dragended(event) {
+        if (!event.active) simulation.alphaTarget(0);
+        event.subject.fx = null;
+        event.subject.fy = null;
+    }
+}
+
+async function loadMetrics() {
+    const hours = document.getElementById('timeRange').value;
+
+    // Latency chart
+    if (charts.latency) charts.latency.destroy();
+    const latencyCtx = document.getElementById('latencyChart').getContext('2d');
+    charts.latency = new Chart(latencyCtx, {
+        type: 'line',
+        data: {
+            labels: generateLabels(24),
+            datasets: [{
+                label: 'P99',
+                data: generateData(24, 80, 150),
+                borderColor: '#6366f1',
+                tension: 0.4
+            }]
+        },
+        options: chartOptions('ms')
+    });
+
+    // Throughput chart
+    if (charts.throughput) charts.throughput.destroy();
+    const throughputCtx = document.getElementById('throughputChart').getContext('2d');
+    charts.throughput = new Chart(throughputCtx, {
+        type: 'line',
+        data: {
+            labels: generateLabels(24),
+            datasets: [{
+                label: 'Requests/s',
+                data: generateData(24, 800, 1500),
+                borderColor: '#10b981',
+                tension: 0.4
+            }]
+        },
+        options: chartOptions('req/s')
+    });
+
+    // Error rate chart
+    if (charts.error) charts.error.destroy();
+    const errorCtx = document.getElementById('errorChart').getContext('2d');
+    charts.error = new Chart(errorCtx, {
+        type: 'line',
+        data: {
+            labels: generateLabels(24),
+            datasets: [{
+                label: 'Error Rate',
+                data: generateData(24, 0.1, 1.5),
+                borderColor: '#ef4444',
+                backgroundColor: 'rgba(239, 68, 68, 0.1)',
+                fill: true,
+                tension: 0.4
+            }]
+        },
+        options: chartOptions('%')
+    });
+}
+
+async function loadCosts() {
+    try {
+        const response = await fetch('/api/dashboard/costs');
+        const result = await response.json();
+
+        if (result.success) {
+            const data = result.data;
+
+            // Cost pie chart
+            if (charts.cost) charts.cost.destroy();
+            const costCtx = document.getElementById('costChart').getContext('2d');
+            charts.cost = new Chart(costCtx, {
+                type: 'doughnut',
+                data: {
+                    labels: Object.keys(data.by_category),
+                    datasets: [{
+                        data: Object.values(data.by_category),
+                        backgroundColor: ['#6366f1', '#10b981', '#f59e0b', '#ef4444', '#3b82f6']
+                    }]
+                },
+                options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { position: 'bottom' } } }
+            });
+
+            // Cost details
+            document.getElementById('costDetails').innerHTML = `
+                <div style="margin-bottom: 1rem;">
+                    <div style="color: var(--text-secondary); font-size: 0.875rem;">Total (30d)</div>
+                    <div style="font-size: 1.5rem; font-weight: 700;">$${data.total.toLocaleString()}</div>
+                </div>
+                <div style="margin-bottom: 1rem;">
+                    <div style="color: var(--text-secondary); font-size: 0.875rem;">Forecast</div>
+                    <div style="font-size: 1.25rem; font-weight: 600;">$${data.forecast_next_month.toLocaleString()}</div>
+                </div>
+                <div class="kpi-trend ${data.trend}">
+                    <i data-feather="trending-${data.trend}"></i> ${data.trend_pct}% vs last period
+                </div>
+            `;
+            feather.replace();
+        }
+    } catch (error) {
+        console.error('Error loading costs:', error);
+    }
+}
+
+async function loadCarbon() {
+    try {
+        const response = await fetch('/api/dashboard/carbon');
+        const result = await response.json();
+
+        if (result.success) {
+            const data = result.data;
+
+            // Carbon pie chart
+            if (charts.carbon) charts.carbon.destroy();
+            const carbonCtx = document.getElementById('carbonChart').getContext('2d');
+            charts.carbon = new Chart(carbonCtx, {
+                type: 'doughnut',
+                data: {
+                    labels: Object.keys(data.by_activity),
+                    datasets: [{
+                        data: Object.values(data.by_activity),
+                        backgroundColor: ['#10b981', '#22c55e', '#4ade80', '#86efac']
+                    }]
+                },
+                options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { position: 'bottom' } } }
+            });
+
+            // Carbon details
+            document.getElementById('carbonDetails').innerHTML = `
+                <div style="margin-bottom: 1rem;">
+                    <div style="color: var(--text-secondary); font-size: 0.875rem;">Total (30d)</div>
+                    <div style="font-size: 1.5rem; font-weight: 700;">${data.total_carbon_kg.toLocaleString()} kgCO2</div>
+                </div>
+                <div style="margin-bottom: 1rem;">
+                    <div style="color: var(--text-secondary); font-size: 0.875rem;">Green Energy</div>
+                    <div style="font-size: 1.25rem; font-weight: 600; color: var(--success);">${data.green_energy_pct}%</div>
+                </div>
+                <div class="kpi-trend ${data.trend}">
+                    <i data-feather="trending-${data.trend}"></i> ${data.trend_pct}% vs last period
+                </div>
+            `;
+            feather.replace();
+        }
+    } catch (error) {
+        console.error('Error loading carbon:', error);
+    }
+}
+
+async function loadSLO() {
+    try {
+        const response = await fetch('/api/dashboard/slo');
+        const result = await response.json();
+
+        if (result.success) {
+            const data = result.data;
+
+            document.getElementById('sloOverall').textContent = `${data.overall_compliance_pct}% Compliant`;
+
+            document.getElementById('sloGrid').innerHTML = data.slos.map(slo => `
+                <div style="padding: 1rem; border: 1px solid var(--border-color); border-radius: 0.5rem;">
+                    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.5rem;">
+                        <span style="font-size: 0.875rem; font-weight: 600;">${slo.name}</span>
+                        <span class="status-badge status-${slo.status}">${slo.status}</span>
+                    </div>
+                    <div style="font-size: 1.5rem; font-weight: 700;">${slo.current}${slo.unit}</div>
+                    <div style="margin-top: 0.5rem;">
+                        <div style="height: 6px; background: var(--border-color); border-radius: 3px; overflow: hidden;">
+                            <div style="height: 100%; width: ${slo.error_budget_remaining_pct}%; background: ${slo.error_budget_remaining_pct > 50 ? 'var(--success)' : slo.error_budget_remaining_pct > 20 ? 'var(--warning)' : 'var(--danger)'}; border-radius: 3px;"></div>
+                        </div>
+                        <div style="font-size: 0.75rem; color: var(--text-secondary); margin-top: 0.25rem;">
+                            Error budget: ${slo.error_budget_remaining_pct}% remaining
+                        </div>
+                    </div>
+                </div>
+            `).join('');
+        }
+    } catch (error) {
+        console.error('Error loading SLO:', error);
+    }
+}
+
+async function loadCompliance() {
+    try {
+        const response = await fetch('/api/dashboard/compliance');
+        const result = await response.json();
+
+        if (result.success) {
+            const data = result.data;
+
+            document.getElementById('complianceGrid').innerHTML = Object.entries(data.categories).map(([key, cat]) => `
+                <div style="padding: 1rem; border: 1px solid var(--border-color); border-radius: 0.5rem; text-align: center;">
+                    <div style="font-size: 2rem; font-weight: 700; color: ${cat.status === 'compliant' ? 'var(--success)' : 'var(--warning)'};">${cat.score}</div>
+                    <div style="font-size: 0.875rem; color: var(--text-secondary);">${key.replace(/_/g, ' ')}</div>
+                    <span class="status-badge status-${cat.status === 'compliant' ? 'healthy' : 'warning'}" style="margin-top: 0.5rem;">${cat.status}</span>
+                </div>
+            `).join('');
+        }
+    } catch (error) {
+        console.error('Error loading compliance:', error);
+    }
+}
+
+function generateLabels(count) {
+    const labels = [];
+    const now = new Date();
+    for (let i = count; i >= 0; i--) {
+        const d = new Date(now - i * 3600000);
+        labels.push(d.getHours() + ':00');
+    }
+    return labels;
+}
+
+function generateData(count, min, max) {
+    const data = [];
+    let value = (min + max) / 2;
+    for (let i = 0; i < count; i++) {
+        value += (Math.random() - 0.5) * (max - min) * 0.2;
+        value = Math.max(min, Math.min(max, value));
+        data.push(value.toFixed(2));
+    }
+    return data;
+}
+
+function chartOptions(unit) {
+    return {
+        responsive: true,
+        maintainAspectRatio: false,
+        plugins: { legend: { display: false } },
+        scales: {
+            y: {
+                ticks: { callback: v => v + unit }
+            }
+        }
+    };
+}
+</script>
+{% endblock %}

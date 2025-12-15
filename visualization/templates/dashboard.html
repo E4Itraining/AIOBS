@@ -1,0 +1,470 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="dashboard-container">
+    <!-- Sidebar - Dynamic based on profile -->
+    <nav class="sidebar" id="sidebar">
+        <div class="sidebar-logo">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <circle cx="12" cy="12" r="10"/>
+                <path d="M12 6v6l4 2"/>
+                <circle cx="12" cy="12" r="3"/>
+            </svg>
+            AIOBS
+        </div>
+        <div id="navigationMenu">
+            <div class="loader"><div class="spinner"></div></div>
+        </div>
+    </nav>
+
+    <!-- Main Content -->
+    <main class="main-content">
+        <div class="header">
+            <div>
+                <h1 class="header-title" id="profileTitle">Loading...</h1>
+                <p style="color: var(--text-secondary); margin: 0;" id="profileDescription"></p>
+            </div>
+            <div class="header-actions">
+                <button class="theme-toggle" onclick="toggleTheme()">
+                    <i data-feather="moon"></i>
+                </button>
+                <a href="/" style="padding: 0.5rem 1rem; background: var(--bg-secondary); border-radius: 0.5rem; text-decoration: none; color: var(--text-primary);">
+                    <i data-feather="arrow-left"></i> Back
+                </a>
+            </div>
+        </div>
+
+        <!-- Dynamic Widget Grid -->
+        <div class="widget-grid" id="widgetGrid">
+            <div class="loader" style="grid-column: 1 / -1;"><div class="spinner"></div></div>
+        </div>
+    </main>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script>
+const profileId = '{{ profile_id }}';
+
+document.addEventListener('DOMContentLoaded', async () => {
+    await loadProfileDashboard();
+    await loadNavigation();
+    feather.replace();
+});
+
+async function loadProfileDashboard() {
+    try {
+        const response = await fetch(`/api/profiles/${profileId}/dashboard`);
+        const result = await response.json();
+
+        if (result.success) {
+            document.getElementById('profileTitle').textContent = result.data.name + ' Dashboard';
+            document.getElementById('profileDescription').textContent = result.data.description;
+
+            // Render widgets
+            const grid = document.getElementById('widgetGrid');
+            grid.innerHTML = result.data.widgets.map(widget => `
+                <div class="widget" style="grid-column: span ${widget.position.w || 3}; grid-row: span ${widget.position.h || 2};">
+                    <div class="card-header">
+                        <h3 class="card-title">${widget.title}</h3>
+                    </div>
+                    <div class="widget-content" id="widget-${widget.id}" data-type="${widget.type}" data-source="${widget.data_source}">
+                        <div class="loader"><div class="spinner"></div></div>
+                    </div>
+                </div>
+            `).join('');
+
+            // Load widget data
+            for (const widget of result.data.widgets) {
+                loadWidgetData(widget);
+            }
+        }
+    } catch (error) {
+        console.error('Error loading dashboard:', error);
+    }
+}
+
+async function loadNavigation() {
+    try {
+        const response = await fetch(`/api/profiles/${profileId}/navigation`);
+        const result = await response.json();
+
+        if (result.success) {
+            const menu = document.getElementById('navigationMenu');
+            menu.innerHTML = `
+                <div class="nav-section">
+                    <div class="nav-section-title">Navigation</div>
+                    ${result.data.map(item => `
+                        <a href="${item.route}" class="nav-item">
+                            <i data-feather="${item.icon}"></i>
+                            ${item.label}
+                            ${item.badge ? `<span class="status-badge status-warning">${item.badge}</span>` : ''}
+                        </a>
+                    `).join('')}
+                </div>
+                <div class="nav-section">
+                    <div class="nav-section-title">Quick Links</div>
+                    <a href="/" class="nav-item">
+                        <i data-feather="home"></i>
+                        Main Dashboard
+                    </a>
+                    <a href="/unified" class="nav-item">
+                        <i data-feather="layers"></i>
+                        Unified View
+                    </a>
+                </div>
+            `;
+            feather.replace();
+        }
+    } catch (error) {
+        console.error('Error loading navigation:', error);
+    }
+}
+
+async function loadWidgetData(widget) {
+    const container = document.getElementById(`widget-${widget.id}`);
+
+    try {
+        // Replace placeholders in data source
+        let dataSource = widget.data_source.replace('{model_id}', 'recommendation-v2');
+
+        const response = await fetch(dataSource);
+        const result = await response.json();
+
+        if (result.success) {
+            renderWidget(container, widget.type, result.data, widget.config);
+        }
+    } catch (error) {
+        container.innerHTML = `<div style="color: var(--text-secondary); text-align: center; padding: 1rem;">Unable to load data</div>`;
+    }
+}
+
+function renderWidget(container, type, data, config) {
+    switch (type) {
+        case 'gauge':
+            renderGauge(container, data, config);
+            break;
+        case 'line_chart':
+        case 'multi_line':
+            renderLineChart(container, data, config);
+            break;
+        case 'bar_chart':
+            renderBarChart(container, data, config);
+            break;
+        case 'pie_chart':
+        case 'donut_chart':
+            renderPieChart(container, data, config);
+            break;
+        case 'table':
+            renderTable(container, data, config);
+            break;
+        case 'kpi_row':
+        case 'kpi_cards':
+            renderKPICards(container, data, config);
+            break;
+        case 'slo_cards':
+            renderSLOCards(container, data, config);
+            break;
+        case 'topology':
+        case 'graph':
+            renderGraph(container, data, config);
+            break;
+        case 'radar_chart':
+            renderRadarChart(container, data, config);
+            break;
+        default:
+            renderJSON(container, data);
+    }
+}
+
+function renderGauge(container, data, config) {
+    const value = data.overall_trust || data.overall || 0;
+    const percentage = (value * 100).toFixed(0);
+
+    container.innerHTML = `
+        <div style="text-align: center; padding: 1rem;">
+            <div style="position: relative; width: 120px; height: 120px; margin: 0 auto;">
+                <svg viewBox="0 0 36 36" style="transform: rotate(-90deg);">
+                    <path d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831"
+                        fill="none" stroke="var(--border-color)" stroke-width="3"/>
+                    <path d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831"
+                        fill="none" stroke="${value > 0.8 ? 'var(--success)' : value > 0.6 ? 'var(--warning)' : 'var(--danger)'}"
+                        stroke-width="3" stroke-dasharray="${percentage}, 100"/>
+                </svg>
+                <div style="position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); font-size: 1.5rem; font-weight: 700;">
+                    ${percentage}%
+                </div>
+            </div>
+            <div style="margin-top: 0.5rem; color: var(--text-secondary);">
+                ${data.trend || 'Stable'}
+            </div>
+        </div>
+    `;
+}
+
+function renderLineChart(container, data, config) {
+    const canvas = document.createElement('canvas');
+    container.innerHTML = '';
+    container.appendChild(canvas);
+    container.style.height = '200px';
+
+    // Handle different data formats
+    let datasets = [];
+    if (data && typeof data === 'object') {
+        Object.entries(data).forEach(([name, series], index) => {
+            if (series.points) {
+                datasets.push({
+                    label: name,
+                    data: series.points.map(p => p.value),
+                    borderColor: config.colors?.[index] || `hsl(${index * 60}, 70%, 50%)`,
+                    tension: 0.4,
+                    fill: false
+                });
+            }
+        });
+    }
+
+    new Chart(canvas, {
+        type: 'line',
+        data: {
+            labels: datasets[0]?.data.map((_, i) => i) || [],
+            datasets: datasets
+        },
+        options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            plugins: { legend: { position: 'bottom' } }
+        }
+    });
+}
+
+function renderBarChart(container, data, config) {
+    container.innerHTML = `
+        <div style="padding: 1rem;">
+            ${Object.entries(data.impact_by_domain || data || {}).map(([key, value]) => `
+                <div style="margin-bottom: 0.75rem;">
+                    <div style="display: flex; justify-content: space-between; margin-bottom: 0.25rem;">
+                        <span>${key}</span>
+                        <span style="font-weight: 600;">$${Math.abs(value).toLocaleString()}</span>
+                    </div>
+                    <div style="height: 8px; background: var(--border-color); border-radius: 4px; overflow: hidden;">
+                        <div style="height: 100%; width: ${Math.min(Math.abs(value) / 500, 100)}%; background: ${value < 0 ? 'var(--danger)' : 'var(--success)'}; border-radius: 4px;"></div>
+                    </div>
+                </div>
+            `).join('')}
+        </div>
+    `;
+}
+
+function renderPieChart(container, data, config) {
+    const canvas = document.createElement('canvas');
+    container.innerHTML = '';
+    container.appendChild(canvas);
+    container.style.height = '200px';
+
+    const field = config.field ? data[config.field.split('.')[0]] : data;
+    const chartData = typeof field === 'object' ? field : data;
+
+    new Chart(canvas, {
+        type: 'doughnut',
+        data: {
+            labels: Object.keys(chartData),
+            datasets: [{
+                data: Object.values(chartData),
+                backgroundColor: ['#6366f1', '#10b981', '#f59e0b', '#ef4444', '#3b82f6', '#8b5cf6']
+            }]
+        },
+        options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            plugins: { legend: { position: 'bottom' } }
+        }
+    });
+}
+
+function renderTable(container, data, config) {
+    const items = Array.isArray(data) ? data : (data[config.field] || []);
+
+    container.innerHTML = `
+        <table class="services-table" style="font-size: 0.875rem;">
+            <tbody>
+                ${items.map(item => `
+                    <tr>
+                        ${Object.entries(item).slice(0, 4).map(([k, v]) => `
+                            <td>${typeof v === 'object' ? JSON.stringify(v) : v}</td>
+                        `).join('')}
+                    </tr>
+                `).join('')}
+            </tbody>
+        </table>
+    `;
+}
+
+function renderKPICards(container, data, config) {
+    const metrics = config.metrics || ['trust_score', 'daily_cost'];
+    const values = {
+        trust_score: data.key_metrics?.avg_trust_score || data.avg_trust_score || 0.82,
+        daily_cost: data.key_metrics?.total_daily_cost || data.total_daily_cost || 1500,
+        slo_compliance: data.slo?.compliance_pct || data.slo_compliance_pct || 98,
+        carbon: data.key_metrics?.total_daily_carbon_kg || data.total_daily_carbon_kg || 42
+    };
+
+    container.innerHTML = `
+        <div style="display: flex; gap: 1rem; flex-wrap: wrap;">
+            ${metrics.map(m => `
+                <div class="kpi-card" style="flex: 1; min-width: 150px;">
+                    <div class="kpi-label">${m.replace(/_/g, ' ').toUpperCase()}</div>
+                    <div class="kpi-value" style="font-size: 1.5rem;">
+                        ${m.includes('score') || m.includes('compliance') ? (values[m] * (values[m] < 1 ? 100 : 1)).toFixed(0) + '%' :
+                          m.includes('cost') ? '$' + values[m].toFixed(0) :
+                          values[m].toFixed(1)}
+                    </div>
+                </div>
+            `).join('')}
+        </div>
+    `;
+}
+
+function renderSLOCards(container, data, config) {
+    const slos = data.slos || [];
+
+    container.innerHTML = `
+        <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 1rem;">
+            ${slos.map(slo => `
+                <div style="padding: 1rem; border: 1px solid var(--border-color); border-radius: 0.5rem;">
+                    <div style="font-size: 0.875rem; color: var(--text-secondary); margin-bottom: 0.5rem;">${slo.name}</div>
+                    <div style="display: flex; align-items: baseline; gap: 0.5rem;">
+                        <span style="font-size: 1.5rem; font-weight: 700;">${slo.current}${slo.unit}</span>
+                        <span class="status-badge status-${slo.status}">${slo.status}</span>
+                    </div>
+                    <div style="margin-top: 0.5rem; font-size: 0.75rem; color: var(--text-secondary);">
+                        Budget: ${slo.error_budget_remaining_pct}% remaining
+                    </div>
+                </div>
+            `).join('')}
+        </div>
+    `;
+}
+
+function renderGraph(container, data, config) {
+    container.innerHTML = `
+        <div id="graph-${Date.now()}" style="width: 100%; height: 300px; background: var(--bg-secondary); border-radius: 0.5rem;"></div>
+    `;
+
+    const graphContainer = container.querySelector('div');
+    const nodes = data.nodes || [];
+    const edges = data.edges || [];
+
+    // Simple D3 force graph
+    const width = graphContainer.clientWidth || 400;
+    const height = 300;
+
+    const svg = d3.select(graphContainer)
+        .append('svg')
+        .attr('width', width)
+        .attr('height', height);
+
+    const simulation = d3.forceSimulation(nodes)
+        .force('link', d3.forceLink(edges).id(d => d.id).distance(80))
+        .force('charge', d3.forceManyBody().strength(-200))
+        .force('center', d3.forceCenter(width / 2, height / 2));
+
+    const link = svg.append('g')
+        .selectAll('line')
+        .data(edges)
+        .join('line')
+        .attr('stroke', 'var(--border-color)')
+        .attr('stroke-width', 2);
+
+    const node = svg.append('g')
+        .selectAll('g')
+        .data(nodes)
+        .join('g')
+        .call(d3.drag()
+            .on('start', dragstarted)
+            .on('drag', dragged)
+            .on('end', dragended));
+
+    node.append('circle')
+        .attr('r', 20)
+        .attr('fill', d => d.status === 'healthy' ? 'var(--success)' : d.status === 'degraded' ? 'var(--warning)' : 'var(--primary)');
+
+    node.append('text')
+        .text(d => d.label?.substring(0, 3) || d.name?.substring(0, 3) || '?')
+        .attr('text-anchor', 'middle')
+        .attr('dy', 4)
+        .attr('fill', 'white')
+        .attr('font-size', '10px');
+
+    simulation.on('tick', () => {
+        link
+            .attr('x1', d => d.source.x)
+            .attr('y1', d => d.source.y)
+            .attr('x2', d => d.target.x)
+            .attr('y2', d => d.target.y);
+
+        node.attr('transform', d => `translate(${d.x},${d.y})`);
+    });
+
+    function dragstarted(event) {
+        if (!event.active) simulation.alphaTarget(0.3).restart();
+        event.subject.fx = event.subject.x;
+        event.subject.fy = event.subject.y;
+    }
+
+    function dragged(event) {
+        event.subject.fx = event.x;
+        event.subject.fy = event.y;
+    }
+
+    function dragended(event) {
+        if (!event.active) simulation.alphaTarget(0);
+        event.subject.fx = null;
+        event.subject.fy = null;
+    }
+}
+
+function renderRadarChart(container, data, config) {
+    const canvas = document.createElement('canvas');
+    container.innerHTML = '';
+    container.appendChild(canvas);
+    container.style.height = '200px';
+
+    const reliability = data.reliability || {};
+    const labels = config.metrics || ['calibration', 'stability', 'uncertainty', 'ood'];
+    const values = [
+        reliability.confidence_calibration || 0.75,
+        reliability.prediction_stability || 0.85,
+        reliability.uncertainty_quality || 0.70,
+        reliability.ood_detection_rate || 0.80
+    ];
+
+    new Chart(canvas, {
+        type: 'radar',
+        data: {
+            labels: labels,
+            datasets: [{
+                label: 'Reliability',
+                data: values,
+                borderColor: '#6366f1',
+                backgroundColor: 'rgba(99, 102, 241, 0.2)'
+            }]
+        },
+        options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            scales: {
+                r: {
+                    min: 0,
+                    max: 1
+                }
+            }
+        }
+    });
+}
+
+function renderJSON(container, data) {
+    container.innerHTML = `<pre style="font-size: 0.75rem; overflow: auto; max-height: 200px;">${JSON.stringify(data, null, 2)}</pre>`;
+}
+</script>
+{% endblock %}
