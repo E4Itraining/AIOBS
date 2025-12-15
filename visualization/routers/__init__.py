@@ -5,6 +5,7 @@ from .profiles import router as profiles_router
 from .i18n import router as i18n_router
 from .realtime import router as realtime_router
 from .assistant import router as assistant_router
+from .ingestion import router as ingestion_router
 
 __all__ = [
     "dashboard_router",
@@ -12,5 +13,6 @@ __all__ = [
     "profiles_router",
     "i18n_router",
     "realtime_router",
-    "assistant_router"
+    "assistant_router",
+    "ingestion_router"
 ]
