@@ -392,11 +392,14 @@ async function loadMetrics() {
 }
 
 async function loadCosts() {
+    const chartContainer = document.getElementById('costChart').parentElement;
+    const detailsContainer = document.getElementById('costDetails');
+
     try {
         const response = await fetch('/api/dashboard/costs');
         const result = await response.json();
 
-        if (result.success) {
+        if (result.success && result.data && result.data.by_category && Object.keys(result.data.by_category).length > 0) {
             const data = result.data;
 
             if (charts.cost) charts.cost.destroy();
@@ -418,33 +421,55 @@ async function loadCosts() {
                 }
             });
 
-            document.getElementById('costDetails').innerHTML = `
+            detailsContainer.innerHTML = `
                 <div class="mb-4">
                     <div class="text-sm text-muted">Total (30d)</div>
-                    <div class="kpi-value">$${data.total.toLocaleString()}</div>
+                    <div class="kpi-value">$${(data.total || 0).toLocaleString()}</div>
                 </div>
                 <div class="mb-4">
                     <div class="text-sm text-muted">Forecast</div>
-                    <div class="font-semibold" style="font-size: 1.25rem;">$${data.forecast_next_month.toLocaleString()}</div>
+                    <div class="font-semibold" style="font-size: 1.25rem;">$${(data.forecast_next_month || 0).toLocaleString()}</div>
                 </div>
-                <div class="kpi-trend ${data.trend}">
-                    <i data-lucide="trending-${data.trend}"></i>
-                    <span>${data.trend_pct}% vs last period</span>
+                <div class="kpi-trend ${data.trend || 'stable'}">
+                    <i data-lucide="trending-${data.trend || 'up'}"></i>
+                    <span>${data.trend_pct || 0}% vs last period</span>
                 </div>
+            `;
+            lucide.createIcons();
+        } else {
+            chartContainer.innerHTML = `
+                <div class="empty-state" style="height: 200px; display: flex; align-items: center; justify-content: center; flex-direction: column;">
+                    <i data-lucide="dollar-sign" style="width: 32px; height: 32px; color: var(--text-muted);"></i>
+                    <p class="text-muted text-sm mt-2">No cost data available</p>
+                </div>
+            `;
+            detailsContainer.innerHTML = `
+                <div class="text-muted text-sm">Cost data will appear here when available</div>
             `;
             lucide.createIcons();
         }
     } catch (error) {
         console.error('Error loading costs:', error);
+        chartContainer.innerHTML = `
+            <div class="empty-state" style="height: 200px; display: flex; align-items: center; justify-content: center; flex-direction: column;">
+                <i data-lucide="alert-circle" style="width: 32px; height: 32px; color: var(--color-warning);"></i>
+                <p class="text-muted text-sm mt-2">Error loading cost data</p>
+            </div>
+        `;
+        detailsContainer.innerHTML = `<div class="text-muted text-sm">Unable to load cost details</div>`;
+        lucide.createIcons();
     }
 }
 
 async function loadCarbon() {
+    const chartContainer = document.getElementById('carbonChart').parentElement;
+    const detailsContainer = document.getElementById('carbonDetails');
+
     try {
         const response = await fetch('/api/dashboard/carbon');
         const result = await response.json();
 
-        if (result.success) {
+        if (result.success && result.data && result.data.by_activity && Object.keys(result.data.by_activity).length > 0) {
             const data = result.data;
 
             if (charts.carbon) charts.carbon.destroy();
@@ -466,83 +491,147 @@ async function loadCarbon() {
                 }
             });
 
-            document.getElementById('carbonDetails').innerHTML = `
+            detailsContainer.innerHTML = `
                 <div class="mb-4">
                     <div class="text-sm text-muted">Total (30d)</div>
-                    <div class="kpi-value">${data.total_carbon_kg.toLocaleString()} kg</div>
+                    <div class="kpi-value">${(data.total_carbon_kg || 0).toLocaleString()} kg</div>
                 </div>
                 <div class="mb-4">
                     <div class="text-sm text-muted">Green Energy</div>
-                    <div class="font-semibold" style="font-size: 1.25rem; color: var(--color-success);">${data.green_energy_pct}%</div>
+                    <div class="font-semibold" style="font-size: 1.25rem; color: var(--color-success);">${data.green_energy_pct || 0}%</div>
                 </div>
-                <div class="kpi-trend ${data.trend}">
-                    <i data-lucide="trending-${data.trend}"></i>
-                    <span>${data.trend_pct}% vs last period</span>
+                <div class="kpi-trend ${data.trend || 'stable'}">
+                    <i data-lucide="trending-${data.trend || 'down'}"></i>
+                    <span>${data.trend_pct || 0}% vs last period</span>
                 </div>
+            `;
+            lucide.createIcons();
+        } else {
+            chartContainer.innerHTML = `
+                <div class="empty-state" style="height: 200px; display: flex; align-items: center; justify-content: center; flex-direction: column;">
+                    <i data-lucide="leaf" style="width: 32px; height: 32px; color: var(--text-muted);"></i>
+                    <p class="text-muted text-sm mt-2">No carbon data available</p>
+                </div>
+            `;
+            detailsContainer.innerHTML = `
+                <div class="text-muted text-sm">Carbon metrics will appear here when available</div>
             `;
             lucide.createIcons();
         }
     } catch (error) {
         console.error('Error loading carbon:', error);
+        chartContainer.innerHTML = `
+            <div class="empty-state" style="height: 200px; display: flex; align-items: center; justify-content: center; flex-direction: column;">
+                <i data-lucide="alert-circle" style="width: 32px; height: 32px; color: var(--color-warning);"></i>
+                <p class="text-muted text-sm mt-2">Error loading carbon data</p>
+            </div>
+        `;
+        detailsContainer.innerHTML = `<div class="text-muted text-sm">Unable to load carbon details</div>`;
+        lucide.createIcons();
     }
 }
 
 async function loadSLO() {
+    const overallContainer = document.getElementById('sloOverall');
+    const gridContainer = document.getElementById('sloGrid');
+
     try {
         const response = await fetch('/api/dashboard/slo');
         const result = await response.json();
 
-        if (result.success) {
+        if (result.success && result.data && result.data.slos && result.data.slos.length > 0) {
             const data = result.data;
 
-            document.getElementById('sloOverall').innerHTML = `
+            overallContainer.innerHTML = `
                 <span class="badge-dot"></span>
-                ${data.overall_compliance_pct}% Compliant
+                ${data.overall_compliance_pct || 0}% Compliant
             `;
 
-            document.getElementById('sloGrid').innerHTML = data.slos.map(slo => `
+            gridContainer.innerHTML = data.slos.map(slo => `
                 <div class="card" style="padding: 1rem;">
                     <div class="flex justify-between items-center mb-2">
-                        <span class="font-semibold text-sm">${slo.name}</span>
-                        <span class="badge badge-${slo.status}">${slo.status}</span>
+                        <span class="font-semibold text-sm">${slo.name || 'SLO'}</span>
+                        <span class="badge badge-${slo.status || 'healthy'}">${slo.status || 'unknown'}</span>
                     </div>
-                    <div class="kpi-value" style="font-size: 1.5rem;">${slo.current}${slo.unit}</div>
+                    <div class="kpi-value" style="font-size: 1.5rem;">${slo.current || 0}${slo.unit || ''}</div>
                     <div class="mt-4">
                         <div style="height: 6px; background: var(--border-color); border-radius: 3px; overflow: hidden;">
-                            <div style="height: 100%; width: ${slo.error_budget_remaining_pct}%; background: ${slo.error_budget_remaining_pct > 50 ? 'var(--color-success)' : slo.error_budget_remaining_pct > 20 ? 'var(--color-warning)' : 'var(--color-danger)'}; border-radius: 3px;"></div>
+                            <div style="height: 100%; width: ${slo.error_budget_remaining_pct || 0}%; background: ${(slo.error_budget_remaining_pct || 0) > 50 ? 'var(--color-success)' : (slo.error_budget_remaining_pct || 0) > 20 ? 'var(--color-warning)' : 'var(--color-danger)'}; border-radius: 3px;"></div>
                         </div>
-                        <div class="text-xs text-muted mt-1">Error budget: ${slo.error_budget_remaining_pct}% remaining</div>
+                        <div class="text-xs text-muted mt-1">Error budget: ${slo.error_budget_remaining_pct || 0}% remaining</div>
                     </div>
                 </div>
             `).join('');
+        } else {
+            overallContainer.innerHTML = `
+                <span class="badge-dot"></span>
+                No data
+            `;
+            overallContainer.className = 'badge badge-warning';
+            gridContainer.innerHTML = `
+                <div class="empty-state" style="grid-column: 1 / -1; padding: 2rem; text-align: center;">
+                    <i data-lucide="target" style="width: 32px; height: 32px; color: var(--text-muted); margin: 0 auto;"></i>
+                    <p class="text-muted text-sm mt-2">No SLO data available</p>
+                </div>
+            `;
+            lucide.createIcons();
         }
     } catch (error) {
         console.error('Error loading SLO:', error);
+        overallContainer.innerHTML = `
+            <span class="badge-dot"></span>
+            Error
+        `;
+        overallContainer.className = 'badge badge-warning';
+        gridContainer.innerHTML = `
+            <div class="empty-state" style="grid-column: 1 / -1; padding: 2rem; text-align: center;">
+                <i data-lucide="alert-circle" style="width: 32px; height: 32px; color: var(--color-warning); margin: 0 auto;"></i>
+                <p class="text-muted text-sm mt-2">Error loading SLO data</p>
+            </div>
+        `;
+        lucide.createIcons();
     }
 }
 
 async function loadCompliance() {
+    const gridContainer = document.getElementById('complianceGrid');
+
     try {
         const response = await fetch('/api/dashboard/compliance');
         const result = await response.json();
 
-        if (result.success) {
+        if (result.success && result.data && result.data.categories && Object.keys(result.data.categories).length > 0) {
             const data = result.data;
 
-            document.getElementById('complianceGrid').innerHTML = Object.entries(data.categories).map(([key, cat]) => `
+            gridContainer.innerHTML = Object.entries(data.categories).map(([key, cat]) => `
                 <div class="card text-center" style="padding: 1rem;">
-                    <div class="kpi-value" style="color: ${cat.status === 'compliant' ? 'var(--color-success)' : 'var(--color-warning)'};">
-                        ${cat.score}
+                    <div class="kpi-value" style="color: ${(cat.status || 'warning') === 'compliant' ? 'var(--color-success)' : 'var(--color-warning)'};">
+                        ${cat.score || 0}
                     </div>
                     <div class="text-sm text-muted mb-2">${key.replace(/_/g, ' ')}</div>
-                    <span class="badge badge-${cat.status === 'compliant' ? 'healthy' : 'warning'}">
-                        ${cat.status}
+                    <span class="badge badge-${(cat.status || 'warning') === 'compliant' ? 'healthy' : 'warning'}">
+                        ${cat.status || 'unknown'}
                     </span>
                 </div>
             `).join('');
+        } else {
+            gridContainer.innerHTML = `
+                <div class="empty-state" style="grid-column: 1 / -1; padding: 2rem; text-align: center;">
+                    <i data-lucide="shield" style="width: 32px; height: 32px; color: var(--text-muted); margin: 0 auto;"></i>
+                    <p class="text-muted text-sm mt-2">No compliance data available</p>
+                </div>
+            `;
+            lucide.createIcons();
         }
     } catch (error) {
         console.error('Error loading compliance:', error);
+        gridContainer.innerHTML = `
+            <div class="empty-state" style="grid-column: 1 / -1; padding: 2rem; text-align: center;">
+                <i data-lucide="alert-circle" style="width: 32px; height: 32px; color: var(--color-warning); margin: 0 auto;"></i>
+                <p class="text-muted text-sm mt-2">Error loading compliance data</p>
+            </div>
+        `;
+        lucide.createIcons();
     }
 }
 
