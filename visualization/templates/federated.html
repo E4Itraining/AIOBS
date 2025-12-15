@@ -1,0 +1,811 @@
+{% extends "base.html" %}
+
+{% set active_page = 'federated' %}
+
+{% block page_title %}{{ t('federated.title') or 'Federated Observability' }}{% endblock %}
+
+{% block page_subtitle %}
+<p>{{ t('federated.subtitle') or 'Multi-cloud & Multi-vendor AI observability - Unified view across all deployments' }}</p>
+{% endblock %}
+
+{% block topbar_actions %}
+<select id="cloudFilter" class="form-select" style="width: auto;">
+    <option value="all">All Clouds</option>
+    <option value="aws">AWS</option>
+    <option value="azure">Azure</option>
+    <option value="gcp">GCP</option>
+    <option value="on_premise">On-Premise</option>
+</select>
+<button class="btn btn-primary" onclick="refreshDashboard()">
+    <i data-lucide="refresh-cw"></i>
+    <span>Refresh</span>
+</button>
+{% endblock %}
+
+{% block sidebar_extra %}
+<div class="nav-group">
+    <span class="nav-group-title">{{ t('federated.sections') or 'Sections' }}</span>
+    <a href="#clouds-section" class="nav-link">
+        <i data-lucide="cloud"></i>
+        <span>Multi-Cloud</span>
+    </a>
+    <a href="#vendors-section" class="nav-link">
+        <i data-lucide="box"></i>
+        <span>AI Vendors</span>
+    </a>
+    <a href="#topology-section" class="nav-link">
+        <i data-lucide="network"></i>
+        <span>Federated Topology</span>
+    </a>
+    <a href="#traces-section" class="nav-link">
+        <i data-lucide="git-branch"></i>
+        <span>Cross-Cloud Traces</span>
+    </a>
+    <a href="#residency-section" class="nav-link">
+        <i data-lucide="map-pin"></i>
+        <span>Data Residency</span>
+    </a>
+</div>
+{% endblock %}
+
+{% block content %}
+<!-- Summary KPIs -->
+<div class="kpi-grid">
+    <div class="kpi-card">
+        <div class="kpi-icon" style="background: linear-gradient(135deg, #6366f1, #8b5cf6); color: white;">
+            <i data-lucide="cloud"></i>
+        </div>
+        <div class="kpi-label">Cloud Providers</div>
+        <div class="kpi-value" id="kpiClouds">4</div>
+        <div class="kpi-trend stable">
+            <i data-lucide="check-circle"></i>
+            <span>All Connected</span>
+        </div>
+    </div>
+
+    <div class="kpi-card">
+        <div class="kpi-icon success">
+            <i data-lucide="box"></i>
+        </div>
+        <div class="kpi-label">AI Vendors</div>
+        <div class="kpi-value" id="kpiVendors">5</div>
+        <div class="kpi-trend up">
+            <i data-lucide="trending-up"></i>
+            <span>+1 new</span>
+        </div>
+    </div>
+
+    <div class="kpi-card">
+        <div class="kpi-icon primary">
+            <i data-lucide="cpu"></i>
+        </div>
+        <div class="kpi-label">Total Models</div>
+        <div class="kpi-value" id="kpiModels">14</div>
+        <div class="kpi-trend stable">
+            <i data-lucide="minus"></i>
+            <span>Stable</span>
+        </div>
+    </div>
+
+    <div class="kpi-card">
+        <div class="kpi-icon warning">
+            <i data-lucide="map-pin"></i>
+        </div>
+        <div class="kpi-label">Data Residency Score</div>
+        <div class="kpi-value" id="kpiResidency" style="color: var(--color-success);">95%</div>
+        <div class="kpi-trend up">
+            <i data-lucide="shield-check"></i>
+            <span>Compliant</span>
+        </div>
+    </div>
+</div>
+
+<!-- Multi-Cloud Overview -->
+<div class="card mb-6" id="clouds-section">
+    <div class="card-header">
+        <h3 class="card-title">
+            <i data-lucide="cloud" style="width: 18px; height: 18px; margin-right: 8px;"></i>
+            Multi-Cloud Overview
+        </h3>
+        <div class="flex gap-2">
+            <span class="badge badge-healthy" id="healthyClouds">
+                <span class="badge-dot"></span>
+                3 Healthy
+            </span>
+            <span class="badge badge-warning" id="degradedClouds">
+                <span class="badge-dot"></span>
+                1 Degraded
+            </span>
+        </div>
+    </div>
+    <div class="grid grid-4" id="cloudsGrid" style="gap: 1rem;">
+        <!-- Cloud cards will be populated here -->
+    </div>
+</div>
+
+<!-- AI Vendors Comparison -->
+<div class="card mb-6" id="vendors-section">
+    <div class="card-header">
+        <h3 class="card-title">
+            <i data-lucide="box" style="width: 18px; height: 18px; margin-right: 8px;"></i>
+            AI Vendors Comparison
+        </h3>
+        <select id="vendorMetric" class="form-select" style="width: auto;" onchange="updateVendorChart()">
+            <option value="latency">Latency</option>
+            <option value="quality">Quality Score</option>
+            <option value="cost">Cost per 1K tokens</option>
+        </select>
+    </div>
+    <div class="grid grid-2">
+        <div class="chart-container" style="height: 300px;">
+            <canvas id="vendorChart"></canvas>
+        </div>
+        <div id="vendorDetails" style="padding: 1rem;">
+            <div class="table-container">
+                <table class="table" id="vendorTable">
+                    <thead>
+                        <tr>
+                            <th>Vendor</th>
+                            <th>Models</th>
+                            <th>Avg Latency</th>
+                            <th>Quality</th>
+                            <th>Status</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <!-- Vendor rows will be populated here -->
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Federated Topology -->
+<div class="card mb-6" id="topology-section">
+    <div class="card-header">
+        <h3 class="card-title">
+            <i data-lucide="network" style="width: 18px; height: 18px; margin-right: 8px;"></i>
+            Federated Service Topology
+        </h3>
+        <div class="flex gap-2">
+            <button class="btn btn-secondary btn-sm" onclick="resetTopologyZoom()">
+                <i data-lucide="maximize-2"></i>
+                Reset View
+            </button>
+        </div>
+    </div>
+    <div id="federatedTopology" class="graph-container" style="height: 450px;"></div>
+    <div class="flex gap-4 justify-center mt-4" style="flex-wrap: wrap;">
+        <div class="flex items-center gap-2">
+            <span style="width: 16px; height: 16px; background: #f97316; border-radius: 4px;"></span>
+            <span class="text-sm text-muted">AWS</span>
+        </div>
+        <div class="flex items-center gap-2">
+            <span style="width: 16px; height: 16px; background: #0ea5e9; border-radius: 4px;"></span>
+            <span class="text-sm text-muted">Azure</span>
+        </div>
+        <div class="flex items-center gap-2">
+            <span style="width: 16px; height: 16px; background: #22c55e; border-radius: 4px;"></span>
+            <span class="text-sm text-muted">GCP</span>
+        </div>
+        <div class="flex items-center gap-2">
+            <span style="width: 16px; height: 16px; background: #8b5cf6; border-radius: 4px;"></span>
+            <span class="text-sm text-muted">On-Premise</span>
+        </div>
+        <div class="flex items-center gap-2">
+            <span style="width: 16px; height: 16px; background: #64748b; border-radius: 4px;"></span>
+            <span class="text-sm text-muted">External</span>
+        </div>
+    </div>
+</div>
+
+<!-- Cross-Cloud Latency & Traces -->
+<div class="grid grid-2 mb-6">
+    <div class="card" id="traces-section">
+        <div class="card-header">
+            <h3 class="card-title">
+                <i data-lucide="git-branch" style="width: 16px; height: 16px; margin-right: 6px;"></i>
+                Cross-Cloud Latency
+            </h3>
+        </div>
+        <div id="latencyMatrix" style="padding: 0.5rem;">
+            <!-- Latency matrix will be populated here -->
+        </div>
+    </div>
+
+    <div class="card">
+        <div class="card-header">
+            <h3 class="card-title">
+                <i data-lucide="activity" style="width: 16px; height: 16px; margin-right: 6px;"></i>
+                Recent Distributed Traces
+            </h3>
+        </div>
+        <div id="tracesList" style="max-height: 300px; overflow-y: auto;">
+            <!-- Traces list will be populated here -->
+        </div>
+    </div>
+</div>
+
+<!-- Data Residency Compliance -->
+<div class="card" id="residency-section">
+    <div class="card-header">
+        <h3 class="card-title">
+            <i data-lucide="map-pin" style="width: 18px; height: 18px; margin-right: 8px;"></i>
+            Data Residency Compliance
+        </h3>
+        <span class="badge badge-healthy">
+            <span class="badge-dot"></span>
+            95% Compliant
+        </span>
+    </div>
+    <div class="grid grid-3" id="residencyGrid" style="gap: 1rem;">
+        <!-- Residency cards will be populated here -->
+    </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script>
+let charts = {};
+let topologySimulation = null;
+let dashboardData = null;
+
+document.addEventListener('DOMContentLoaded', async () => {
+    console.log('Initializing Federated Observability Dashboard...');
+    await loadDashboard();
+    lucide.createIcons();
+});
+
+async function loadDashboard() {
+    try {
+        const response = await fetch('/api/federated/dashboard');
+        const result = await response.json();
+
+        if (result.success) {
+            dashboardData = result.data;
+            updateKPIs(dashboardData.summary);
+            renderCloudsGrid(dashboardData.clouds);
+            renderVendorsTable(dashboardData.vendors);
+            renderVendorChart(dashboardData.vendors);
+            await loadFederatedTopology();
+            await loadLatencyMatrix();
+            await loadTraces();
+            renderResidencyGrid(dashboardData.data_residency);
+        }
+    } catch (error) {
+        console.error('Error loading dashboard:', error);
+        showToast('Failed to load federated dashboard', 'error');
+    }
+}
+
+async function refreshDashboard() {
+    showToast('Refreshing dashboard...', 'info');
+    await loadDashboard();
+    lucide.createIcons();
+    showToast('Dashboard refreshed', 'success');
+}
+
+function updateKPIs(summary) {
+    document.getElementById('kpiClouds').textContent = summary.total_clouds;
+    document.getElementById('kpiVendors').textContent = summary.total_vendors;
+    document.getElementById('kpiModels').textContent = summary.total_models;
+    document.getElementById('kpiResidency').textContent = summary.data_residency_score + '%';
+
+    const healthyClouds = summary.health.healthy || 0;
+    const degradedClouds = summary.health.degraded || 0;
+    document.getElementById('healthyClouds').innerHTML = `<span class="badge-dot"></span>${healthyClouds} Healthy`;
+    document.getElementById('degradedClouds').innerHTML = `<span class="badge-dot"></span>${degradedClouds} Degraded`;
+}
+
+function renderCloudsGrid(clouds) {
+    const grid = document.getElementById('cloudsGrid');
+    const cloudIcons = {
+        aws: 'cloud',
+        azure: 'cloud',
+        gcp: 'cloud',
+        on_premise: 'server'
+    };
+    const cloudColors = {
+        aws: '#f97316',
+        azure: '#0ea5e9',
+        gcp: '#22c55e',
+        on_premise: '#8b5cf6'
+    };
+    const cloudNames = {
+        aws: 'Amazon Web Services',
+        azure: 'Microsoft Azure',
+        gcp: 'Google Cloud Platform',
+        on_premise: 'On-Premise'
+    };
+
+    grid.innerHTML = Object.entries(clouds).map(([key, cloud]) => `
+        <div class="card" style="padding: 1.25rem; border-left: 4px solid ${cloudColors[key] || '#64748b'};">
+            <div class="flex items-center gap-3 mb-4">
+                <div style="width: 40px; height: 40px; background: ${cloudColors[key] || '#64748b'}20; border-radius: 8px; display: flex; align-items: center; justify-content: center;">
+                    <i data-lucide="${cloudIcons[key] || 'cloud'}" style="width: 20px; height: 20px; color: ${cloudColors[key] || '#64748b'};"></i>
+                </div>
+                <div>
+                    <div class="font-semibold">${cloudNames[key] || key}</div>
+                    <div class="text-xs text-muted">${cloud.region}</div>
+                </div>
+            </div>
+            <div class="grid grid-2" style="gap: 0.75rem;">
+                <div>
+                    <div class="text-xs text-muted">Models</div>
+                    <div class="font-semibold">${cloud.models}</div>
+                </div>
+                <div>
+                    <div class="text-xs text-muted">Endpoints</div>
+                    <div class="font-semibold">${cloud.endpoints}</div>
+                </div>
+                <div>
+                    <div class="text-xs text-muted">Cost (30d)</div>
+                    <div class="font-semibold">$${(cloud.cost_30d / 1000).toFixed(1)}K</div>
+                </div>
+                <div>
+                    <div class="text-xs text-muted">Latency P99</div>
+                    <div class="font-semibold">${cloud.latency_p99_ms}ms</div>
+                </div>
+            </div>
+            <div class="mt-4 flex justify-between items-center">
+                <span class="badge badge-${cloud.health}">${cloud.health}</span>
+                <span class="text-xs text-muted">${cloud.error_rate_pct}% errors</span>
+            </div>
+        </div>
+    `).join('');
+}
+
+function renderVendorsTable(vendors) {
+    const tbody = document.querySelector('#vendorTable tbody');
+    const vendorIcons = {
+        openai: '#10b981',
+        anthropic: '#f97316',
+        cohere: '#3b82f6',
+        google: '#ef4444',
+        local: '#8b5cf6'
+    };
+
+    tbody.innerHTML = Object.entries(vendors).map(([key, vendor]) => `
+        <tr>
+            <td>
+                <div class="flex items-center gap-2">
+                    <span style="width: 8px; height: 8px; background: ${vendorIcons[key] || '#64748b'}; border-radius: 2px;"></span>
+                    <strong style="text-transform: capitalize;">${key}</strong>
+                </div>
+            </td>
+            <td>${vendor.models_count}</td>
+            <td>${vendor.avg_latency_ms}ms</td>
+            <td>${(vendor.avg_quality * 100).toFixed(0)}%</td>
+            <td><span class="badge badge-healthy">Active</span></td>
+        </tr>
+    `).join('');
+}
+
+function renderVendorChart(vendors) {
+    const ctx = document.getElementById('vendorChart').getContext('2d');
+
+    if (charts.vendor) charts.vendor.destroy();
+
+    const vendorColors = {
+        openai: '#10b981',
+        anthropic: '#f97316',
+        cohere: '#3b82f6',
+        google: '#ef4444',
+        local: '#8b5cf6'
+    };
+
+    const labels = Object.keys(vendors);
+    const latencyData = labels.map(v => vendors[v].avg_latency_ms);
+    const qualityData = labels.map(v => vendors[v].avg_quality * 100);
+    const colors = labels.map(v => vendorColors[v] || '#64748b');
+
+    charts.vendor = new Chart(ctx, {
+        type: 'bar',
+        data: {
+            labels: labels.map(l => l.charAt(0).toUpperCase() + l.slice(1)),
+            datasets: [{
+                label: 'Avg Latency (ms)',
+                data: latencyData,
+                backgroundColor: colors.map(c => c + '80'),
+                borderColor: colors,
+                borderWidth: 2,
+                borderRadius: 6
+            }]
+        },
+        options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            plugins: {
+                legend: { display: false }
+            },
+            scales: {
+                x: {
+                    grid: { display: false },
+                    ticks: { color: '#64748b' }
+                },
+                y: {
+                    grid: { color: '#e2e8f0' },
+                    ticks: {
+                        color: '#64748b',
+                        callback: v => v + 'ms'
+                    }
+                }
+            }
+        }
+    });
+}
+
+function updateVendorChart() {
+    const metric = document.getElementById('vendorMetric').value;
+    if (!dashboardData?.vendors) return;
+
+    const vendors = dashboardData.vendors;
+    const labels = Object.keys(vendors);
+
+    let data, label, unit;
+    switch (metric) {
+        case 'quality':
+            data = labels.map(v => vendors[v].avg_quality * 100);
+            label = 'Quality Score';
+            unit = '%';
+            break;
+        case 'cost':
+            data = labels.map(v => {
+                const models = vendors[v].models || [];
+                return models.reduce((sum, m) => sum + m.cost_per_1k, 0) / (models.length || 1);
+            });
+            label = 'Cost per 1K tokens';
+            unit = '$';
+            break;
+        default:
+            data = labels.map(v => vendors[v].avg_latency_ms);
+            label = 'Avg Latency';
+            unit = 'ms';
+    }
+
+    charts.vendor.data.datasets[0].data = data;
+    charts.vendor.data.datasets[0].label = label;
+    charts.vendor.options.scales.y.ticks.callback = v => v + unit;
+    charts.vendor.update();
+}
+
+async function loadFederatedTopology() {
+    try {
+        const response = await fetch('/api/federated/topology');
+        const result = await response.json();
+
+        if (result.success) {
+            renderFederatedTopology(result.data);
+        }
+    } catch (error) {
+        console.error('Error loading topology:', error);
+    }
+}
+
+function renderFederatedTopology(data) {
+    const container = document.getElementById('federatedTopology');
+    container.innerHTML = '';
+
+    const width = container.clientWidth || 900;
+    const height = 450;
+
+    const svg = d3.select(container)
+        .append('svg')
+        .attr('width', '100%')
+        .attr('height', height)
+        .attr('viewBox', `0 0 ${width} ${height}`);
+
+    const defs = svg.append('defs');
+    defs.append('marker')
+        .attr('id', 'fed-arrowhead')
+        .attr('viewBox', '-0 -5 10 10')
+        .attr('refX', 30)
+        .attr('refY', 0)
+        .attr('orient', 'auto')
+        .attr('markerWidth', 5)
+        .attr('markerHeight', 5)
+        .append('path')
+        .attr('d', 'M 0,-5 L 10,0 L 0,5')
+        .attr('fill', '#94a3b8');
+
+    const cloudColors = {
+        aws: '#f97316',
+        azure: '#0ea5e9',
+        gcp: '#22c55e',
+        on_premise: '#8b5cf6',
+        external: '#64748b'
+    };
+
+    const typeShapes = {
+        endpoint: 'd3.symbolCircle',
+        router: 'd3.symbolDiamond',
+        model: 'd3.symbolSquare',
+        data: 'd3.symbolTriangle',
+        infrastructure: 'd3.symbolStar',
+        vendor: 'd3.symbolCross'
+    };
+
+    topologySimulation = d3.forceSimulation(data.nodes)
+        .force('link', d3.forceLink(data.edges).id(d => d.id).distance(100))
+        .force('charge', d3.forceManyBody().strength(-300))
+        .force('center', d3.forceCenter(width / 2, height / 2))
+        .force('collision', d3.forceCollide().radius(40))
+        .force('x', d3.forceX(width / 2).strength(0.05))
+        .force('y', d3.forceY(height / 2).strength(0.05));
+
+    // Draw edges with latency labels
+    const link = svg.append('g')
+        .selectAll('g')
+        .data(data.edges)
+        .join('g');
+
+    link.append('line')
+        .attr('stroke', '#cbd5e1')
+        .attr('stroke-width', d => d.latency_ms ? Math.max(1, 3 - d.latency_ms / 50) : 2)
+        .attr('stroke-dasharray', d => d.type === 'cache' || d.type === 'analytics' ? '5,5' : 'none')
+        .attr('marker-end', 'url(#fed-arrowhead)');
+
+    // Draw nodes
+    const node = svg.append('g')
+        .selectAll('g')
+        .data(data.nodes)
+        .join('g')
+        .call(d3.drag()
+            .on('start', dragstarted)
+            .on('drag', dragged)
+            .on('end', dragended));
+
+    // Node background (cloud indicator)
+    node.append('circle')
+        .attr('r', 26)
+        .attr('fill', d => cloudColors[d.cloud] || '#64748b')
+        .attr('opacity', 0.15);
+
+    // Node main circle
+    node.append('circle')
+        .attr('r', 22)
+        .attr('fill', d => d.status === 'healthy' ? cloudColors[d.cloud] || '#64748b' :
+            d.status === 'degraded' ? '#f59e0b' : '#ef4444')
+        .attr('stroke', 'white')
+        .attr('stroke-width', 2);
+
+    // Node labels
+    node.append('text')
+        .text(d => d.label.substring(0, 3).toUpperCase())
+        .attr('text-anchor', 'middle')
+        .attr('dy', 4)
+        .attr('fill', 'white')
+        .attr('font-size', '9px')
+        .attr('font-weight', '600');
+
+    // Full label below
+    node.append('text')
+        .text(d => d.label.length > 15 ? d.label.substring(0, 15) + '...' : d.label)
+        .attr('text-anchor', 'middle')
+        .attr('dy', 40)
+        .attr('fill', 'var(--text-secondary)')
+        .attr('font-size', '9px');
+
+    // Cloud label
+    node.append('text')
+        .text(d => d.cloud.toUpperCase())
+        .attr('text-anchor', 'middle')
+        .attr('dy', 52)
+        .attr('fill', d => cloudColors[d.cloud] || '#64748b')
+        .attr('font-size', '8px')
+        .attr('font-weight', '600');
+
+    node.append('title')
+        .text(d => `${d.label}\nCloud: ${d.cloud}\nRegion: ${d.region}\nStatus: ${d.status}`);
+
+    topologySimulation.on('tick', () => {
+        data.nodes.forEach(d => {
+            d.x = Math.max(35, Math.min(width - 35, d.x));
+            d.y = Math.max(35, Math.min(height - 60, d.y));
+        });
+
+        link.select('line')
+            .attr('x1', d => d.source.x)
+            .attr('y1', d => d.source.y)
+            .attr('x2', d => d.target.x)
+            .attr('y2', d => d.target.y);
+
+        node.attr('transform', d => `translate(${d.x},${d.y})`);
+    });
+
+    function dragstarted(event) {
+        if (!event.active) topologySimulation.alphaTarget(0.3).restart();
+        event.subject.fx = event.subject.x;
+        event.subject.fy = event.subject.y;
+    }
+
+    function dragged(event) {
+        event.subject.fx = event.x;
+        event.subject.fy = event.y;
+    }
+
+    function dragended(event) {
+        if (!event.active) topologySimulation.alphaTarget(0);
+        event.subject.fx = null;
+        event.subject.fy = null;
+    }
+}
+
+function resetTopologyZoom() {
+    if (topologySimulation) {
+        topologySimulation.alpha(1).restart();
+    }
+}
+
+async function loadLatencyMatrix() {
+    try {
+        const response = await fetch('/api/federated/latency');
+        const result = await response.json();
+
+        if (result.success) {
+            renderLatencyMatrix(result.data);
+        }
+    } catch (error) {
+        console.error('Error loading latency:', error);
+    }
+}
+
+function renderLatencyMatrix(data) {
+    const container = document.getElementById('latencyMatrix');
+
+    const latencyHTML = Object.entries(data.cloud_to_cloud).map(([path, latency]) => {
+        const [from, to] = path.split('->');
+        const color = latency < 50 ? 'var(--color-success)' :
+                     latency < 80 ? 'var(--color-warning)' : 'var(--color-danger)';
+        return `
+            <div class="flex justify-between items-center" style="padding: 0.5rem; border-bottom: 1px solid var(--border-color);">
+                <div class="flex items-center gap-2">
+                    <span class="text-sm font-medium">${from}</span>
+                    <i data-lucide="arrow-right" style="width: 14px; height: 14px; color: var(--text-tertiary);"></i>
+                    <span class="text-sm font-medium">${to}</span>
+                </div>
+                <span class="font-semibold" style="color: ${color};">${latency}ms</span>
+            </div>
+        `;
+    }).join('');
+
+    const bottlenecksHTML = data.bottlenecks?.length ? `
+        <div class="mt-4">
+            <div class="text-xs text-muted mb-2 font-semibold">Bottlenecks Detected:</div>
+            ${data.bottlenecks.map(b => `
+                <div class="card" style="padding: 0.75rem; background: var(--color-warning-light); border: 1px solid var(--color-warning);">
+                    <div class="flex justify-between items-center mb-1">
+                        <span class="text-sm font-semibold">${b.path}</span>
+                        <span class="badge badge-warning">${b.p99_latency_ms}ms P99</span>
+                    </div>
+                    <div class="text-xs text-muted">${b.recommendation}</div>
+                </div>
+            `).join('')}
+        </div>
+    ` : '';
+
+    container.innerHTML = latencyHTML + bottlenecksHTML;
+    lucide.createIcons();
+}
+
+async function loadTraces() {
+    // Generate sample traces
+    const traces = [
+        { id: 'trace-001', clouds: ['aws', 'gcp', 'azure'], duration: 482, status: 'success', time: '2 min ago' },
+        { id: 'trace-002', clouds: ['aws', 'on_premise'], duration: 165, status: 'success', time: '5 min ago' },
+        { id: 'trace-003', clouds: ['azure', 'gcp'], duration: 298, status: 'warning', time: '8 min ago' },
+        { id: 'trace-004', clouds: ['aws', 'azure', 'gcp', 'on_premise'], duration: 720, status: 'success', time: '12 min ago' },
+    ];
+
+    const container = document.getElementById('tracesList');
+    container.innerHTML = traces.map(trace => `
+        <div class="flex items-center gap-3" style="padding: 0.75rem; border-bottom: 1px solid var(--border-color); cursor: pointer;" onclick="viewTrace('${trace.id}')">
+            <span class="badge badge-${trace.status === 'success' ? 'healthy' : 'warning'}">
+                <span class="badge-dot"></span>
+            </span>
+            <div style="flex: 1;">
+                <div class="font-medium text-sm">${trace.id}</div>
+                <div class="text-xs text-muted">${trace.clouds.join(' -> ')}</div>
+            </div>
+            <div class="text-right">
+                <div class="font-semibold text-sm">${trace.duration}ms</div>
+                <div class="text-xs text-muted">${trace.time}</div>
+            </div>
+            <i data-lucide="chevron-right" style="width: 16px; height: 16px; color: var(--text-tertiary);"></i>
+        </div>
+    `).join('');
+    lucide.createIcons();
+}
+
+async function viewTrace(traceId) {
+    try {
+        const response = await fetch(`/api/federated/traces/${traceId}`);
+        const result = await response.json();
+
+        if (result.success) {
+            showToast(`Trace ${traceId}: ${result.data.total_duration_ms}ms across ${result.data.clouds_involved.join(', ')}`, 'info');
+        }
+    } catch (error) {
+        console.error('Error loading trace:', error);
+    }
+}
+
+function renderResidencyGrid(residency) {
+    const grid = document.getElementById('residencyGrid');
+    const regionIcons = {
+        eu: 'flag',
+        us: 'flag',
+        apac: 'flag'
+    };
+    const regionNames = {
+        eu: 'European Union',
+        us: 'United States',
+        apac: 'Asia Pacific'
+    };
+
+    grid.innerHTML = Object.entries(residency.regions).map(([key, region]) => `
+        <div class="card" style="padding: 1.25rem;">
+            <div class="flex items-center gap-3 mb-4">
+                <div class="kpi-icon ${region.status === 'compliant' ? 'success' : region.status === 'not_configured' ? '' : 'warning'}">
+                    <i data-lucide="${regionIcons[key] || 'map-pin'}"></i>
+                </div>
+                <div>
+                    <div class="font-semibold">${regionNames[key] || key.toUpperCase()}</div>
+                    <span class="badge badge-${region.status === 'compliant' ? 'healthy' : region.status === 'not_configured' ? 'info' : 'warning'}">
+                        ${region.status.replace('_', ' ')}
+                    </span>
+                </div>
+            </div>
+            ${region.status !== 'not_configured' ? `
+                <div class="text-sm mb-2">
+                    <span class="text-muted">Sources:</span>
+                    <span class="font-medium">${region.sources.length}</span>
+                </div>
+                <div class="text-sm mb-2">
+                    <span class="text-muted">Regulations:</span>
+                    <span class="font-medium">${region.regulations.join(', ') || 'None'}</span>
+                </div>
+                <div class="text-sm">
+                    <span class="text-muted">Last Audit:</span>
+                    <span class="font-medium">${region.last_audit || 'N/A'}</span>
+                </div>
+            ` : `
+                <div class="text-sm text-muted">
+                    No data sources configured for this region yet.
+                </div>
+            `}
+        </div>
+    `).join('');
+}
+
+// Cloud filter handler
+document.getElementById('cloudFilter')?.addEventListener('change', async (e) => {
+    const cloud = e.target.value;
+    if (cloud === 'all') {
+        await loadDashboard();
+    } else {
+        // Filter data for specific cloud
+        const response = await fetch(`/api/federated/clouds?clouds=${cloud}`);
+        const result = await response.json();
+        if (result.success) {
+            renderCloudsGrid({ [cloud]: result.data.by_cloud[cloud] });
+        }
+    }
+    showToast(`Filtering by ${cloud === 'all' ? 'all clouds' : cloud}`, 'info');
+});
+</script>
+
+<style>
+/* Federated view specific styles */
+#federatedTopology svg {
+    background: linear-gradient(135deg, var(--bg-body) 0%, var(--bg-card) 100%);
+    border-radius: var(--radius-lg);
+}
+
+.btn-sm {
+    padding: var(--space-1) var(--space-3);
+    font-size: 0.75rem;
+}
+</style>
+{% endblock %}

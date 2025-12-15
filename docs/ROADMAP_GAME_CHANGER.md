@@ -291,7 +291,7 @@ spec:
 
 ### 9. Federated AI Observability - GAME CHANGER
 
-**Statut:** A implementer
+**Statut:** Implemente
 **Priorite:** P2
 
 **Description:**
