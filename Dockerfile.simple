@@ -17,8 +17,11 @@ ENV PYTHONDONTWRITEBYTECODE=1 \
 WORKDIR /app
 
 # Installer les dépendances système minimales
+# gcc et python3-dev sont nécessaires pour compiler psutil
 RUN apt-get update && apt-get install -y --no-install-recommends \
     curl \
+    gcc \
+    python3-dev \
     && rm -rf /var/lib/apt/lists/*
 
 # Copier les requirements et installer
