@@ -1,0 +1,240 @@
+# =============================================================================
+# AIOBS - AI Observability Hub
+# Docker Compose Configuration for Full Stack Deployment
+# =============================================================================
+#
+# Quick Start:
+#   docker-compose up -d
+#
+# Services:
+#   - visualization: FastAPI Dashboard (port 8000)
+#   - backend: TypeScript Core Platform (port 3000)
+#   - victoriametrics: Time-series metrics database (port 8428)
+#   - openobserve: Logs, traces, compliance storage (port 5080)
+#   - redis: Caching and real-time pub/sub (port 6379)
+#
+# =============================================================================
+
+version: '3.9'
+
+services:
+  # ===========================================================================
+  # AIOBS Visualization Dashboard (FastAPI)
+  # ===========================================================================
+  visualization:
+    build:
+      context: .
+      dockerfile: Dockerfile.visualization
+    container_name: aiobs-visualization
+    ports:
+      - "${VISUALIZATION_PORT:-8000}:8000"
+    environment:
+      - PORT=8000
+      - HOST=0.0.0.0
+      - BACKEND_URL=http://backend:3000
+      - VICTORIA_METRICS_URL=http://victoriametrics:8428
+      - OPENOBSERVE_URL=http://openobserve:5080
+      - REDIS_URL=redis://redis:6379
+      - LOG_LEVEL=${LOG_LEVEL:-info}
+      - DEFAULT_LANGUAGE=${DEFAULT_LANGUAGE:-en}
+    depends_on:
+      backend:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+    networks:
+      - aiobs-network
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD", "python", "-c", "import urllib.request; urllib.request.urlopen('http://localhost:8000/health')"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 10s
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.aiobs-viz.rule=Host(`aiobs.local`)"
+      - "traefik.http.services.aiobs-viz.loadbalancer.server.port=8000"
+
+  # ===========================================================================
+  # AIOBS Backend Platform (TypeScript/Node.js)
+  # ===========================================================================
+  backend:
+    build:
+      context: .
+      dockerfile: Dockerfile.backend
+    container_name: aiobs-backend
+    ports:
+      - "${BACKEND_PORT:-3000}:3000"
+    environment:
+      - NODE_ENV=production
+      - PORT=3000
+      - VICTORIA_METRICS_URL=http://victoriametrics:8428
+      - OPENOBSERVE_URL=http://openobserve:5080
+      - OPENOBSERVE_USER=${OPENOBSERVE_USER:-admin}
+      - OPENOBSERVE_PASSWORD=${OPENOBSERVE_PASSWORD:-Complexpass#123}
+      - REDIS_URL=redis://redis:6379
+      - LOG_LEVEL=${LOG_LEVEL:-info}
+    depends_on:
+      victoriametrics:
+        condition: service_healthy
+      openobserve:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+    networks:
+      - aiobs-network
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD", "node", "-e", "require('http').get('http://localhost:3000/health', (r) => process.exit(r.statusCode === 200 ? 0 : 1))"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 10s
+
+  # ===========================================================================
+  # VictoriaMetrics - High-Performance Time-Series Database
+  # For: Metrics, SLIs, Performance Data
+  # ===========================================================================
+  victoriametrics:
+    image: victoriametrics/victoria-metrics:v1.96.0
+    container_name: aiobs-victoriametrics
+    ports:
+      - "${VICTORIA_METRICS_PORT:-8428}:8428"
+    volumes:
+      - victoriametrics-data:/victoria-metrics-data
+    command:
+      - "--storageDataPath=/victoria-metrics-data"
+      - "--httpListenAddr=:8428"
+      - "--retentionPeriod=90d"
+      - "--search.latencyOffset=0s"
+      - "--search.maxUniqueTimeseries=300000"
+    networks:
+      - aiobs-network
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD", "wget", "--no-verbose", "--tries=1", "--spider", "http://localhost:8428/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 10s
+
+  # ===========================================================================
+  # OpenObserve - Unified Logs, Traces, and Metrics
+  # For: Audit Logs, Compliance Records, Traces
+  # ===========================================================================
+  openobserve:
+    image: public.ecr.aws/zinclabs/openobserve:v0.9.0
+    container_name: aiobs-openobserve
+    ports:
+      - "${OPENOBSERVE_PORT:-5080}:5080"
+    environment:
+      - ZO_ROOT_USER_EMAIL=${OPENOBSERVE_USER:-admin@aiobs.local}
+      - ZO_ROOT_USER_PASSWORD=${OPENOBSERVE_PASSWORD:-Complexpass#123}
+      - ZO_DATA_DIR=/data
+      - ZO_HTTP_PORT=5080
+      - ZO_TELEMETRY_ENABLED=false
+    volumes:
+      - openobserve-data:/data
+    networks:
+      - aiobs-network
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD", "wget", "--no-verbose", "--tries=1", "--spider", "http://localhost:5080/healthz"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 15s
+
+  # ===========================================================================
+  # Redis - Caching and Real-time Pub/Sub
+  # For: Session Cache, WebSocket Pub/Sub, Rate Limiting
+  # ===========================================================================
+  redis:
+    image: redis:7-alpine
+    container_name: aiobs-redis
+    ports:
+      - "${REDIS_PORT:-6379}:6379"
+    volumes:
+      - redis-data:/data
+    command: redis-server --appendonly yes --maxmemory 256mb --maxmemory-policy allkeys-lru
+    networks:
+      - aiobs-network
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 10s
+      timeout: 5s
+      retries: 3
+      start_period: 5s
+
+  # ===========================================================================
+  # Prometheus (Optional) - For Prometheus-compatible scraping
+  # ===========================================================================
+  prometheus:
+    image: prom/prometheus:v2.48.0
+    container_name: aiobs-prometheus
+    profiles:
+      - monitoring
+    ports:
+      - "${PROMETHEUS_PORT:-9090}:9090"
+    volumes:
+      - ./docker/prometheus/prometheus.yml:/etc/prometheus/prometheus.yml:ro
+      - prometheus-data:/prometheus
+    command:
+      - "--config.file=/etc/prometheus/prometheus.yml"
+      - "--storage.tsdb.path=/prometheus"
+      - "--storage.tsdb.retention.time=15d"
+      - "--web.enable-lifecycle"
+    networks:
+      - aiobs-network
+    restart: unless-stopped
+
+  # ===========================================================================
+  # Grafana (Optional) - Advanced Visualization
+  # ===========================================================================
+  grafana:
+    image: grafana/grafana:10.2.0
+    container_name: aiobs-grafana
+    profiles:
+      - monitoring
+    ports:
+      - "${GRAFANA_PORT:-3001}:3000"
+    environment:
+      - GF_SECURITY_ADMIN_USER=${GRAFANA_USER:-admin}
+      - GF_SECURITY_ADMIN_PASSWORD=${GRAFANA_PASSWORD:-admin}
+      - GF_USERS_ALLOW_SIGN_UP=false
+      - GF_INSTALL_PLUGINS=grafana-clock-panel,grafana-simple-json-datasource
+    volumes:
+      - grafana-data:/var/lib/grafana
+      - ./docker/grafana/provisioning:/etc/grafana/provisioning:ro
+    depends_on:
+      - victoriametrics
+    networks:
+      - aiobs-network
+    restart: unless-stopped
+
+# =============================================================================
+# Networks
+# =============================================================================
+networks:
+  aiobs-network:
+    driver: bridge
+    ipam:
+      config:
+        - subnet: 172.28.0.0/16
+
+# =============================================================================
+# Volumes
+# =============================================================================
+volumes:
+  victoriametrics-data:
+    driver: local
+  openobserve-data:
+    driver: local
+  redis-data:
+    driver: local
+  prometheus-data:
+    driver: local
+  grafana-data:
+    driver: local

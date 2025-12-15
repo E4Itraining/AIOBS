@@ -1,0 +1,43 @@
+# =============================================================================
+# AIOBS Grafana Data Sources
+# =============================================================================
+
+apiVersion: 1
+
+datasources:
+  # VictoriaMetrics as Prometheus-compatible datasource
+  - name: VictoriaMetrics
+    type: prometheus
+    access: proxy
+    url: http://victoriametrics:8428
+    isDefault: true
+    editable: true
+    jsonData:
+      httpMethod: POST
+      manageAlerts: true
+      prometheusType: Prometheus
+      prometheusVersion: 2.48.0
+
+  # Prometheus (if using monitoring profile)
+  - name: Prometheus
+    type: prometheus
+    access: proxy
+    url: http://prometheus:9090
+    isDefault: false
+    editable: true
+
+  # OpenObserve for logs
+  - name: OpenObserve
+    type: elasticsearch
+    access: proxy
+    url: http://openobserve:5080/api/default
+    basicAuth: true
+    basicAuthUser: admin@aiobs.local
+    editable: true
+    jsonData:
+      esVersion: "7.10.0"
+      timeField: "_timestamp"
+      logMessageField: "log"
+      logLevelField: "level"
+    secureJsonData:
+      basicAuthPassword: "Complexpass#123"

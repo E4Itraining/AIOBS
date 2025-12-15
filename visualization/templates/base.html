@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="en" data-theme="light">
+<html lang="{{ lang|default('en') }}" data-theme="light" {% if is_rtl %}dir="rtl"{% endif %}>
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -19,6 +19,34 @@
 
     <!-- Custom styles -->
     <link rel="stylesheet" href="/static/css/dashboard.css">
+
+    <!-- i18n: Store translations in global object -->
+    <script>
+        window.AIOBS = window.AIOBS || {};
+        window.AIOBS.lang = '{{ lang|default("en") }}';
+        window.AIOBS.isRtl = {{ is_rtl|default(false)|lower }};
+        window.AIOBS.translations = {{ translations|tojson|safe }};
+
+        // Translation helper function
+        window.t = function(key, params) {
+            const keys = key.split('.');
+            let value = window.AIOBS.translations;
+            for (const k of keys) {
+                if (value && typeof value === 'object') {
+                    value = value[k];
+                } else {
+                    return key;
+                }
+            }
+            if (typeof value !== 'string') return key;
+            if (params) {
+                Object.keys(params).forEach(param => {
+                    value = value.replace(new RegExp(`{${param}}`, 'g'), params[param]);
+                });
+            }
+            return value;
+        };
+    </script>
 
     <style>
         :root {
@@ -328,6 +356,126 @@
         .theme-toggle:hover {
             background: var(--bg-secondary);
         }
+
+        /* Language Selector Styles */
+        .language-selector {
+            position: relative;
+            display: inline-block;
+        }
+
+        .language-btn {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            padding: 0.5rem 1rem;
+            background: var(--bg-card);
+            border: 1px solid var(--border-color);
+            border-radius: 0.5rem;
+            cursor: pointer;
+            font-size: 0.875rem;
+            color: var(--text-primary);
+            transition: all 0.2s;
+        }
+
+        .language-btn:hover {
+            border-color: var(--primary);
+        }
+
+        .language-dropdown {
+            position: absolute;
+            top: 100%;
+            right: 0;
+            margin-top: 0.25rem;
+            background: var(--bg-card);
+            border: 1px solid var(--border-color);
+            border-radius: 0.5rem;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+            min-width: 200px;
+            z-index: 1000;
+            display: none;
+            max-height: 300px;
+            overflow-y: auto;
+        }
+
+        .language-dropdown.show {
+            display: block;
+        }
+
+        .language-option {
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            padding: 0.75rem 1rem;
+            cursor: pointer;
+            transition: background 0.2s;
+            border: none;
+            background: none;
+            width: 100%;
+            text-align: left;
+            color: var(--text-primary);
+            font-size: 0.875rem;
+        }
+
+        .language-option:hover {
+            background: var(--bg-secondary);
+        }
+
+        .language-option.active {
+            background: var(--primary);
+            color: white;
+        }
+
+        .language-flag {
+            font-size: 1.25rem;
+        }
+
+        .language-name {
+            flex: 1;
+        }
+
+        .language-native {
+            color: var(--text-secondary);
+            font-size: 0.75rem;
+        }
+
+        .language-option.active .language-native {
+            color: rgba(255, 255, 255, 0.7);
+        }
+
+        /* RTL Support */
+        [dir="rtl"] .sidebar {
+            right: 0;
+            left: auto;
+            border-right: none;
+            border-left: 1px solid var(--border-color);
+        }
+
+        [dir="rtl"] .main-content {
+            margin-right: 250px;
+            margin-left: 0;
+        }
+
+        [dir="rtl"] .nav-item {
+            flex-direction: row-reverse;
+        }
+
+        [dir="rtl"] .header-actions {
+            flex-direction: row-reverse;
+        }
+
+        [dir="rtl"] .language-dropdown {
+            right: auto;
+            left: 0;
+        }
+
+        [dir="rtl"] .services-table th,
+        [dir="rtl"] .services-table td {
+            text-align: right;
+        }
+
+        [dir="rtl"] .kpi-trend {
+            flex-direction: row-reverse;
+        }
     </style>
 </head>
 <body>
@@ -351,6 +499,66 @@
         // Load saved theme
         const savedTheme = localStorage.getItem('theme') || 'light';
         document.documentElement.setAttribute('data-theme', savedTheme);
+
+        // Language Selector Functions
+        const LANGUAGES = {{ languages|tojson|safe if languages else '{}' }};
+
+        function toggleLanguageDropdown() {
+            const dropdown = document.getElementById('languageDropdown');
+            if (dropdown) {
+                dropdown.classList.toggle('show');
+            }
+        }
+
+        function closeLanguageDropdown(event) {
+            const dropdown = document.getElementById('languageDropdown');
+            const selector = document.querySelector('.language-selector');
+            if (dropdown && selector && !selector.contains(event.target)) {
+                dropdown.classList.remove('show');
+            }
+        }
+
+        async function setLanguage(langCode) {
+            try {
+                const response = await fetch(`/api/i18n/set-language/${langCode}`, {
+                    method: 'POST'
+                });
+                if (response.ok) {
+                    // Reload page with new language
+                    window.location.reload();
+                }
+            } catch (error) {
+                console.error('Error setting language:', error);
+            }
+        }
+
+        function renderLanguageSelector() {
+            const currentLang = window.AIOBS.lang || 'en';
+            const currentInfo = LANGUAGES[currentLang] || LANGUAGES['en'] || {};
+
+            return `
+                <div class="language-selector">
+                    <button class="language-btn" onclick="toggleLanguageDropdown()">
+                        <span class="language-flag">${currentInfo.flag || ''}</span>
+                        <span>${currentInfo.native || currentInfo.name || currentLang.toUpperCase()}</span>
+                        <i data-feather="chevron-down" style="width: 16px; height: 16px;"></i>
+                    </button>
+                    <div class="language-dropdown" id="languageDropdown">
+                        ${Object.entries(LANGUAGES).map(([code, info]) => `
+                            <button class="language-option ${code === currentLang ? 'active' : ''}"
+                                    onclick="setLanguage('${code}')">
+                                <span class="language-flag">${info.flag}</span>
+                                <span class="language-name">${info.name}</span>
+                                <span class="language-native">${info.native}</span>
+                            </button>
+                        `).join('')}
+                    </div>
+                </div>
+            `;
+        }
+
+        // Close dropdown when clicking outside
+        document.addEventListener('click', closeLanguageDropdown);
     </script>
     {% block scripts %}{% endblock %}
 </body>

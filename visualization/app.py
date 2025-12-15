@@ -9,7 +9,13 @@ from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import HTMLResponse
 import os
 
-from .routers import dashboard_router, metrics_router, profiles_router
+from .routers import (
+    dashboard_router, metrics_router, profiles_router, i18n_router,
+    realtime_router, assistant_router
+)
+from .i18n import I18nMiddleware, SUPPORTED_LANGUAGES, get_translator
+from .i18n.middleware import create_i18n_context
+from .routers.realtime import start_background_tasks, stop_background_tasks
 
 # Application metadata
 APP_TITLE = "AIOBS - AI Observability Hub"
@@ -43,6 +49,9 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
+# i18n middleware for multilingual support
+app.add_middleware(I18nMiddleware)
+
 # Mount static files
 static_dir = os.path.join(os.path.dirname(__file__), "static")
 app.mount("/static", StaticFiles(directory=static_dir), name="static")
@@ -55,6 +64,25 @@ templates = Jinja2Templates(directory=templates_dir)
 app.include_router(dashboard_router)
 app.include_router(metrics_router)
 app.include_router(profiles_router)
+app.include_router(i18n_router)
+app.include_router(realtime_router)
+app.include_router(assistant_router)
+
+
+# =============================================================================
+# Application Lifecycle Events
+# =============================================================================
+
+@app.on_event("startup")
+async def startup_event():
+    """Start background tasks on application startup"""
+    start_background_tasks()
+
+
+@app.on_event("shutdown")
+async def shutdown_event():
+    """Stop background tasks on application shutdown"""
+    stop_background_tasks()
 
 
 # ============================================================================
@@ -64,12 +92,14 @@ app.include_router(profiles_router)
 @app.get("/", response_class=HTMLResponse)
 async def index(request: Request):
     """Main dashboard page"""
+    i18n = create_i18n_context(request)
     return templates.TemplateResponse(
         "index.html",
         {
             "request": request,
             "title": APP_TITLE,
-            "version": APP_VERSION
+            "version": APP_VERSION,
+            **i18n
         }
     )
 
@@ -77,12 +107,14 @@ async def index(request: Request):
 @app.get("/profile/{profile_id}", response_class=HTMLResponse)
 async def profile_dashboard(request: Request, profile_id: str):
     """Profile-specific dashboard"""
+    i18n = create_i18n_context(request)
     return templates.TemplateResponse(
         "dashboard.html",
         {
             "request": request,
             "title": APP_TITLE,
-            "profile_id": profile_id
+            "profile_id": profile_id,
+            **i18n
         }
     )
 
@@ -90,11 +122,13 @@ async def profile_dashboard(request: Request, profile_id: str):
 @app.get("/unified", response_class=HTMLResponse)
 async def unified_view(request: Request):
     """Unified monitoring view"""
+    i18n = create_i18n_context(request)
     return templates.TemplateResponse(
         "unified.html",
         {
             "request": request,
-            "title": f"{APP_TITLE} - Unified View"
+            "title": f"{APP_TITLE} - {i18n['t']('nav.unified_view')}",
+            **i18n
         }
     )
 
@@ -102,11 +136,13 @@ async def unified_view(request: Request):
 @app.get("/causal", response_class=HTMLResponse)
 async def causal_view(request: Request):
     """Causal analysis view"""
+    i18n = create_i18n_context(request)
     return templates.TemplateResponse(
         "causal.html",
         {
             "request": request,
-            "title": f"{APP_TITLE} - Causal Analysis"
+            "title": f"{APP_TITLE} - {i18n['t']('causal.title')}",
+            **i18n
         }
     )
 
@@ -114,11 +150,13 @@ async def causal_view(request: Request):
 @app.get("/impact", response_class=HTMLResponse)
 async def impact_view(request: Request):
     """Impact analysis view"""
+    i18n = create_i18n_context(request)
     return templates.TemplateResponse(
         "impact.html",
         {
             "request": request,
-            "title": f"{APP_TITLE} - Impact Analysis"
+            "title": f"{APP_TITLE} - {i18n['t']('causal.impact')}",
+            **i18n
         }
     )
 
