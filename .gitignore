@@ -29,3 +29,6 @@ coverage/
 # Cache
 .cache/
 .npm/
+__pycache__/
+*.pyc
+*.pyo
