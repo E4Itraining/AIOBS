@@ -18,6 +18,52 @@
 {% endblock %}
 
 {% block content %}
+<!-- Page Narrative Section -->
+<div class="page-narrative" id="pageNarrative">
+    <button class="narrative-dismiss" onclick="dismissNarrative()" title="{{ t('actions.close') or 'Close' }}">
+        <i data-lucide="x"></i>
+    </button>
+    <div class="narrative-header">
+        <div class="narrative-icon">
+            <i data-lucide="shield-check"></i>
+        </div>
+        <div class="narrative-content">
+            <h2>{{ t('narrative.dashboard_title') or 'Welcome to your AI Trust Control Center' }}</h2>
+            <p>{{ t('narrative.dashboard_desc') or 'This dashboard provides a unified view of your AI systems\' health, performance, and reliability. Monitor trust scores, track costs, and ensure compliance - all in one place.' }}</p>
+        </div>
+    </div>
+    <div class="narrative-actions">
+        <button class="btn btn-primary" onclick="startGuidedTour()">
+            <i data-lucide="play-circle"></i>
+            {{ t('help.start_tour') or 'Take a Quick Tour' }}
+        </button>
+        <a href="/onboarding" class="btn btn-secondary">
+            <i data-lucide="user-circle"></i>
+            {{ t('help.change_profile') or 'Choose Your Profile' }}
+        </a>
+    </div>
+</div>
+
+<!-- Quick Tips for New Users -->
+<div class="quick-tips" id="quickTips">
+    <div class="quick-tips-header">
+        <i data-lucide="lightbulb"></i>
+        {{ t('help.quick_tips') or 'Quick Tips' }}
+    </div>
+    <div class="quick-tip">
+        <span class="quick-tip-number">1</span>
+        <span>{{ t('help.tip_1') or 'Click on any KPI card to see detailed metrics and trends' }}</span>
+    </div>
+    <div class="quick-tip">
+        <span class="quick-tip-number">2</span>
+        <span>{{ t('help.tip_2') or 'Use the sidebar to navigate between different specialized views' }}</span>
+    </div>
+    <div class="quick-tip">
+        <span class="quick-tip-number">3</span>
+        <span>{{ t('help.tip_3') or 'Click "Investigate" on any issue to see root cause analysis' }}</span>
+    </div>
+</div>
+
 <!-- KPI Grid -->
 <div class="kpi-grid">
     <div class="kpi-card" id="kpiTrust">
@@ -515,5 +561,49 @@ document.getElementById('serviceSearch')?.addEventListener('input', (e) => {
         row.style.display = text.includes(query) ? '' : 'none';
     });
 });
+
+// Narrative and Quick Tips management
+function initNarrativeAndTips() {
+    const narrativeDismissed = localStorage.getItem('aiobs-narrative-dismissed');
+    const tipsDismissed = localStorage.getItem('aiobs-tips-dismissed');
+    const onboardingComplete = localStorage.getItem('aiobs-onboarding-complete');
+
+    // Hide narrative if already dismissed or onboarding was completed
+    if (narrativeDismissed || onboardingComplete) {
+        const narrative = document.getElementById('pageNarrative');
+        if (narrative) narrative.style.display = 'none';
+    }
+
+    // Hide tips if dismissed
+    if (tipsDismissed || onboardingComplete) {
+        const tips = document.getElementById('quickTips');
+        if (tips) tips.style.display = 'none';
+    }
+}
+
+function dismissNarrative() {
+    const narrative = document.getElementById('pageNarrative');
+    if (narrative) {
+        narrative.style.animation = 'fadeOut 0.3s ease forwards';
+        setTimeout(() => {
+            narrative.style.display = 'none';
+        }, 300);
+    }
+    localStorage.setItem('aiobs-narrative-dismissed', 'true');
+}
+
+function dismissTips() {
+    const tips = document.getElementById('quickTips');
+    if (tips) {
+        tips.style.animation = 'fadeOut 0.3s ease forwards';
+        setTimeout(() => {
+            tips.style.display = 'none';
+        }, 300);
+    }
+    localStorage.setItem('aiobs-tips-dismissed', 'true');
+}
+
+// Initialize on page load
+initNarrativeAndTips();
 </script>
 {% endblock %}

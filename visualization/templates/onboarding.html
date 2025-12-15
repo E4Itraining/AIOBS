@@ -1,0 +1,408 @@
+{% extends "base.html" %}
+
+{% set active_page = 'onboarding' %}
+
+{% block page_title %}{{ t('onboarding.title') or 'Welcome to AIOBS' }}{% endblock %}
+
+{% block page_subtitle %}
+<p>{{ t('onboarding.subtitle') or 'Choose your profile to get started' }}</p>
+{% endblock %}
+
+{% block content %}
+<!-- Onboarding Welcome -->
+<div class="onboarding-container">
+    <!-- Step 1: Welcome -->
+    <div class="onboarding-step active" id="step-welcome">
+        <div class="onboarding-hero">
+            <div class="hero-icon">
+                <i data-lucide="shield-check"></i>
+            </div>
+            <h1>{{ t('onboarding.welcome_title') or 'Welcome to AIOBS' }}</h1>
+            <p class="hero-subtitle">{{ t('onboarding.welcome_subtitle') or 'AI Trust Control Layer - Your unified observability platform for AI systems' }}</p>
+        </div>
+
+        <div class="onboarding-features">
+            <div class="feature-card">
+                <i data-lucide="eye"></i>
+                <h3>{{ t('onboarding.feature_observe') or 'Observe' }}</h3>
+                <p>{{ t('onboarding.feature_observe_desc') or 'Monitor your AI models in real-time with comprehensive metrics' }}</p>
+            </div>
+            <div class="feature-card">
+                <i data-lucide="git-branch"></i>
+                <h3>{{ t('onboarding.feature_understand') or 'Understand' }}</h3>
+                <p>{{ t('onboarding.feature_understand_desc') or 'Analyze root causes with causal graphs and impact analysis' }}</p>
+            </div>
+            <div class="feature-card">
+                <i data-lucide="shield"></i>
+                <h3>{{ t('onboarding.feature_trust') or 'Trust' }}</h3>
+                <p>{{ t('onboarding.feature_trust_desc') or 'Ensure compliance and reliability with cognitive metrics' }}</p>
+            </div>
+        </div>
+
+        <button class="btn btn-primary btn-lg" onclick="nextStep('profile')">
+            {{ t('onboarding.get_started') or 'Get Started' }}
+            <i data-lucide="arrow-right"></i>
+        </button>
+    </div>
+
+    <!-- Step 2: Profile Selection -->
+    <div class="onboarding-step" id="step-profile">
+        <div class="step-header">
+            <button class="btn btn-ghost" onclick="prevStep('welcome')">
+                <i data-lucide="arrow-left"></i>
+                {{ t('actions.back') or 'Back' }}
+            </button>
+            <div class="step-indicator">
+                <span class="step-dot"></span>
+                <span class="step-dot active"></span>
+                <span class="step-dot"></span>
+            </div>
+        </div>
+
+        <h2>{{ t('onboarding.who_are_you') or 'Who are you?' }}</h2>
+        <p class="step-desc">{{ t('onboarding.profile_desc') or 'Select your role to get a personalized experience tailored to your needs.' }}</p>
+
+        <!-- Profile Categories -->
+        <div class="profile-categories">
+            <!-- Technical Profiles -->
+            <div class="profile-category">
+                <div class="category-header">
+                    <span class="category-badge tech">{{ t('onboarding.category_tech') or 'Technical' }}</span>
+                    <p class="category-desc">{{ t('onboarding.category_tech_desc') or 'For engineers and data professionals' }}</p>
+                </div>
+                <div class="profile-grid">
+                    <div class="profile-card" data-profile="tech_ml_engineer" onclick="selectProfile(this)">
+                        <div class="profile-icon">
+                            <i data-lucide="cpu"></i>
+                        </div>
+                        <h4>{{ t('profiles.ml_engineer') or 'ML Engineer' }}</h4>
+                        <p>{{ t('onboarding.ml_engineer_desc') or 'Model performance, drift detection, reliability analysis' }}</p>
+                        <div class="profile-focus">
+                            <span class="tag">Drift</span>
+                            <span class="tag">Trust</span>
+                            <span class="tag">Performance</span>
+                        </div>
+                    </div>
+
+                    <div class="profile-card" data-profile="tech_devops" onclick="selectProfile(this)">
+                        <div class="profile-icon">
+                            <i data-lucide="server"></i>
+                        </div>
+                        <h4>{{ t('profiles.devops') or 'DevOps' }}</h4>
+                        <p>{{ t('onboarding.devops_desc') or 'Infrastructure health, SLOs, service topology' }}</p>
+                        <div class="profile-focus">
+                            <span class="tag">SLO</span>
+                            <span class="tag">Topology</span>
+                            <span class="tag">Alerts</span>
+                        </div>
+                    </div>
+
+                    <div class="profile-card" data-profile="tech_data_scientist" onclick="selectProfile(this)">
+                        <div class="profile-icon">
+                            <i data-lucide="bar-chart-2"></i>
+                        </div>
+                        <h4>{{ t('profiles.data_scientist') or 'Data Scientist' }}</h4>
+                        <p>{{ t('onboarding.data_scientist_desc') or 'Data quality, experiments, statistical insights' }}</p>
+                        <div class="profile-focus">
+                            <span class="tag">Data Quality</span>
+                            <span class="tag">Experiments</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Business Profiles -->
+            <div class="profile-category">
+                <div class="category-header">
+                    <span class="category-badge business">{{ t('onboarding.category_business') or 'Business' }}</span>
+                    <p class="category-desc">{{ t('onboarding.category_business_desc') or 'For executives and product leaders' }}</p>
+                </div>
+                <div class="profile-grid">
+                    <div class="profile-card" data-profile="business_executive" onclick="selectProfile(this)">
+                        <div class="profile-icon">
+                            <i data-lucide="briefcase"></i>
+                        </div>
+                        <h4>{{ t('profiles.executive') or 'Executive' }}</h4>
+                        <p>{{ t('onboarding.executive_desc') or 'High-level KPIs, business impact, strategic overview' }}</p>
+                        <div class="profile-focus">
+                            <span class="tag">KPIs</span>
+                            <span class="tag">ROI</span>
+                            <span class="tag">Impact</span>
+                        </div>
+                    </div>
+
+                    <div class="profile-card" data-profile="business_product" onclick="selectProfile(this)">
+                        <div class="profile-icon">
+                            <i data-lucide="package"></i>
+                        </div>
+                        <h4>{{ t('profiles.product_owner') or 'Product Owner' }}</h4>
+                        <p>{{ t('onboarding.product_owner_desc') or 'AI features, user impact, product metrics' }}</p>
+                        <div class="profile-focus">
+                            <span class="tag">Features</span>
+                            <span class="tag">UX Impact</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Specialist Profiles -->
+            <div class="profile-category">
+                <div class="category-header">
+                    <span class="category-badge specialist">{{ t('onboarding.category_specialist') or 'Specialist' }}</span>
+                    <p class="category-desc">{{ t('onboarding.category_specialist_desc') or 'For security, compliance and sustainability' }}</p>
+                </div>
+                <div class="profile-grid">
+                    <div class="profile-card" data-profile="security_soc" onclick="selectProfile(this)">
+                        <div class="profile-icon">
+                            <i data-lucide="shield-alert"></i>
+                        </div>
+                        <h4>{{ t('profiles.security') or 'Security Analyst' }}</h4>
+                        <p>{{ t('onboarding.security_desc') or 'Security posture, threats, incident management' }}</p>
+                        <div class="profile-focus">
+                            <span class="tag">Threats</span>
+                            <span class="tag">Incidents</span>
+                        </div>
+                    </div>
+
+                    <div class="profile-card" data-profile="compliance_legal" onclick="selectProfile(this)">
+                        <div class="profile-icon">
+                            <i data-lucide="check-square"></i>
+                        </div>
+                        <h4>{{ t('profiles.compliance') or 'Compliance Officer' }}</h4>
+                        <p>{{ t('onboarding.compliance_desc') or 'Regulatory compliance, audit trails, governance' }}</p>
+                        <div class="profile-focus">
+                            <span class="tag">Audit</span>
+                            <span class="tag">GDPR</span>
+                            <span class="tag">AI Act</span>
+                        </div>
+                    </div>
+
+                    <div class="profile-card" data-profile="sustainability_esg" onclick="selectProfile(this)">
+                        <div class="profile-icon">
+                            <i data-lucide="leaf"></i>
+                        </div>
+                        <h4>{{ t('profiles.esg') or 'ESG Manager' }}</h4>
+                        <p>{{ t('onboarding.esg_desc') or 'Carbon footprint, energy, sustainability metrics' }}</p>
+                        <div class="profile-focus">
+                            <span class="tag">Carbon</span>
+                            <span class="tag">Energy</span>
+                            <span class="tag">ESG</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <button class="btn btn-primary btn-lg" id="profileContinueBtn" disabled onclick="nextStep('tour')">
+            {{ t('onboarding.continue') or 'Continue' }}
+            <i data-lucide="arrow-right"></i>
+        </button>
+    </div>
+
+    <!-- Step 3: Quick Tour -->
+    <div class="onboarding-step" id="step-tour">
+        <div class="step-header">
+            <button class="btn btn-ghost" onclick="prevStep('profile')">
+                <i data-lucide="arrow-left"></i>
+                {{ t('actions.back') or 'Back' }}
+            </button>
+            <div class="step-indicator">
+                <span class="step-dot"></span>
+                <span class="step-dot"></span>
+                <span class="step-dot active"></span>
+            </div>
+        </div>
+
+        <h2>{{ t('onboarding.quick_tour') or 'Quick Tour' }}</h2>
+        <p class="step-desc" id="tourDesc">{{ t('onboarding.tour_desc') or 'Here is what you can do with AIOBS based on your role.' }}</p>
+
+        <!-- Tour content will be populated based on profile -->
+        <div class="tour-content" id="tourContent">
+            <!-- Dynamic content based on selected profile -->
+        </div>
+
+        <div class="tour-actions">
+            <button class="btn btn-secondary" onclick="skipTour()">
+                <i data-lucide="skip-forward"></i>
+                {{ t('onboarding.skip_tour') or 'Skip tour' }}
+            </button>
+            <button class="btn btn-primary btn-lg" onclick="startDashboard()">
+                {{ t('onboarding.start_dashboard') or 'Go to Dashboard' }}
+                <i data-lucide="arrow-right"></i>
+            </button>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script>
+let selectedProfile = null;
+
+// Tour content per profile
+const tourContent = {
+    tech_ml_engineer: {
+        title: '{{ t("onboarding.tour_ml_title") or "ML Engineer Dashboard" }}',
+        description: '{{ t("onboarding.tour_ml_desc") or "Your workspace for AI model observability" }}',
+        features: [
+            { icon: 'gauge', title: '{{ t("onboarding.tour_ml_1_title") or "Trust Score Monitoring" }}', desc: '{{ t("onboarding.tour_ml_1_desc") or "Track model reliability with real-time trust scores and confidence intervals" }}' },
+            { icon: 'activity', title: '{{ t("onboarding.tour_ml_2_title") or "Drift Detection" }}', desc: '{{ t("onboarding.tour_ml_2_desc") or "Detect data and concept drift before they impact your users" }}' },
+            { icon: 'git-branch', title: '{{ t("onboarding.tour_ml_3_title") or "Causal Analysis" }}', desc: '{{ t("onboarding.tour_ml_3_desc") or "Understand root causes with causal graphs and impact visualization" }}' },
+            { icon: 'brain', title: '{{ t("onboarding.tour_ml_4_title") or "Cognitive Metrics" }}', desc: '{{ t("onboarding.tour_ml_4_desc") or "Monitor hallucination risk, calibration, and uncertainty quantification" }}' }
+        ]
+    },
+    tech_devops: {
+        title: '{{ t("onboarding.tour_devops_title") or "DevOps Dashboard" }}',
+        description: '{{ t("onboarding.tour_devops_desc") or "Infrastructure and operational excellence" }}',
+        features: [
+            { icon: 'target', title: '{{ t("onboarding.tour_devops_1_title") or "SLO/SLI Monitoring" }}', desc: '{{ t("onboarding.tour_devops_1_desc") or "Track service level objectives with real-time compliance status" }}' },
+            { icon: 'share-2', title: '{{ t("onboarding.tour_devops_2_title") or "Service Topology" }}', desc: '{{ t("onboarding.tour_devops_2_desc") or "Visualize service dependencies and identify bottlenecks" }}' },
+            { icon: 'bell', title: '{{ t("onboarding.tour_devops_3_title") or "Intelligent Alerts" }}', desc: '{{ t("onboarding.tour_devops_3_desc") or "Get actionable alerts with root cause context" }}' },
+            { icon: 'activity', title: '{{ t("onboarding.tour_devops_4_title") or "Performance Trends" }}', desc: '{{ t("onboarding.tour_devops_4_desc") or "Monitor latency, throughput, and error rates" }}' }
+        ]
+    },
+    business_executive: {
+        title: '{{ t("onboarding.tour_exec_title") or "Executive Dashboard" }}',
+        description: '{{ t("onboarding.tour_exec_desc") or "Strategic overview of AI operations" }}',
+        features: [
+            { icon: 'trending-up', title: '{{ t("onboarding.tour_exec_1_title") or "Business Impact" }}', desc: '{{ t("onboarding.tour_exec_1_desc") or "See how AI performance affects business metrics" }}' },
+            { icon: 'dollar-sign', title: '{{ t("onboarding.tour_exec_2_title") or "Cost Overview" }}', desc: '{{ t("onboarding.tour_exec_2_desc") or "Track AI spending with clear cost breakdowns" }}' },
+            { icon: 'shield-check', title: '{{ t("onboarding.tour_exec_3_title") or "Trust & Compliance" }}', desc: '{{ t("onboarding.tour_exec_3_desc") or "One-glance view of system reliability and compliance" }}' },
+            { icon: 'bar-chart', title: '{{ t("onboarding.tour_exec_4_title") or "Key Metrics" }}', desc: '{{ t("onboarding.tour_exec_4_desc") or "Essential KPIs without technical complexity" }}' }
+        ]
+    },
+    business_product: {
+        title: '{{ t("onboarding.tour_product_title") or "Product Dashboard" }}',
+        description: '{{ t("onboarding.tour_product_desc") or "AI features and user experience" }}',
+        features: [
+            { icon: 'zap', title: '{{ t("onboarding.tour_product_1_title") or "Feature Performance" }}', desc: '{{ t("onboarding.tour_product_1_desc") or "Track how AI features perform in production" }}' },
+            { icon: 'users', title: '{{ t("onboarding.tour_product_2_title") or "User Impact" }}', desc: '{{ t("onboarding.tour_product_2_desc") or "Understand how AI affects user experience" }}' },
+            { icon: 'trending-up', title: '{{ t("onboarding.tour_product_3_title") or "Conversion Impact" }}', desc: '{{ t("onboarding.tour_product_3_desc") or "Measure AI contribution to business goals" }}' }
+        ]
+    },
+    security_soc: {
+        title: '{{ t("onboarding.tour_security_title") or "Security Dashboard" }}',
+        description: '{{ t("onboarding.tour_security_desc") or "AI security and threat management" }}',
+        features: [
+            { icon: 'shield', title: '{{ t("onboarding.tour_security_1_title") or "Security Posture" }}', desc: '{{ t("onboarding.tour_security_1_desc") or "Overall security health with actionable insights" }}' },
+            { icon: 'alert-triangle', title: '{{ t("onboarding.tour_security_2_title") or "Threat Detection" }}', desc: '{{ t("onboarding.tour_security_2_desc") or "Real-time threat timeline and incident tracking" }}' },
+            { icon: 'key', title: '{{ t("onboarding.tour_security_3_title") or "Access Monitoring" }}', desc: '{{ t("onboarding.tour_security_3_desc") or "Track and audit model access patterns" }}' }
+        ]
+    },
+    compliance_legal: {
+        title: '{{ t("onboarding.tour_compliance_title") or "Compliance Dashboard" }}',
+        description: '{{ t("onboarding.tour_compliance_desc") or "Governance and regulatory compliance" }}',
+        features: [
+            { icon: 'check-square', title: '{{ t("onboarding.tour_compliance_1_title") or "Compliance Status" }}', desc: '{{ t("onboarding.tour_compliance_1_desc") or "Track compliance across all regulations (GDPR, AI Act, etc.)" }}' },
+            { icon: 'clipboard', title: '{{ t("onboarding.tour_compliance_2_title") or "Audit Trail" }}', desc: '{{ t("onboarding.tour_compliance_2_desc") or "Complete audit history with evidence management" }}' },
+            { icon: 'file-text', title: '{{ t("onboarding.tour_compliance_3_title") or "Reports" }}', desc: '{{ t("onboarding.tour_compliance_3_desc") or "Generate compliance reports for stakeholders" }}' }
+        ]
+    },
+    sustainability_esg: {
+        title: '{{ t("onboarding.tour_esg_title") or "Sustainability Dashboard" }}',
+        description: '{{ t("onboarding.tour_esg_desc") or "Environmental impact of AI operations" }}',
+        features: [
+            { icon: 'cloud', title: '{{ t("onboarding.tour_esg_1_title") or "Carbon Tracking" }}', desc: '{{ t("onboarding.tour_esg_1_desc") or "Monitor carbon emissions from AI inference and training" }}' },
+            { icon: 'zap', title: '{{ t("onboarding.tour_esg_2_title") or "Energy Consumption" }}', desc: '{{ t("onboarding.tour_esg_2_desc") or "Track energy usage with green energy percentage" }}' },
+            { icon: 'lightbulb', title: '{{ t("onboarding.tour_esg_3_title") or "Recommendations" }}', desc: '{{ t("onboarding.tour_esg_3_desc") or "Get actionable tips to reduce environmental impact" }}' }
+        ]
+    },
+    tech_data_scientist: {
+        title: '{{ t("onboarding.tour_ds_title") or "Data Science Dashboard" }}',
+        description: '{{ t("onboarding.tour_ds_desc") or "Data quality and experimentation" }}',
+        features: [
+            { icon: 'database', title: '{{ t("onboarding.tour_ds_1_title") or "Data Quality" }}', desc: '{{ t("onboarding.tour_ds_1_desc") or "Monitor data quality metrics and anomalies" }}' },
+            { icon: 'flask', title: '{{ t("onboarding.tour_ds_2_title") or "Experiments" }}', desc: '{{ t("onboarding.tour_ds_2_desc") or "Track experiment results and A/B tests" }}' },
+            { icon: 'pie-chart', title: '{{ t("onboarding.tour_ds_3_title") or "Statistical Insights" }}', desc: '{{ t("onboarding.tour_ds_3_desc") or "Deep statistical analysis of model behavior" }}' }
+        ]
+    }
+};
+
+function nextStep(step) {
+    document.querySelectorAll('.onboarding-step').forEach(s => s.classList.remove('active'));
+    document.getElementById('step-' + step).classList.add('active');
+
+    if (step === 'tour' && selectedProfile) {
+        renderTourContent();
+    }
+
+    lucide.createIcons();
+}
+
+function prevStep(step) {
+    document.querySelectorAll('.onboarding-step').forEach(s => s.classList.remove('active'));
+    document.getElementById('step-' + step).classList.add('active');
+    lucide.createIcons();
+}
+
+function selectProfile(card) {
+    // Remove selection from all cards
+    document.querySelectorAll('.profile-card').forEach(c => c.classList.remove('selected'));
+
+    // Select this card
+    card.classList.add('selected');
+    selectedProfile = card.dataset.profile;
+
+    // Enable continue button
+    document.getElementById('profileContinueBtn').disabled = false;
+
+    // Store profile in localStorage
+    localStorage.setItem('aiobs-user-profile', selectedProfile);
+}
+
+function renderTourContent() {
+    const content = tourContent[selectedProfile];
+    if (!content) return;
+
+    const container = document.getElementById('tourContent');
+    container.innerHTML = `
+        <div class="tour-header">
+            <h3>${content.title}</h3>
+            <p>${content.description}</p>
+        </div>
+        <div class="tour-features">
+            ${content.features.map(f => `
+                <div class="tour-feature">
+                    <div class="tour-feature-icon">
+                        <i data-lucide="${f.icon}"></i>
+                    </div>
+                    <div class="tour-feature-content">
+                        <h4>${f.title}</h4>
+                        <p>${f.desc}</p>
+                    </div>
+                </div>
+            `).join('')}
+        </div>
+    `;
+    lucide.createIcons();
+}
+
+function skipTour() {
+    startDashboard();
+}
+
+function startDashboard() {
+    // Mark onboarding as complete
+    localStorage.setItem('aiobs-onboarding-complete', 'true');
+
+    // Redirect to profile-specific dashboard
+    if (selectedProfile) {
+        window.location.href = '/profile/' + selectedProfile;
+    } else {
+        window.location.href = '/';
+    }
+}
+
+// Check if onboarding is already complete
+document.addEventListener('DOMContentLoaded', () => {
+    const savedProfile = localStorage.getItem('aiobs-user-profile');
+    if (savedProfile) {
+        const card = document.querySelector(`[data-profile="${savedProfile}"]`);
+        if (card) {
+            selectProfile(card);
+        }
+    }
+    lucide.createIcons();
+});
+</script>
+{% endblock %}

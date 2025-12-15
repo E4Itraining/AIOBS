@@ -179,6 +179,98 @@
     <!-- Toast Container -->
     <div class="toast-container" id="toastContainer"></div>
 
+    <!-- Contextual Help Bubble -->
+    <div class="help-bubble" id="helpBubble">
+        <button class="help-trigger" onclick="toggleHelpPanel()" title="{{ t('help.title') or 'Help & Guide' }}">
+            <i data-lucide="help-circle"></i>
+        </button>
+        <div class="help-panel">
+            <div class="help-panel-header">
+                <h3>
+                    <i data-lucide="compass"></i>
+                    {{ t('help.title') or 'Help & Guide' }}
+                </h3>
+                <button class="help-panel-close" onclick="toggleHelpPanel()">
+                    <i data-lucide="x"></i>
+                </button>
+            </div>
+            <div class="help-panel-content" id="helpPanelContent">
+                <!-- Quick Actions -->
+                <div class="help-section">
+                    <div class="help-section-title">{{ t('help.quick_actions') or 'Quick Actions' }}</div>
+                    <div class="help-item" onclick="startGuidedTour()">
+                        <div class="help-item-icon">
+                            <i data-lucide="play-circle"></i>
+                        </div>
+                        <div class="help-item-content">
+                            <h4>{{ t('help.start_tour') or 'Start Guided Tour' }}</h4>
+                            <p>{{ t('help.start_tour_desc') or 'Learn the basics with an interactive walkthrough' }}</p>
+                        </div>
+                    </div>
+                    <div class="help-item" onclick="window.location.href='/onboarding'">
+                        <div class="help-item-icon">
+                            <i data-lucide="user-circle"></i>
+                        </div>
+                        <div class="help-item-content">
+                            <h4>{{ t('help.change_profile') or 'Change Profile' }}</h4>
+                            <p>{{ t('help.change_profile_desc') or 'Switch to a different user persona' }}</p>
+                        </div>
+                    </div>
+                </div>
+                <!-- Current Page Help -->
+                <div class="help-section" id="pageHelpSection">
+                    <div class="help-section-title">{{ t('help.this_page') or 'On This Page' }}</div>
+                    <div id="pageHelpContent">
+                        <!-- Dynamically populated based on current page -->
+                    </div>
+                </div>
+                <!-- Resources -->
+                <div class="help-section">
+                    <div class="help-section-title">{{ t('help.resources') or 'Resources' }}</div>
+                    <div class="help-item" onclick="showKeyboardShortcuts()">
+                        <div class="help-item-icon">
+                            <i data-lucide="keyboard"></i>
+                        </div>
+                        <div class="help-item-content">
+                            <h4>{{ t('help.keyboard_shortcuts') or 'Keyboard Shortcuts' }}</h4>
+                            <p>{{ t('help.keyboard_shortcuts_desc') or 'Speed up your workflow' }}</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Guided Tour Overlay -->
+    <div class="tour-overlay" id="tourOverlay">
+        <div class="tour-spotlight" id="tourSpotlight"></div>
+        <div class="tour-tooltip" id="tourTooltip">
+            <div class="tour-tooltip-arrow top"></div>
+            <div class="tour-tooltip-header">
+                <span class="tour-step-badge" id="tourStepBadge">1</span>
+                <h4 id="tourStepTitle">Welcome</h4>
+            </div>
+            <div class="tour-tooltip-body" id="tourStepBody">
+                This is your dashboard.
+            </div>
+            <div class="tour-tooltip-footer">
+                <span class="tour-progress" id="tourProgress">Step 1 of 5</span>
+                <div class="tour-nav">
+                    <button class="btn btn-ghost" id="tourPrevBtn" onclick="tourPrev()">
+                        <i data-lucide="chevron-left"></i>
+                    </button>
+                    <button class="btn btn-ghost" onclick="endTour()">
+                        {{ t('help.skip') or 'Skip' }}
+                    </button>
+                    <button class="btn btn-primary" id="tourNextBtn" onclick="tourNext()">
+                        {{ t('help.next') or 'Next' }}
+                        <i data-lucide="chevron-right"></i>
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
     <!-- Scripts -->
     <script src="/static/js/dashboard.js"></script>
     <script>
@@ -254,6 +346,213 @@
             const selector = document.getElementById('languageSelector');
             if (selector && !selector.contains(e.target)) {
                 selector.classList.remove('open');
+            }
+        });
+
+        // =============================================
+        // Help Panel & Guided Tour System
+        // =============================================
+
+        // Help Panel Toggle
+        function toggleHelpPanel() {
+            const helpBubble = document.getElementById('helpBubble');
+            helpBubble.classList.toggle('open');
+            if (helpBubble.classList.contains('open')) {
+                loadPageHelp();
+            }
+            lucide.createIcons();
+        }
+
+        // Load contextual help based on current page
+        function loadPageHelp() {
+            const path = window.location.pathname;
+            const pageHelpContent = document.getElementById('pageHelpContent');
+            const helpItems = getPageHelpItems(path);
+
+            pageHelpContent.innerHTML = helpItems.map(item => `
+                <div class="help-item" onclick="${item.action || ''}">
+                    <div class="help-item-icon">
+                        <i data-lucide="${item.icon}"></i>
+                    </div>
+                    <div class="help-item-content">
+                        <h4>${item.title}</h4>
+                        <p>${item.description}</p>
+                    </div>
+                </div>
+            `).join('');
+            lucide.createIcons();
+        }
+
+        // Get help items based on current page
+        function getPageHelpItems(path) {
+            const helpConfig = {
+                '/': [
+                    { icon: 'gauge', title: window.t('help.kpi_title') || 'KPI Overview', description: window.t('help.kpi_desc') || 'Key performance indicators for your AI systems' },
+                    { icon: 'activity', title: window.t('help.health_title') || 'System Health', description: window.t('help.health_desc') || 'Monitor the health status of all services' },
+                    { icon: 'alert-triangle', title: window.t('help.alerts_title') || 'Active Alerts', description: window.t('help.alerts_desc') || 'View and investigate current issues' }
+                ],
+                '/unified': [
+                    { icon: 'layers', title: window.t('help.unified_title') || 'Unified View', description: window.t('help.unified_desc') || 'Single pane of glass for all metrics' },
+                    { icon: 'filter', title: window.t('help.filter_title') || 'Filters', description: window.t('help.filter_desc') || 'Filter data by service, model, or time range' }
+                ],
+                '/causal': [
+                    { icon: 'git-branch', title: window.t('help.causal_title') || 'Causal Graph', description: window.t('help.causal_desc') || 'Visualize cause-effect relationships' },
+                    { icon: 'search', title: window.t('help.rca_title') || 'Root Cause Analysis', description: window.t('help.rca_desc') || 'Identify the source of issues' }
+                ],
+                '/executive': [
+                    { icon: 'briefcase', title: window.t('help.exec_title') || 'Executive Summary', description: window.t('help.exec_desc') || 'High-level KPIs and business impact' },
+                    { icon: 'trending-up', title: window.t('help.trends_title') || 'Trends', description: window.t('help.trends_desc') || 'Track improvements over time' }
+                ],
+                '/compliance': [
+                    { icon: 'shield-check', title: window.t('help.compliance_title') || 'Compliance Status', description: window.t('help.compliance_desc') || 'View regulatory compliance overview' },
+                    { icon: 'clipboard', title: window.t('help.audit_title') || 'Audit Trail', description: window.t('help.audit_desc') || 'Track all compliance-related activities' }
+                ],
+                '/greenops': [
+                    { icon: 'leaf', title: window.t('help.carbon_title') || 'Carbon Tracking', description: window.t('help.carbon_desc') || 'Monitor environmental impact' },
+                    { icon: 'lightbulb', title: window.t('help.recommendations_title') || 'Recommendations', description: window.t('help.recommendations_desc') || 'Get tips to reduce carbon footprint' }
+                ],
+                '/security': [
+                    { icon: 'shield', title: window.t('help.security_title') || 'Security Posture', description: window.t('help.security_desc') || 'Overall security health score' },
+                    { icon: 'alert-octagon', title: window.t('help.threats_title') || 'Threat Detection', description: window.t('help.threats_desc') || 'Monitor for security incidents' }
+                ]
+            };
+
+            return helpConfig[path] || helpConfig['/'];
+        }
+
+        // Guided Tour State
+        let tourState = {
+            active: false,
+            currentStep: 0,
+            steps: []
+        };
+
+        // Tour steps configuration per page
+        const tourConfigs = {
+            '/': [
+                { target: '.kpi-grid', title: window.t('tour.kpi_title') || 'Key Performance Indicators', body: window.t('tour.kpi_body') || 'These cards show your most important AI metrics at a glance: trust score, daily inferences, costs, and carbon footprint.' },
+                { target: '.sidebar-nav', title: window.t('tour.nav_title') || 'Navigation', body: window.t('tour.nav_body') || 'Use the sidebar to navigate between different views. Each view is optimized for specific use cases.' },
+                { target: '#profileSelector', title: window.t('tour.profile_title') || 'Profile Selection', body: window.t('tour.profile_body') || 'Switch between different user profiles to see dashboards tailored for your role.' },
+                { target: '#trustChart', title: window.t('tour.chart_title') || 'Trust Score Trend', body: window.t('tour.chart_body') || 'Track how your AI system\'s reliability evolves over time.' },
+                { target: '.help-trigger', title: window.t('tour.help_title') || 'Help & Guide', body: window.t('tour.help_body') || 'Click here anytime to get contextual help or restart this tour.' }
+            ],
+            '/causal': [
+                { target: '.card', title: window.t('tour.causal_graph_title') || 'Causal Graph', body: window.t('tour.causal_graph_body') || 'This visualization shows cause-effect relationships between events in your AI system.' },
+                { target: '.sidebar-nav', title: window.t('tour.analysis_title') || 'Analysis Tools', body: window.t('tour.analysis_body') || 'Use the navigation to access different analysis views.' }
+            ],
+            '/executive': [
+                { target: '.kpi-grid', title: window.t('tour.exec_kpi_title') || 'Business KPIs', body: window.t('tour.exec_kpi_body') || 'High-level metrics that matter for business decisions.' },
+                { target: '.chart-container', title: window.t('tour.exec_charts_title') || 'Visual Insights', body: window.t('tour.exec_charts_body') || 'Charts and graphs designed for quick understanding without technical details.' }
+            ]
+        };
+
+        // Start guided tour
+        function startGuidedTour() {
+            toggleHelpPanel(); // Close help panel
+            const path = window.location.pathname;
+            tourState.steps = tourConfigs[path] || tourConfigs['/'];
+            tourState.currentStep = 0;
+            tourState.active = true;
+            showTourStep();
+        }
+
+        // Show current tour step
+        function showTourStep() {
+            const overlay = document.getElementById('tourOverlay');
+            const tooltip = document.getElementById('tourTooltip');
+            const spotlight = document.getElementById('tourSpotlight');
+            const step = tourState.steps[tourState.currentStep];
+
+            if (!step) {
+                endTour();
+                return;
+            }
+
+            // Find target element
+            const target = document.querySelector(step.target);
+            if (!target) {
+                tourNext();
+                return;
+            }
+
+            // Show overlay
+            overlay.classList.add('active');
+
+            // Position spotlight
+            const rect = target.getBoundingClientRect();
+            spotlight.style.top = (rect.top - 8) + 'px';
+            spotlight.style.left = (rect.left - 8) + 'px';
+            spotlight.style.width = (rect.width + 16) + 'px';
+            spotlight.style.height = (rect.height + 16) + 'px';
+
+            // Update tooltip content
+            document.getElementById('tourStepBadge').textContent = tourState.currentStep + 1;
+            document.getElementById('tourStepTitle').textContent = step.title;
+            document.getElementById('tourStepBody').textContent = step.body;
+            document.getElementById('tourProgress').textContent = `Step ${tourState.currentStep + 1} of ${tourState.steps.length}`;
+
+            // Position tooltip
+            const tooltipTop = rect.bottom + 20;
+            const tooltipLeft = Math.max(16, Math.min(window.innerWidth - 336, rect.left));
+            tooltip.style.top = tooltipTop + 'px';
+            tooltip.style.left = tooltipLeft + 'px';
+
+            // Update nav buttons
+            document.getElementById('tourPrevBtn').style.visibility = tourState.currentStep > 0 ? 'visible' : 'hidden';
+            document.getElementById('tourNextBtn').textContent = tourState.currentStep === tourState.steps.length - 1 ? (window.t('tour.finish') || 'Finish') : (window.t('help.next') || 'Next');
+
+            lucide.createIcons();
+        }
+
+        // Next tour step
+        function tourNext() {
+            if (tourState.currentStep < tourState.steps.length - 1) {
+                tourState.currentStep++;
+                showTourStep();
+            } else {
+                endTour();
+            }
+        }
+
+        // Previous tour step
+        function tourPrev() {
+            if (tourState.currentStep > 0) {
+                tourState.currentStep--;
+                showTourStep();
+            }
+        }
+
+        // End tour
+        function endTour() {
+            tourState.active = false;
+            document.getElementById('tourOverlay').classList.remove('active');
+            localStorage.setItem('aiobs-tour-completed', 'true');
+        }
+
+        // Keyboard shortcuts
+        function showKeyboardShortcuts() {
+            showToast(window.t('help.shortcuts_coming') || 'Keyboard shortcuts: ? for help, G+D for dashboard, G+C for causal', 'info', 5000);
+        }
+
+        // Close help panel when clicking outside
+        document.addEventListener('click', (e) => {
+            const helpBubble = document.getElementById('helpBubble');
+            if (helpBubble && !helpBubble.contains(e.target)) {
+                helpBubble.classList.remove('open');
+            }
+        });
+
+        // Check for first visit - show onboarding
+        document.addEventListener('DOMContentLoaded', () => {
+            const onboardingComplete = localStorage.getItem('aiobs-onboarding-complete');
+            const tourCompleted = localStorage.getItem('aiobs-tour-completed');
+
+            // Redirect to onboarding if first visit (not on onboarding page)
+            if (!onboardingComplete && window.location.pathname !== '/onboarding') {
+                // Show subtle prompt instead of redirect
+                setTimeout(() => {
+                    showToast(window.t('onboarding.prompt') || 'New here? Click the help button to get started!', 'info', 8000);
+                }, 2000);
             }
         });
 
