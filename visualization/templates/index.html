@@ -25,21 +25,39 @@
     </button>
     <div class="narrative-header">
         <div class="narrative-icon">
-            <i data-lucide="shield-check"></i>
+            <i data-lucide="eye"></i>
         </div>
         <div class="narrative-content">
-            <h2>{{ t('narrative.dashboard_title') or 'Welcome to your AI Trust Control Center' }}</h2>
-            <p>{{ t('narrative.dashboard_desc') or 'This dashboard provides a unified view of your AI systems\' health, performance, and reliability. Monitor trust scores, track costs, and ensure compliance - all in one place.' }}</p>
+            <h2>{{ t('narrative.dashboard_title') or 'Bienvenue dans votre Centre de Contrôle IA' }}</h2>
+            <p>{{ t('narrative.dashboard_desc') or 'GASKIA vous offre une vision unifiée de vos systèmes IA : fiabilité, performance, coûts et conformité. Voir. Prouver. Maîtriser.' }}</p>
+        </div>
+    </div>
+    <div class="narrative-features">
+        <div class="narrative-feature">
+            <i data-lucide="shield-check"></i>
+            <span>Score de Confiance</span>
+        </div>
+        <div class="narrative-feature">
+            <i data-lucide="activity"></i>
+            <span>Monitoring Live</span>
+        </div>
+        <div class="narrative-feature">
+            <i data-lucide="git-branch"></i>
+            <span>Analyse Causale</span>
+        </div>
+        <div class="narrative-feature">
+            <i data-lucide="shield"></i>
+            <span>Conformité IA</span>
         </div>
     </div>
     <div class="narrative-actions">
         <button class="btn btn-primary" onclick="startGuidedTour()">
             <i data-lucide="play-circle"></i>
-            {{ t('help.start_tour') or 'Take a Quick Tour' }}
+            {{ t('help.start_tour') or 'Découvrir en 2 minutes' }}
         </button>
         <a href="/personas" class="btn btn-secondary">
-            <i data-lucide="users"></i>
-            {{ t('help.change_profile') or 'Choisir votre Parcours' }}
+            <i data-lucide="compass"></i>
+            {{ t('help.change_profile') or 'Choisir mon Parcours' }}
         </a>
     </div>
 </div>
@@ -47,20 +65,41 @@
 <!-- Quick Tips for New Users -->
 <div class="quick-tips" id="quickTips">
     <div class="quick-tips-header">
-        <i data-lucide="lightbulb"></i>
-        {{ t('help.quick_tips') or 'Quick Tips' }}
+        <i data-lucide="sparkles"></i>
+        {{ t('help.quick_tips') or 'Astuces Rapides' }}
+        <button class="quick-tips-dismiss" onclick="dismissTips()" title="Fermer">
+            <i data-lucide="x"></i>
+        </button>
     </div>
-    <div class="quick-tip">
-        <span class="quick-tip-number">1</span>
-        <span>{{ t('help.tip_1') or 'Click on any KPI card to see detailed metrics and trends' }}</span>
-    </div>
-    <div class="quick-tip">
-        <span class="quick-tip-number">2</span>
-        <span>{{ t('help.tip_2') or 'Use the sidebar to navigate between different specialized views' }}</span>
-    </div>
-    <div class="quick-tip">
-        <span class="quick-tip-number">3</span>
-        <span>{{ t('help.tip_3') or 'Click "Investigate" on any issue to see root cause analysis' }}</span>
+    <div class="quick-tips-grid">
+        <div class="quick-tip">
+            <div class="quick-tip-icon"><i data-lucide="mouse-pointer-click"></i></div>
+            <div class="quick-tip-content">
+                <strong>{{ t('help.tip_1_title') or 'KPIs Interactifs' }}</strong>
+                <span>{{ t('help.tip_1') or 'Cliquez sur une carte KPI pour voir les détails et tendances' }}</span>
+            </div>
+        </div>
+        <div class="quick-tip">
+            <div class="quick-tip-icon"><i data-lucide="command"></i></div>
+            <div class="quick-tip-content">
+                <strong>{{ t('help.tip_2_title') or 'Navigation Rapide' }}</strong>
+                <span>{{ t('help.tip_2') or 'Utilisez ⌘K pour accéder instantanément à n\'importe quelle page' }}</span>
+            </div>
+        </div>
+        <div class="quick-tip">
+            <div class="quick-tip-icon"><i data-lucide="search"></i></div>
+            <div class="quick-tip-content">
+                <strong>{{ t('help.tip_3_title') or 'Analyse Causale' }}</strong>
+                <span>{{ t('help.tip_3') or 'Cliquez "Investiguer" sur un problème pour voir l\'analyse root cause' }}</span>
+            </div>
+        </div>
+        <div class="quick-tip">
+            <div class="quick-tip-icon"><i data-lucide="message-circle"></i></div>
+            <div class="quick-tip-content">
+                <strong>{{ t('help.tip_4_title') or 'Assistant IA' }}</strong>
+                <span>{{ t('help.tip_4') or 'Posez vos questions à l\'assistant en bas à droite' }}</span>
+            </div>
+        </div>
     </div>
 </div>
 
@@ -243,15 +282,120 @@
 let trustChart = null;
 let sloChart = null;
 
+// Dashboard real-time updater instance
+let dashboardUpdater = null;
+
 document.addEventListener('DOMContentLoaded', async () => {
-    await Promise.all([
+    // Initialize loading states
+    showLoadingStates();
+
+    // Load initial data with proper error handling
+    const loadResults = await Promise.allSettled([
         loadProfiles(),
         loadDashboardData(),
         loadServices()
     ]);
+
+    // Check for failures and show appropriate messages
+    loadResults.forEach((result, index) => {
+        if (result.status === 'rejected') {
+            const names = ['profiles', 'dashboard', 'services'];
+            console.error(`Failed to load ${names[index]}:`, result.reason);
+        }
+    });
+
     initCharts();
     lucide.createIcons();
+
+    // Set up real-time updates
+    setupRealtimeUpdates();
 });
+
+// Show loading indicators
+function showLoadingStates() {
+    ['trustScore', 'inferences', 'dailyCost', 'carbonKg'].forEach(id => {
+        const el = document.getElementById(id);
+        if (el) {
+            el.innerHTML = '<span class="skeleton" style="display: inline-block; width: 60px; height: 24px;"></span>';
+        }
+    });
+}
+
+// Set up real-time updates for dashboard
+function setupRealtimeUpdates() {
+    dashboardUpdater = new window.aiobs.RealtimeUpdater({
+        interval: 30000, // 30 seconds default
+        maxErrors: 5,
+        onStatusChange: (status) => {
+            updateConnectionStatus(status);
+        }
+    });
+
+    // Subscribe to dashboard overview updates
+    dashboardUpdater.subscribe('dashboard', '/api/dashboard/overview', (data) => {
+        if (data && data.key_metrics) {
+            updateKPI('trustScore', (data.key_metrics.avg_trust_score * 100).toFixed(0) + '%');
+            updateKPI('inferences', formatNumber(data.key_metrics.total_daily_inferences));
+            updateKPI('dailyCost', '$' + data.key_metrics.total_daily_cost.toFixed(0));
+            updateKPI('carbonKg', data.key_metrics.total_daily_carbon_kg.toFixed(1) + ' kg');
+
+            if (data.health) {
+                document.getElementById('healthyCount').textContent = data.health.healthy;
+                document.getElementById('degradedCount').textContent = data.health.degraded;
+                document.getElementById('unhealthyCount').textContent = data.health.unhealthy;
+            }
+
+            if (data.alerts) {
+                document.getElementById('criticalAlerts').textContent = data.alerts.critical;
+                document.getElementById('warningAlerts').textContent = data.alerts.warning;
+                document.getElementById('infoAlerts').textContent = data.alerts.info;
+            }
+
+            if (data.trends) {
+                updateTrend('trustTrend', data.trends.trust);
+                updateTrend('costTrend', data.trends.cost);
+                updateTrend('carbonTrend', data.trends.carbon);
+            }
+
+            if (data.top_issues) {
+                updateTopIssues(data.top_issues);
+            }
+        }
+    }, {
+        interval: 30000,
+        immediate: false, // Already loaded initially
+        onError: (error, count) => {
+            if (count >= 3) {
+                showToast(t('errors.connection') || 'Connexion interrompue. Réessai en cours...', 'warning');
+            }
+        }
+    });
+
+    // Subscribe to services updates (less frequent)
+    dashboardUpdater.subscribe('services', '/api/dashboard/services', (data) => {
+        if (data) {
+            renderServicesTable(data);
+        }
+    }, {
+        interval: 60000, // 1 minute
+        immediate: false
+    });
+
+    // Pause updates when page is hidden
+    document.addEventListener('visibilitychange', () => {
+        if (document.hidden) {
+            dashboardUpdater.pause();
+        } else {
+            dashboardUpdater.resume();
+        }
+    });
+}
+
+// Update connection status indicator
+function updateConnectionStatus(status) {
+    // Could add a visual indicator here if desired
+    console.log('Connection status:', status);
+}
 
 // Load profiles
 async function loadProfiles() {

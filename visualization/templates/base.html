@@ -76,68 +76,72 @@
             </div>
 
             <nav class="sidebar-nav">
-                <!-- Home & Getting Started -->
+                <!-- Accueil & Démarrage -->
                 <div class="nav-group">
-                    <span class="nav-group-title">{{ t('nav.getting_started') or 'Getting Started' }}</span>
+                    <span class="nav-group-title">{{ t('nav.getting_started') or 'Démarrage' }}</span>
                     <a href="/" class="nav-link {% if active_page == 'dashboard' %}active{% endif %}">
                         <i data-lucide="home"></i>
-                        <span>{{ t('nav.home') or 'Home' }}</span>
+                        <span>{{ t('nav.home') or 'Tableau de Bord' }}</span>
                     </a>
                     <a href="/personas" class="nav-link {% if active_page == 'personas' %}active{% endif %}">
-                        <i data-lucide="users"></i>
-                        <span>{{ t('nav.personas') or 'Parcours & Personas' }}</span>
+                        <i data-lucide="compass"></i>
+                        <span>{{ t('nav.personas') or 'Choisir un Parcours' }}</span>
                     </a>
                 </div>
 
+                <!-- Vues Principales -->
                 <div class="nav-group">
-                    <span class="nav-group-title">{{ t('nav.overview') }}</span>
+                    <span class="nav-group-title">{{ t('nav.overview') or 'Vues Principales' }}</span>
                     <a href="/unified" class="nav-link {% if active_page == 'unified' %}active{% endif %}">
-                        <i data-lucide="layers"></i>
-                        <span>{{ t('nav.unified_view') }}</span>
+                        <i data-lucide="layout-dashboard"></i>
+                        <span>{{ t('nav.unified_view') or 'Vue Unifiée' }}</span>
                     </a>
                     <a href="/executive" class="nav-link {% if active_page == 'executive' %}active{% endif %}">
                         <i data-lucide="briefcase"></i>
-                        <span>{{ t('nav.executive_view') or 'Executive View' }}</span>
+                        <span>{{ t('nav.executive_view') or 'Vue Executive' }}</span>
                     </a>
                 </div>
 
+                <!-- Analyse & Intelligence -->
                 <div class="nav-group">
-                    <span class="nav-group-title">{{ t('nav.analysis') }}</span>
+                    <span class="nav-group-title">{{ t('nav.analysis') or 'Analyse & Intelligence' }}</span>
                     <a href="/causal" class="nav-link {% if active_page == 'causal' %}active{% endif %}">
                         <i data-lucide="git-branch"></i>
-                        <span>{{ t('nav.causal_analysis') }}</span>
+                        <span>{{ t('nav.causal_analysis') or 'Analyse Causale' }}</span>
                     </a>
                     <a href="/impact" class="nav-link {% if active_page == 'impact' %}active{% endif %}">
                         <i data-lucide="trending-up"></i>
-                        <span>{{ t('nav.impact_analysis') }}</span>
+                        <span>{{ t('nav.impact_analysis') or 'Analyse d\'Impact' }}</span>
                     </a>
                 </div>
 
+                <!-- Opérations -->
                 <div class="nav-group">
-                    <span class="nav-group-title">Operations</span>
+                    <span class="nav-group-title">{{ t('nav.operations') or 'Opérations' }}</span>
                     <a href="/monitoring" class="nav-link {% if active_page == 'monitoring' %}active{% endif %}">
                         <i data-lucide="activity"></i>
-                        <span>Live Monitoring</span>
+                        <span>{{ t('nav.monitoring') or 'Monitoring Live' }}</span>
                     </a>
                     <a href="/finops" class="nav-link {% if active_page == 'finops' %}active{% endif %}">
-                        <i data-lucide="wallet"></i>
-                        <span>FinOps</span>
+                        <i data-lucide="coins"></i>
+                        <span>{{ t('nav.finops') or 'Coûts & FinOps' }}</span>
                     </a>
                     <a href="/greenops" class="nav-link {% if active_page == 'greenops' %}active{% endif %}">
                         <i data-lucide="leaf"></i>
-                        <span>GreenOps</span>
+                        <span>{{ t('nav.greenops') or 'Impact Carbone' }}</span>
                     </a>
                 </div>
 
+                <!-- Gouvernance & Conformité -->
                 <div class="nav-group">
-                    <span class="nav-group-title">Governance</span>
+                    <span class="nav-group-title">{{ t('nav.governance') or 'Gouvernance' }}</span>
                     <a href="/compliance" class="nav-link {% if active_page == 'compliance' %}active{% endif %}">
                         <i data-lucide="shield-check"></i>
-                        <span>Compliance</span>
+                        <span>{{ t('nav.compliance') or 'Conformité IA' }}</span>
                     </a>
                     <a href="/security" class="nav-link {% if active_page == 'security' %}active{% endif %}">
                         <i data-lucide="lock"></i>
-                        <span>Security Center</span>
+                        <span>{{ t('nav.security') or 'Centre Sécurité' }}</span>
                     </a>
                 </div>
 
