@@ -139,12 +139,76 @@ async def index(request: Request):
 async def profile_dashboard(request: Request, profile_id: str):
     """Profile-specific dashboard"""
     i18n = create_i18n_context(request)
+
+    # Profile metadata for enhanced dashboard
+    PROFILE_META = {
+        "tech_ml_engineer": {
+            "name": "ML Engineer",
+            "description": "Drift detection, cognitive metrics, reliability analysis et performance ML",
+            "color": "#6366f1",
+            "icon": "brain"
+        },
+        "tech_devops": {
+            "name": "DevOps Engineer",
+            "description": "SLOs/SLIs, latences, uptime et monitoring infrastructure",
+            "color": "#3b82f6",
+            "icon": "server"
+        },
+        "tech_data_scientist": {
+            "name": "Data Scientist",
+            "description": "Data quality, feature analysis, experiments et statistiques",
+            "color": "#8b5cf6",
+            "icon": "database"
+        },
+        "business_product": {
+            "name": "Product Owner",
+            "description": "AI features, user experience, adoption et impact business",
+            "color": "#f59e0b",
+            "icon": "zap"
+        },
+        "business_executive": {
+            "name": "Executive",
+            "description": "KPIs stratégiques, ROI, conformité et vue d'ensemble",
+            "color": "#10b981",
+            "icon": "briefcase"
+        },
+        "security_soc": {
+            "name": "Security Analyst",
+            "description": "Posture sécurité, menaces, incidents et vulnérabilités",
+            "color": "#ef4444",
+            "icon": "shield-alert"
+        },
+        "compliance_legal": {
+            "name": "Compliance Officer",
+            "description": "Conformité réglementaire, audit trail et documentation",
+            "color": "#f59e0b",
+            "icon": "scale"
+        },
+        "sustainability_esg": {
+            "name": "ESG Manager",
+            "description": "Empreinte carbone, consommation énergétique et reporting ESG",
+            "color": "#059669",
+            "icon": "leaf"
+        }
+    }
+
+    meta = PROFILE_META.get(profile_id, {
+        "name": profile_id.replace("_", " ").title(),
+        "description": "Tableau de bord personnalisé",
+        "color": "#6366f1",
+        "icon": "layout-dashboard"
+    })
+
     return templates.TemplateResponse(
         "dashboard.html",
         {
             "request": request,
-            "title": APP_TITLE,
+            "title": f"{meta['name']} | {APP_TITLE}",
             "profile_id": profile_id,
+            "profile_name": meta["name"],
+            "profile_description": meta["description"],
+            "profile_color": meta["color"],
+            "profile_icon": meta["icon"],
             **i18n
         }
     )
