@@ -1,0 +1,851 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="juridique-dashboard page-transition-enter">
+    <!-- Hero Section -->
+    <div class="dashboard-hero">
+        <div class="hero-content">
+            <div class="hero-badge" style="background: linear-gradient(135deg, #f59e0b, #d97706);">
+                <i data-lucide="gavel"></i>
+                <span>Juridique / Conformité</span>
+            </div>
+            <h1>Conformité IA & Réglementation</h1>
+            <p class="hero-subtitle">
+                EU AI Act, RGPD, audit trail et documentation réglementaire. Pilotez votre conformité IA en temps réel.
+            </p>
+        </div>
+        <div class="hero-actions">
+            <a href="/global" class="btn btn-outline">
+                <i data-lucide="globe"></i>
+                <span>Vue Globale</span>
+            </a>
+            <button class="btn btn-primary" onclick="generateComplianceReport()">
+                <i data-lucide="file-text"></i>
+                <span>Rapport Conformité</span>
+            </button>
+        </div>
+    </div>
+
+    <!-- Compliance Score Overview -->
+    <div class="compliance-hero-grid">
+        <div class="compliance-score-card">
+            <div class="score-ring" id="mainComplianceRing"></div>
+            <div class="score-content">
+                <span class="score-value">92%</span>
+                <span class="score-label">Conformité Globale</span>
+                <div class="score-trend trend-up">
+                    <i data-lucide="trending-up"></i>
+                    +5% ce mois
+                </div>
+            </div>
+        </div>
+
+        <div class="regulation-cards">
+            <div class="regulation-card eu-ai-act">
+                <div class="reg-header">
+                    <span class="reg-flag">🇪🇺</span>
+                    <h3>EU AI Act</h3>
+                    <span class="reg-badge in-progress">En cours</span>
+                </div>
+                <div class="reg-score">
+                    <span class="reg-score-value">92%</span>
+                    <div class="reg-progress-bar">
+                        <div class="reg-progress" style="width: 92%;"></div>
+                    </div>
+                </div>
+                <div class="reg-details">
+                    <span class="reg-detail"><i data-lucide="check-circle"></i> 18 exigences validées</span>
+                    <span class="reg-detail"><i data-lucide="clock"></i> 2 en cours</span>
+                </div>
+            </div>
+
+            <div class="regulation-card rgpd">
+                <div class="reg-header">
+                    <span class="reg-flag">🔒</span>
+                    <h3>RGPD</h3>
+                    <span class="reg-badge compliant">Conforme</span>
+                </div>
+                <div class="reg-score">
+                    <span class="reg-score-value">98%</span>
+                    <div class="reg-progress-bar">
+                        <div class="reg-progress" style="width: 98%;"></div>
+                    </div>
+                </div>
+                <div class="reg-details">
+                    <span class="reg-detail"><i data-lucide="check-circle"></i> Toutes exigences validées</span>
+                </div>
+            </div>
+
+            <div class="regulation-card nist">
+                <div class="reg-header">
+                    <span class="reg-flag">🛡️</span>
+                    <h3>NIST AI RMF</h3>
+                    <span class="reg-badge in-progress">En cours</span>
+                </div>
+                <div class="reg-score">
+                    <span class="reg-score-value">78%</span>
+                    <div class="reg-progress-bar">
+                        <div class="reg-progress" style="width: 78%;"></div>
+                    </div>
+                </div>
+                <div class="reg-details">
+                    <span class="reg-detail"><i data-lucide="clock"></i> 5 actions en cours</span>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- EU AI Act Focus Section -->
+    <div class="section-header">
+        <h2>
+            <span class="section-flag">🇪🇺</span>
+            Conformité EU AI Act
+        </h2>
+        <p>État détaillé de conformité selon les exigences du règlement européen sur l'IA</p>
+    </div>
+
+    <div class="ai-act-grid">
+        <!-- Risk Classification -->
+        <div class="card card-lg">
+            <div class="card-header">
+                <h3>
+                    <i data-lucide="layers"></i>
+                    Classification des Risques
+                </h3>
+            </div>
+            <div class="card-body">
+                <div class="risk-classification">
+                    <div class="risk-level high-risk">
+                        <div class="risk-level-header">
+                            <i data-lucide="alert-triangle"></i>
+                            <span class="risk-level-name">Haut Risque</span>
+                            <span class="risk-count">3 systèmes</span>
+                        </div>
+                        <div class="risk-systems">
+                            <div class="risk-system">
+                                <span class="system-name">Scoring Crédit</span>
+                                <span class="system-status compliant">Conforme</span>
+                            </div>
+                            <div class="risk-system">
+                                <span class="system-name">KYC Automation</span>
+                                <span class="system-status in-progress">En cours</span>
+                            </div>
+                            <div class="risk-system">
+                                <span class="system-name">Fraud Detection</span>
+                                <span class="system-status compliant">Conforme</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="risk-level limited-risk">
+                        <div class="risk-level-header">
+                            <i data-lucide="info"></i>
+                            <span class="risk-level-name">Risque Limité</span>
+                            <span class="risk-count">8 systèmes</span>
+                        </div>
+                        <div class="risk-systems">
+                            <div class="risk-system">
+                                <span class="system-name">Chatbot Client</span>
+                                <span class="system-status compliant">Conforme</span>
+                            </div>
+                            <div class="risk-system">
+                                <span class="system-name">Recommendation Engine</span>
+                                <span class="system-status compliant">Conforme</span>
+                            </div>
+                            <div class="risk-system">
+                                <span class="system-name">+ 6 autres</span>
+                                <span class="system-status compliant">Conforme</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="risk-level minimal-risk">
+                        <div class="risk-level-header">
+                            <i data-lucide="check-circle"></i>
+                            <span class="risk-level-name">Risque Minimal</span>
+                            <span class="risk-count">13 systèmes</span>
+                        </div>
+                        <p class="risk-note">Aucune obligation spécifique - bonnes pratiques appliquées</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Requirements Checklist -->
+        <div class="card card-lg">
+            <div class="card-header">
+                <h3>
+                    <i data-lucide="clipboard-check"></i>
+                    Exigences AI Act (Article 9-15)
+                </h3>
+            </div>
+            <div class="card-body">
+                <div class="requirements-list">
+                    <div class="requirement-item status-passed">
+                        <div class="req-status"><i data-lucide="check-circle"></i></div>
+                        <div class="req-content">
+                            <h4>Art. 9 - Gestion des risques</h4>
+                            <p>Système de gestion des risques établi et maintenu</p>
+                        </div>
+                        <div class="req-actions">
+                            <a href="#" class="btn btn-ghost btn-sm">Documentation</a>
+                        </div>
+                    </div>
+
+                    <div class="requirement-item status-passed">
+                        <div class="req-status"><i data-lucide="check-circle"></i></div>
+                        <div class="req-content">
+                            <h4>Art. 10 - Données & gouvernance</h4>
+                            <p>Qualité des données d'entraînement vérifiée</p>
+                        </div>
+                        <div class="req-actions">
+                            <a href="#" class="btn btn-ghost btn-sm">Documentation</a>
+                        </div>
+                    </div>
+
+                    <div class="requirement-item status-in-progress">
+                        <div class="req-status"><i data-lucide="clock"></i></div>
+                        <div class="req-content">
+                            <h4>Art. 11 - Documentation technique</h4>
+                            <p>Documentation en cours de finalisation (85%)</p>
+                        </div>
+                        <div class="req-actions">
+                            <span class="req-deadline">Échéance: 15 Jan</span>
+                        </div>
+                    </div>
+
+                    <div class="requirement-item status-passed">
+                        <div class="req-status"><i data-lucide="check-circle"></i></div>
+                        <div class="req-content">
+                            <h4>Art. 12 - Tenue des registres</h4>
+                            <p>Logs automatiques et audit trail en place</p>
+                        </div>
+                        <div class="req-actions">
+                            <a href="#" class="btn btn-ghost btn-sm">Voir logs</a>
+                        </div>
+                    </div>
+
+                    <div class="requirement-item status-passed">
+                        <div class="req-status"><i data-lucide="check-circle"></i></div>
+                        <div class="req-content">
+                            <h4>Art. 13 - Transparence</h4>
+                            <p>Informations utilisateurs et explicabilité</p>
+                        </div>
+                        <div class="req-actions">
+                            <a href="#" class="btn btn-ghost btn-sm">Documentation</a>
+                        </div>
+                    </div>
+
+                    <div class="requirement-item status-in-progress">
+                        <div class="req-status"><i data-lucide="clock"></i></div>
+                        <div class="req-content">
+                            <h4>Art. 14 - Contrôle humain</h4>
+                            <p>Interface de supervision en cours de déploiement</p>
+                        </div>
+                        <div class="req-actions">
+                            <span class="req-deadline">Échéance: 30 Jan</span>
+                        </div>
+                    </div>
+
+                    <div class="requirement-item status-passed">
+                        <div class="req-status"><i data-lucide="check-circle"></i></div>
+                        <div class="req-content">
+                            <h4>Art. 15 - Précision & robustesse</h4>
+                            <p>Tests de robustesse et précision validés</p>
+                        </div>
+                        <div class="req-actions">
+                            <a href="#" class="btn btn-ghost btn-sm">Rapports</a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Audit Trail -->
+        <div class="card">
+            <div class="card-header">
+                <h3>
+                    <i data-lucide="scroll-text"></i>
+                    Audit Trail
+                </h3>
+                <a href="#" class="btn btn-ghost btn-sm">
+                    Export
+                    <i data-lucide="download"></i>
+                </a>
+            </div>
+            <div class="card-body">
+                <div class="audit-timeline">
+                    <div class="audit-entry">
+                        <div class="audit-time">Aujourd'hui 14:32</div>
+                        <div class="audit-event">
+                            <span class="audit-icon update"><i data-lucide="refresh-cw"></i></span>
+                            <span class="audit-text">Mise à jour documentation technique</span>
+                        </div>
+                    </div>
+                    <div class="audit-entry">
+                        <div class="audit-time">Aujourd'hui 09:15</div>
+                        <div class="audit-event">
+                            <span class="audit-icon review"><i data-lucide="eye"></i></span>
+                            <span class="audit-text">Revue conformité Art. 11 - DPO</span>
+                        </div>
+                    </div>
+                    <div class="audit-entry">
+                        <div class="audit-time">Hier 16:48</div>
+                        <div class="audit-event">
+                            <span class="audit-icon deploy"><i data-lucide="upload"></i></span>
+                            <span class="audit-text">Déploiement scoring-v2.3 - Impact évalué</span>
+                        </div>
+                    </div>
+                    <div class="audit-entry">
+                        <div class="audit-time">Hier 11:20</div>
+                        <div class="audit-event">
+                            <span class="audit-icon validation"><i data-lucide="check"></i></span>
+                            <span class="audit-text">Validation AIPD - Fraud Detection</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- AIPD (DPIA) Status -->
+        <div class="card">
+            <div class="card-header">
+                <h3>
+                    <i data-lucide="file-search"></i>
+                    AIPD / Études d'Impact
+                </h3>
+            </div>
+            <div class="card-body">
+                <div class="aipd-list">
+                    <div class="aipd-item status-complete">
+                        <div class="aipd-info">
+                            <h4>Scoring Crédit v2</h4>
+                            <span class="aipd-date">Validée le 15 Nov 2024</span>
+                        </div>
+                        <span class="aipd-status">Validée</span>
+                    </div>
+                    <div class="aipd-item status-complete">
+                        <div class="aipd-info">
+                            <h4>Fraud Detection</h4>
+                            <span class="aipd-date">Validée le 10 Nov 2024</span>
+                        </div>
+                        <span class="aipd-status">Validée</span>
+                    </div>
+                    <div class="aipd-item status-pending">
+                        <div class="aipd-info">
+                            <h4>KYC Automation v3</h4>
+                            <span class="aipd-date">En cours de révision</span>
+                        </div>
+                        <span class="aipd-status">En cours</span>
+                    </div>
+                    <div class="aipd-item status-scheduled">
+                        <div class="aipd-info">
+                            <h4>Chatbot LLM</h4>
+                            <span class="aipd-date">Programmée: Jan 2025</span>
+                        </div>
+                        <span class="aipd-status">Planifiée</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Upcoming Actions -->
+        <div class="card">
+            <div class="card-header">
+                <h3>
+                    <i data-lucide="calendar"></i>
+                    Échéances & Actions
+                </h3>
+            </div>
+            <div class="card-body">
+                <div class="actions-timeline">
+                    <div class="action-item urgent">
+                        <div class="action-date">
+                            <span class="action-day">15</span>
+                            <span class="action-month">Jan</span>
+                        </div>
+                        <div class="action-content">
+                            <h4>Finalisation documentation Art. 11</h4>
+                            <span class="action-owner">Responsable: J. Dupont</span>
+                        </div>
+                    </div>
+                    <div class="action-item upcoming">
+                        <div class="action-date">
+                            <span class="action-day">30</span>
+                            <span class="action-month">Jan</span>
+                        </div>
+                        <div class="action-content">
+                            <h4>Déploiement interface supervision</h4>
+                            <span class="action-owner">Responsable: Tech Team</span>
+                        </div>
+                    </div>
+                    <div class="action-item upcoming">
+                        <div class="action-date">
+                            <span class="action-day">15</span>
+                            <span class="action-month">Fév</span>
+                        </div>
+                        <div class="action-content">
+                            <h4>Audit externe conformité EU AI Act</h4>
+                            <span class="action-owner">Auditeur: Deloitte</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Documentation -->
+        <div class="card">
+            <div class="card-header">
+                <h3>
+                    <i data-lucide="folder-open"></i>
+                    Documentation Légale
+                </h3>
+            </div>
+            <div class="card-body">
+                <div class="doc-list">
+                    <a href="#" class="doc-item">
+                        <i data-lucide="file-text"></i>
+                        <span>Registre des systèmes IA</span>
+                        <i data-lucide="download" class="doc-action"></i>
+                    </a>
+                    <a href="#" class="doc-item">
+                        <i data-lucide="file-text"></i>
+                        <span>Documentation technique</span>
+                        <i data-lucide="download" class="doc-action"></i>
+                    </a>
+                    <a href="#" class="doc-item">
+                        <i data-lucide="file-text"></i>
+                        <span>AIPD consolidées</span>
+                        <i data-lucide="download" class="doc-action"></i>
+                    </a>
+                    <a href="#" class="doc-item">
+                        <i data-lucide="file-text"></i>
+                        <span>Politique de transparence IA</span>
+                        <i data-lucide="download" class="doc-action"></i>
+                    </a>
+                    <a href="#" class="doc-item">
+                        <i data-lucide="file-text"></i>
+                        <span>Procédures de contrôle humain</span>
+                        <i data-lucide="download" class="doc-action"></i>
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<style>
+/* Juridique Dashboard Styles */
+.juridique-dashboard {
+    padding: var(--space-6);
+    max-width: 1600px;
+    margin: 0 auto;
+}
+
+.dashboard-hero {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: var(--space-6) 0;
+    margin-bottom: var(--space-6);
+}
+
+.hero-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: var(--space-2);
+    padding: var(--space-2) var(--space-4);
+    color: white;
+    border-radius: var(--radius-full);
+    font-size: 0.875rem;
+    font-weight: 600;
+    margin-bottom: var(--space-3);
+}
+
+.hero-badge svg { width: 16px; height: 16px; }
+.hero-content h1 { font-size: 2.5rem; font-weight: 700; margin-bottom: var(--space-2); }
+.hero-subtitle { font-size: 1rem; color: var(--text-secondary); max-width: 500px; }
+.hero-actions { display: flex; gap: var(--space-3); }
+
+/* Compliance Hero Grid */
+.compliance-hero-grid {
+    display: grid;
+    grid-template-columns: 1fr 2fr;
+    gap: var(--space-6);
+    margin-bottom: var(--space-8);
+}
+
+.compliance-score-card {
+    display: flex;
+    align-items: center;
+    gap: var(--space-6);
+    padding: var(--space-6);
+    background: var(--bg-card);
+    border: 2px solid var(--border-color);
+    border-radius: var(--radius-xl);
+}
+
+.score-ring { width: 140px; height: 140px; flex-shrink: 0; }
+.score-value { font-size: 3rem; font-weight: 700; color: #10b981; display: block; }
+.score-label { font-size: 1rem; color: var(--text-secondary); display: block; margin-bottom: var(--space-2); }
+.score-trend { display: flex; align-items: center; gap: var(--space-1); color: #10b981; font-size: 0.875rem; }
+.score-trend svg { width: 16px; height: 16px; }
+
+.regulation-cards {
+    display: flex;
+    gap: var(--space-4);
+}
+
+.regulation-card {
+    flex: 1;
+    padding: var(--space-5);
+    background: var(--bg-card);
+    border: 1px solid var(--border-color);
+    border-radius: var(--radius-lg);
+}
+
+.reg-header {
+    display: flex;
+    align-items: center;
+    gap: var(--space-2);
+    margin-bottom: var(--space-4);
+}
+
+.reg-flag { font-size: 1.5rem; }
+.reg-header h3 { flex: 1; font-size: 1.125rem; }
+
+.reg-badge {
+    padding: var(--space-1) var(--space-2);
+    border-radius: var(--radius-sm);
+    font-size: 0.6875rem;
+    font-weight: 600;
+    text-transform: uppercase;
+}
+
+.reg-badge.compliant { background: rgba(16, 185, 129, 0.1); color: #10b981; }
+.reg-badge.in-progress { background: rgba(245, 158, 11, 0.1); color: #f59e0b; }
+
+.reg-score {
+    display: flex;
+    align-items: center;
+    gap: var(--space-3);
+    margin-bottom: var(--space-3);
+}
+
+.reg-score-value { font-size: 1.5rem; font-weight: 700; }
+
+.reg-progress-bar {
+    flex: 1;
+    height: 8px;
+    background: var(--bg-body);
+    border-radius: var(--radius-full);
+    overflow: hidden;
+}
+
+.reg-progress {
+    height: 100%;
+    background: linear-gradient(90deg, #f59e0b, #10b981);
+    border-radius: var(--radius-full);
+}
+
+.reg-details {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-1);
+}
+
+.reg-detail {
+    display: flex;
+    align-items: center;
+    gap: var(--space-1);
+    font-size: 0.75rem;
+    color: var(--text-secondary);
+}
+
+.reg-detail svg { width: 12px; height: 12px; color: #10b981; }
+
+/* Section Header */
+.section-header {
+    margin-bottom: var(--space-6);
+}
+
+.section-header h2 {
+    display: flex;
+    align-items: center;
+    gap: var(--space-3);
+    font-size: 1.5rem;
+    margin-bottom: var(--space-2);
+}
+
+.section-flag { font-size: 1.5rem; }
+.section-header p { color: var(--text-secondary); }
+
+/* AI Act Grid */
+.ai-act-grid {
+    display: grid;
+    grid-template-columns: repeat(12, 1fr);
+    gap: var(--space-5);
+}
+
+.card { grid-column: span 4; }
+.card-lg { grid-column: span 6; }
+
+/* Risk Classification */
+.risk-classification {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-4);
+}
+
+.risk-level {
+    padding: var(--space-4);
+    border-radius: var(--radius-md);
+    border-left: 4px solid;
+}
+
+.high-risk { background: rgba(239, 68, 68, 0.05); border-color: #ef4444; }
+.limited-risk { background: rgba(245, 158, 11, 0.05); border-color: #f59e0b; }
+.minimal-risk { background: rgba(16, 185, 129, 0.05); border-color: #10b981; }
+
+.risk-level-header {
+    display: flex;
+    align-items: center;
+    gap: var(--space-2);
+    margin-bottom: var(--space-3);
+}
+
+.risk-level-header svg { width: 18px; height: 18px; }
+.high-risk .risk-level-header svg { color: #ef4444; }
+.limited-risk .risk-level-header svg { color: #f59e0b; }
+.minimal-risk .risk-level-header svg { color: #10b981; }
+
+.risk-level-name { flex: 1; font-weight: 600; }
+.risk-count { font-size: 0.75rem; color: var(--text-secondary); }
+
+.risk-systems {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-2);
+}
+
+.risk-system {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: var(--space-2) var(--space-3);
+    background: var(--bg-card);
+    border-radius: var(--radius-sm);
+}
+
+.system-name { font-size: 0.875rem; }
+.system-status { font-size: 0.6875rem; padding: 2px 8px; border-radius: var(--radius-sm); }
+.system-status.compliant { background: rgba(16, 185, 129, 0.1); color: #10b981; }
+.system-status.in-progress { background: rgba(245, 158, 11, 0.1); color: #f59e0b; }
+
+.risk-note { font-size: 0.8125rem; color: var(--text-secondary); margin: 0; }
+
+/* Requirements List */
+.requirements-list {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-3);
+}
+
+.requirement-item {
+    display: flex;
+    align-items: flex-start;
+    gap: var(--space-3);
+    padding: var(--space-3);
+    border-radius: var(--radius-md);
+    background: var(--bg-body);
+}
+
+.req-status { flex-shrink: 0; }
+.req-status svg { width: 20px; height: 20px; }
+.status-passed .req-status { color: #10b981; }
+.status-in-progress .req-status { color: #f59e0b; }
+
+.req-content { flex: 1; }
+.req-content h4 { font-size: 0.875rem; font-weight: 600; margin-bottom: var(--space-1); }
+.req-content p { font-size: 0.75rem; color: var(--text-secondary); margin: 0; }
+
+.req-deadline {
+    font-size: 0.6875rem;
+    padding: var(--space-1) var(--space-2);
+    background: rgba(245, 158, 11, 0.1);
+    color: #f59e0b;
+    border-radius: var(--radius-sm);
+}
+
+/* Audit Timeline */
+.audit-timeline {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-3);
+}
+
+.audit-entry {
+    display: flex;
+    align-items: center;
+    gap: var(--space-3);
+}
+
+.audit-time {
+    min-width: 100px;
+    font-size: 0.6875rem;
+    color: var(--text-secondary);
+}
+
+.audit-event {
+    display: flex;
+    align-items: center;
+    gap: var(--space-2);
+    flex: 1;
+}
+
+.audit-icon {
+    width: 28px;
+    height: 28px;
+    border-radius: var(--radius-sm);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.audit-icon svg { width: 14px; height: 14px; }
+.audit-icon.update { background: rgba(59, 130, 246, 0.1); color: #3b82f6; }
+.audit-icon.review { background: rgba(139, 92, 246, 0.1); color: #8b5cf6; }
+.audit-icon.deploy { background: rgba(16, 185, 129, 0.1); color: #10b981; }
+.audit-icon.validation { background: rgba(16, 185, 129, 0.1); color: #10b981; }
+
+.audit-text { font-size: 0.8125rem; }
+
+/* AIPD List */
+.aipd-list {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-3);
+}
+
+.aipd-item {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: var(--space-3);
+    border-radius: var(--radius-md);
+    background: var(--bg-body);
+}
+
+.aipd-info h4 { font-size: 0.875rem; font-weight: 500; margin-bottom: 2px; }
+.aipd-date { font-size: 0.6875rem; color: var(--text-secondary); }
+
+.aipd-status {
+    font-size: 0.6875rem;
+    padding: var(--space-1) var(--space-2);
+    border-radius: var(--radius-sm);
+}
+
+.status-complete .aipd-status { background: rgba(16, 185, 129, 0.1); color: #10b981; }
+.status-pending .aipd-status { background: rgba(245, 158, 11, 0.1); color: #f59e0b; }
+.status-scheduled .aipd-status { background: rgba(59, 130, 246, 0.1); color: #3b82f6; }
+
+/* Actions Timeline */
+.actions-timeline {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-4);
+}
+
+.action-item {
+    display: flex;
+    align-items: center;
+    gap: var(--space-4);
+}
+
+.action-date {
+    width: 50px;
+    text-align: center;
+    padding: var(--space-2);
+    border-radius: var(--radius-md);
+    background: var(--bg-body);
+}
+
+.action-day { font-size: 1.25rem; font-weight: 700; display: block; }
+.action-month { font-size: 0.6875rem; color: var(--text-secondary); text-transform: uppercase; }
+
+.action-item.urgent .action-date { background: rgba(239, 68, 68, 0.1); color: #ef4444; }
+
+.action-content h4 { font-size: 0.875rem; font-weight: 500; margin-bottom: 2px; }
+.action-owner { font-size: 0.6875rem; color: var(--text-secondary); }
+
+/* Doc List */
+.doc-list {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-2);
+}
+
+.doc-item {
+    display: flex;
+    align-items: center;
+    gap: var(--space-3);
+    padding: var(--space-3);
+    border-radius: var(--radius-md);
+    background: var(--bg-body);
+    text-decoration: none;
+    color: var(--text-primary);
+    transition: all 0.2s;
+}
+
+.doc-item:hover { background: var(--color-primary-light); }
+.doc-item svg { width: 16px; height: 16px; color: var(--color-primary); }
+.doc-item span { flex: 1; font-size: 0.875rem; }
+.doc-action { color: var(--text-tertiary); }
+
+/* Responsive */
+@media (max-width: 1200px) {
+    .compliance-hero-grid { grid-template-columns: 1fr; }
+    .regulation-cards { flex-wrap: wrap; }
+    .regulation-card { flex: 1 1 calc(50% - var(--space-2)); }
+    .card-lg { grid-column: span 12; }
+    .card { grid-column: span 6; }
+}
+
+@media (max-width: 768px) {
+    .dashboard-hero { flex-direction: column; text-align: center; gap: var(--space-4); }
+    .regulation-cards { flex-direction: column; }
+    .regulation-card { flex: 1; }
+    .card { grid-column: span 12; }
+}
+</style>
+
+<script>
+document.addEventListener('DOMContentLoaded', () => {
+    lucide.createIcons();
+    initJuridiqueDashboard();
+});
+
+function initJuridiqueDashboard() {
+    initComplianceRing();
+}
+
+function initComplianceRing() {
+    const container = document.getElementById('mainComplianceRing');
+    if (!container) return;
+
+    container.innerHTML = `
+        <svg viewBox="0 0 140 140" style="width: 100%; height: 100%;">
+            <circle cx="70" cy="70" r="60" fill="none" stroke="var(--bg-body)" stroke-width="12"/>
+            <circle cx="70" cy="70" r="60" fill="none" stroke="#10b981" stroke-width="12"
+                    stroke-dasharray="346 377" stroke-linecap="round" transform="rotate(-90 70 70)">
+                <animate attributeName="stroke-dasharray" from="0 377" to="346 377" dur="1s" fill="freeze"/>
+            </circle>
+        </svg>
+    `;
+}
+
+function generateComplianceReport() {
+    showToast('Génération du rapport de conformité en cours...', 'info', 3000);
+}
+</script>
+{% endblock %}

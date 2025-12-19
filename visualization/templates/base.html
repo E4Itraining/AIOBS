@@ -89,9 +89,34 @@
                     </a>
                 </div>
 
-                <!-- Vues Principales -->
+                <!-- Vues par Persona -->
                 <div class="nav-group">
-                    <span class="nav-group-title">{{ t('nav.overview') or 'Vues Principales' }}</span>
+                    <span class="nav-group-title">{{ t('nav.personas_views') or 'Vues par Persona' }}</span>
+                    <a href="/global" class="nav-link {% if active_page == 'global' %}active{% endif %}">
+                        <i data-lucide="globe"></i>
+                        <span>{{ t('nav.global_view') or 'Vue Globale' }}</span>
+                    </a>
+                    <a href="/dirigeant" class="nav-link {% if active_page == 'dirigeant' %}active{% endif %}">
+                        <i data-lucide="building-2"></i>
+                        <span>{{ t('nav.dirigeant_view') or 'Dirigeant / Business' }}</span>
+                    </a>
+                    <a href="/tech" class="nav-link {% if active_page == 'tech' %}active{% endif %}">
+                        <i data-lucide="server"></i>
+                        <span>{{ t('nav.tech_view') or 'Tech (DSI / RSSI)' }}</span>
+                    </a>
+                    <a href="/juridique" class="nav-link {% if active_page == 'juridique' %}active{% endif %}">
+                        <i data-lucide="gavel"></i>
+                        <span>{{ t('nav.juridique_view') or 'Juridique / Conformité' }}</span>
+                    </a>
+                    <a href="/financier" class="nav-link {% if active_page == 'financier' %}active{% endif %}">
+                        <i data-lucide="wallet"></i>
+                        <span>{{ t('nav.financier_view') or 'Financier / FinOps' }}</span>
+                    </a>
+                </div>
+
+                <!-- Vues Techniques -->
+                <div class="nav-group">
+                    <span class="nav-group-title">{{ t('nav.technical_views') or 'Vues Techniques' }}</span>
                     <a href="/unified" class="nav-link {% if active_page == 'unified' %}active{% endif %}">
                         <i data-lucide="layout-dashboard"></i>
                         <span>{{ t('nav.unified_view') or 'Vue Unifiée' }}</span>

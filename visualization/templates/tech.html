@@ -1,0 +1,1075 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="tech-dashboard page-transition-enter">
+    <!-- Hero Section -->
+    <div class="dashboard-hero">
+        <div class="hero-content">
+            <div class="hero-badge" style="background: linear-gradient(135deg, #6366f1, #8b5cf6);">
+                <i data-lucide="server"></i>
+                <span>Tech (DSI / RSSI)</span>
+            </div>
+            <h1>Vue Technique & Sécurité</h1>
+            <p class="hero-subtitle">
+                Gouvernance IT, infrastructure IA, sécurité et performance. Vue consolidée pour DSI et RSSI.
+            </p>
+        </div>
+        <div class="hero-actions">
+            <a href="/global" class="btn btn-outline">
+                <i data-lucide="globe"></i>
+                <span>Vue Globale</span>
+            </a>
+            <a href="/monitoring" class="btn btn-primary">
+                <i data-lucide="activity"></i>
+                <span>Monitoring Live</span>
+            </a>
+        </div>
+    </div>
+
+    <!-- Tech KPIs -->
+    <div class="tech-kpi-grid">
+        <div class="tech-kpi-card">
+            <div class="tech-kpi-icon" style="background: linear-gradient(135deg, #10b981, #059669);">
+                <i data-lucide="check-circle"></i>
+            </div>
+            <div class="tech-kpi-content">
+                <span class="tech-kpi-value">99.94%</span>
+                <span class="tech-kpi-label">Disponibilité</span>
+                <div class="tech-kpi-detail">
+                    <span class="slo-badge slo-ok">SLO: 99.9%</span>
+                </div>
+            </div>
+        </div>
+
+        <div class="tech-kpi-card">
+            <div class="tech-kpi-icon" style="background: linear-gradient(135deg, #3b82f6, #2563eb);">
+                <i data-lucide="gauge"></i>
+            </div>
+            <div class="tech-kpi-content">
+                <span class="tech-kpi-value">47ms</span>
+                <span class="tech-kpi-label">Latence P99</span>
+                <div class="tech-kpi-detail">
+                    <span class="trend-up"><i data-lucide="trending-down"></i> -12% vs hier</span>
+                </div>
+            </div>
+        </div>
+
+        <div class="tech-kpi-card">
+            <div class="tech-kpi-icon" style="background: linear-gradient(135deg, #ef4444, #dc2626);">
+                <i data-lucide="shield-alert"></i>
+            </div>
+            <div class="tech-kpi-content">
+                <span class="tech-kpi-value">A</span>
+                <span class="tech-kpi-label">Posture Sécurité</span>
+                <div class="tech-kpi-detail">
+                    <span class="security-score">Score: 92/100</span>
+                </div>
+            </div>
+        </div>
+
+        <div class="tech-kpi-card">
+            <div class="tech-kpi-icon" style="background: linear-gradient(135deg, #f59e0b, #d97706);">
+                <i data-lucide="alert-triangle"></i>
+            </div>
+            <div class="tech-kpi-content">
+                <span class="tech-kpi-value">2</span>
+                <span class="tech-kpi-label">Incidents Ouverts</span>
+                <div class="tech-kpi-detail">
+                    <span class="incident-severity">0 critiques, 2 modérés</span>
+                </div>
+            </div>
+        </div>
+
+        <div class="tech-kpi-card">
+            <div class="tech-kpi-icon" style="background: linear-gradient(135deg, #8b5cf6, #7c3aed);">
+                <i data-lucide="cpu"></i>
+            </div>
+            <div class="tech-kpi-content">
+                <span class="tech-kpi-value">24</span>
+                <span class="tech-kpi-label">Systèmes IA</span>
+                <div class="tech-kpi-detail">
+                    <span class="systems-status">22 OK, 2 dégradés</span>
+                </div>
+            </div>
+        </div>
+
+        <div class="tech-kpi-card">
+            <div class="tech-kpi-icon" style="background: linear-gradient(135deg, #059669, #047857);">
+                <i data-lucide="git-branch"></i>
+            </div>
+            <div class="tech-kpi-content">
+                <span class="tech-kpi-value">8</span>
+                <span class="tech-kpi-label">Déploiements/sem</span>
+                <div class="tech-kpi-detail">
+                    <span class="deploy-success">100% succès</span>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Dual View: DSI + RSSI -->
+    <div class="dual-view-tabs">
+        <button class="dual-tab active" data-view="dsi" onclick="switchTechView('dsi')">
+            <i data-lucide="landmark"></i>
+            <span>Vue DSI</span>
+        </button>
+        <button class="dual-tab" data-view="rssi" onclick="switchTechView('rssi')">
+            <i data-lucide="shield"></i>
+            <span>Vue RSSI</span>
+        </button>
+    </div>
+
+    <!-- DSI View -->
+    <div class="tech-view dsi-view active" id="dsiView">
+        <div class="tech-grid">
+            <!-- IT Governance -->
+            <div class="card card-lg">
+                <div class="card-header">
+                    <h3>
+                        <i data-lucide="layout-grid"></i>
+                        Portefeuille Systèmes IA
+                    </h3>
+                    <div class="view-toggle">
+                        <button class="view-btn active" data-view="grid"><i data-lucide="grid"></i></button>
+                        <button class="view-btn" data-view="list"><i data-lucide="list"></i></button>
+                    </div>
+                </div>
+                <div class="card-body">
+                    <div class="systems-portfolio-grid" id="systemsGrid">
+                        <!-- System cards -->
+                        <div class="system-card status-healthy">
+                            <div class="system-status-indicator"></div>
+                            <div class="system-icon"><i data-lucide="message-square"></i></div>
+                            <div class="system-info">
+                                <h4>Chatbot Client</h4>
+                                <span class="system-type">NLP / LLM</span>
+                            </div>
+                            <div class="system-metrics">
+                                <span title="Disponibilité">99.98%</span>
+                                <span title="Latence">23ms</span>
+                            </div>
+                        </div>
+                        <div class="system-card status-healthy">
+                            <div class="system-status-indicator"></div>
+                            <div class="system-icon"><i data-lucide="credit-card"></i></div>
+                            <div class="system-info">
+                                <h4>Scoring Crédit</h4>
+                                <span class="system-type">ML Classification</span>
+                            </div>
+                            <div class="system-metrics">
+                                <span>99.95%</span>
+                                <span>45ms</span>
+                            </div>
+                        </div>
+                        <div class="system-card status-warning">
+                            <div class="system-status-indicator"></div>
+                            <div class="system-icon"><i data-lucide="shopping-cart"></i></div>
+                            <div class="system-info">
+                                <h4>Recommandation</h4>
+                                <span class="system-type">ML Ranking</span>
+                            </div>
+                            <div class="system-metrics">
+                                <span>99.2%</span>
+                                <span>120ms</span>
+                            </div>
+                        </div>
+                        <div class="system-card status-healthy">
+                            <div class="system-status-indicator"></div>
+                            <div class="system-icon"><i data-lucide="shield"></i></div>
+                            <div class="system-info">
+                                <h4>Fraude Detection</h4>
+                                <span class="system-type">Anomaly Detection</span>
+                            </div>
+                            <div class="system-metrics">
+                                <span>99.99%</span>
+                                <span>15ms</span>
+                            </div>
+                        </div>
+                        <div class="system-card status-critical">
+                            <div class="system-status-indicator"></div>
+                            <div class="system-icon"><i data-lucide="user-check"></i></div>
+                            <div class="system-info">
+                                <h4>KYC Automation</h4>
+                                <span class="system-type">Document AI</span>
+                            </div>
+                            <div class="system-metrics">
+                                <span>85.3%</span>
+                                <span>850ms</span>
+                            </div>
+                        </div>
+                        <div class="system-card status-healthy">
+                            <div class="system-status-indicator"></div>
+                            <div class="system-icon"><i data-lucide="file-search"></i></div>
+                            <div class="system-info">
+                                <h4>Doc Analyzer</h4>
+                                <span class="system-type">OCR + NLP</span>
+                            </div>
+                            <div class="system-metrics">
+                                <span>99.8%</span>
+                                <span>200ms</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- SLO Dashboard -->
+            <div class="card card-lg">
+                <div class="card-header">
+                    <h3>
+                        <i data-lucide="target"></i>
+                        SLO / SLI Status
+                    </h3>
+                </div>
+                <div class="card-body">
+                    <div class="slo-grid">
+                        <div class="slo-card slo-ok">
+                            <div class="slo-header">
+                                <span class="slo-name">Disponibilité</span>
+                                <span class="slo-badge">OK</span>
+                            </div>
+                            <div class="slo-values">
+                                <div class="slo-current">
+                                    <span class="slo-value">99.94%</span>
+                                    <span class="slo-label">Actuel</span>
+                                </div>
+                                <div class="slo-target">
+                                    <span class="slo-value">99.9%</span>
+                                    <span class="slo-label">Objectif</span>
+                                </div>
+                            </div>
+                            <div class="slo-budget">
+                                <div class="slo-budget-bar">
+                                    <div class="slo-budget-fill" style="width: 45%;"></div>
+                                </div>
+                                <span class="slo-budget-text">55% budget erreur restant</span>
+                            </div>
+                        </div>
+                        <div class="slo-card slo-ok">
+                            <div class="slo-header">
+                                <span class="slo-name">Latence P99</span>
+                                <span class="slo-badge">OK</span>
+                            </div>
+                            <div class="slo-values">
+                                <div class="slo-current">
+                                    <span class="slo-value">47ms</span>
+                                    <span class="slo-label">Actuel</span>
+                                </div>
+                                <div class="slo-target">
+                                    <span class="slo-value">100ms</span>
+                                    <span class="slo-label">Objectif</span>
+                                </div>
+                            </div>
+                            <div class="slo-budget">
+                                <div class="slo-budget-bar">
+                                    <div class="slo-budget-fill" style="width: 80%;"></div>
+                                </div>
+                                <span class="slo-budget-text">Excellent - 53% sous objectif</span>
+                            </div>
+                        </div>
+                        <div class="slo-card slo-warning">
+                            <div class="slo-header">
+                                <span class="slo-name">Taux d'Erreur</span>
+                                <span class="slo-badge slo-badge-warning">Attention</span>
+                            </div>
+                            <div class="slo-values">
+                                <div class="slo-current">
+                                    <span class="slo-value">0.08%</span>
+                                    <span class="slo-label">Actuel</span>
+                                </div>
+                                <div class="slo-target">
+                                    <span class="slo-value">0.1%</span>
+                                    <span class="slo-label">Objectif</span>
+                                </div>
+                            </div>
+                            <div class="slo-budget">
+                                <div class="slo-budget-bar">
+                                    <div class="slo-budget-fill warning" style="width: 20%;"></div>
+                                </div>
+                                <span class="slo-budget-text">20% budget erreur restant</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Service Topology -->
+            <div class="card">
+                <div class="card-header">
+                    <h3>
+                        <i data-lucide="share-2"></i>
+                        Topologie Services
+                    </h3>
+                    <a href="/causal" class="btn btn-ghost btn-sm">
+                        Vue complète
+                        <i data-lucide="arrow-right"></i>
+                    </a>
+                </div>
+                <div class="card-body">
+                    <div class="topology-mini" id="topologyMini"></div>
+                </div>
+            </div>
+
+            <!-- Resource Allocation -->
+            <div class="card">
+                <div class="card-header">
+                    <h3>
+                        <i data-lucide="pie-chart"></i>
+                        Allocation Ressources
+                    </h3>
+                </div>
+                <div class="card-body">
+                    <canvas id="resourceChart" height="200"></canvas>
+                </div>
+            </div>
+
+            <!-- Performance Trends -->
+            <div class="card card-full">
+                <div class="card-header">
+                    <h3>
+                        <i data-lucide="activity"></i>
+                        Tendances Performance (24h)
+                    </h3>
+                    <div class="metric-selector">
+                        <button class="metric-btn active" data-metric="latency">Latence</button>
+                        <button class="metric-btn" data-metric="throughput">Throughput</button>
+                        <button class="metric-btn" data-metric="errors">Erreurs</button>
+                    </div>
+                </div>
+                <div class="card-body">
+                    <canvas id="performanceTrendChart" height="150"></canvas>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- RSSI View -->
+    <div class="tech-view rssi-view" id="rssiView">
+        <div class="tech-grid">
+            <!-- Security Posture -->
+            <div class="card card-lg">
+                <div class="card-header">
+                    <h3>
+                        <i data-lucide="shield"></i>
+                        Posture de Sécurité
+                    </h3>
+                    <a href="/security" class="btn btn-ghost btn-sm">
+                        Centre Sécurité
+                        <i data-lucide="arrow-right"></i>
+                    </a>
+                </div>
+                <div class="card-body">
+                    <div class="security-score-display">
+                        <div class="score-gauge" id="securityGauge"></div>
+                        <div class="score-details">
+                            <div class="score-grade">A</div>
+                            <div class="score-number">92/100</div>
+                            <div class="score-label">Score Global</div>
+                        </div>
+                    </div>
+                    <div class="security-categories">
+                        <div class="sec-category">
+                            <span class="sec-cat-name">Contrôle d'accès</span>
+                            <div class="sec-cat-bar"><div class="sec-cat-fill" style="width: 95%;"></div></div>
+                            <span class="sec-cat-score">95%</span>
+                        </div>
+                        <div class="sec-category">
+                            <span class="sec-cat-name">Chiffrement</span>
+                            <div class="sec-cat-bar"><div class="sec-cat-fill" style="width: 98%;"></div></div>
+                            <span class="sec-cat-score">98%</span>
+                        </div>
+                        <div class="sec-category">
+                            <span class="sec-cat-name">Adversarial Defense</span>
+                            <div class="sec-cat-bar"><div class="sec-cat-fill" style="width: 85%;"></div></div>
+                            <span class="sec-cat-score">85%</span>
+                        </div>
+                        <div class="sec-category">
+                            <span class="sec-cat-name">Data Privacy</span>
+                            <div class="sec-cat-bar"><div class="sec-cat-fill" style="width: 92%;"></div></div>
+                            <span class="sec-cat-score">92%</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Threat Detection -->
+            <div class="card card-lg">
+                <div class="card-header">
+                    <h3>
+                        <i data-lucide="alert-octagon"></i>
+                        Détection de Menaces (7 jours)
+                    </h3>
+                </div>
+                <div class="card-body">
+                    <div class="threat-summary">
+                        <div class="threat-stat">
+                            <span class="threat-number">0</span>
+                            <span class="threat-label">Attaques bloquées</span>
+                        </div>
+                        <div class="threat-stat">
+                            <span class="threat-number">3</span>
+                            <span class="threat-label">Tentatives adversariales</span>
+                        </div>
+                        <div class="threat-stat">
+                            <span class="threat-number">12</span>
+                            <span class="threat-label">Accès suspects</span>
+                        </div>
+                    </div>
+                    <canvas id="threatTrendChart" height="180"></canvas>
+                </div>
+            </div>
+
+            <!-- Vulnerability Assessment -->
+            <div class="card">
+                <div class="card-header">
+                    <h3>
+                        <i data-lucide="bug"></i>
+                        Vulnérabilités
+                    </h3>
+                </div>
+                <div class="card-body">
+                    <div class="vuln-summary">
+                        <div class="vuln-item critical">
+                            <span class="vuln-count">0</span>
+                            <span class="vuln-label">Critiques</span>
+                        </div>
+                        <div class="vuln-item high">
+                            <span class="vuln-count">1</span>
+                            <span class="vuln-label">Élevées</span>
+                        </div>
+                        <div class="vuln-item medium">
+                            <span class="vuln-count">4</span>
+                            <span class="vuln-label">Moyennes</span>
+                        </div>
+                        <div class="vuln-item low">
+                            <span class="vuln-count">8</span>
+                            <span class="vuln-label">Faibles</span>
+                        </div>
+                    </div>
+                    <div class="vuln-action">
+                        <button class="btn btn-outline btn-sm">Voir rapport</button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Compliance Status -->
+            <div class="card">
+                <div class="card-header">
+                    <h3>
+                        <i data-lucide="clipboard-check"></i>
+                        Conformité Sécurité
+                    </h3>
+                </div>
+                <div class="card-body">
+                    <div class="compliance-checks">
+                        <div class="compliance-check passed">
+                            <i data-lucide="check-circle"></i>
+                            <span>ISO 27001</span>
+                        </div>
+                        <div class="compliance-check passed">
+                            <i data-lucide="check-circle"></i>
+                            <span>SOC 2 Type II</span>
+                        </div>
+                        <div class="compliance-check passed">
+                            <i data-lucide="check-circle"></i>
+                            <span>NIST CSF</span>
+                        </div>
+                        <div class="compliance-check warning">
+                            <i data-lucide="alert-circle"></i>
+                            <span>PCI DSS (en cours)</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Security Incidents -->
+            <div class="card card-full">
+                <div class="card-header">
+                    <h3>
+                        <i data-lucide="shield-off"></i>
+                        Incidents Sécurité Récents
+                    </h3>
+                </div>
+                <div class="card-body">
+                    <div class="incident-table">
+                        <div class="incident-row">
+                            <div class="incident-severity medium">
+                                <i data-lucide="alert-triangle"></i>
+                            </div>
+                            <div class="incident-content">
+                                <div class="incident-title">Tentative d'injection prompt détectée</div>
+                                <div class="incident-details">
+                                    <span><i data-lucide="clock"></i> Il y a 2h</span>
+                                    <span><i data-lucide="server"></i> chatbot-prod</span>
+                                    <span class="incident-status resolved">Résolu</span>
+                                </div>
+                            </div>
+                            <div class="incident-action">
+                                <button class="btn btn-ghost btn-sm">Détails</button>
+                            </div>
+                        </div>
+                        <div class="incident-row">
+                            <div class="incident-severity low">
+                                <i data-lucide="info"></i>
+                            </div>
+                            <div class="incident-content">
+                                <div class="incident-title">Accès API depuis IP inhabituelle</div>
+                                <div class="incident-details">
+                                    <span><i data-lucide="clock"></i> Il y a 5h</span>
+                                    <span><i data-lucide="globe"></i> api-gateway</span>
+                                    <span class="incident-status monitoring">En observation</span>
+                                </div>
+                            </div>
+                            <div class="incident-action">
+                                <button class="btn btn-ghost btn-sm">Détails</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<style>
+/* Tech Dashboard Styles */
+.tech-dashboard {
+    padding: var(--space-6);
+    max-width: 1600px;
+    margin: 0 auto;
+}
+
+.dashboard-hero {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: var(--space-6) 0;
+    margin-bottom: var(--space-6);
+}
+
+.hero-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: var(--space-2);
+    padding: var(--space-2) var(--space-4);
+    color: white;
+    border-radius: var(--radius-full);
+    font-size: 0.875rem;
+    font-weight: 600;
+    margin-bottom: var(--space-3);
+}
+
+.hero-badge svg { width: 16px; height: 16px; }
+
+.hero-content h1 { font-size: 2.5rem; font-weight: 700; margin-bottom: var(--space-2); }
+.hero-subtitle { font-size: 1rem; color: var(--text-secondary); max-width: 500px; }
+.hero-actions { display: flex; gap: var(--space-3); }
+
+/* Tech KPI Grid */
+.tech-kpi-grid {
+    display: grid;
+    grid-template-columns: repeat(6, 1fr);
+    gap: var(--space-4);
+    margin-bottom: var(--space-6);
+}
+
+.tech-kpi-card {
+    display: flex;
+    align-items: center;
+    gap: var(--space-3);
+    padding: var(--space-4);
+    background: var(--bg-card);
+    border: 1px solid var(--border-color);
+    border-radius: var(--radius-lg);
+}
+
+.tech-kpi-icon {
+    width: 48px;
+    height: 48px;
+    border-radius: var(--radius-md);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: white;
+    flex-shrink: 0;
+}
+
+.tech-kpi-icon svg { width: 24px; height: 24px; }
+.tech-kpi-value { font-size: 1.5rem; font-weight: 700; display: block; }
+.tech-kpi-label { font-size: 0.75rem; color: var(--text-secondary); display: block; }
+.tech-kpi-detail { font-size: 0.6875rem; margin-top: var(--space-1); }
+
+.slo-badge { padding: 2px 8px; border-radius: var(--radius-sm); font-weight: 600; }
+.slo-ok { background: rgba(16, 185, 129, 0.1); color: #10b981; }
+
+.security-score, .systems-status, .deploy-success, .incident-severity { color: var(--text-secondary); }
+.trend-up { color: #10b981; display: flex; align-items: center; gap: 4px; }
+.trend-up svg { width: 12px; height: 12px; }
+
+/* Dual View Tabs */
+.dual-view-tabs {
+    display: flex;
+    gap: var(--space-2);
+    margin-bottom: var(--space-6);
+    padding: var(--space-2);
+    background: var(--bg-card);
+    border: 1px solid var(--border-color);
+    border-radius: var(--radius-lg);
+    width: fit-content;
+}
+
+.dual-tab {
+    display: flex;
+    align-items: center;
+    gap: var(--space-2);
+    padding: var(--space-3) var(--space-5);
+    background: transparent;
+    border: none;
+    border-radius: var(--radius-md);
+    font-size: 0.9375rem;
+    font-weight: 500;
+    color: var(--text-secondary);
+    cursor: pointer;
+    transition: all 0.2s;
+}
+
+.dual-tab.active {
+    background: var(--color-primary);
+    color: white;
+}
+
+.dual-tab svg { width: 18px; height: 18px; }
+
+.tech-view { display: none; }
+.tech-view.active { display: block; }
+
+/* Tech Grid */
+.tech-grid {
+    display: grid;
+    grid-template-columns: repeat(12, 1fr);
+    gap: var(--space-5);
+}
+
+.card { grid-column: span 4; }
+.card-lg { grid-column: span 6; }
+.card-full { grid-column: span 12; }
+
+/* Systems Portfolio Grid */
+.systems-portfolio-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: var(--space-3);
+}
+
+.system-card {
+    display: flex;
+    align-items: center;
+    gap: var(--space-3);
+    padding: var(--space-3);
+    background: var(--bg-body);
+    border-radius: var(--radius-md);
+    position: relative;
+    overflow: hidden;
+}
+
+.system-status-indicator {
+    position: absolute;
+    left: 0;
+    top: 0;
+    bottom: 0;
+    width: 4px;
+}
+
+.status-healthy .system-status-indicator { background: #10b981; }
+.status-warning .system-status-indicator { background: #f59e0b; }
+.status-critical .system-status-indicator { background: #ef4444; }
+
+.system-icon {
+    width: 36px;
+    height: 36px;
+    border-radius: var(--radius-sm);
+    background: var(--color-primary);
+    color: white;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.system-icon svg { width: 18px; height: 18px; }
+
+.system-info h4 { font-size: 0.8125rem; font-weight: 600; margin-bottom: 2px; }
+.system-type { font-size: 0.6875rem; color: var(--text-secondary); }
+
+.system-metrics {
+    margin-left: auto;
+    display: flex;
+    flex-direction: column;
+    align-items: flex-end;
+    gap: 2px;
+    font-size: 0.6875rem;
+    color: var(--text-secondary);
+}
+
+/* SLO Grid */
+.slo-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: var(--space-4);
+}
+
+.slo-card {
+    padding: var(--space-4);
+    background: var(--bg-body);
+    border-radius: var(--radius-md);
+    border-left: 4px solid #10b981;
+}
+
+.slo-warning { border-left-color: #f59e0b; }
+
+.slo-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: var(--space-3);
+}
+
+.slo-name { font-weight: 600; font-size: 0.9375rem; }
+.slo-badge { font-size: 0.6875rem; padding: 2px 8px; border-radius: var(--radius-sm); background: rgba(16, 185, 129, 0.1); color: #10b981; }
+.slo-badge-warning { background: rgba(245, 158, 11, 0.1); color: #f59e0b; }
+
+.slo-values { display: flex; gap: var(--space-4); margin-bottom: var(--space-3); }
+.slo-current, .slo-target { text-align: center; }
+.slo-value { font-size: 1.25rem; font-weight: 700; display: block; }
+.slo-label { font-size: 0.6875rem; color: var(--text-secondary); }
+
+.slo-budget-bar {
+    height: 6px;
+    background: var(--bg-card);
+    border-radius: var(--radius-full);
+    overflow: hidden;
+    margin-bottom: var(--space-2);
+}
+
+.slo-budget-fill {
+    height: 100%;
+    background: #10b981;
+    border-radius: var(--radius-full);
+}
+
+.slo-budget-fill.warning { background: #f59e0b; }
+
+.slo-budget-text { font-size: 0.6875rem; color: var(--text-secondary); }
+
+/* Security Score Display */
+.security-score-display {
+    display: flex;
+    align-items: center;
+    gap: var(--space-6);
+    margin-bottom: var(--space-6);
+}
+
+.score-gauge { width: 120px; height: 120px; }
+.score-details { text-align: center; }
+.score-grade { font-size: 3rem; font-weight: 700; color: #10b981; line-height: 1; }
+.score-number { font-size: 1.25rem; color: var(--text-secondary); }
+.score-label { font-size: 0.75rem; color: var(--text-secondary); }
+
+.security-categories {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-3);
+}
+
+.sec-category {
+    display: flex;
+    align-items: center;
+    gap: var(--space-3);
+}
+
+.sec-cat-name { min-width: 140px; font-size: 0.8125rem; }
+.sec-cat-bar { flex: 1; height: 8px; background: var(--bg-body); border-radius: var(--radius-full); overflow: hidden; }
+.sec-cat-fill { height: 100%; background: linear-gradient(90deg, #6366f1, #10b981); border-radius: var(--radius-full); }
+.sec-cat-score { font-size: 0.8125rem; font-weight: 600; min-width: 35px; text-align: right; }
+
+/* Threat Summary */
+.threat-summary {
+    display: flex;
+    justify-content: space-around;
+    margin-bottom: var(--space-4);
+    padding-bottom: var(--space-4);
+    border-bottom: 1px solid var(--border-color);
+}
+
+.threat-stat { text-align: center; }
+.threat-number { font-size: 1.5rem; font-weight: 700; display: block; }
+.threat-label { font-size: 0.75rem; color: var(--text-secondary); }
+
+/* Vulnerability Summary */
+.vuln-summary {
+    display: flex;
+    justify-content: space-around;
+    margin-bottom: var(--space-4);
+}
+
+.vuln-item { text-align: center; }
+.vuln-count { font-size: 1.25rem; font-weight: 700; display: block; }
+.vuln-label { font-size: 0.6875rem; color: var(--text-secondary); }
+
+.vuln-item.critical .vuln-count { color: #ef4444; }
+.vuln-item.high .vuln-count { color: #f59e0b; }
+.vuln-item.medium .vuln-count { color: #3b82f6; }
+.vuln-item.low .vuln-count { color: #10b981; }
+
+.vuln-action { text-align: center; }
+
+/* Compliance Checks */
+.compliance-checks {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-2);
+}
+
+.compliance-check {
+    display: flex;
+    align-items: center;
+    gap: var(--space-2);
+    padding: var(--space-2) var(--space-3);
+    border-radius: var(--radius-sm);
+    font-size: 0.875rem;
+}
+
+.compliance-check svg { width: 16px; height: 16px; }
+.compliance-check.passed { background: rgba(16, 185, 129, 0.1); color: #10b981; }
+.compliance-check.warning { background: rgba(245, 158, 11, 0.1); color: #f59e0b; }
+
+/* Incident Table */
+.incident-table {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-3);
+}
+
+.incident-row {
+    display: flex;
+    align-items: center;
+    gap: var(--space-4);
+    padding: var(--space-3);
+    border-radius: var(--radius-md);
+    background: var(--bg-body);
+}
+
+.incident-severity { width: 36px; height: 36px; border-radius: var(--radius-sm); display: flex; align-items: center; justify-content: center; }
+.incident-severity svg { width: 18px; height: 18px; }
+.incident-severity.medium { background: rgba(245, 158, 11, 0.1); color: #f59e0b; }
+.incident-severity.low { background: rgba(59, 130, 246, 0.1); color: #3b82f6; }
+
+.incident-content { flex: 1; }
+.incident-title { font-weight: 500; margin-bottom: var(--space-1); }
+.incident-details { display: flex; gap: var(--space-4); font-size: 0.75rem; color: var(--text-secondary); }
+.incident-details span { display: flex; align-items: center; gap: var(--space-1); }
+.incident-details svg { width: 12px; height: 12px; }
+
+.incident-status { padding: 2px 8px; border-radius: var(--radius-sm); }
+.incident-status.resolved { background: rgba(16, 185, 129, 0.1); color: #10b981; }
+.incident-status.monitoring { background: rgba(59, 130, 246, 0.1); color: #3b82f6; }
+
+/* Metric Selector */
+.metric-selector { display: flex; gap: var(--space-1); }
+.metric-btn {
+    padding: var(--space-1) var(--space-3);
+    font-size: 0.75rem;
+    background: transparent;
+    border: 1px solid var(--border-color);
+    border-radius: var(--radius-sm);
+    cursor: pointer;
+    color: var(--text-secondary);
+}
+.metric-btn.active { background: var(--color-primary); color: white; border-color: var(--color-primary); }
+
+/* Responsive */
+@media (max-width: 1400px) {
+    .tech-kpi-grid { grid-template-columns: repeat(3, 1fr); }
+    .systems-portfolio-grid { grid-template-columns: repeat(2, 1fr); }
+    .slo-grid { grid-template-columns: 1fr; }
+}
+
+@media (max-width: 1024px) {
+    .card-lg { grid-column: span 12; }
+    .card { grid-column: span 6; }
+}
+
+@media (max-width: 768px) {
+    .dashboard-hero { flex-direction: column; text-align: center; gap: var(--space-4); }
+    .tech-kpi-grid { grid-template-columns: repeat(2, 1fr); }
+    .card { grid-column: span 12; }
+    .systems-portfolio-grid { grid-template-columns: 1fr; }
+}
+</style>
+
+<script>
+document.addEventListener('DOMContentLoaded', () => {
+    lucide.createIcons();
+    initTechDashboard();
+});
+
+function initTechDashboard() {
+    initPerformanceTrendChart();
+    initResourceChart();
+    initTopologyMini();
+    initThreatTrendChart();
+    initSecurityGauge();
+}
+
+function switchTechView(view) {
+    document.querySelectorAll('.dual-tab').forEach(tab => tab.classList.remove('active'));
+    document.querySelector(`[data-view="${view}"]`).classList.add('active');
+
+    document.querySelectorAll('.tech-view').forEach(v => v.classList.remove('active'));
+    document.getElementById(view === 'dsi' ? 'dsiView' : 'rssiView').classList.add('active');
+
+    lucide.createIcons();
+}
+
+function initPerformanceTrendChart() {
+    const ctx = document.getElementById('performanceTrendChart');
+    if (!ctx) return;
+
+    const labels = Array.from({length: 24}, (_, i) => `${i}:00`);
+    const latencyData = labels.map(() => 30 + Math.random() * 30);
+
+    new Chart(ctx, {
+        type: 'line',
+        data: {
+            labels,
+            datasets: [{
+                label: 'Latence P99',
+                data: latencyData,
+                borderColor: '#6366f1',
+                backgroundColor: 'rgba(99, 102, 241, 0.1)',
+                fill: true,
+                tension: 0.4,
+                pointRadius: 0
+            }]
+        },
+        options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            plugins: { legend: { display: false } },
+            scales: {
+                y: { ticks: { callback: v => v + 'ms' } },
+                x: { ticks: { maxTicksLimit: 12 } }
+            }
+        }
+    });
+}
+
+function initResourceChart() {
+    const ctx = document.getElementById('resourceChart');
+    if (!ctx) return;
+
+    new Chart(ctx, {
+        type: 'doughnut',
+        data: {
+            labels: ['GPU', 'CPU', 'Mémoire', 'Stockage'],
+            datasets: [{
+                data: [35, 25, 25, 15],
+                backgroundColor: ['#6366f1', '#10b981', '#f59e0b', '#8b5cf6'],
+                borderWidth: 0
+            }]
+        },
+        options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            plugins: {
+                legend: { position: 'bottom', labels: { usePointStyle: true } }
+            },
+            cutout: '60%'
+        }
+    });
+}
+
+function initTopologyMini() {
+    const container = document.getElementById('topologyMini');
+    if (!container) return;
+
+    container.innerHTML = `
+        <svg viewBox="0 0 200 150" style="width: 100%; height: 150px;">
+            <!-- Nodes -->
+            <circle cx="100" cy="30" r="15" fill="#6366f1"/>
+            <text x="100" y="34" text-anchor="middle" font-size="8" fill="white">API</text>
+
+            <circle cx="50" cy="80" r="12" fill="#10b981"/>
+            <text x="50" y="84" text-anchor="middle" font-size="7" fill="white">ML1</text>
+
+            <circle cx="100" cy="80" r="12" fill="#10b981"/>
+            <text x="100" y="84" text-anchor="middle" font-size="7" fill="white">ML2</text>
+
+            <circle cx="150" cy="80" r="12" fill="#f59e0b"/>
+            <text x="150" y="84" text-anchor="middle" font-size="7" fill="white">ML3</text>
+
+            <circle cx="75" cy="130" r="10" fill="#3b82f6"/>
+            <text x="75" y="133" text-anchor="middle" font-size="6" fill="white">DB</text>
+
+            <circle cx="125" cy="130" r="10" fill="#3b82f6"/>
+            <text x="125" y="133" text-anchor="middle" font-size="6" fill="white">Cache</text>
+
+            <!-- Connections -->
+            <line x1="100" y1="45" x2="50" y2="68" stroke="var(--border-color)" stroke-width="1.5"/>
+            <line x1="100" y1="45" x2="100" y2="68" stroke="var(--border-color)" stroke-width="1.5"/>
+            <line x1="100" y1="45" x2="150" y2="68" stroke="var(--border-color)" stroke-width="1.5"/>
+            <line x1="50" y1="92" x2="75" y2="120" stroke="var(--border-color)" stroke-width="1"/>
+            <line x1="100" y1="92" x2="75" y2="120" stroke="var(--border-color)" stroke-width="1"/>
+            <line x1="100" y1="92" x2="125" y2="120" stroke="var(--border-color)" stroke-width="1"/>
+            <line x1="150" y1="92" x2="125" y2="120" stroke="var(--border-color)" stroke-width="1"/>
+        </svg>
+    `;
+}
+
+function initThreatTrendChart() {
+    const ctx = document.getElementById('threatTrendChart');
+    if (!ctx) return;
+
+    new Chart(ctx, {
+        type: 'bar',
+        data: {
+            labels: ['Lun', 'Mar', 'Mer', 'Jeu', 'Ven', 'Sam', 'Dim'],
+            datasets: [
+                {
+                    label: 'Tentatives bloquées',
+                    data: [2, 1, 3, 0, 2, 1, 0],
+                    backgroundColor: '#ef4444'
+                },
+                {
+                    label: 'Accès suspects',
+                    data: [5, 3, 2, 4, 3, 2, 1],
+                    backgroundColor: '#f59e0b'
+                }
+            ]
+        },
+        options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            plugins: {
+                legend: { position: 'bottom', labels: { usePointStyle: true } }
+            },
+            scales: {
+                y: { beginAtZero: true, ticks: { stepSize: 1 } }
+            }
+        }
+    });
+}
+
+function initSecurityGauge() {
+    const container = document.getElementById('securityGauge');
+    if (!container) return;
+
+    container.innerHTML = `
+        <svg viewBox="0 0 100 100" style="width: 100%; height: 100%;">
+            <circle cx="50" cy="50" r="40" fill="none" stroke="var(--bg-body)" stroke-width="8"/>
+            <circle cx="50" cy="50" r="40" fill="none" stroke="#10b981" stroke-width="8"
+                    stroke-dasharray="230 251" stroke-linecap="round" transform="rotate(-90 50 50)"/>
+        </svg>
+    `;
+}
+</script>
+{% endblock %}
