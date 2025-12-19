@@ -1,0 +1,863 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="personas-hub page-transition-enter">
+    <!-- Hero Section -->
+    <div class="personas-hero">
+        <div class="hero-content">
+            <div class="hero-badge">
+                <i data-lucide="sparkles"></i>
+                <span>Game Changer</span>
+            </div>
+            <h1>Choisissez Votre Parcours</h1>
+            <p class="hero-subtitle">
+                GASKIA s'adapte à votre rôle. Sélectionnez votre profil pour une expérience personnalisée
+                avec les KPIs, vues et recommandations qui vous concernent.
+            </p>
+            <div class="hero-shortcuts">
+                <div class="shortcut-hint">
+                    <kbd>⌘</kbd><kbd>K</kbd>
+                    <span>Navigation rapide</span>
+                </div>
+                <div class="shortcut-hint">
+                    <kbd>I</kbd>
+                    <span>Quick Insights</span>
+                </div>
+            </div>
+        </div>
+        <div class="hero-visual">
+            <div class="orbit-container">
+                <div class="orbit-center">
+                    <i data-lucide="eye"></i>
+                </div>
+                <div class="orbit orbit-1">
+                    <div class="orbit-item" style="--delay: 0s;"><i data-lucide="briefcase"></i></div>
+                    <div class="orbit-item" style="--delay: 1s;"><i data-lucide="cpu"></i></div>
+                    <div class="orbit-item" style="--delay: 2s;"><i data-lucide="shield"></i></div>
+                </div>
+                <div class="orbit orbit-2">
+                    <div class="orbit-item" style="--delay: 0.5s;"><i data-lucide="scale"></i></div>
+                    <div class="orbit-item" style="--delay: 1.5s;"><i data-lucide="leaf"></i></div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Persona Cards Grid -->
+    <div class="personas-grid">
+        <!-- Dirigeant / Executive -->
+        <div class="persona-card card-animate" data-persona="business_executive" onclick="selectPersona('business_executive')">
+            <div class="persona-card-header" style="--persona-color: #10b981;">
+                <div class="persona-icon">
+                    <i data-lucide="briefcase"></i>
+                </div>
+                <div class="persona-badge">Business</div>
+            </div>
+            <div class="persona-card-body">
+                <h3>Dirigeant / Executive</h3>
+                <p>Vue stratégique simplifiée. KPIs essentiels, ROI, risques et tendances pour une prise de décision rapide.</p>
+                <div class="persona-focus-tags">
+                    <span class="focus-tag">ROI</span>
+                    <span class="focus-tag">Risques</span>
+                    <span class="focus-tag">Conformité</span>
+                    <span class="focus-tag">Tendances</span>
+                </div>
+            </div>
+            <div class="persona-journey-preview">
+                <div class="journey-step-mini active">
+                    <span class="step-num">1</span>
+                    <span>Dashboard</span>
+                </div>
+                <div class="journey-arrow"><i data-lucide="chevron-right"></i></div>
+                <div class="journey-step-mini">
+                    <span class="step-num">2</span>
+                    <span>Executive</span>
+                </div>
+                <div class="journey-arrow"><i data-lucide="chevron-right"></i></div>
+                <div class="journey-step-mini">
+                    <span class="step-num">3</span>
+                    <span>Compliance</span>
+                </div>
+                <div class="journey-arrow"><i data-lucide="chevron-right"></i></div>
+                <div class="journey-step-mini">
+                    <span class="step-num">4</span>
+                    <span>FinOps</span>
+                </div>
+            </div>
+            <button class="persona-select-btn">
+                <span>Commencer ce parcours</span>
+                <i data-lucide="arrow-right"></i>
+            </button>
+        </div>
+
+        <!-- Tech / ML Engineer -->
+        <div class="persona-card card-animate" data-persona="tech_ml_engineer" onclick="selectPersona('tech_ml_engineer')">
+            <div class="persona-card-header" style="--persona-color: #6366f1;">
+                <div class="persona-icon">
+                    <i data-lucide="cpu"></i>
+                </div>
+                <div class="persona-badge">Technique</div>
+            </div>
+            <div class="persona-card-body">
+                <h3>ML Engineer / Tech</h3>
+                <p>Vue technique détaillée. Métriques cognitives, drift, latence, et analyse causale pour le debugging.</p>
+                <div class="persona-focus-tags">
+                    <span class="focus-tag">Drift</span>
+                    <span class="focus-tag">Métriques Cognitives</span>
+                    <span class="focus-tag">Performance</span>
+                    <span class="focus-tag">Déploiement</span>
+                </div>
+            </div>
+            <div class="persona-journey-preview">
+                <div class="journey-step-mini active">
+                    <span class="step-num">1</span>
+                    <span>Dashboard</span>
+                </div>
+                <div class="journey-arrow"><i data-lucide="chevron-right"></i></div>
+                <div class="journey-step-mini">
+                    <span class="step-num">2</span>
+                    <span>Monitoring</span>
+                </div>
+                <div class="journey-arrow"><i data-lucide="chevron-right"></i></div>
+                <div class="journey-step-mini">
+                    <span class="step-num">3</span>
+                    <span>Causal</span>
+                </div>
+                <div class="journey-arrow"><i data-lucide="chevron-right"></i></div>
+                <div class="journey-step-mini">
+                    <span class="step-num">4</span>
+                    <span>Impact</span>
+                </div>
+            </div>
+            <button class="persona-select-btn">
+                <span>Commencer ce parcours</span>
+                <i data-lucide="arrow-right"></i>
+            </button>
+        </div>
+
+        <!-- RSSI / Security -->
+        <div class="persona-card card-animate" data-persona="security_rssi" onclick="selectPersona('security_rssi')">
+            <div class="persona-card-header" style="--persona-color: #ef4444;">
+                <div class="persona-icon">
+                    <i data-lucide="shield"></i>
+                </div>
+                <div class="persona-badge">Sécurité</div>
+            </div>
+            <div class="persona-card-body">
+                <h3>RSSI / Security</h3>
+                <p>Centre de sécurité IA. Menaces, vulnérabilités, incidents et posture sécurité globale.</p>
+                <div class="persona-focus-tags">
+                    <span class="focus-tag">Menaces</span>
+                    <span class="focus-tag">Vulnérabilités</span>
+                    <span class="focus-tag">Incidents</span>
+                    <span class="focus-tag">Posture</span>
+                </div>
+            </div>
+            <div class="persona-journey-preview">
+                <div class="journey-step-mini active">
+                    <span class="step-num">1</span>
+                    <span>Security</span>
+                </div>
+                <div class="journey-arrow"><i data-lucide="chevron-right"></i></div>
+                <div class="journey-step-mini">
+                    <span class="step-num">2</span>
+                    <span>Monitoring</span>
+                </div>
+                <div class="journey-arrow"><i data-lucide="chevron-right"></i></div>
+                <div class="journey-step-mini">
+                    <span class="step-num">3</span>
+                    <span>Compliance</span>
+                </div>
+                <div class="journey-arrow"><i data-lucide="chevron-right"></i></div>
+                <div class="journey-step-mini">
+                    <span class="step-num">4</span>
+                    <span>Causal</span>
+                </div>
+            </div>
+            <button class="persona-select-btn">
+                <span>Commencer ce parcours</span>
+                <i data-lucide="arrow-right"></i>
+            </button>
+        </div>
+
+        <!-- Juriste / DPO -->
+        <div class="persona-card card-animate" data-persona="compliance_legal" onclick="selectPersona('compliance_legal')">
+            <div class="persona-card-header" style="--persona-color: #f59e0b;">
+                <div class="persona-icon">
+                    <i data-lucide="scale"></i>
+                </div>
+                <div class="persona-badge">Juridique</div>
+            </div>
+            <div class="persona-card-body">
+                <h3>Juriste / DPO</h3>
+                <p>Focus conformité réglementaire. RGPD, AI Act, audit trails et risques juridiques.</p>
+                <div class="persona-focus-tags">
+                    <span class="focus-tag">RGPD</span>
+                    <span class="focus-tag">AI Act</span>
+                    <span class="focus-tag">Audit Trail</span>
+                    <span class="focus-tag">Risques</span>
+                </div>
+            </div>
+            <div class="persona-journey-preview">
+                <div class="journey-step-mini active">
+                    <span class="step-num">1</span>
+                    <span>Compliance</span>
+                </div>
+                <div class="journey-arrow"><i data-lucide="chevron-right"></i></div>
+                <div class="journey-step-mini">
+                    <span class="step-num">2</span>
+                    <span>Security</span>
+                </div>
+                <div class="journey-arrow"><i data-lucide="chevron-right"></i></div>
+                <div class="journey-step-mini">
+                    <span class="step-num">3</span>
+                    <span>Executive</span>
+                </div>
+                <div class="journey-arrow"><i data-lucide="chevron-right"></i></div>
+                <div class="journey-step-mini">
+                    <span class="step-num">4</span>
+                    <span>Dashboard</span>
+                </div>
+            </div>
+            <button class="persona-select-btn">
+                <span>Commencer ce parcours</span>
+                <i data-lucide="arrow-right"></i>
+            </button>
+        </div>
+
+        <!-- ESG / Sustainability -->
+        <div class="persona-card card-animate" data-persona="sustainability_esg" onclick="selectPersona('sustainability_esg')">
+            <div class="persona-card-header" style="--persona-color: #059669;">
+                <div class="persona-icon">
+                    <i data-lucide="leaf"></i>
+                </div>
+                <div class="persona-badge">ESG</div>
+            </div>
+            <div class="persona-card-body">
+                <h3>ESG / Sustainability</h3>
+                <p>Impact environnemental. Empreinte carbone, énergie, et reporting ESG pour l'IA responsable.</p>
+                <div class="persona-focus-tags">
+                    <span class="focus-tag">Carbone</span>
+                    <span class="focus-tag">Énergie</span>
+                    <span class="focus-tag">Impact</span>
+                    <span class="focus-tag">ESG</span>
+                </div>
+            </div>
+            <div class="persona-journey-preview">
+                <div class="journey-step-mini active">
+                    <span class="step-num">1</span>
+                    <span>GreenOps</span>
+                </div>
+                <div class="journey-arrow"><i data-lucide="chevron-right"></i></div>
+                <div class="journey-step-mini">
+                    <span class="step-num">2</span>
+                    <span>Executive</span>
+                </div>
+                <div class="journey-arrow"><i data-lucide="chevron-right"></i></div>
+                <div class="journey-step-mini">
+                    <span class="step-num">3</span>
+                    <span>FinOps</span>
+                </div>
+                <div class="journey-arrow"><i data-lucide="chevron-right"></i></div>
+                <div class="journey-step-mini">
+                    <span class="step-num">4</span>
+                    <span>Dashboard</span>
+                </div>
+            </div>
+            <button class="persona-select-btn">
+                <span>Commencer ce parcours</span>
+                <i data-lucide="arrow-right"></i>
+            </button>
+        </div>
+
+        <!-- Custom / All Access -->
+        <div class="persona-card card-animate card-custom" data-persona="custom" onclick="window.location.href='/'">
+            <div class="persona-card-header" style="--persona-color: #8b5cf6;">
+                <div class="persona-icon">
+                    <i data-lucide="layout-grid"></i>
+                </div>
+                <div class="persona-badge">Libre</div>
+            </div>
+            <div class="persona-card-body">
+                <h3>Accès Complet</h3>
+                <p>Explorez librement toutes les fonctionnalités sans parcours prédéfini. Idéal pour les utilisateurs avancés.</p>
+                <div class="persona-focus-tags">
+                    <span class="focus-tag">Tout</span>
+                    <span class="focus-tag">Flexible</span>
+                    <span class="focus-tag">Avancé</span>
+                </div>
+            </div>
+            <button class="persona-select-btn btn-outline">
+                <span>Explorer librement</span>
+                <i data-lucide="arrow-right"></i>
+            </button>
+        </div>
+    </div>
+
+    <!-- Game Changer Features Section -->
+    <div class="features-section">
+        <h2>
+            <i data-lucide="zap"></i>
+            Fonctionnalités Game Changer
+        </h2>
+        <div class="features-grid">
+            <div class="feature-card card-animate">
+                <div class="feature-icon" style="background: linear-gradient(135deg, #D4A017, #8B4513);">
+                    <i data-lucide="terminal"></i>
+                </div>
+                <h4>Command Palette</h4>
+                <p>Navigation ultra-rapide avec <kbd>⌘</kbd><kbd>K</kbd>. Accédez à n'importe quelle page ou action en quelques frappes.</p>
+                <button class="feature-try" onclick="window.GASKIA_UX && window.GASKIA_UX.toggleCommandPalette()">
+                    Essayer
+                </button>
+            </div>
+            <div class="feature-card card-animate">
+                <div class="feature-icon" style="background: linear-gradient(135deg, #6366f1, #8b5cf6);">
+                    <i data-lucide="zap"></i>
+                </div>
+                <h4>Quick Insights</h4>
+                <p>Résumé exécutif en 30 secondes avec <kbd>I</kbd>. Comprenez l'état de vos systèmes IA instantanément.</p>
+                <button class="feature-try" onclick="window.GASKIA_UX && window.GASKIA_UX.toggleQuickInsights()">
+                    Essayer
+                </button>
+            </div>
+            <div class="feature-card card-animate">
+                <div class="feature-icon" style="background: linear-gradient(135deg, #10b981, #059669);">
+                    <i data-lucide="lightbulb"></i>
+                </div>
+                <h4>Recommandations IA</h4>
+                <p>Suggestions proactives personnalisées selon votre rôle pour optimiser coûts, performance et sécurité.</p>
+                <button class="feature-try" onclick="window.GASKIA_UX && window.GASKIA_UX.toggleQuickInsights()">
+                    Voir
+                </button>
+            </div>
+            <div class="feature-card card-animate">
+                <div class="feature-icon" style="background: linear-gradient(135deg, #ef4444, #dc2626);">
+                    <i data-lucide="keyboard"></i>
+                </div>
+                <h4>Raccourcis Clavier</h4>
+                <p>Productivité maximale avec les raccourcis <kbd>G</kbd>+<kbd>H</kbd>, <kbd>G</kbd>+<kbd>E</kbd>, etc. Tapez <kbd>?</kbd> pour voir tous.</p>
+                <button class="feature-try" onclick="window.GASKIA_UX && window.GASKIA_UX.toggleShortcutsModal()">
+                    Voir tous
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<style>
+/* Personas Hub Styles */
+.personas-hub {
+    padding: var(--space-6);
+    max-width: 1400px;
+    margin: 0 auto;
+}
+
+.personas-hero {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: var(--space-8);
+    align-items: center;
+    padding: var(--space-8) 0;
+    margin-bottom: var(--space-8);
+}
+
+.hero-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: var(--space-2);
+    padding: var(--space-2) var(--space-4);
+    background: linear-gradient(135deg, var(--color-or-sahel), var(--color-terre-cuite));
+    color: white;
+    border-radius: var(--radius-full);
+    font-size: 0.875rem;
+    font-weight: 600;
+    margin-bottom: var(--space-4);
+}
+
+.hero-badge svg {
+    width: 16px;
+    height: 16px;
+}
+
+.hero-content h1 {
+    font-size: 3rem;
+    font-weight: 700;
+    line-height: 1.1;
+    margin-bottom: var(--space-4);
+    background: linear-gradient(135deg, var(--text-primary), var(--color-or-sahel));
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+}
+
+.hero-subtitle {
+    font-size: 1.125rem;
+    color: var(--text-secondary);
+    line-height: 1.7;
+    margin-bottom: var(--space-6);
+}
+
+.hero-shortcuts {
+    display: flex;
+    gap: var(--space-4);
+}
+
+.shortcut-hint {
+    display: flex;
+    align-items: center;
+    gap: var(--space-2);
+    padding: var(--space-2) var(--space-3);
+    background: var(--bg-card);
+    border: 1px solid var(--border-color);
+    border-radius: var(--radius-md);
+    font-size: 0.875rem;
+    color: var(--text-secondary);
+}
+
+.shortcut-hint kbd {
+    padding: var(--space-1) var(--space-2);
+    background: var(--bg-body);
+    border: 1px solid var(--border-color);
+    border-radius: var(--radius-sm);
+    font-size: 0.75rem;
+    font-weight: 600;
+}
+
+/* Orbit Animation */
+.hero-visual {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.orbit-container {
+    position: relative;
+    width: 300px;
+    height: 300px;
+}
+
+.orbit-center {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    width: 80px;
+    height: 80px;
+    background: linear-gradient(135deg, var(--color-or-sahel), var(--color-terre-cuite));
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: white;
+    box-shadow: 0 0 40px rgba(212, 160, 23, 0.4);
+}
+
+.orbit-center svg {
+    width: 40px;
+    height: 40px;
+}
+
+.orbit {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    border: 1px dashed var(--border-color);
+    border-radius: 50%;
+    animation: orbitRotate 20s linear infinite;
+}
+
+.orbit-1 {
+    width: 200px;
+    height: 200px;
+    margin: -100px 0 0 -100px;
+}
+
+.orbit-2 {
+    width: 280px;
+    height: 280px;
+    margin: -140px 0 0 -140px;
+    animation-duration: 30s;
+    animation-direction: reverse;
+}
+
+@keyframes orbitRotate {
+    from { transform: rotate(0deg); }
+    to { transform: rotate(360deg); }
+}
+
+.orbit-item {
+    position: absolute;
+    width: 40px;
+    height: 40px;
+    background: var(--bg-card);
+    border: 2px solid var(--border-color);
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: var(--color-primary);
+    animation: orbitRotate 20s linear infinite reverse;
+}
+
+.orbit-1 .orbit-item:nth-child(1) { top: -20px; left: calc(50% - 20px); }
+.orbit-1 .orbit-item:nth-child(2) { bottom: -20px; left: calc(50% - 20px); }
+.orbit-1 .orbit-item:nth-child(3) { top: calc(50% - 20px); right: -20px; }
+
+.orbit-2 .orbit-item:nth-child(1) { top: 20px; right: 20px; }
+.orbit-2 .orbit-item:nth-child(2) { bottom: 20px; left: 20px; }
+
+.orbit-item svg {
+    width: 20px;
+    height: 20px;
+}
+
+/* Persona Cards Grid */
+.personas-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: var(--space-5);
+    margin-bottom: var(--space-8);
+}
+
+.persona-card {
+    background: var(--bg-card);
+    border: 2px solid var(--border-color);
+    border-radius: var(--radius-xl);
+    overflow: hidden;
+    cursor: pointer;
+    transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.persona-card:hover {
+    border-color: var(--persona-color, var(--color-primary));
+    transform: translateY(-8px);
+    box-shadow: var(--shadow-xl), 0 0 0 1px var(--persona-color, var(--color-primary));
+}
+
+.persona-card-header {
+    padding: var(--space-5);
+    background: linear-gradient(135deg, var(--bg-body), var(--bg-card));
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+}
+
+.persona-icon {
+    width: 56px;
+    height: 56px;
+    background: var(--persona-color, var(--color-primary));
+    border-radius: var(--radius-lg);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: white;
+}
+
+.persona-icon svg {
+    width: 28px;
+    height: 28px;
+}
+
+.persona-badge {
+    padding: var(--space-1) var(--space-3);
+    background: var(--bg-card);
+    border: 1px solid var(--border-color);
+    border-radius: var(--radius-full);
+    font-size: 0.75rem;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    color: var(--text-secondary);
+}
+
+.persona-card-body {
+    padding: var(--space-5);
+}
+
+.persona-card-body h3 {
+    font-size: 1.25rem;
+    font-weight: 600;
+    margin-bottom: var(--space-2);
+}
+
+.persona-card-body p {
+    font-size: 0.875rem;
+    color: var(--text-secondary);
+    line-height: 1.6;
+    margin-bottom: var(--space-4);
+}
+
+.persona-focus-tags {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--space-2);
+}
+
+.focus-tag {
+    padding: var(--space-1) var(--space-2);
+    background: var(--bg-body);
+    border-radius: var(--radius-sm);
+    font-size: 0.6875rem;
+    font-weight: 500;
+    color: var(--text-secondary);
+}
+
+.persona-journey-preview {
+    display: flex;
+    align-items: center;
+    gap: var(--space-1);
+    padding: var(--space-3) var(--space-5);
+    background: var(--bg-body);
+    border-top: 1px solid var(--border-color);
+    overflow-x: auto;
+}
+
+.journey-step-mini {
+    display: flex;
+    align-items: center;
+    gap: var(--space-1);
+    padding: var(--space-1) var(--space-2);
+    background: var(--bg-card);
+    border: 1px solid var(--border-color);
+    border-radius: var(--radius-sm);
+    font-size: 0.6875rem;
+    white-space: nowrap;
+    color: var(--text-secondary);
+}
+
+.journey-step-mini.active {
+    background: var(--color-primary-light);
+    border-color: var(--color-primary);
+    color: var(--color-primary);
+}
+
+.step-num {
+    width: 16px;
+    height: 16px;
+    background: currentColor;
+    color: var(--bg-card);
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 0.625rem;
+    font-weight: 700;
+}
+
+.journey-step-mini.active .step-num {
+    background: var(--color-primary);
+    color: white;
+}
+
+.journey-arrow {
+    color: var(--text-tertiary);
+}
+
+.journey-arrow svg {
+    width: 12px;
+    height: 12px;
+}
+
+.persona-select-btn {
+    width: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: var(--space-2);
+    padding: var(--space-4);
+    background: var(--color-primary);
+    color: white;
+    border: none;
+    font-size: 0.9375rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all var(--transition-fast);
+}
+
+.persona-select-btn:hover {
+    background: var(--color-primary-hover);
+}
+
+.persona-select-btn.btn-outline {
+    background: transparent;
+    color: var(--color-primary);
+    border-top: 1px solid var(--border-color);
+}
+
+.persona-select-btn.btn-outline:hover {
+    background: var(--color-primary-light);
+}
+
+.persona-select-btn svg {
+    width: 18px;
+    height: 18px;
+}
+
+/* Features Section */
+.features-section {
+    padding: var(--space-8);
+    background: var(--bg-card);
+    border: 1px solid var(--border-color);
+    border-radius: var(--radius-xl);
+}
+
+.features-section h2 {
+    display: flex;
+    align-items: center;
+    gap: var(--space-3);
+    font-size: 1.5rem;
+    margin-bottom: var(--space-6);
+    text-align: center;
+    justify-content: center;
+}
+
+.features-section h2 svg {
+    width: 28px;
+    height: 28px;
+    color: var(--color-primary);
+}
+
+.features-grid {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: var(--space-5);
+}
+
+.feature-card {
+    background: var(--bg-body);
+    border: 1px solid var(--border-color);
+    border-radius: var(--radius-lg);
+    padding: var(--space-5);
+    text-align: center;
+    transition: all var(--transition-base);
+}
+
+.feature-card:hover {
+    transform: translateY(-4px);
+    box-shadow: var(--shadow-lg);
+}
+
+.feature-icon {
+    width: 56px;
+    height: 56px;
+    margin: 0 auto var(--space-4);
+    border-radius: var(--radius-lg);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: white;
+}
+
+.feature-icon svg {
+    width: 28px;
+    height: 28px;
+}
+
+.feature-card h4 {
+    font-size: 1rem;
+    font-weight: 600;
+    margin-bottom: var(--space-2);
+}
+
+.feature-card p {
+    font-size: 0.8125rem;
+    color: var(--text-secondary);
+    line-height: 1.5;
+    margin-bottom: var(--space-4);
+}
+
+.feature-card kbd {
+    padding: 2px 6px;
+    background: var(--bg-card);
+    border: 1px solid var(--border-color);
+    border-radius: var(--radius-sm);
+    font-size: 0.6875rem;
+}
+
+.feature-try {
+    padding: var(--space-2) var(--space-4);
+    background: var(--color-primary);
+    color: white;
+    border: none;
+    border-radius: var(--radius-md);
+    font-size: 0.8125rem;
+    font-weight: 500;
+    cursor: pointer;
+    transition: all var(--transition-fast);
+}
+
+.feature-try:hover {
+    background: var(--color-primary-hover);
+    transform: scale(1.05);
+}
+
+/* Responsive */
+@media (max-width: 1200px) {
+    .personas-grid {
+        grid-template-columns: repeat(2, 1fr);
+    }
+    .features-grid {
+        grid-template-columns: repeat(2, 1fr);
+    }
+}
+
+@media (max-width: 768px) {
+    .personas-hero {
+        grid-template-columns: 1fr;
+        text-align: center;
+    }
+    .hero-visual {
+        display: none;
+    }
+    .hero-content h1 {
+        font-size: 2rem;
+    }
+    .hero-shortcuts {
+        justify-content: center;
+    }
+    .personas-grid {
+        grid-template-columns: 1fr;
+    }
+    .features-grid {
+        grid-template-columns: 1fr;
+    }
+}
+</style>
+
+<script>
+function selectPersona(personaId) {
+    // Save to localStorage
+    localStorage.setItem('gaskia-persona', personaId);
+    localStorage.setItem('gaskia-onboarding-complete', 'true');
+
+    // Get first page of journey
+    const journeys = {
+        'business_executive': '/',
+        'tech_ml_engineer': '/',
+        'security_rssi': '/security',
+        'compliance_legal': '/compliance',
+        'sustainability_esg': '/greenops'
+    };
+
+    // Show toast and redirect
+    if (typeof showToast === 'function') {
+        showToast('Parcours activé ! Redirection...', 'success', 2000);
+    }
+
+    setTimeout(() => {
+        window.location.href = journeys[personaId] || '/';
+    }, 500);
+}
+
+// Initialize on load
+document.addEventListener('DOMContentLoaded', () => {
+    lucide.createIcons();
+
+    // Add staggered animation
+    document.querySelectorAll('.card-animate').forEach((card, i) => {
+        card.style.animationDelay = `${i * 0.1}s`;
+    });
+});
+</script>
+{% endblock %}
