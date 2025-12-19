@@ -32,6 +32,9 @@ services:
     container_name: aiobs-visualization
     ports:
       - "${VISUALIZATION_PORT:-8000}:8000"
+    volumes:
+      # Mount source for hot-reload in development
+      - ./visualization:/app/visualization:ro
     environment:
       - PORT=8000
       - HOST=0.0.0.0
