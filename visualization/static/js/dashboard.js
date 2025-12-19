@@ -3,38 +3,123 @@
  * Modern, Clean, Professional Interface
  */
 
-// API helper
+// API helper with retry logic and exponential backoff
 const api = {
-    async get(endpoint) {
-        try {
-            const response = await fetch(endpoint);
-            const data = await response.json();
-            if (!data.success) {
-                throw new Error(data.error || 'API error');
-            }
-            return data.data;
-        } catch (error) {
-            console.error('API Error:', error);
-            throw error;
-        }
+    // Default retry configuration
+    retryConfig: {
+        maxRetries: 3,
+        baseDelay: 1000,
+        maxDelay: 10000
     },
 
-    async post(endpoint, body = {}) {
-        try {
-            const response = await fetch(endpoint, {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify(body)
-            });
-            const data = await response.json();
-            if (!data.success) {
-                throw new Error(data.error || 'API error');
+    // Calculate delay with exponential backoff + jitter
+    getRetryDelay(attempt) {
+        const delay = Math.min(
+            this.retryConfig.baseDelay * Math.pow(2, attempt),
+            this.retryConfig.maxDelay
+        );
+        // Add jitter (±25%)
+        return delay * (0.75 + Math.random() * 0.5);
+    },
+
+    // Check if error is retryable
+    isRetryable(error, response) {
+        // Network errors are retryable
+        if (!response) return true;
+        // Server errors (5xx) are retryable
+        if (response.status >= 500) return true;
+        // Rate limiting (429) is retryable
+        if (response.status === 429) return true;
+        return false;
+    },
+
+    async get(endpoint, options = {}) {
+        const maxRetries = options.maxRetries ?? this.retryConfig.maxRetries;
+        let lastError;
+
+        for (let attempt = 0; attempt <= maxRetries; attempt++) {
+            try {
+                const controller = new AbortController();
+                const timeoutId = setTimeout(() => controller.abort(), options.timeout || 30000);
+
+                const response = await fetch(endpoint, {
+                    signal: controller.signal,
+                    ...options
+                });
+                clearTimeout(timeoutId);
+
+                if (!response.ok) {
+                    const error = new Error(`HTTP ${response.status}`);
+                    error.response = response;
+                    throw error;
+                }
+
+                const data = await response.json();
+                if (!data.success) {
+                    throw new Error(data.error || 'API error');
+                }
+                return data.data;
+            } catch (error) {
+                lastError = error;
+                const shouldRetry = attempt < maxRetries && this.isRetryable(error, error.response);
+
+                if (shouldRetry) {
+                    const delay = this.getRetryDelay(attempt);
+                    console.warn(`API retry ${attempt + 1}/${maxRetries} for ${endpoint} in ${Math.round(delay)}ms`);
+                    await new Promise(resolve => setTimeout(resolve, delay));
+                } else {
+                    console.error('API Error:', error);
+                    throw error;
+                }
             }
-            return data.data;
-        } catch (error) {
-            console.error('API Error:', error);
-            throw error;
         }
+        throw lastError;
+    },
+
+    async post(endpoint, body = {}, options = {}) {
+        const maxRetries = options.maxRetries ?? this.retryConfig.maxRetries;
+        let lastError;
+
+        for (let attempt = 0; attempt <= maxRetries; attempt++) {
+            try {
+                const controller = new AbortController();
+                const timeoutId = setTimeout(() => controller.abort(), options.timeout || 30000);
+
+                const response = await fetch(endpoint, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(body),
+                    signal: controller.signal,
+                    ...options
+                });
+                clearTimeout(timeoutId);
+
+                if (!response.ok) {
+                    const error = new Error(`HTTP ${response.status}`);
+                    error.response = response;
+                    throw error;
+                }
+
+                const data = await response.json();
+                if (!data.success) {
+                    throw new Error(data.error || 'API error');
+                }
+                return data.data;
+            } catch (error) {
+                lastError = error;
+                const shouldRetry = attempt < maxRetries && this.isRetryable(error, error.response);
+
+                if (shouldRetry) {
+                    const delay = this.getRetryDelay(attempt);
+                    console.warn(`API retry ${attempt + 1}/${maxRetries} for ${endpoint} in ${Math.round(delay)}ms`);
+                    await new Promise(resolve => setTimeout(resolve, delay));
+                } else {
+                    console.error('API Error:', error);
+                    throw error;
+                }
+            }
+        }
+        throw lastError;
     }
 };
 
@@ -326,45 +411,138 @@ class AutoRefresh {
     }
 }
 
-// Real-time updates via polling
+// Real-time updates via polling with improved error handling
 class RealtimeUpdater {
-    constructor() {
+    constructor(options = {}) {
         this.subscribers = new Map();
-        this.interval = 5000;
+        this.interval = options.interval || 5000;
         this.timer = null;
+        this.paused = false;
+        this.errorCounts = new Map();
+        this.maxErrors = options.maxErrors || 5;
+        this.errorBackoff = options.errorBackoff || 2;
+        this.onStatusChange = options.onStatusChange || null;
+        this.status = 'idle';
     }
 
-    subscribe(key, endpoint, callback) {
-        this.subscribers.set(key, { endpoint, callback });
+    subscribe(key, endpoint, callback, options = {}) {
+        this.subscribers.set(key, {
+            endpoint,
+            callback,
+            interval: options.interval || this.interval,
+            lastUpdate: 0,
+            onError: options.onError
+        });
+        this.errorCounts.set(key, 0);
+
         if (!this.timer) {
             this.start();
+        }
+
+        // Immediately fetch the data
+        if (options.immediate !== false) {
+            this.updateSubscriber(key);
         }
     }
 
     unsubscribe(key) {
         this.subscribers.delete(key);
+        this.errorCounts.delete(key);
         if (this.subscribers.size === 0) {
             this.stop();
         }
     }
 
+    async updateSubscriber(key) {
+        const sub = this.subscribers.get(key);
+        if (!sub) return;
+
+        try {
+            const data = await api.get(sub.endpoint, { maxRetries: 1 });
+            this.errorCounts.set(key, 0);
+            sub.lastUpdate = Date.now();
+            sub.callback(data, null);
+            this.setStatus('connected');
+        } catch (error) {
+            const errorCount = (this.errorCounts.get(key) || 0) + 1;
+            this.errorCounts.set(key, errorCount);
+
+            console.error(`Error updating ${key} (${errorCount}/${this.maxErrors}):`, error.message);
+
+            // Call error handler if provided
+            if (sub.onError) {
+                sub.onError(error, errorCount);
+            }
+
+            // If too many errors, temporarily disable this subscriber
+            if (errorCount >= this.maxErrors) {
+                console.warn(`Subscriber ${key} disabled after ${errorCount} errors`);
+                this.setStatus('error');
+            }
+        }
+    }
+
+    setStatus(newStatus) {
+        if (this.status !== newStatus) {
+            this.status = newStatus;
+            if (this.onStatusChange) {
+                this.onStatusChange(newStatus);
+            }
+        }
+    }
+
     start() {
+        this.setStatus('connecting');
         this.timer = setInterval(async () => {
-            for (const [key, { endpoint, callback }] of this.subscribers) {
-                try {
-                    const data = await api.get(endpoint);
-                    callback(data);
-                } catch (error) {
-                    console.error(`Error updating ${key}:`, error);
+            if (this.paused || document.hidden) return;
+
+            const now = Date.now();
+            for (const [key, sub] of this.subscribers) {
+                // Check if this subscriber should update based on its interval
+                if (now - sub.lastUpdate >= sub.interval) {
+                    // Skip if too many errors (with exponential backoff)
+                    const errorCount = this.errorCounts.get(key) || 0;
+                    if (errorCount >= this.maxErrors) {
+                        const backoffTime = sub.interval * Math.pow(this.errorBackoff, errorCount - this.maxErrors);
+                        if (now - sub.lastUpdate < backoffTime) continue;
+                    }
+                    this.updateSubscriber(key);
                 }
             }
-        }, this.interval);
+        }, 1000); // Check every second, but update based on individual intervals
     }
 
     stop() {
         if (this.timer) {
             clearInterval(this.timer);
             this.timer = null;
+        }
+        this.setStatus('idle');
+    }
+
+    pause() {
+        this.paused = true;
+        this.setStatus('paused');
+    }
+
+    resume() {
+        this.paused = false;
+        this.setStatus('connected');
+        // Immediately update all subscribers
+        for (const key of this.subscribers.keys()) {
+            this.updateSubscriber(key);
+        }
+    }
+
+    // Reset error count for a specific subscriber
+    resetErrors(key) {
+        this.errorCounts.set(key, 0);
+    }
+
+    // Reset all error counts
+    resetAllErrors() {
+        for (const key of this.errorCounts.keys()) {
+            this.errorCounts.set(key, 0);
         }
     }
 }

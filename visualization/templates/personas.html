@@ -49,18 +49,18 @@
         <div class="persona-card card-animate" data-persona="business_executive" onclick="selectPersona('business_executive')">
             <div class="persona-card-header" style="--persona-color: #10b981;">
                 <div class="persona-icon">
-                    <i data-lucide="briefcase"></i>
+                    <i data-lucide="building-2"></i>
                 </div>
-                <div class="persona-badge">Business</div>
+                <div class="persona-badge">Stratégique</div>
             </div>
             <div class="persona-card-body">
-                <h3>Dirigeant / Executive</h3>
-                <p>Vue stratégique simplifiée. KPIs essentiels, ROI, risques et tendances pour une prise de décision rapide.</p>
+                <h3>Dirigeant / CDO / CTO</h3>
+                <p>Vision 360° de votre portefeuille IA. ROI, risques métier, conformité et tendances pour des décisions éclairées en quelques clics.</p>
                 <div class="persona-focus-tags">
-                    <span class="focus-tag">ROI</span>
-                    <span class="focus-tag">Risques</span>
+                    <span class="focus-tag">ROI Global</span>
+                    <span class="focus-tag">Risques Métier</span>
                     <span class="focus-tag">Conformité</span>
-                    <span class="focus-tag">Tendances</span>
+                    <span class="focus-tag">Stratégie IA</span>
                 </div>
             </div>
             <div class="persona-journey-preview">
@@ -76,16 +76,16 @@
                 <div class="journey-arrow"><i data-lucide="chevron-right"></i></div>
                 <div class="journey-step-mini">
                     <span class="step-num">3</span>
-                    <span>Compliance</span>
+                    <span>Conformité</span>
                 </div>
                 <div class="journey-arrow"><i data-lucide="chevron-right"></i></div>
                 <div class="journey-step-mini">
                     <span class="step-num">4</span>
-                    <span>FinOps</span>
+                    <span>Coûts</span>
                 </div>
             </div>
             <button class="persona-select-btn">
-                <span>Commencer ce parcours</span>
+                <span>Parcours Dirigeant</span>
                 <i data-lucide="arrow-right"></i>
             </button>
         </div>
@@ -94,18 +94,18 @@
         <div class="persona-card card-animate" data-persona="tech_ml_engineer" onclick="selectPersona('tech_ml_engineer')">
             <div class="persona-card-header" style="--persona-color: #6366f1;">
                 <div class="persona-icon">
-                    <i data-lucide="cpu"></i>
+                    <i data-lucide="brain"></i>
                 </div>
-                <div class="persona-badge">Technique</div>
+                <div class="persona-badge">Data/ML</div>
             </div>
             <div class="persona-card-body">
-                <h3>ML Engineer / Tech</h3>
-                <p>Vue technique détaillée. Métriques cognitives, drift, latence, et analyse causale pour le debugging.</p>
+                <h3>ML Engineer / Data Scientist</h3>
+                <p>Métriques cognitives, data drift, feature drift, et diagnostics modèle. Debugging avancé et analyse des performances ML.</p>
                 <div class="persona-focus-tags">
-                    <span class="focus-tag">Drift</span>
-                    <span class="focus-tag">Métriques Cognitives</span>
-                    <span class="focus-tag">Performance</span>
-                    <span class="focus-tag">Déploiement</span>
+                    <span class="focus-tag">Data Drift</span>
+                    <span class="focus-tag">Model Quality</span>
+                    <span class="focus-tag">Features</span>
+                    <span class="focus-tag">Expériences</span>
                 </div>
             </div>
             <div class="persona-journey-preview">
@@ -130,7 +130,52 @@
                 </div>
             </div>
             <button class="persona-select-btn">
-                <span>Commencer ce parcours</span>
+                <span>Parcours ML Engineer</span>
+                <i data-lucide="arrow-right"></i>
+            </button>
+        </div>
+
+        <!-- DevOps / Platform Engineer -->
+        <div class="persona-card card-animate" data-persona="tech_devops" onclick="selectPersona('tech_devops')">
+            <div class="persona-card-header" style="--persona-color: #3b82f6;">
+                <div class="persona-icon">
+                    <i data-lucide="server"></i>
+                </div>
+                <div class="persona-badge">Platform</div>
+            </div>
+            <div class="persona-card-body">
+                <h3>DevOps / Platform Engineer</h3>
+                <p>SLOs, latences, throughput et fiabilité des services IA. Alertes temps réel et optimisation infrastructure.</p>
+                <div class="persona-focus-tags">
+                    <span class="focus-tag">SLOs/SLIs</span>
+                    <span class="focus-tag">Latence P99</span>
+                    <span class="focus-tag">Uptime</span>
+                    <span class="focus-tag">Alertes</span>
+                </div>
+            </div>
+            <div class="persona-journey-preview">
+                <div class="journey-step-mini active">
+                    <span class="step-num">1</span>
+                    <span>Monitoring</span>
+                </div>
+                <div class="journey-arrow"><i data-lucide="chevron-right"></i></div>
+                <div class="journey-step-mini">
+                    <span class="step-num">2</span>
+                    <span>Dashboard</span>
+                </div>
+                <div class="journey-arrow"><i data-lucide="chevron-right"></i></div>
+                <div class="journey-step-mini">
+                    <span class="step-num">3</span>
+                    <span>Causal</span>
+                </div>
+                <div class="journey-arrow"><i data-lucide="chevron-right"></i></div>
+                <div class="journey-step-mini">
+                    <span class="step-num">4</span>
+                    <span>Coûts</span>
+                </div>
+            </div>
+            <button class="persona-select-btn">
+                <span>Parcours DevOps</span>
                 <i data-lucide="arrow-right"></i>
             </button>
         </div>
@@ -139,16 +184,16 @@
         <div class="persona-card card-animate" data-persona="security_rssi" onclick="selectPersona('security_rssi')">
             <div class="persona-card-header" style="--persona-color: #ef4444;">
                 <div class="persona-icon">
-                    <i data-lucide="shield"></i>
+                    <i data-lucide="shield-alert"></i>
                 </div>
                 <div class="persona-badge">Sécurité</div>
             </div>
             <div class="persona-card-body">
-                <h3>RSSI / Security</h3>
-                <p>Centre de sécurité IA. Menaces, vulnérabilités, incidents et posture sécurité globale.</p>
+                <h3>RSSI / Security Officer</h3>
+                <p>Centre de sécurité IA complet. Détection des menaces, vulnérabilités, adversarial attacks et posture sécurité globale.</p>
                 <div class="persona-focus-tags">
-                    <span class="focus-tag">Menaces</span>
-                    <span class="focus-tag">Vulnérabilités</span>
+                    <span class="focus-tag">Menaces IA</span>
+                    <span class="focus-tag">Adversarial</span>
                     <span class="focus-tag">Incidents</span>
                     <span class="focus-tag">Posture</span>
                 </div>
@@ -156,7 +201,7 @@
             <div class="persona-journey-preview">
                 <div class="journey-step-mini active">
                     <span class="step-num">1</span>
-                    <span>Security</span>
+                    <span>Sécurité</span>
                 </div>
                 <div class="journey-arrow"><i data-lucide="chevron-right"></i></div>
                 <div class="journey-step-mini">
@@ -166,7 +211,7 @@
                 <div class="journey-arrow"><i data-lucide="chevron-right"></i></div>
                 <div class="journey-step-mini">
                     <span class="step-num">3</span>
-                    <span>Compliance</span>
+                    <span>Conformité</span>
                 </div>
                 <div class="journey-arrow"><i data-lucide="chevron-right"></i></div>
                 <div class="journey-step-mini">
@@ -175,7 +220,7 @@
                 </div>
             </div>
             <button class="persona-select-btn">
-                <span>Commencer ce parcours</span>
+                <span>Parcours Sécurité</span>
                 <i data-lucide="arrow-right"></i>
             </button>
         </div>
@@ -184,29 +229,29 @@
         <div class="persona-card card-animate" data-persona="compliance_legal" onclick="selectPersona('compliance_legal')">
             <div class="persona-card-header" style="--persona-color: #f59e0b;">
                 <div class="persona-icon">
-                    <i data-lucide="scale"></i>
+                    <i data-lucide="gavel"></i>
                 </div>
                 <div class="persona-badge">Juridique</div>
             </div>
             <div class="persona-card-body">
-                <h3>Juriste / DPO</h3>
-                <p>Focus conformité réglementaire. RGPD, AI Act, audit trails et risques juridiques.</p>
+                <h3>DPO / Juriste IA</h3>
+                <p>Conformité réglementaire complète. RGPD, EU AI Act, audit trails, évaluations d'impact et documentation.</p>
                 <div class="persona-focus-tags">
+                    <span class="focus-tag">EU AI Act</span>
                     <span class="focus-tag">RGPD</span>
-                    <span class="focus-tag">AI Act</span>
                     <span class="focus-tag">Audit Trail</span>
-                    <span class="focus-tag">Risques</span>
+                    <span class="focus-tag">Documentation</span>
                 </div>
             </div>
             <div class="persona-journey-preview">
                 <div class="journey-step-mini active">
                     <span class="step-num">1</span>
-                    <span>Compliance</span>
+                    <span>Conformité</span>
                 </div>
                 <div class="journey-arrow"><i data-lucide="chevron-right"></i></div>
                 <div class="journey-step-mini">
                     <span class="step-num">2</span>
-                    <span>Security</span>
+                    <span>Sécurité</span>
                 </div>
                 <div class="journey-arrow"><i data-lucide="chevron-right"></i></div>
                 <div class="journey-step-mini">
@@ -220,7 +265,7 @@
                 </div>
             </div>
             <button class="persona-select-btn">
-                <span>Commencer ce parcours</span>
+                <span>Parcours Conformité</span>
                 <i data-lucide="arrow-right"></i>
             </button>
         </div>
@@ -229,24 +274,24 @@
         <div class="persona-card card-animate" data-persona="sustainability_esg" onclick="selectPersona('sustainability_esg')">
             <div class="persona-card-header" style="--persona-color: #059669;">
                 <div class="persona-icon">
-                    <i data-lucide="leaf"></i>
+                    <i data-lucide="trees"></i>
                 </div>
-                <div class="persona-badge">ESG</div>
+                <div class="persona-badge">RSE/ESG</div>
             </div>
             <div class="persona-card-body">
-                <h3>ESG / Sustainability</h3>
-                <p>Impact environnemental. Empreinte carbone, énergie, et reporting ESG pour l'IA responsable.</p>
+                <h3>Responsable RSE / ESG</h3>
+                <p>Impact environnemental de vos IA. Empreinte carbone, consommation énergétique, et reporting ESG automatisé.</p>
                 <div class="persona-focus-tags">
-                    <span class="focus-tag">Carbone</span>
-                    <span class="focus-tag">Énergie</span>
-                    <span class="focus-tag">Impact</span>
-                    <span class="focus-tag">ESG</span>
+                    <span class="focus-tag">CO2/kWh</span>
+                    <span class="focus-tag">Green AI</span>
+                    <span class="focus-tag">Reporting</span>
+                    <span class="focus-tag">Optimisation</span>
                 </div>
             </div>
             <div class="persona-journey-preview">
                 <div class="journey-step-mini active">
                     <span class="step-num">1</span>
-                    <span>GreenOps</span>
+                    <span>Carbone</span>
                 </div>
                 <div class="journey-arrow"><i data-lucide="chevron-right"></i></div>
                 <div class="journey-step-mini">
@@ -256,7 +301,7 @@
                 <div class="journey-arrow"><i data-lucide="chevron-right"></i></div>
                 <div class="journey-step-mini">
                     <span class="step-num">3</span>
-                    <span>FinOps</span>
+                    <span>Coûts</span>
                 </div>
                 <div class="journey-arrow"><i data-lucide="chevron-right"></i></div>
                 <div class="journey-step-mini">
@@ -265,7 +310,7 @@
                 </div>
             </div>
             <button class="persona-select-btn">
-                <span>Commencer ce parcours</span>
+                <span>Parcours ESG</span>
                 <i data-lucide="arrow-right"></i>
             </button>
         </div>
@@ -831,18 +876,30 @@ function selectPersona(personaId) {
     localStorage.setItem('gaskia-persona', personaId);
     localStorage.setItem('gaskia-onboarding-complete', 'true');
 
-    // Get first page of journey
+    // Get first page of journey based on persona
     const journeys = {
         'business_executive': '/',
         'tech_ml_engineer': '/',
+        'tech_devops': '/monitoring',
         'security_rssi': '/security',
         'compliance_legal': '/compliance',
         'sustainability_esg': '/greenops'
     };
 
+    // Persona names for display
+    const personaNames = {
+        'business_executive': 'Dirigeant',
+        'tech_ml_engineer': 'ML Engineer',
+        'tech_devops': 'DevOps',
+        'security_rssi': 'Sécurité',
+        'compliance_legal': 'Conformité',
+        'sustainability_esg': 'ESG'
+    };
+
     // Show toast and redirect
     if (typeof showToast === 'function') {
-        showToast('Parcours activé ! Redirection...', 'success', 2000);
+        const name = personaNames[personaId] || 'Personnalisé';
+        showToast(`Parcours ${name} activé !`, 'success', 2000);
     }
 
     setTimeout(() => {
