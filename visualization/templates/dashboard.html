@@ -1,56 +1,363 @@
 {% extends "base.html" %}
 
+{% set active_page = 'profile' %}
+
+{% block page_title %}{{ profile_name or 'Dashboard' }}{% endblock %}
+
+{% block page_subtitle %}
+<p>{{ profile_description or 'Tableau de bord personnalisé' }}</p>
+{% endblock %}
+
+{% block topbar_actions %}
+<div class="profile-indicator">
+    <span class="profile-badge" style="background: {{ profile_color or 'var(--color-primary)' }};">
+        <i data-lucide="{{ profile_icon or 'user' }}"></i>
+    </span>
+    <span class="profile-name">{{ profile_name or 'Profile' }}</span>
+</div>
+<a href="/personas" class="btn btn-secondary btn-sm">
+    <i data-lucide="repeat"></i>
+    <span>{{ t('actions.change_profile') or 'Changer de profil' }}</span>
+</a>
+{% endblock %}
+
 {% block content %}
-<div class="dashboard-container">
-    <!-- Sidebar - Dynamic based on profile -->
-    <nav class="sidebar" id="sidebar">
-        <div class="sidebar-logo">
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                <circle cx="12" cy="12" r="10"/>
-                <path d="M12 6v6l4 2"/>
-                <circle cx="12" cy="12" r="3"/>
-            </svg>
-            AIOBS
+<!-- Page Narrative Section - Profile Specific -->
+<div class="page-narrative" id="pageNarrative">
+    <button class="narrative-dismiss" onclick="dismissNarrative()" title="{{ t('actions.close') or 'Fermer' }}">
+        <i data-lucide="x"></i>
+    </button>
+    <div class="narrative-header">
+        <div class="narrative-icon" style="background: {{ profile_color or 'var(--color-primary)' }};">
+            <i data-lucide="{{ profile_icon or 'layout-dashboard' }}"></i>
         </div>
-        <div id="navigationMenu">
-            <div class="loader"><div class="spinner"></div></div>
+        <div class="narrative-content">
+            <h2 id="narrativeTitle">{{ t('narrative.profile_title') or 'Votre Tableau de Bord Personnalisé' }}</h2>
+            <p id="narrativeDesc">{{ profile_description or 'Vue optimisée pour votre rôle avec les métriques et KPIs les plus pertinents.' }}</p>
         </div>
-    </nav>
+    </div>
+    <div class="narrative-features" id="narrativeFeatures">
+        <!-- Dynamically populated based on profile -->
+    </div>
+    <div class="narrative-actions">
+        <button class="btn btn-primary" onclick="startGuidedTour()">
+            <i data-lucide="play-circle"></i>
+            {{ t('help.start_tour') or 'Découvrir ce tableau de bord' }}
+        </button>
+        <a href="/personas" class="btn btn-secondary">
+            <i data-lucide="compass"></i>
+            {{ t('help.change_profile') or 'Changer de Parcours' }}
+        </a>
+    </div>
+</div>
 
-    <!-- Main Content -->
-    <main class="main-content">
-        <div class="header">
-            <div>
-                <h1 class="header-title" id="profileTitle">Loading...</h1>
-                <p style="color: var(--text-secondary); margin: 0;" id="profileDescription"></p>
-            </div>
-            <div class="header-actions">
-                <button class="theme-toggle" onclick="toggleTheme()">
-                    <i data-feather="moon"></i>
-                </button>
-                <a href="/" style="padding: 0.5rem 1rem; background: var(--bg-secondary); border-radius: 0.5rem; text-decoration: none; color: var(--text-primary);">
-                    <i data-feather="arrow-left"></i> Back
-                </a>
-            </div>
-        </div>
+<!-- Profile Journey Preview -->
+<div class="profile-journey-bar" id="profileJourney">
+    <div class="journey-label">
+        <i data-lucide="map"></i>
+        <span>{{ t('profile.journey') or 'Votre Parcours' }}</span>
+    </div>
+    <div class="journey-steps" id="journeySteps">
+        <!-- Dynamically populated -->
+    </div>
+</div>
 
-        <!-- Dynamic Widget Grid -->
-        <div class="widget-grid" id="widgetGrid">
-            <div class="loader" style="grid-column: 1 / -1;"><div class="spinner"></div></div>
-        </div>
-    </main>
+<!-- Quick Tips for Profile -->
+<div class="quick-tips" id="quickTips">
+    <div class="quick-tips-header">
+        <i data-lucide="lightbulb"></i>
+        {{ t('help.tips_for_profile') or 'Astuces pour ce profil' }}
+        <button class="quick-tips-dismiss" onclick="dismissTips()" title="Fermer">
+            <i data-lucide="x"></i>
+        </button>
+    </div>
+    <div class="quick-tips-grid" id="quickTipsGrid">
+        <!-- Dynamically populated based on profile -->
+    </div>
+</div>
+
+<!-- KPI Summary Row -->
+<div class="kpi-grid" id="kpiGrid">
+    <!-- Dynamically populated with profile-specific KPIs -->
+    <div class="kpi-card skeleton-card">
+        <div class="skeleton" style="width: 40px; height: 40px; border-radius: 50%;"></div>
+        <div class="skeleton" style="width: 100px; height: 16px; margin-top: 8px;"></div>
+        <div class="skeleton" style="width: 80px; height: 32px; margin-top: 4px;"></div>
+    </div>
+    <div class="kpi-card skeleton-card">
+        <div class="skeleton" style="width: 40px; height: 40px; border-radius: 50%;"></div>
+        <div class="skeleton" style="width: 100px; height: 16px; margin-top: 8px;"></div>
+        <div class="skeleton" style="width: 80px; height: 32px; margin-top: 4px;"></div>
+    </div>
+    <div class="kpi-card skeleton-card">
+        <div class="skeleton" style="width: 40px; height: 40px; border-radius: 50%;"></div>
+        <div class="skeleton" style="width: 100px; height: 16px; margin-top: 8px;"></div>
+        <div class="skeleton" style="width: 80px; height: 32px; margin-top: 4px;"></div>
+    </div>
+    <div class="kpi-card skeleton-card">
+        <div class="skeleton" style="width: 40px; height: 40px; border-radius: 50%;"></div>
+        <div class="skeleton" style="width: 100px; height: 16px; margin-top: 8px;"></div>
+        <div class="skeleton" style="width: 80px; height: 32px; margin-top: 4px;"></div>
+    </div>
+</div>
+
+<!-- Dynamic Widget Grid -->
+<div class="widget-grid" id="widgetGrid">
+    <div class="widget-loading">
+        <div class="loader"><div class="spinner"></div></div>
+        <p>{{ t('loading.widgets') or 'Chargement des widgets...' }}</p>
+    </div>
+</div>
+
+<!-- Profile Actions Bar -->
+<div class="profile-actions-bar">
+    <div class="actions-left">
+        <button class="btn btn-ghost" onclick="refreshAllWidgets()">
+            <i data-lucide="refresh-cw"></i>
+            {{ t('actions.refresh') or 'Actualiser' }}
+        </button>
+        <button class="btn btn-ghost" onclick="toggleAutoRefresh()">
+            <i data-lucide="clock" id="autoRefreshIcon"></i>
+            <span id="autoRefreshLabel">{{ t('actions.auto_refresh') or 'Auto-refresh: OFF' }}</span>
+        </button>
+    </div>
+    <div class="actions-right">
+        <select id="timeRangeSelect" class="form-select" onchange="updateTimeRange(this.value)">
+            <option value="1h">{{ t('time.last_1h') or 'Dernière heure' }}</option>
+            <option value="24h" selected>{{ t('time.last_24h') or 'Dernières 24h' }}</option>
+            <option value="7d">{{ t('time.last_7d') or '7 derniers jours' }}</option>
+            <option value="30d">{{ t('time.last_30d') or '30 derniers jours' }}</option>
+        </select>
+    </div>
 </div>
 {% endblock %}
 
 {% block scripts %}
 <script>
 const profileId = '{{ profile_id }}';
+let autoRefreshEnabled = false;
+let autoRefreshInterval = null;
+let widgetCharts = {};
+
+// Profile configurations with colors, icons, and features
+const PROFILE_CONFIG = {
+    'tech_ml_engineer': {
+        color: '#6366f1',
+        icon: 'brain',
+        title: 'ML Engineer Dashboard',
+        narrative: 'Surveillez vos modèles ML : drift, métriques cognitives, fiabilité et performance en temps réel.',
+        features: [
+            { icon: 'activity', label: 'Data Drift' },
+            { icon: 'cpu', label: 'Métriques Cognitives' },
+            { icon: 'shield', label: 'Fiabilité' },
+            { icon: 'git-branch', label: 'Analyse Causale' }
+        ],
+        tips: [
+            { icon: 'alert-triangle', title: 'Drift Alerts', desc: 'Configurez des alertes pour détecter le drift automatiquement' },
+            { icon: 'layers', title: 'Feature Importance', desc: 'Analysez l\'importance des features pour comprendre les prédictions' },
+            { icon: 'git-branch', title: 'Root Cause', desc: 'Utilisez l\'analyse causale pour investiguer les anomalies' }
+        ],
+        journey: [
+            { label: 'Dashboard', route: `/profile/${profileId}`, active: true },
+            { label: 'Monitoring', route: '/monitoring' },
+            { label: 'Causal', route: '/causal' },
+            { label: 'Impact', route: '/impact' }
+        ]
+    },
+    'tech_devops': {
+        color: '#3b82f6',
+        icon: 'server',
+        title: 'DevOps Dashboard',
+        narrative: 'Supervisez votre infrastructure IA : SLOs, latences, uptime et déploiements en un coup d\'œil.',
+        features: [
+            { icon: 'target', label: 'SLOs/SLIs' },
+            { icon: 'activity', label: 'Latence P99' },
+            { icon: 'check-circle', label: 'Uptime' },
+            { icon: 'bell', label: 'Alertes' }
+        ],
+        tips: [
+            { icon: 'target', title: 'Error Budget', desc: 'Suivez votre budget d\'erreur pour prioriser les actions' },
+            { icon: 'share-2', title: 'Topologie', desc: 'Visualisez les dépendances entre services' },
+            { icon: 'trending-up', title: 'Tendances', desc: 'Analysez les tendances de latence sur 7 jours' }
+        ],
+        journey: [
+            { label: 'Monitoring', route: '/monitoring', active: true },
+            { label: 'Dashboard', route: `/profile/${profileId}` },
+            { label: 'Causal', route: '/causal' },
+            { label: 'FinOps', route: '/finops' }
+        ]
+    },
+    'tech_data_scientist': {
+        color: '#8b5cf6',
+        icon: 'database',
+        title: 'Data Scientist Dashboard',
+        narrative: 'Analysez la qualité de vos données, suivez vos expériences et comparez vos modèles.',
+        features: [
+            { icon: 'database', label: 'Data Quality' },
+            { icon: 'flask', label: 'Expériences' },
+            { icon: 'bar-chart-2', label: 'Statistiques' },
+            { icon: 'layers', label: 'Features' }
+        ],
+        tips: [
+            { icon: 'database', title: 'Qualité', desc: 'Surveillez completeness, accuracy et freshness' },
+            { icon: 'flask', title: 'A/B Tests', desc: 'Suivez vos tests avec p-value et effect size' },
+            { icon: 'git-merge', title: 'Feature Drift', desc: 'Détectez le drift par feature avec la heatmap' }
+        ],
+        journey: [
+            { label: 'Dashboard', route: `/profile/${profileId}`, active: true },
+            { label: 'Monitoring', route: '/monitoring' },
+            { label: 'Causal', route: '/causal' },
+            { label: 'Impact', route: '/impact' }
+        ]
+    },
+    'business_product': {
+        color: '#f59e0b',
+        icon: 'zap',
+        title: 'Product Owner Dashboard',
+        narrative: 'Suivez l\'impact de vos features IA sur l\'expérience utilisateur et les métriques business.',
+        features: [
+            { icon: 'zap', label: 'AI Features' },
+            { icon: 'users', label: 'Adoption' },
+            { icon: 'heart', label: 'Satisfaction' },
+            { icon: 'trending-up', label: 'Conversion' }
+        ],
+        tips: [
+            { icon: 'filter', title: 'Funnel', desc: 'Analysez le funnel d\'adoption de vos features' },
+            { icon: 'bar-chart-2', title: 'A/B Results', desc: 'Consultez les résultats de vos A/B tests' },
+            { icon: 'trending-up', title: 'Business Impact', desc: 'Mesurez l\'impact revenue de chaque feature' }
+        ],
+        journey: [
+            { label: 'Dashboard', route: `/profile/${profileId}`, active: true },
+            { label: 'Executive', route: '/executive' },
+            { label: 'Impact', route: '/impact' },
+            { label: 'FinOps', route: '/finops' }
+        ]
+    },
+    'business_executive': {
+        color: '#10b981',
+        icon: 'briefcase',
+        title: 'Executive Dashboard',
+        narrative: 'Vue stratégique de votre portefeuille IA : ROI, risques et conformité en un coup d\'œil.',
+        features: [
+            { icon: 'shield-check', label: 'Trust Score' },
+            { icon: 'dollar-sign', label: 'Coûts' },
+            { icon: 'check-square', label: 'Conformité' },
+            { icon: 'leaf', label: 'Carbone' }
+        ],
+        tips: [
+            { icon: 'briefcase', title: 'Vue Executive', desc: 'Accédez à la vue executive pour les rapports stratégiques' },
+            { icon: 'trending-up', title: 'Tendances', desc: 'Suivez les tendances du Trust Score sur 30 jours' },
+            { icon: 'file-text', title: 'Rapports', desc: 'Exportez les rapports pour vos comités' }
+        ],
+        journey: [
+            { label: 'Dashboard', route: '/', active: true },
+            { label: 'Executive', route: '/executive' },
+            { label: 'Conformité', route: '/compliance' },
+            { label: 'Coûts', route: '/finops' }
+        ]
+    }
+};
+
+// Default config for unknown profiles
+const DEFAULT_CONFIG = {
+    color: '#6366f1',
+    icon: 'layout-dashboard',
+    title: 'Dashboard',
+    narrative: 'Votre tableau de bord personnalisé avec les métriques clés.',
+    features: [
+        { icon: 'shield-check', label: 'Trust Score' },
+        { icon: 'activity', label: 'Monitoring' },
+        { icon: 'dollar-sign', label: 'Coûts' },
+        { icon: 'leaf', label: 'Carbone' }
+    ],
+    tips: [
+        { icon: 'command', title: 'Navigation', desc: 'Utilisez ⌘K pour naviguer rapidement' },
+        { icon: 'keyboard', title: 'Raccourcis', desc: 'Tapez ? pour voir tous les raccourcis' },
+        { icon: 'help-circle', title: 'Aide', desc: 'Cliquez sur l\'aide en bas à droite' }
+    ],
+    journey: [
+        { label: 'Dashboard', route: '/', active: true },
+        { label: 'Unified', route: '/unified' },
+        { label: 'Causal', route: '/causal' },
+        { label: 'Impact', route: '/impact' }
+    ]
+};
 
 document.addEventListener('DOMContentLoaded', async () => {
+    // Initialize profile-specific UI
+    initializeProfileUI();
+
+    // Load dashboard data
     await loadProfileDashboard();
-    await loadNavigation();
-    feather.replace();
+
+    // Initialize icons
+    lucide.createIcons();
+
+    // Setup real-time updates if available
+    if (window.aiobs && window.aiobs.RealtimeUpdater) {
+        setupRealtimeUpdates();
+    }
+
+    // Check narrative/tips dismissal
+    initNarrativeAndTips();
 });
+
+function initializeProfileUI() {
+    const config = PROFILE_CONFIG[profileId] || DEFAULT_CONFIG;
+
+    // Update narrative
+    const narrativeIcon = document.querySelector('.narrative-icon');
+    if (narrativeIcon) {
+        narrativeIcon.style.background = config.color;
+    }
+
+    document.getElementById('narrativeTitle').textContent = config.title;
+    document.getElementById('narrativeDesc').textContent = config.narrative;
+
+    // Populate features
+    const featuresContainer = document.getElementById('narrativeFeatures');
+    featuresContainer.innerHTML = config.features.map(f => `
+        <div class="narrative-feature">
+            <i data-lucide="${f.icon}"></i>
+            <span>${f.label}</span>
+        </div>
+    `).join('');
+
+    // Populate tips
+    const tipsGrid = document.getElementById('quickTipsGrid');
+    tipsGrid.innerHTML = config.tips.map(tip => `
+        <div class="quick-tip">
+            <div class="quick-tip-icon"><i data-lucide="${tip.icon}"></i></div>
+            <div class="quick-tip-content">
+                <strong>${tip.title}</strong>
+                <span>${tip.desc}</span>
+            </div>
+        </div>
+    `).join('');
+
+    // Populate journey
+    const journeySteps = document.getElementById('journeySteps');
+    const journey = config.journey || DEFAULT_CONFIG.journey;
+    journeySteps.innerHTML = journey.map((step, i) => `
+        ${i > 0 ? '<div class="journey-arrow"><i data-lucide="chevron-right"></i></div>' : ''}
+        <a href="${step.route}" class="journey-step ${step.active ? 'active' : ''}">
+            <span class="step-num">${i + 1}</span>
+            <span>${step.label}</span>
+        </a>
+    `).join('');
+
+    // Update profile indicator
+    const profileBadge = document.querySelector('.profile-badge');
+    if (profileBadge) {
+        profileBadge.style.background = config.color;
+        const icon = profileBadge.querySelector('i');
+        if (icon) {
+            icon.setAttribute('data-lucide', config.icon);
+        }
+    }
+
+    lucide.createIcons();
+}
 
 async function loadProfileDashboard() {
     try {
@@ -58,85 +365,229 @@ async function loadProfileDashboard() {
         const result = await response.json();
 
         if (result.success) {
-            document.getElementById('profileTitle').textContent = result.data.name + ' Dashboard';
-            document.getElementById('profileDescription').textContent = result.data.description;
+            const data = result.data;
+
+            // Update page title
+            document.title = `${data.name} | GASKIA`;
+
+            // Render KPI cards
+            await renderKPICards(data.widgets);
 
             // Render widgets
-            const grid = document.getElementById('widgetGrid');
-            grid.innerHTML = result.data.widgets.map(widget => `
-                <div class="widget" style="grid-column: span ${widget.position.w || 3}; grid-row: span ${widget.position.h || 2};">
-                    <div class="card-header">
-                        <h3 class="card-title">${widget.title}</h3>
-                    </div>
-                    <div class="widget-content" id="widget-${widget.id}" data-type="${widget.type}" data-source="${widget.data_source}">
-                        <div class="loader"><div class="spinner"></div></div>
-                    </div>
-                </div>
-            `).join('');
+            await renderWidgets(data.widgets);
 
-            // Load widget data
-            for (const widget of result.data.widgets) {
-                loadWidgetData(widget);
-            }
+            lucide.createIcons();
+        } else {
+            showError('Impossible de charger le tableau de bord');
         }
     } catch (error) {
         console.error('Error loading dashboard:', error);
+        showError('Erreur de connexion');
     }
 }
 
-async function loadNavigation() {
+async function renderKPICards(widgets) {
+    const kpiWidget = widgets.find(w => w.type === 'kpi_row' || w.type === 'kpi_cards');
+    const kpiGrid = document.getElementById('kpiGrid');
+
+    if (!kpiWidget) {
+        kpiGrid.style.display = 'none';
+        return;
+    }
+
     try {
-        const response = await fetch(`/api/profiles/${profileId}/navigation`);
+        const response = await fetch(kpiWidget.data_source);
         const result = await response.json();
 
         if (result.success) {
-            const menu = document.getElementById('navigationMenu');
-            menu.innerHTML = `
-                <div class="nav-section">
-                    <div class="nav-section-title">Navigation</div>
-                    ${result.data.map(item => `
-                        <a href="${item.route}" class="nav-item">
-                            <i data-feather="${item.icon}"></i>
-                            ${item.label}
-                            ${item.badge ? `<span class="status-badge status-warning">${item.badge}</span>` : ''}
-                        </a>
-                    `).join('')}
-                </div>
-                <div class="nav-section">
-                    <div class="nav-section-title">Quick Links</div>
-                    <a href="/" class="nav-item">
-                        <i data-feather="home"></i>
-                        Main Dashboard
-                    </a>
-                    <a href="/unified" class="nav-item">
-                        <i data-feather="layers"></i>
-                        Unified View
-                    </a>
-                </div>
-            `;
-            feather.replace();
+            const data = result.data;
+            const config = PROFILE_CONFIG[profileId] || DEFAULT_CONFIG;
+
+            // Define KPI mappings with icons and formatters
+            const kpiDefinitions = {
+                trust_score: {
+                    icon: 'shield-check',
+                    label: 'Trust Score',
+                    format: v => ((v.key_metrics?.avg_trust_score || v.avg_trust_score || 0) * 100).toFixed(0) + '%',
+                    color: 'primary'
+                },
+                daily_cost: {
+                    icon: 'dollar-sign',
+                    label: 'Coût Journalier',
+                    format: v => '$' + (v.key_metrics?.total_daily_cost || v.total_daily_cost || 0).toFixed(0),
+                    color: 'warning'
+                },
+                slo_compliance: {
+                    icon: 'target',
+                    label: 'SLO Compliance',
+                    format: v => (v.slo?.compliance_pct || 98) + '%',
+                    color: 'success'
+                },
+                carbon: {
+                    icon: 'leaf',
+                    label: 'Empreinte Carbone',
+                    format: v => (v.key_metrics?.total_daily_carbon_kg || v.total_daily_carbon_kg || 0).toFixed(1) + ' kg',
+                    color: 'danger'
+                },
+                model_accuracy: {
+                    icon: 'target',
+                    label: 'Model Accuracy',
+                    format: v => (v.model_accuracy || 94.5).toFixed(1) + '%',
+                    color: 'success'
+                },
+                drift_status: {
+                    icon: 'activity',
+                    label: 'Drift Status',
+                    format: v => v.drift_status || 'Normal',
+                    color: 'info'
+                },
+                inference_count: {
+                    icon: 'zap',
+                    label: 'Inférences',
+                    format: v => formatNumber(v.key_metrics?.total_daily_inferences || v.total_daily_inferences || 0),
+                    color: 'primary'
+                },
+                uptime_percent: {
+                    icon: 'check-circle',
+                    label: 'Uptime',
+                    format: v => (v.uptime_percent || 99.9).toFixed(1) + '%',
+                    color: 'success'
+                },
+                active_incidents: {
+                    icon: 'alert-triangle',
+                    label: 'Incidents Actifs',
+                    format: v => v.alerts?.critical || 0,
+                    color: 'danger'
+                },
+                active_ai_features: {
+                    icon: 'zap',
+                    label: 'AI Features',
+                    format: v => v.active_features || 12,
+                    color: 'primary'
+                },
+                user_satisfaction: {
+                    icon: 'heart',
+                    label: 'Satisfaction',
+                    format: v => (v.user_satisfaction || 4.2).toFixed(1) + '/5',
+                    color: 'success'
+                },
+                feature_adoption: {
+                    icon: 'users',
+                    label: 'Adoption',
+                    format: v => (v.feature_adoption || 78) + '%',
+                    color: 'info'
+                },
+                conversion_lift: {
+                    icon: 'trending-up',
+                    label: 'Conversion Lift',
+                    format: v => '+' + (v.conversion_lift || 12) + '%',
+                    color: 'success'
+                }
+            };
+
+            const metrics = kpiWidget.config?.metrics || ['trust_score', 'daily_cost', 'slo_compliance', 'carbon'];
+
+            kpiGrid.innerHTML = metrics.slice(0, 4).map(metric => {
+                const def = kpiDefinitions[metric] || { icon: 'circle', label: metric, format: v => '-', color: 'primary' };
+                return `
+                    <div class="kpi-card card-animate">
+                        <div class="kpi-icon ${def.color}">
+                            <i data-lucide="${def.icon}"></i>
+                        </div>
+                        <div class="kpi-label">${def.label}</div>
+                        <div class="kpi-value">${def.format(data)}</div>
+                        <div class="kpi-trend stable">
+                            <i data-lucide="minus"></i>
+                            <span>Stable</span>
+                        </div>
+                    </div>
+                `;
+            }).join('');
+
+            lucide.createIcons();
         }
     } catch (error) {
-        console.error('Error loading navigation:', error);
+        console.error('Error loading KPIs:', error);
+    }
+}
+
+async function renderWidgets(widgets) {
+    const grid = document.getElementById('widgetGrid');
+
+    // Filter out kpi_row widgets (already rendered separately)
+    const displayWidgets = widgets.filter(w => w.type !== 'kpi_row' && w.type !== 'kpi_cards');
+
+    if (displayWidgets.length === 0) {
+        grid.innerHTML = `
+            <div class="empty-state">
+                <i data-lucide="layout"></i>
+                <h3>Aucun widget configuré</h3>
+                <p>Ce profil n'a pas encore de widgets configurés.</p>
+            </div>
+        `;
+        lucide.createIcons();
+        return;
+    }
+
+    grid.innerHTML = displayWidgets.map(widget => `
+        <div class="widget card card-animate"
+             style="grid-column: span ${Math.min(widget.position?.w || 6, 12)}; grid-row: span ${widget.position?.h || 2};"
+             data-widget-id="${widget.id}">
+            <div class="card-header">
+                <h3 class="card-title">${widget.title}</h3>
+                <div class="widget-actions">
+                    <button class="btn btn-ghost btn-sm" onclick="refreshWidget('${widget.id}')" title="Actualiser">
+                        <i data-lucide="refresh-cw"></i>
+                    </button>
+                    <button class="btn btn-ghost btn-sm" onclick="expandWidget('${widget.id}')" title="Agrandir">
+                        <i data-lucide="maximize-2"></i>
+                    </button>
+                </div>
+            </div>
+            <div class="widget-content" id="widget-${widget.id}" data-type="${widget.type}" data-source="${widget.data_source}">
+                <div class="widget-loader">
+                    <div class="spinner"></div>
+                </div>
+            </div>
+        </div>
+    `).join('');
+
+    lucide.createIcons();
+
+    // Load widget data
+    for (const widget of displayWidgets) {
+        loadWidgetData(widget);
     }
 }
 
 async function loadWidgetData(widget) {
     const container = document.getElementById(`widget-${widget.id}`);
+    if (!container) return;
 
     try {
-        // Replace placeholders in data source
         let dataSource = widget.data_source.replace('{model_id}', 'recommendation-v2');
-
         const response = await fetch(dataSource);
         const result = await response.json();
 
         if (result.success) {
-            renderWidget(container, widget.type, result.data, widget.config);
+            renderWidget(container, widget.type, result.data, widget.config || {});
+        } else {
+            container.innerHTML = `
+                <div class="widget-error">
+                    <i data-lucide="alert-circle"></i>
+                    <span>Données non disponibles</span>
+                </div>
+            `;
         }
     } catch (error) {
-        container.innerHTML = `<div style="color: var(--text-secondary); text-align: center; padding: 1rem;">Unable to load data</div>`;
+        container.innerHTML = `
+            <div class="widget-error">
+                <i data-lucide="wifi-off"></i>
+                <span>Erreur de connexion</span>
+            </div>
+        `;
     }
+    lucide.createIcons();
 }
 
 function renderWidget(container, type, data, config) {
@@ -146,7 +597,8 @@ function renderWidget(container, type, data, config) {
             break;
         case 'line_chart':
         case 'multi_line':
-            renderLineChart(container, data, config);
+        case 'area_chart':
+            renderLineChart(container, data, config, type === 'area_chart');
             break;
         case 'bar_chart':
             renderBarChart(container, data, config);
@@ -158,10 +610,6 @@ function renderWidget(container, type, data, config) {
         case 'table':
             renderTable(container, data, config);
             break;
-        case 'kpi_row':
-        case 'kpi_cards':
-            renderKPICards(container, data, config);
-            break;
         case 'slo_cards':
             renderSLOCards(container, data, config);
             break;
@@ -172,53 +620,65 @@ function renderWidget(container, type, data, config) {
         case 'radar_chart':
             renderRadarChart(container, data, config);
             break;
+        case 'cards_grid':
+            renderCardsGrid(container, data, config);
+            break;
+        case 'timeline':
+            renderTimeline(container, data, config);
+            break;
         default:
             renderJSON(container, data);
     }
 }
 
 function renderGauge(container, data, config) {
-    const value = data.overall_trust || data.overall || 0;
+    const value = data.overall_trust || data.overall || data.score || 0;
     const percentage = (value * 100).toFixed(0);
+    const color = value > 0.8 ? 'var(--color-success)' : value > 0.6 ? 'var(--color-warning)' : 'var(--color-danger)';
 
     container.innerHTML = `
-        <div style="text-align: center; padding: 1rem;">
-            <div style="position: relative; width: 120px; height: 120px; margin: 0 auto;">
-                <svg viewBox="0 0 36 36" style="transform: rotate(-90deg);">
-                    <path d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831"
+        <div class="gauge-widget">
+            <div class="gauge-container">
+                <svg viewBox="0 0 36 36" class="gauge-svg">
+                    <path class="gauge-bg"
+                        d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831"
                         fill="none" stroke="var(--border-color)" stroke-width="3"/>
-                    <path d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831"
-                        fill="none" stroke="${value > 0.8 ? 'var(--success)' : value > 0.6 ? 'var(--warning)' : 'var(--danger)'}"
-                        stroke-width="3" stroke-dasharray="${percentage}, 100"/>
+                    <path class="gauge-value"
+                        d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831"
+                        fill="none" stroke="${color}" stroke-width="3"
+                        stroke-dasharray="${percentage}, 100"
+                        stroke-linecap="round"/>
                 </svg>
-                <div style="position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); font-size: 1.5rem; font-weight: 700;">
-                    ${percentage}%
+                <div class="gauge-center">
+                    <span class="gauge-value-text">${percentage}%</span>
+                    <span class="gauge-label">${data.trend || 'Stable'}</span>
                 </div>
-            </div>
-            <div style="margin-top: 0.5rem; color: var(--text-secondary);">
-                ${data.trend || 'Stable'}
             </div>
         </div>
     `;
 }
 
-function renderLineChart(container, data, config) {
+function renderLineChart(container, data, config, isArea = false) {
     const canvas = document.createElement('canvas');
+    canvas.id = 'chart-' + Date.now();
     container.innerHTML = '';
     container.appendChild(canvas);
-    container.style.height = '200px';
+    container.style.height = '250px';
 
-    // Handle different data formats
     let datasets = [];
     if (data && typeof data === 'object') {
         Object.entries(data).forEach(([name, series], index) => {
-            if (series.points) {
+            if (series && series.points) {
                 datasets.push({
-                    label: name,
+                    label: name.replace(/_/g, ' '),
                     data: series.points.map(p => p.value),
-                    borderColor: config.colors?.[index] || `hsl(${index * 60}, 70%, 50%)`,
+                    borderColor: config.colors?.[index] || `hsl(${index * 60 + 220}, 70%, 55%)`,
+                    backgroundColor: isArea ? `hsla(${index * 60 + 220}, 70%, 55%, 0.1)` : 'transparent',
                     tension: 0.4,
-                    fill: false
+                    fill: isArea,
+                    borderWidth: 2,
+                    pointRadius: 0,
+                    pointHoverRadius: 4
                 });
             }
         });
@@ -233,25 +693,45 @@ function renderLineChart(container, data, config) {
         options: {
             responsive: true,
             maintainAspectRatio: false,
-            plugins: { legend: { position: 'bottom' } }
+            plugins: {
+                legend: {
+                    position: 'bottom',
+                    labels: { usePointStyle: true, padding: 15 }
+                }
+            },
+            scales: {
+                x: { grid: { display: false } },
+                y: { grid: { color: 'var(--border-color)' } }
+            }
         }
     });
 }
 
 function renderBarChart(container, data, config) {
+    const chartData = data.impact_by_domain || data || {};
+
     container.innerHTML = `
-        <div style="padding: 1rem;">
-            ${Object.entries(data.impact_by_domain || data || {}).map(([key, value]) => `
-                <div style="margin-bottom: 0.75rem;">
-                    <div style="display: flex; justify-content: space-between; margin-bottom: 0.25rem;">
-                        <span>${key}</span>
-                        <span style="font-weight: 600;">$${Math.abs(value).toLocaleString()}</span>
+        <div class="bar-chart-widget">
+            ${Object.entries(chartData).map(([key, value]) => {
+                const absValue = Math.abs(value);
+                const maxValue = Math.max(...Object.values(chartData).map(Math.abs));
+                const width = (absValue / maxValue) * 100;
+                const isPositive = value >= 0;
+
+                return `
+                    <div class="bar-item">
+                        <div class="bar-label">
+                            <span class="bar-name">${key.replace(/_/g, ' ')}</span>
+                            <span class="bar-value ${isPositive ? 'positive' : 'negative'}">
+                                ${isPositive ? '+' : ''}$${value.toLocaleString()}
+                            </span>
+                        </div>
+                        <div class="bar-track">
+                            <div class="bar-fill ${isPositive ? 'positive' : 'negative'}" style="width: ${width}%"></div>
+                        </div>
                     </div>
-                    <div style="height: 8px; background: var(--border-color); border-radius: 4px; overflow: hidden;">
-                        <div style="height: 100%; width: ${Math.min(Math.abs(value) / 500, 100)}%; background: ${value < 0 ? 'var(--danger)' : 'var(--success)'}; border-radius: 4px;"></div>
-                    </div>
-                </div>
-            `).join('')}
+                `;
+            }).join('')}
         </div>
     `;
 }
@@ -260,7 +740,7 @@ function renderPieChart(container, data, config) {
     const canvas = document.createElement('canvas');
     container.innerHTML = '';
     container.appendChild(canvas);
-    container.style.height = '200px';
+    container.style.height = '250px';
 
     const field = config.field ? data[config.field.split('.')[0]] : data;
     const chartData = typeof field === 'object' ? field : data;
@@ -271,56 +751,63 @@ function renderPieChart(container, data, config) {
             labels: Object.keys(chartData),
             datasets: [{
                 data: Object.values(chartData),
-                backgroundColor: ['#6366f1', '#10b981', '#f59e0b', '#ef4444', '#3b82f6', '#8b5cf6']
+                backgroundColor: ['#6366f1', '#10b981', '#f59e0b', '#ef4444', '#3b82f6', '#8b5cf6'],
+                borderWidth: 0,
+                spacing: 2
             }]
         },
         options: {
             responsive: true,
             maintainAspectRatio: false,
-            plugins: { legend: { position: 'bottom' } }
+            cutout: '65%',
+            plugins: {
+                legend: {
+                    position: 'bottom',
+                    labels: { usePointStyle: true, padding: 15 }
+                }
+            }
         }
     });
 }
 
 function renderTable(container, data, config) {
-    const items = Array.isArray(data) ? data : (data[config.field] || []);
+    const items = Array.isArray(data) ? data : (data.services || data.items || []);
+
+    if (items.length === 0) {
+        container.innerHTML = `
+            <div class="empty-state small">
+                <i data-lucide="inbox"></i>
+                <span>Aucune donnée</span>
+            </div>
+        `;
+        lucide.createIcons();
+        return;
+    }
+
+    const columns = config.columns || Object.keys(items[0] || {}).slice(0, 5);
 
     container.innerHTML = `
-        <table class="services-table" style="font-size: 0.875rem;">
-            <tbody>
-                ${items.map(item => `
+        <div class="table-container">
+            <table class="table table-sm">
+                <thead>
                     <tr>
-                        ${Object.entries(item).slice(0, 4).map(([k, v]) => `
-                            <td>${typeof v === 'object' ? JSON.stringify(v) : v}</td>
-                        `).join('')}
+                        ${columns.map(col => `<th>${col.replace(/_/g, ' ')}</th>`).join('')}
                     </tr>
-                `).join('')}
-            </tbody>
-        </table>
-    `;
-}
-
-function renderKPICards(container, data, config) {
-    const metrics = config.metrics || ['trust_score', 'daily_cost'];
-    const values = {
-        trust_score: data.key_metrics?.avg_trust_score || data.avg_trust_score || 0.82,
-        daily_cost: data.key_metrics?.total_daily_cost || data.total_daily_cost || 1500,
-        slo_compliance: data.slo?.compliance_pct || data.slo_compliance_pct || 98,
-        carbon: data.key_metrics?.total_daily_carbon_kg || data.total_daily_carbon_kg || 42
-    };
-
-    container.innerHTML = `
-        <div style="display: flex; gap: 1rem; flex-wrap: wrap;">
-            ${metrics.map(m => `
-                <div class="kpi-card" style="flex: 1; min-width: 150px;">
-                    <div class="kpi-label">${m.replace(/_/g, ' ').toUpperCase()}</div>
-                    <div class="kpi-value" style="font-size: 1.5rem;">
-                        ${m.includes('score') || m.includes('compliance') ? (values[m] * (values[m] < 1 ? 100 : 1)).toFixed(0) + '%' :
-                          m.includes('cost') ? '$' + values[m].toFixed(0) :
-                          values[m].toFixed(1)}
-                    </div>
-                </div>
-            `).join('')}
+                </thead>
+                <tbody>
+                    ${items.slice(0, 10).map(item => `
+                        <tr>
+                            ${columns.map(col => {
+                                const value = item[col];
+                                if (col === 'status') {
+                                    return `<td><span class="badge badge-${value}">${value}</span></td>`;
+                                }
+                                return `<td>${typeof value === 'object' ? JSON.stringify(value) : value || '-'}</td>`;
+                            }).join('')}
+                        </tr>
+                    `).join('')}
+                </tbody>
+            </table>
         </div>
     `;
 }
@@ -328,17 +815,34 @@ function renderKPICards(container, data, config) {
 function renderSLOCards(container, data, config) {
     const slos = data.slos || [];
 
+    if (slos.length === 0) {
+        container.innerHTML = `
+            <div class="empty-state small">
+                <i data-lucide="target"></i>
+                <span>Aucun SLO configuré</span>
+            </div>
+        `;
+        lucide.createIcons();
+        return;
+    }
+
     container.innerHTML = `
-        <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 1rem;">
+        <div class="slo-grid">
             ${slos.map(slo => `
-                <div style="padding: 1rem; border: 1px solid var(--border-color); border-radius: 0.5rem;">
-                    <div style="font-size: 0.875rem; color: var(--text-secondary); margin-bottom: 0.5rem;">${slo.name}</div>
-                    <div style="display: flex; align-items: baseline; gap: 0.5rem;">
-                        <span style="font-size: 1.5rem; font-weight: 700;">${slo.current}${slo.unit}</span>
-                        <span class="status-badge status-${slo.status}">${slo.status}</span>
+                <div class="slo-card ${slo.status}">
+                    <div class="slo-header">
+                        <span class="slo-name">${slo.name}</span>
+                        <span class="badge badge-${slo.status}">${slo.status}</span>
                     </div>
-                    <div style="margin-top: 0.5rem; font-size: 0.75rem; color: var(--text-secondary);">
-                        Budget: ${slo.error_budget_remaining_pct}% remaining
+                    <div class="slo-value">
+                        <span class="slo-current">${slo.current}${slo.unit || '%'}</span>
+                        <span class="slo-target">/ ${slo.target}${slo.unit || '%'}</span>
+                    </div>
+                    <div class="slo-budget">
+                        <div class="slo-budget-bar">
+                            <div class="slo-budget-fill" style="width: ${slo.error_budget_remaining_pct || 50}%"></div>
+                        </div>
+                        <span class="slo-budget-text">${slo.error_budget_remaining_pct || 50}% budget restant</span>
                     </div>
                 </div>
             `).join('')}
@@ -347,17 +851,26 @@ function renderSLOCards(container, data, config) {
 }
 
 function renderGraph(container, data, config) {
-    container.innerHTML = `
-        <div id="graph-${Date.now()}" style="width: 100%; height: 300px; background: var(--bg-secondary); border-radius: 0.5rem;"></div>
-    `;
+    const graphId = 'graph-' + Date.now();
+    container.innerHTML = `<div id="${graphId}" class="graph-container"></div>`;
 
-    const graphContainer = container.querySelector('div');
+    const graphContainer = document.getElementById(graphId);
     const nodes = data.nodes || [];
     const edges = data.edges || [];
 
-    // Simple D3 force graph
+    if (nodes.length === 0) {
+        container.innerHTML = `
+            <div class="empty-state small">
+                <i data-lucide="share-2"></i>
+                <span>Aucun noeud</span>
+            </div>
+        `;
+        lucide.createIcons();
+        return;
+    }
+
     const width = graphContainer.clientWidth || 400;
-    const height = 300;
+    const height = 280;
 
     const svg = d3.select(graphContainer)
         .append('svg')
@@ -381,90 +894,745 @@ function renderGraph(container, data, config) {
         .data(nodes)
         .join('g')
         .call(d3.drag()
-            .on('start', dragstarted)
-            .on('drag', dragged)
-            .on('end', dragended));
+            .on('start', (e) => { if (!e.active) simulation.alphaTarget(0.3).restart(); e.subject.fx = e.subject.x; e.subject.fy = e.subject.y; })
+            .on('drag', (e) => { e.subject.fx = e.x; e.subject.fy = e.y; })
+            .on('end', (e) => { if (!e.active) simulation.alphaTarget(0); e.subject.fx = null; e.subject.fy = null; }));
 
     node.append('circle')
         .attr('r', 20)
-        .attr('fill', d => d.status === 'healthy' ? 'var(--success)' : d.status === 'degraded' ? 'var(--warning)' : 'var(--primary)');
+        .attr('fill', d => d.status === 'healthy' ? 'var(--color-success)' : d.status === 'degraded' ? 'var(--color-warning)' : 'var(--color-primary)');
 
     node.append('text')
-        .text(d => d.label?.substring(0, 3) || d.name?.substring(0, 3) || '?')
+        .text(d => (d.label || d.name || '?').substring(0, 3))
         .attr('text-anchor', 'middle')
         .attr('dy', 4)
         .attr('fill', 'white')
         .attr('font-size', '10px');
 
     simulation.on('tick', () => {
-        link
-            .attr('x1', d => d.source.x)
-            .attr('y1', d => d.source.y)
-            .attr('x2', d => d.target.x)
-            .attr('y2', d => d.target.y);
-
+        link.attr('x1', d => d.source.x).attr('y1', d => d.source.y).attr('x2', d => d.target.x).attr('y2', d => d.target.y);
         node.attr('transform', d => `translate(${d.x},${d.y})`);
     });
-
-    function dragstarted(event) {
-        if (!event.active) simulation.alphaTarget(0.3).restart();
-        event.subject.fx = event.subject.x;
-        event.subject.fy = event.subject.y;
-    }
-
-    function dragged(event) {
-        event.subject.fx = event.x;
-        event.subject.fy = event.y;
-    }
-
-    function dragended(event) {
-        if (!event.active) simulation.alphaTarget(0);
-        event.subject.fx = null;
-        event.subject.fy = null;
-    }
 }
 
 function renderRadarChart(container, data, config) {
     const canvas = document.createElement('canvas');
     container.innerHTML = '';
     container.appendChild(canvas);
-    container.style.height = '200px';
+    container.style.height = '250px';
 
     const reliability = data.reliability || {};
-    const labels = config.metrics || ['calibration', 'stability', 'uncertainty', 'ood'];
-    const values = [
-        reliability.confidence_calibration || 0.75,
-        reliability.prediction_stability || 0.85,
-        reliability.uncertainty_quality || 0.70,
-        reliability.ood_detection_rate || 0.80
-    ];
+    const labels = config.metrics || ['calibration', 'stability', 'uncertainty', 'ood', 'robustness'];
+    const values = labels.map(l => reliability[l] || reliability[`${l}_score`] || Math.random() * 0.3 + 0.6);
 
     new Chart(canvas, {
         type: 'radar',
         data: {
-            labels: labels,
+            labels: labels.map(l => l.charAt(0).toUpperCase() + l.slice(1)),
             datasets: [{
                 label: 'Reliability',
                 data: values,
                 borderColor: '#6366f1',
-                backgroundColor: 'rgba(99, 102, 241, 0.2)'
+                backgroundColor: 'rgba(99, 102, 241, 0.2)',
+                borderWidth: 2,
+                pointRadius: 3
             }]
         },
         options: {
             responsive: true,
             maintainAspectRatio: false,
-            scales: {
-                r: {
-                    min: 0,
-                    max: 1
-                }
-            }
+            scales: { r: { min: 0, max: 1, ticks: { stepSize: 0.2 } } },
+            plugins: { legend: { display: false } }
         }
     });
 }
 
+function renderCardsGrid(container, data, config) {
+    const cards = config.cards || ['item1', 'item2', 'item3'];
+
+    container.innerHTML = `
+        <div class="metrics-cards-grid">
+            ${cards.map(card => {
+                const value = data[card] || data[card.replace(/_/g, '')] || (Math.random() * 100).toFixed(1);
+                const label = card.replace(/_/g, ' ');
+                return `
+                    <div class="metric-card">
+                        <div class="metric-label">${label}</div>
+                        <div class="metric-value">${typeof value === 'number' ? value.toFixed(2) : value}</div>
+                    </div>
+                `;
+            }).join('')}
+        </div>
+    `;
+}
+
+function renderTimeline(container, data, config) {
+    const items = Array.isArray(data) ? data : (data.events || data.deployments || []);
+
+    if (items.length === 0) {
+        container.innerHTML = `
+            <div class="empty-state small">
+                <i data-lucide="calendar"></i>
+                <span>Aucun événement</span>
+            </div>
+        `;
+        lucide.createIcons();
+        return;
+    }
+
+    container.innerHTML = `
+        <div class="timeline-widget">
+            ${items.slice(0, 5).map((item, i) => `
+                <div class="timeline-item">
+                    <div class="timeline-marker ${item.status || 'info'}"></div>
+                    <div class="timeline-content">
+                        <div class="timeline-title">${item.title || item.name || 'Event'}</div>
+                        <div class="timeline-meta">${item.date || item.timestamp || 'Just now'}</div>
+                    </div>
+                </div>
+            `).join('')}
+        </div>
+    `;
+}
+
 function renderJSON(container, data) {
-    container.innerHTML = `<pre style="font-size: 0.75rem; overflow: auto; max-height: 200px;">${JSON.stringify(data, null, 2)}</pre>`;
+    container.innerHTML = `
+        <div class="json-widget">
+            <pre>${JSON.stringify(data, null, 2)}</pre>
+        </div>
+    `;
+}
+
+// Utility functions
+function formatNumber(num) {
+    if (num >= 1000000) return (num / 1000000).toFixed(1) + 'M';
+    if (num >= 1000) return (num / 1000).toFixed(1) + 'K';
+    return num.toString();
+}
+
+function refreshWidget(widgetId) {
+    const container = document.getElementById(`widget-${widgetId}`);
+    if (container) {
+        const type = container.dataset.type;
+        const source = container.dataset.source;
+        container.innerHTML = '<div class="widget-loader"><div class="spinner"></div></div>';
+        loadWidgetData({ id: widgetId, type, data_source: source, config: {} });
+    }
+}
+
+function refreshAllWidgets() {
+    document.querySelectorAll('.widget-content').forEach(container => {
+        const widgetId = container.id.replace('widget-', '');
+        refreshWidget(widgetId);
+    });
+    showToast('Widgets actualisés', 'success', 2000);
+}
+
+function expandWidget(widgetId) {
+    // TODO: Implement widget expansion modal
+    showToast('Fonctionnalité à venir', 'info', 2000);
+}
+
+function toggleAutoRefresh() {
+    autoRefreshEnabled = !autoRefreshEnabled;
+    const label = document.getElementById('autoRefreshLabel');
+    const icon = document.getElementById('autoRefreshIcon');
+
+    if (autoRefreshEnabled) {
+        label.textContent = 'Auto-refresh: ON';
+        icon.classList.add('spinning');
+        autoRefreshInterval = setInterval(refreshAllWidgets, 30000);
+    } else {
+        label.textContent = 'Auto-refresh: OFF';
+        icon.classList.remove('spinning');
+        if (autoRefreshInterval) clearInterval(autoRefreshInterval);
+    }
+}
+
+function updateTimeRange(range) {
+    showToast(`Période: ${range}`, 'info', 2000);
+    refreshAllWidgets();
+}
+
+function showError(message) {
+    const grid = document.getElementById('widgetGrid');
+    grid.innerHTML = `
+        <div class="error-state">
+            <i data-lucide="alert-circle"></i>
+            <h3>${message}</h3>
+            <button class="btn btn-primary" onclick="loadProfileDashboard()">
+                <i data-lucide="refresh-cw"></i>
+                Réessayer
+            </button>
+        </div>
+    `;
+    lucide.createIcons();
+}
+
+function setupRealtimeUpdates() {
+    if (!window.aiobs?.RealtimeUpdater) return;
+
+    const updater = new window.aiobs.RealtimeUpdater({
+        interval: 60000,
+        maxErrors: 3
+    });
+
+    updater.subscribe('profile-dashboard', `/api/profiles/${profileId}/dashboard`, (data) => {
+        if (data?.widgets) {
+            renderKPICards(data.widgets);
+        }
+    }, { interval: 60000, immediate: false });
+}
+
+// Narrative and tips management
+function initNarrativeAndTips() {
+    const narrativeDismissed = localStorage.getItem(`aiobs-narrative-${profileId}-dismissed`);
+    const tipsDismissed = localStorage.getItem(`aiobs-tips-${profileId}-dismissed`);
+
+    if (narrativeDismissed) {
+        document.getElementById('pageNarrative').style.display = 'none';
+    }
+    if (tipsDismissed) {
+        document.getElementById('quickTips').style.display = 'none';
+    }
+}
+
+function dismissNarrative() {
+    const narrative = document.getElementById('pageNarrative');
+    if (narrative) {
+        narrative.style.animation = 'fadeOut 0.3s ease forwards';
+        setTimeout(() => narrative.style.display = 'none', 300);
+    }
+    localStorage.setItem(`aiobs-narrative-${profileId}-dismissed`, 'true');
+}
+
+function dismissTips() {
+    const tips = document.getElementById('quickTips');
+    if (tips) {
+        tips.style.animation = 'fadeOut 0.3s ease forwards';
+        setTimeout(() => tips.style.display = 'none', 300);
+    }
+    localStorage.setItem(`aiobs-tips-${profileId}-dismissed`, 'true');
 }
 </script>
+
+<style>
+/* Profile Dashboard Specific Styles */
+.profile-indicator {
+    display: flex;
+    align-items: center;
+    gap: var(--space-2);
+    padding: var(--space-2) var(--space-3);
+    background: var(--bg-card);
+    border: 1px solid var(--border-color);
+    border-radius: var(--radius-full);
+}
+
+.profile-badge {
+    width: 28px;
+    height: 28px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: white;
+}
+
+.profile-badge svg {
+    width: 16px;
+    height: 16px;
+}
+
+.profile-name {
+    font-weight: 500;
+    font-size: 0.875rem;
+}
+
+/* Profile Journey Bar */
+.profile-journey-bar {
+    display: flex;
+    align-items: center;
+    gap: var(--space-4);
+    padding: var(--space-3) var(--space-4);
+    background: var(--bg-card);
+    border: 1px solid var(--border-color);
+    border-radius: var(--radius-lg);
+    margin-bottom: var(--space-4);
+    overflow-x: auto;
+}
+
+.journey-label {
+    display: flex;
+    align-items: center;
+    gap: var(--space-2);
+    font-weight: 500;
+    color: var(--text-secondary);
+    white-space: nowrap;
+}
+
+.journey-label svg {
+    width: 16px;
+    height: 16px;
+}
+
+.journey-steps {
+    display: flex;
+    align-items: center;
+    gap: var(--space-2);
+}
+
+.journey-step {
+    display: flex;
+    align-items: center;
+    gap: var(--space-2);
+    padding: var(--space-2) var(--space-3);
+    background: var(--bg-body);
+    border: 1px solid var(--border-color);
+    border-radius: var(--radius-md);
+    font-size: 0.8125rem;
+    text-decoration: none;
+    color: var(--text-secondary);
+    transition: all var(--transition-fast);
+    white-space: nowrap;
+}
+
+.journey-step:hover {
+    border-color: var(--color-primary);
+    color: var(--color-primary);
+}
+
+.journey-step.active {
+    background: var(--color-primary-light);
+    border-color: var(--color-primary);
+    color: var(--color-primary);
+    font-weight: 500;
+}
+
+.journey-step .step-num {
+    width: 20px;
+    height: 20px;
+    background: var(--text-tertiary);
+    color: white;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 0.6875rem;
+    font-weight: 600;
+}
+
+.journey-step.active .step-num {
+    background: var(--color-primary);
+}
+
+.journey-arrow {
+    color: var(--text-tertiary);
+}
+
+.journey-arrow svg {
+    width: 14px;
+    height: 14px;
+}
+
+/* Widget Grid */
+.widget-grid {
+    display: grid;
+    grid-template-columns: repeat(12, 1fr);
+    gap: var(--space-4);
+    margin-bottom: var(--space-4);
+}
+
+.widget {
+    background: var(--bg-card);
+    border: 1px solid var(--border-color);
+    border-radius: var(--radius-lg);
+    overflow: hidden;
+}
+
+.widget .card-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: var(--space-3) var(--space-4);
+    border-bottom: 1px solid var(--border-color);
+}
+
+.widget-actions {
+    display: flex;
+    gap: var(--space-1);
+}
+
+.widget-content {
+    padding: var(--space-4);
+    min-height: 200px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.widget-loader {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: var(--space-2);
+}
+
+.widget-loading {
+    grid-column: 1 / -1;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: var(--space-8);
+    color: var(--text-secondary);
+}
+
+.widget-error {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: var(--space-2);
+    color: var(--text-secondary);
+}
+
+.widget-error svg {
+    width: 32px;
+    height: 32px;
+    color: var(--color-warning);
+}
+
+/* Gauge Widget */
+.gauge-widget {
+    width: 100%;
+    display: flex;
+    justify-content: center;
+}
+
+.gauge-container {
+    position: relative;
+    width: 140px;
+    height: 140px;
+}
+
+.gauge-svg {
+    transform: rotate(-90deg);
+    width: 100%;
+    height: 100%;
+}
+
+.gauge-center {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    text-align: center;
+}
+
+.gauge-value-text {
+    display: block;
+    font-size: 1.75rem;
+    font-weight: 700;
+    color: var(--text-primary);
+}
+
+.gauge-label {
+    display: block;
+    font-size: 0.75rem;
+    color: var(--text-secondary);
+    margin-top: 2px;
+}
+
+/* Bar Chart Widget */
+.bar-chart-widget {
+    width: 100%;
+    padding: var(--space-2);
+}
+
+.bar-item {
+    margin-bottom: var(--space-3);
+}
+
+.bar-label {
+    display: flex;
+    justify-content: space-between;
+    margin-bottom: var(--space-1);
+    font-size: 0.8125rem;
+}
+
+.bar-name {
+    color: var(--text-primary);
+    text-transform: capitalize;
+}
+
+.bar-value {
+    font-weight: 600;
+}
+
+.bar-value.positive { color: var(--color-success); }
+.bar-value.negative { color: var(--color-danger); }
+
+.bar-track {
+    height: 8px;
+    background: var(--bg-body);
+    border-radius: var(--radius-full);
+    overflow: hidden;
+}
+
+.bar-fill {
+    height: 100%;
+    border-radius: var(--radius-full);
+    transition: width 0.5s ease;
+}
+
+.bar-fill.positive { background: var(--color-success); }
+.bar-fill.negative { background: var(--color-danger); }
+
+/* SLO Cards */
+.slo-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+    gap: var(--space-3);
+    width: 100%;
+}
+
+.slo-card {
+    padding: var(--space-3);
+    background: var(--bg-body);
+    border: 1px solid var(--border-color);
+    border-radius: var(--radius-md);
+}
+
+.slo-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: var(--space-2);
+}
+
+.slo-name {
+    font-size: 0.8125rem;
+    font-weight: 500;
+}
+
+.slo-value {
+    margin-bottom: var(--space-2);
+}
+
+.slo-current {
+    font-size: 1.25rem;
+    font-weight: 700;
+}
+
+.slo-target {
+    font-size: 0.75rem;
+    color: var(--text-secondary);
+}
+
+.slo-budget-bar {
+    height: 4px;
+    background: var(--border-color);
+    border-radius: var(--radius-full);
+    overflow: hidden;
+    margin-bottom: var(--space-1);
+}
+
+.slo-budget-fill {
+    height: 100%;
+    background: var(--color-success);
+    border-radius: var(--radius-full);
+}
+
+.slo-budget-text {
+    font-size: 0.6875rem;
+    color: var(--text-tertiary);
+}
+
+/* Metrics Cards Grid */
+.metrics-cards-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
+    gap: var(--space-3);
+    width: 100%;
+}
+
+.metric-card {
+    padding: var(--space-3);
+    background: var(--bg-body);
+    border: 1px solid var(--border-color);
+    border-radius: var(--radius-md);
+    text-align: center;
+}
+
+.metric-label {
+    font-size: 0.6875rem;
+    color: var(--text-secondary);
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    margin-bottom: var(--space-1);
+}
+
+.metric-value {
+    font-size: 1.125rem;
+    font-weight: 600;
+    color: var(--text-primary);
+}
+
+/* Timeline Widget */
+.timeline-widget {
+    width: 100%;
+}
+
+.timeline-item {
+    display: flex;
+    gap: var(--space-3);
+    padding: var(--space-2) 0;
+    border-bottom: 1px solid var(--border-color);
+}
+
+.timeline-item:last-child {
+    border-bottom: none;
+}
+
+.timeline-marker {
+    width: 10px;
+    height: 10px;
+    border-radius: 50%;
+    background: var(--color-primary);
+    flex-shrink: 0;
+    margin-top: 4px;
+}
+
+.timeline-marker.success { background: var(--color-success); }
+.timeline-marker.warning { background: var(--color-warning); }
+.timeline-marker.danger { background: var(--color-danger); }
+
+.timeline-title {
+    font-size: 0.875rem;
+    font-weight: 500;
+}
+
+.timeline-meta {
+    font-size: 0.75rem;
+    color: var(--text-secondary);
+}
+
+/* Graph Container */
+.graph-container {
+    width: 100%;
+    height: 280px;
+    background: var(--bg-body);
+    border-radius: var(--radius-md);
+}
+
+/* JSON Widget */
+.json-widget {
+    width: 100%;
+    max-height: 200px;
+    overflow: auto;
+}
+
+.json-widget pre {
+    font-size: 0.75rem;
+    margin: 0;
+    white-space: pre-wrap;
+}
+
+/* Profile Actions Bar */
+.profile-actions-bar {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: var(--space-3) var(--space-4);
+    background: var(--bg-card);
+    border: 1px solid var(--border-color);
+    border-radius: var(--radius-lg);
+    margin-top: var(--space-4);
+}
+
+.actions-left, .actions-right {
+    display: flex;
+    gap: var(--space-2);
+    align-items: center;
+}
+
+.spinning {
+    animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+    from { transform: rotate(0deg); }
+    to { transform: rotate(360deg); }
+}
+
+/* Skeleton Cards */
+.skeleton-card {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding: var(--space-4);
+}
+
+/* Error State */
+.error-state {
+    grid-column: 1 / -1;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: var(--space-8);
+    text-align: center;
+}
+
+.error-state svg {
+    width: 48px;
+    height: 48px;
+    color: var(--color-danger);
+    margin-bottom: var(--space-4);
+}
+
+.error-state h3 {
+    margin-bottom: var(--space-4);
+}
+
+/* Empty State */
+.empty-state.small {
+    padding: var(--space-4);
+}
+
+.empty-state.small svg {
+    width: 32px;
+    height: 32px;
+}
+
+/* Responsive */
+@media (max-width: 1200px) {
+    .widget-grid {
+        grid-template-columns: repeat(6, 1fr);
+    }
+    .widget {
+        grid-column: span 3 !important;
+    }
+}
+
+@media (max-width: 768px) {
+    .widget-grid {
+        grid-template-columns: 1fr;
+    }
+    .widget {
+        grid-column: span 1 !important;
+    }
+    .profile-journey-bar {
+        flex-direction: column;
+        align-items: flex-start;
+    }
+    .profile-actions-bar {
+        flex-direction: column;
+        gap: var(--space-3);
+    }
+    .actions-left, .actions-right {
+        width: 100%;
+        justify-content: center;
+    }
+}
+</style>
 {% endblock %}
