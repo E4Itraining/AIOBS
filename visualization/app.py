@@ -297,6 +297,21 @@ async def onboarding_view(request: Request):
     )
 
 
+@app.get("/personas", response_class=HTMLResponse)
+async def personas_view(request: Request):
+    """Personas hub - select user journey based on role"""
+    i18n = create_i18n_context(request)
+    return templates.TemplateResponse(
+        "personas.html",
+        {
+            "request": request,
+            "title": f"{APP_TITLE} - Parcours Utilisateurs",
+            "active_page": "personas",
+            **i18n
+        }
+    )
+
+
 # ============================================================================
 # Request tracking middleware
 # ============================================================================
