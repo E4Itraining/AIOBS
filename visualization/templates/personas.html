@@ -876,24 +876,26 @@ function selectPersona(personaId) {
     localStorage.setItem('gaskia-persona', personaId);
     localStorage.setItem('gaskia-onboarding-complete', 'true');
 
-    // Get first page of journey based on persona
+    // Get first page of journey based on persona - redirecting to new persona views
     const journeys = {
-        'business_executive': '/',
-        'tech_ml_engineer': '/',
-        'tech_devops': '/monitoring',
-        'security_rssi': '/security',
-        'compliance_legal': '/compliance',
-        'sustainability_esg': '/greenops'
+        'business_executive': '/dirigeant',
+        'tech_ml_engineer': '/tech',
+        'tech_devops': '/tech',
+        'security_rssi': '/tech',
+        'compliance_legal': '/juridique',
+        'sustainability_esg': '/greenops',
+        'financier': '/financier'
     };
 
     // Persona names for display
     const personaNames = {
         'business_executive': 'Dirigeant',
-        'tech_ml_engineer': 'ML Engineer',
-        'tech_devops': 'DevOps',
-        'security_rssi': 'Sécurité',
-        'compliance_legal': 'Conformité',
-        'sustainability_esg': 'ESG'
+        'tech_ml_engineer': 'Tech',
+        'tech_devops': 'Tech',
+        'security_rssi': 'Tech/Sécurité',
+        'compliance_legal': 'Juridique',
+        'sustainability_esg': 'ESG',
+        'financier': 'Financier'
     };
 
     // Show toast and redirect
@@ -903,7 +905,7 @@ function selectPersona(personaId) {
     }
 
     setTimeout(() => {
-        window.location.href = journeys[personaId] || '/';
+        window.location.href = journeys[personaId] || '/global';
     }, 500);
 }
 

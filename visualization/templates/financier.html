@@ -1,0 +1,1052 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="financier-dashboard page-transition-enter">
+    <!-- Hero Section -->
+    <div class="dashboard-hero">
+        <div class="hero-content">
+            <div class="hero-badge" style="background: linear-gradient(135deg, #ef4444, #dc2626);">
+                <i data-lucide="wallet"></i>
+                <span>Financier / FinOps</span>
+            </div>
+            <h1>Gestion des Coûts IA</h1>
+            <p class="hero-subtitle">
+                Coûts, budgets, ROI et optimisation des dépenses IA. Pilotez la rentabilité de vos investissements IA.
+            </p>
+        </div>
+        <div class="hero-actions">
+            <a href="/global" class="btn btn-outline">
+                <i data-lucide="globe"></i>
+                <span>Vue Globale</span>
+            </a>
+            <button class="btn btn-primary" onclick="generateFinancialReport()">
+                <i data-lucide="file-spreadsheet"></i>
+                <span>Rapport Financier</span>
+            </button>
+        </div>
+    </div>
+
+    <!-- Financial KPIs -->
+    <div class="fin-kpi-grid">
+        <div class="fin-kpi-card highlight">
+            <div class="fin-kpi-icon">
+                <i data-lucide="trending-up"></i>
+            </div>
+            <div class="fin-kpi-content">
+                <span class="fin-kpi-label">ROI Global IA</span>
+                <span class="fin-kpi-value">+247%</span>
+                <div class="fin-kpi-comparison">
+                    <span class="comparison-positive">+18%</span>
+                    <span>vs trimestre précédent</span>
+                </div>
+            </div>
+        </div>
+
+        <div class="fin-kpi-card">
+            <div class="fin-kpi-icon" style="background: linear-gradient(135deg, #f59e0b, #d97706);">
+                <i data-lucide="receipt"></i>
+            </div>
+            <div class="fin-kpi-content">
+                <span class="fin-kpi-label">Coût Mensuel</span>
+                <span class="fin-kpi-value">€85,420</span>
+                <div class="fin-kpi-comparison">
+                    <span class="comparison-negative">+3.2%</span>
+                    <span>vs mois dernier</span>
+                </div>
+            </div>
+        </div>
+
+        <div class="fin-kpi-card">
+            <div class="fin-kpi-icon" style="background: linear-gradient(135deg, #10b981, #059669);">
+                <i data-lucide="piggy-bank"></i>
+            </div>
+            <div class="fin-kpi-content">
+                <span class="fin-kpi-label">Économies Réalisées</span>
+                <span class="fin-kpi-value">€24,800</span>
+                <div class="fin-kpi-comparison">
+                    <span class="comparison-positive">Optimisations Q4</span>
+                </div>
+            </div>
+        </div>
+
+        <div class="fin-kpi-card">
+            <div class="fin-kpi-icon" style="background: linear-gradient(135deg, #3b82f6, #2563eb);">
+                <i data-lucide="target"></i>
+            </div>
+            <div class="fin-kpi-content">
+                <span class="fin-kpi-label">Budget Consommé</span>
+                <span class="fin-kpi-value">85%</span>
+                <div class="fin-kpi-comparison">
+                    <span class="comparison-neutral">€85K / €100K</span>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Budget Overview -->
+    <div class="budget-overview-section">
+        <div class="budget-progress-card">
+            <div class="budget-header">
+                <h3>Budget Mensuel IA</h3>
+                <span class="budget-period">Décembre 2024</span>
+            </div>
+            <div class="budget-main-progress">
+                <div class="budget-numbers">
+                    <span class="budget-spent">€85,420</span>
+                    <span class="budget-separator">/</span>
+                    <span class="budget-total">€100,000</span>
+                </div>
+                <div class="budget-bar-container">
+                    <div class="budget-bar">
+                        <div class="budget-bar-fill" style="width: 85%;"></div>
+                        <div class="budget-bar-projection" style="left: 85%; width: 8%;"></div>
+                    </div>
+                </div>
+                <div class="budget-labels">
+                    <span>0%</span>
+                    <span class="budget-warning-label">Alerte 90%</span>
+                    <span>100%</span>
+                </div>
+            </div>
+            <div class="budget-forecast">
+                <i data-lucide="info"></i>
+                <span>Projection fin de mois: <strong>€93,200</strong> - Dans le budget</span>
+            </div>
+        </div>
+
+        <div class="budget-breakdown-card">
+            <h3>Répartition par Catégorie</h3>
+            <div class="budget-categories">
+                <div class="budget-category">
+                    <div class="category-info">
+                        <span class="category-dot" style="background: #6366f1;"></span>
+                        <span class="category-name">Inférence</span>
+                    </div>
+                    <div class="category-bar">
+                        <div class="category-progress" style="width: 45%; background: #6366f1;"></div>
+                    </div>
+                    <span class="category-amount">€38,439</span>
+                </div>
+                <div class="budget-category">
+                    <div class="category-info">
+                        <span class="category-dot" style="background: #10b981;"></span>
+                        <span class="category-name">Training</span>
+                    </div>
+                    <div class="category-bar">
+                        <div class="category-progress" style="width: 29%; background: #10b981;"></div>
+                    </div>
+                    <span class="category-amount">€24,772</span>
+                </div>
+                <div class="budget-category">
+                    <div class="category-info">
+                        <span class="category-dot" style="background: #f59e0b;"></span>
+                        <span class="category-name">Stockage</span>
+                    </div>
+                    <div class="category-bar">
+                        <div class="category-progress" style="width: 15%; background: #f59e0b;"></div>
+                    </div>
+                    <span class="category-amount">€12,813</span>
+                </div>
+                <div class="budget-category">
+                    <div class="category-info">
+                        <span class="category-dot" style="background: #8b5cf6;"></span>
+                        <span class="category-name">Infrastructure</span>
+                    </div>
+                    <div class="category-bar">
+                        <div class="category-progress" style="width: 11%; background: #8b5cf6;"></div>
+                    </div>
+                    <span class="category-amount">€9,396</span>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Main Grid -->
+    <div class="fin-grid">
+        <!-- Cost Trend -->
+        <div class="card card-lg">
+            <div class="card-header">
+                <h3>
+                    <i data-lucide="line-chart"></i>
+                    Évolution des Coûts
+                </h3>
+                <div class="time-selector">
+                    <button class="time-btn" data-range="7d">7j</button>
+                    <button class="time-btn active" data-range="30d">30j</button>
+                    <button class="time-btn" data-range="90d">90j</button>
+                </div>
+            </div>
+            <div class="card-body">
+                <canvas id="costTrendChart" height="280"></canvas>
+            </div>
+        </div>
+
+        <!-- Cost by Model -->
+        <div class="card card-lg">
+            <div class="card-header">
+                <h3>
+                    <i data-lucide="brain"></i>
+                    Coût par Modèle
+                </h3>
+            </div>
+            <div class="card-body">
+                <div class="model-costs-table">
+                    <div class="model-cost-header">
+                        <span>Modèle</span>
+                        <span>Inférences</span>
+                        <span>Coût/1K</span>
+                        <span>Total</span>
+                        <span>Tendance</span>
+                    </div>
+                    <div class="model-cost-row">
+                        <div class="model-name">
+                            <i data-lucide="message-square"></i>
+                            <span>Chatbot LLM</span>
+                        </div>
+                        <span class="model-inferences">2.4M</span>
+                        <span class="model-unit-cost">€0.012</span>
+                        <span class="model-total-cost">€28,800</span>
+                        <span class="model-trend trend-up"><i data-lucide="trending-up"></i> +5%</span>
+                    </div>
+                    <div class="model-cost-row">
+                        <div class="model-name">
+                            <i data-lucide="credit-card"></i>
+                            <span>Scoring Crédit</span>
+                        </div>
+                        <span class="model-inferences">8.2M</span>
+                        <span class="model-unit-cost">€0.002</span>
+                        <span class="model-total-cost">€16,400</span>
+                        <span class="model-trend trend-down"><i data-lucide="trending-down"></i> -3%</span>
+                    </div>
+                    <div class="model-cost-row">
+                        <div class="model-name">
+                            <i data-lucide="shopping-cart"></i>
+                            <span>Recommandation</span>
+                        </div>
+                        <span class="model-inferences">12.1M</span>
+                        <span class="model-unit-cost">€0.001</span>
+                        <span class="model-total-cost">€12,100</span>
+                        <span class="model-trend trend-down"><i data-lucide="trending-down"></i> -8%</span>
+                    </div>
+                    <div class="model-cost-row">
+                        <div class="model-name">
+                            <i data-lucide="shield"></i>
+                            <span>Fraud Detection</span>
+                        </div>
+                        <span class="model-inferences">5.6M</span>
+                        <span class="model-unit-cost">€0.002</span>
+                        <span class="model-total-cost">€11,200</span>
+                        <span class="model-trend trend-neutral"><i data-lucide="minus"></i> 0%</span>
+                    </div>
+                    <div class="model-cost-row">
+                        <div class="model-name">
+                            <i data-lucide="file-search"></i>
+                            <span>Doc Analyzer</span>
+                        </div>
+                        <span class="model-inferences">340K</span>
+                        <span class="model-unit-cost">€0.025</span>
+                        <span class="model-total-cost">€8,500</span>
+                        <span class="model-trend trend-up"><i data-lucide="trending-up"></i> +12%</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- ROI Analysis -->
+        <div class="card">
+            <div class="card-header">
+                <h3>
+                    <i data-lucide="bar-chart-3"></i>
+                    Analyse ROI
+                </h3>
+            </div>
+            <div class="card-body">
+                <div class="roi-summary">
+                    <div class="roi-item">
+                        <span class="roi-label">Investissement Total</span>
+                        <span class="roi-value">€850K</span>
+                    </div>
+                    <div class="roi-item">
+                        <span class="roi-label">Valeur Générée</span>
+                        <span class="roi-value positive">€2.9M</span>
+                    </div>
+                    <div class="roi-item">
+                        <span class="roi-label">ROI Net</span>
+                        <span class="roi-value highlight">+247%</span>
+                    </div>
+                </div>
+                <div class="roi-breakdown">
+                    <h4>Sources de Valeur</h4>
+                    <div class="value-source">
+                        <span class="source-name">Automatisation processus</span>
+                        <span class="source-value">€1.2M</span>
+                    </div>
+                    <div class="value-source">
+                        <span class="source-name">Revenus additionnels</span>
+                        <span class="source-value">€980K</span>
+                    </div>
+                    <div class="value-source">
+                        <span class="source-name">Réduction fraude</span>
+                        <span class="source-value">€520K</span>
+                    </div>
+                    <div class="value-source">
+                        <span class="source-name">Satisfaction client</span>
+                        <span class="source-value">€200K</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Optimization Opportunities -->
+        <div class="card">
+            <div class="card-header">
+                <h3>
+                    <i data-lucide="lightbulb"></i>
+                    Opportunités d'Optimisation
+                </h3>
+            </div>
+            <div class="card-body">
+                <div class="opportunities-list">
+                    <div class="opportunity-item high-impact">
+                        <div class="opp-header">
+                            <span class="opp-badge">€12K/mois</span>
+                            <span class="opp-effort">Effort: Faible</span>
+                        </div>
+                        <h4>Passage au batch processing</h4>
+                        <p>Migration des inférences non-temps-réel vers le batch pour Doc Analyzer</p>
+                        <button class="btn btn-primary btn-sm">Implémenter</button>
+                    </div>
+                    <div class="opportunity-item medium-impact">
+                        <div class="opp-header">
+                            <span class="opp-badge">€8K/mois</span>
+                            <span class="opp-effort">Effort: Moyen</span>
+                        </div>
+                        <h4>Optimisation cache embeddings</h4>
+                        <p>Mise en cache des embeddings fréquents pour le chatbot</p>
+                        <button class="btn btn-outline btn-sm">Évaluer</button>
+                    </div>
+                    <div class="opportunity-item low-impact">
+                        <div class="opp-header">
+                            <span class="opp-badge">€4K/mois</span>
+                            <span class="opp-effort">Effort: Élevé</span>
+                        </div>
+                        <h4>Quantization modèles</h4>
+                        <p>Réduction de la précision des modèles non-critiques</p>
+                        <button class="btn btn-ghost btn-sm">Planifier</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Cost Allocation -->
+        <div class="card">
+            <div class="card-header">
+                <h3>
+                    <i data-lucide="pie-chart"></i>
+                    Allocation par Département
+                </h3>
+            </div>
+            <div class="card-body">
+                <canvas id="departmentCostChart" height="220"></canvas>
+            </div>
+        </div>
+
+        <!-- Cost Alerts -->
+        <div class="card">
+            <div class="card-header">
+                <h3>
+                    <i data-lucide="bell"></i>
+                    Alertes Coûts
+                </h3>
+            </div>
+            <div class="card-body">
+                <div class="cost-alerts">
+                    <div class="cost-alert warning">
+                        <div class="alert-icon"><i data-lucide="alert-triangle"></i></div>
+                        <div class="alert-content">
+                            <h4>Doc Analyzer - Hausse coûts</h4>
+                            <p>+12% de coûts cette semaine - volume d'utilisation anormal</p>
+                        </div>
+                        <span class="alert-time">Il y a 2h</span>
+                    </div>
+                    <div class="cost-alert info">
+                        <div class="alert-icon"><i data-lucide="info"></i></div>
+                        <div class="alert-content">
+                            <h4>Budget 85% consommé</h4>
+                            <p>Projection: €93K en fin de mois (dans le budget)</p>
+                        </div>
+                        <span class="alert-time">Il y a 4h</span>
+                    </div>
+                    <div class="cost-alert success">
+                        <div class="alert-icon"><i data-lucide="check-circle"></i></div>
+                        <div class="alert-content">
+                            <h4>Optimisation réussie</h4>
+                            <p>Recommandation: -8% de coûts après optimisation cache</p>
+                        </div>
+                        <span class="alert-time">Hier</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Cloud Provider Costs -->
+        <div class="card card-full">
+            <div class="card-header">
+                <h3>
+                    <i data-lucide="cloud"></i>
+                    Coûts par Fournisseur Cloud
+                </h3>
+            </div>
+            <div class="card-body">
+                <div class="provider-costs-grid">
+                    <div class="provider-card">
+                        <div class="provider-header">
+                            <span class="provider-logo aws">AWS</span>
+                            <span class="provider-total">€42,300</span>
+                        </div>
+                        <div class="provider-services">
+                            <div class="provider-service">
+                                <span>SageMaker</span>
+                                <span>€28,500</span>
+                            </div>
+                            <div class="provider-service">
+                                <span>S3 Storage</span>
+                                <span>€8,200</span>
+                            </div>
+                            <div class="provider-service">
+                                <span>EC2 Compute</span>
+                                <span>€5,600</span>
+                            </div>
+                        </div>
+                        <div class="provider-trend trend-down">
+                            <i data-lucide="trending-down"></i> -5% vs mois dernier
+                        </div>
+                    </div>
+
+                    <div class="provider-card">
+                        <div class="provider-header">
+                            <span class="provider-logo gcp">GCP</span>
+                            <span class="provider-total">€28,700</span>
+                        </div>
+                        <div class="provider-services">
+                            <div class="provider-service">
+                                <span>Vertex AI</span>
+                                <span>€18,400</span>
+                            </div>
+                            <div class="provider-service">
+                                <span>BigQuery</span>
+                                <span>€6,800</span>
+                            </div>
+                            <div class="provider-service">
+                                <span>Cloud Run</span>
+                                <span>€3,500</span>
+                            </div>
+                        </div>
+                        <div class="provider-trend trend-up">
+                            <i data-lucide="trending-up"></i> +8% vs mois dernier
+                        </div>
+                    </div>
+
+                    <div class="provider-card">
+                        <div class="provider-header">
+                            <span class="provider-logo azure">Azure</span>
+                            <span class="provider-total">€14,420</span>
+                        </div>
+                        <div class="provider-services">
+                            <div class="provider-service">
+                                <span>Azure OpenAI</span>
+                                <span>€9,200</span>
+                            </div>
+                            <div class="provider-service">
+                                <span>Cognitive Services</span>
+                                <span>€3,800</span>
+                            </div>
+                            <div class="provider-service">
+                                <span>Storage</span>
+                                <span>€1,420</span>
+                            </div>
+                        </div>
+                        <div class="provider-trend trend-neutral">
+                            <i data-lucide="minus"></i> Stable
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<style>
+/* Financier Dashboard Styles */
+.financier-dashboard {
+    padding: var(--space-6);
+    max-width: 1600px;
+    margin: 0 auto;
+}
+
+.dashboard-hero {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: var(--space-6) 0;
+    margin-bottom: var(--space-6);
+}
+
+.hero-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: var(--space-2);
+    padding: var(--space-2) var(--space-4);
+    color: white;
+    border-radius: var(--radius-full);
+    font-size: 0.875rem;
+    font-weight: 600;
+    margin-bottom: var(--space-3);
+}
+
+.hero-badge svg { width: 16px; height: 16px; }
+.hero-content h1 { font-size: 2.5rem; font-weight: 700; margin-bottom: var(--space-2); }
+.hero-subtitle { font-size: 1rem; color: var(--text-secondary); max-width: 500px; }
+.hero-actions { display: flex; gap: var(--space-3); }
+
+/* Financial KPIs */
+.fin-kpi-grid {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: var(--space-4);
+    margin-bottom: var(--space-6);
+}
+
+.fin-kpi-card {
+    display: flex;
+    align-items: center;
+    gap: var(--space-4);
+    padding: var(--space-5);
+    background: var(--bg-card);
+    border: 1px solid var(--border-color);
+    border-radius: var(--radius-lg);
+}
+
+.fin-kpi-card.highlight {
+    background: linear-gradient(135deg, rgba(16, 185, 129, 0.1), rgba(5, 150, 105, 0.05));
+    border-color: rgba(16, 185, 129, 0.3);
+}
+
+.fin-kpi-icon {
+    width: 56px;
+    height: 56px;
+    background: linear-gradient(135deg, #10b981, #059669);
+    border-radius: var(--radius-lg);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: white;
+    flex-shrink: 0;
+}
+
+.fin-kpi-icon svg { width: 28px; height: 28px; }
+.fin-kpi-label { font-size: 0.875rem; color: var(--text-secondary); display: block; }
+.fin-kpi-value { font-size: 1.75rem; font-weight: 700; display: block; margin: var(--space-1) 0; }
+
+.fin-kpi-comparison {
+    font-size: 0.75rem;
+    color: var(--text-secondary);
+}
+
+.comparison-positive { color: #10b981; font-weight: 600; }
+.comparison-negative { color: #ef4444; font-weight: 600; }
+.comparison-neutral { font-weight: 500; }
+
+/* Budget Overview */
+.budget-overview-section {
+    display: grid;
+    grid-template-columns: 2fr 1fr;
+    gap: var(--space-5);
+    margin-bottom: var(--space-6);
+}
+
+.budget-progress-card, .budget-breakdown-card {
+    padding: var(--space-5);
+    background: var(--bg-card);
+    border: 1px solid var(--border-color);
+    border-radius: var(--radius-lg);
+}
+
+.budget-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: var(--space-4);
+}
+
+.budget-header h3 { font-size: 1.125rem; }
+.budget-period { font-size: 0.875rem; color: var(--text-secondary); }
+
+.budget-numbers {
+    display: flex;
+    align-items: baseline;
+    gap: var(--space-2);
+    margin-bottom: var(--space-3);
+}
+
+.budget-spent { font-size: 2rem; font-weight: 700; }
+.budget-separator { font-size: 1.5rem; color: var(--text-tertiary); }
+.budget-total { font-size: 1.25rem; color: var(--text-secondary); }
+
+.budget-bar-container { margin-bottom: var(--space-2); }
+
+.budget-bar {
+    height: 12px;
+    background: var(--bg-body);
+    border-radius: var(--radius-full);
+    position: relative;
+    overflow: visible;
+}
+
+.budget-bar-fill {
+    height: 100%;
+    background: linear-gradient(90deg, #10b981, #f59e0b);
+    border-radius: var(--radius-full);
+}
+
+.budget-bar-projection {
+    position: absolute;
+    top: 0;
+    height: 100%;
+    background: rgba(245, 158, 11, 0.3);
+    border-radius: 0 var(--radius-full) var(--radius-full) 0;
+}
+
+.budget-labels {
+    display: flex;
+    justify-content: space-between;
+    font-size: 0.6875rem;
+    color: var(--text-tertiary);
+}
+
+.budget-warning-label { color: #f59e0b; }
+
+.budget-forecast {
+    display: flex;
+    align-items: center;
+    gap: var(--space-2);
+    padding: var(--space-3);
+    background: rgba(59, 130, 246, 0.1);
+    border-radius: var(--radius-md);
+    font-size: 0.875rem;
+    margin-top: var(--space-4);
+}
+
+.budget-forecast svg { width: 16px; height: 16px; color: #3b82f6; }
+
+.budget-breakdown-card h3 {
+    font-size: 1rem;
+    margin-bottom: var(--space-4);
+}
+
+.budget-categories {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-3);
+}
+
+.budget-category {
+    display: flex;
+    align-items: center;
+    gap: var(--space-3);
+}
+
+.category-info {
+    display: flex;
+    align-items: center;
+    gap: var(--space-2);
+    min-width: 100px;
+}
+
+.category-dot {
+    width: 10px;
+    height: 10px;
+    border-radius: 50%;
+}
+
+.category-name { font-size: 0.875rem; }
+
+.category-bar {
+    flex: 1;
+    height: 8px;
+    background: var(--bg-body);
+    border-radius: var(--radius-full);
+    overflow: hidden;
+}
+
+.category-progress {
+    height: 100%;
+    border-radius: var(--radius-full);
+}
+
+.category-amount {
+    min-width: 70px;
+    text-align: right;
+    font-size: 0.875rem;
+    font-weight: 600;
+}
+
+/* Financial Grid */
+.fin-grid {
+    display: grid;
+    grid-template-columns: repeat(12, 1fr);
+    gap: var(--space-5);
+}
+
+.card { grid-column: span 4; }
+.card-lg { grid-column: span 6; }
+.card-full { grid-column: span 12; }
+
+/* Model Costs Table */
+.model-costs-table {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-2);
+}
+
+.model-cost-header {
+    display: grid;
+    grid-template-columns: 2fr 1fr 1fr 1fr 1fr;
+    padding: var(--space-2) var(--space-3);
+    font-size: 0.6875rem;
+    font-weight: 600;
+    color: var(--text-secondary);
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+}
+
+.model-cost-row {
+    display: grid;
+    grid-template-columns: 2fr 1fr 1fr 1fr 1fr;
+    align-items: center;
+    padding: var(--space-3);
+    background: var(--bg-body);
+    border-radius: var(--radius-md);
+}
+
+.model-name {
+    display: flex;
+    align-items: center;
+    gap: var(--space-2);
+    font-weight: 500;
+}
+
+.model-name svg { width: 16px; height: 16px; color: var(--color-primary); }
+.model-inferences, .model-unit-cost, .model-total-cost { font-size: 0.875rem; }
+.model-total-cost { font-weight: 600; }
+
+.model-trend {
+    display: flex;
+    align-items: center;
+    gap: var(--space-1);
+    font-size: 0.75rem;
+}
+
+.model-trend svg { width: 14px; height: 14px; }
+.trend-up { color: #ef4444; }
+.trend-down { color: #10b981; }
+.trend-neutral { color: var(--text-secondary); }
+
+/* ROI Summary */
+.roi-summary {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-3);
+    margin-bottom: var(--space-5);
+    padding-bottom: var(--space-4);
+    border-bottom: 1px solid var(--border-color);
+}
+
+.roi-item {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.roi-label { font-size: 0.875rem; color: var(--text-secondary); }
+.roi-value { font-size: 1.125rem; font-weight: 600; }
+.roi-value.positive { color: #10b981; }
+.roi-value.highlight { color: var(--color-primary); font-size: 1.5rem; }
+
+.roi-breakdown h4 {
+    font-size: 0.8125rem;
+    color: var(--text-secondary);
+    margin-bottom: var(--space-3);
+}
+
+.value-source {
+    display: flex;
+    justify-content: space-between;
+    padding: var(--space-2) 0;
+    border-bottom: 1px solid var(--border-color);
+}
+
+.value-source:last-child { border-bottom: none; }
+.source-name { font-size: 0.875rem; }
+.source-value { font-size: 0.875rem; font-weight: 600; color: #10b981; }
+
+/* Opportunities */
+.opportunities-list {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-4);
+}
+
+.opportunity-item {
+    padding: var(--space-4);
+    border-radius: var(--radius-md);
+    background: var(--bg-body);
+    border-left: 4px solid;
+}
+
+.high-impact { border-color: #10b981; }
+.medium-impact { border-color: #f59e0b; }
+.low-impact { border-color: #3b82f6; }
+
+.opp-header {
+    display: flex;
+    gap: var(--space-3);
+    margin-bottom: var(--space-2);
+}
+
+.opp-badge {
+    padding: var(--space-1) var(--space-2);
+    border-radius: var(--radius-sm);
+    font-size: 0.75rem;
+    font-weight: 600;
+    background: rgba(16, 185, 129, 0.1);
+    color: #10b981;
+}
+
+.opp-effort {
+    font-size: 0.6875rem;
+    color: var(--text-secondary);
+}
+
+.opportunity-item h4 { font-size: 0.9375rem; margin-bottom: var(--space-1); }
+.opportunity-item p { font-size: 0.8125rem; color: var(--text-secondary); margin-bottom: var(--space-3); }
+
+/* Cost Alerts */
+.cost-alerts {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-3);
+}
+
+.cost-alert {
+    display: flex;
+    align-items: flex-start;
+    gap: var(--space-3);
+    padding: var(--space-3);
+    border-radius: var(--radius-md);
+    background: var(--bg-body);
+}
+
+.alert-icon { flex-shrink: 0; }
+.alert-icon svg { width: 18px; height: 18px; }
+.cost-alert.warning .alert-icon { color: #f59e0b; }
+.cost-alert.info .alert-icon { color: #3b82f6; }
+.cost-alert.success .alert-icon { color: #10b981; }
+
+.alert-content { flex: 1; }
+.alert-content h4 { font-size: 0.875rem; margin-bottom: 2px; }
+.alert-content p { font-size: 0.75rem; color: var(--text-secondary); margin: 0; }
+.alert-time { font-size: 0.6875rem; color: var(--text-tertiary); }
+
+/* Provider Costs */
+.provider-costs-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: var(--space-5);
+}
+
+.provider-card {
+    padding: var(--space-5);
+    background: var(--bg-body);
+    border-radius: var(--radius-lg);
+}
+
+.provider-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: var(--space-4);
+}
+
+.provider-logo {
+    padding: var(--space-2) var(--space-3);
+    border-radius: var(--radius-sm);
+    font-weight: 700;
+    font-size: 0.875rem;
+}
+
+.provider-logo.aws { background: #ff9900; color: #232f3e; }
+.provider-logo.gcp { background: #4285f4; color: white; }
+.provider-logo.azure { background: #0078d4; color: white; }
+
+.provider-total { font-size: 1.25rem; font-weight: 700; }
+
+.provider-services {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-2);
+    margin-bottom: var(--space-4);
+}
+
+.provider-service {
+    display: flex;
+    justify-content: space-between;
+    font-size: 0.875rem;
+    padding: var(--space-2) 0;
+    border-bottom: 1px solid var(--border-color);
+}
+
+.provider-service:last-child { border-bottom: none; }
+
+.provider-trend {
+    display: flex;
+    align-items: center;
+    gap: var(--space-1);
+    font-size: 0.75rem;
+}
+
+.provider-trend svg { width: 14px; height: 14px; }
+.provider-trend.trend-up { color: #ef4444; }
+.provider-trend.trend-down { color: #10b981; }
+.provider-trend.trend-neutral { color: var(--text-secondary); }
+
+/* Time Selector */
+.time-selector {
+    display: flex;
+    gap: var(--space-1);
+}
+
+.time-btn {
+    padding: var(--space-1) var(--space-3);
+    font-size: 0.75rem;
+    background: transparent;
+    border: 1px solid var(--border-color);
+    border-radius: var(--radius-sm);
+    cursor: pointer;
+    color: var(--text-secondary);
+}
+
+.time-btn.active { background: var(--color-primary); color: white; border-color: var(--color-primary); }
+
+/* Responsive */
+@media (max-width: 1400px) {
+    .fin-kpi-grid { grid-template-columns: repeat(2, 1fr); }
+    .budget-overview-section { grid-template-columns: 1fr; }
+    .provider-costs-grid { grid-template-columns: 1fr; }
+}
+
+@media (max-width: 1024px) {
+    .card-lg { grid-column: span 12; }
+    .card { grid-column: span 6; }
+}
+
+@media (max-width: 768px) {
+    .dashboard-hero { flex-direction: column; text-align: center; gap: var(--space-4); }
+    .fin-kpi-grid { grid-template-columns: 1fr; }
+    .card { grid-column: span 12; }
+    .model-cost-header, .model-cost-row { grid-template-columns: 1fr 1fr; gap: var(--space-2); }
+}
+</style>
+
+<script>
+document.addEventListener('DOMContentLoaded', () => {
+    lucide.createIcons();
+    initFinancierDashboard();
+});
+
+function initFinancierDashboard() {
+    initCostTrendChart();
+    initDepartmentCostChart();
+
+    // Time selector events
+    document.querySelectorAll('.time-btn').forEach(btn => {
+        btn.addEventListener('click', () => {
+            const selector = btn.parentElement;
+            selector.querySelectorAll('.time-btn').forEach(b => b.classList.remove('active'));
+            btn.classList.add('active');
+        });
+    });
+}
+
+function initCostTrendChart() {
+    const ctx = document.getElementById('costTrendChart');
+    if (!ctx) return;
+
+    const labels = Array.from({length: 30}, (_, i) => `${i + 1} Déc`);
+
+    new Chart(ctx, {
+        type: 'line',
+        data: {
+            labels,
+            datasets: [
+                {
+                    label: 'Coût réel',
+                    data: labels.map((_, i) => 2500 + Math.random() * 500 + i * 20),
+                    borderColor: '#6366f1',
+                    backgroundColor: 'rgba(99, 102, 241, 0.1)',
+                    fill: true,
+                    tension: 0.4
+                },
+                {
+                    label: 'Budget prévu',
+                    data: labels.map(() => 3333),
+                    borderColor: '#f59e0b',
+                    borderDash: [5, 5],
+                    pointRadius: 0,
+                    fill: false
+                }
+            ]
+        },
+        options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            plugins: {
+                legend: { position: 'bottom', labels: { usePointStyle: true } }
+            },
+            scales: {
+                y: { ticks: { callback: v => '€' + v } }
+            }
+        }
+    });
+}
+
+function initDepartmentCostChart() {
+    const ctx = document.getElementById('departmentCostChart');
+    if (!ctx) return;
+
+    new Chart(ctx, {
+        type: 'doughnut',
+        data: {
+            labels: ['Marketing', 'Finance', 'Operations', 'R&D', 'Support'],
+            datasets: [{
+                data: [35, 25, 20, 12, 8],
+                backgroundColor: ['#6366f1', '#10b981', '#f59e0b', '#8b5cf6', '#ef4444'],
+                borderWidth: 0
+            }]
+        },
+        options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            plugins: {
+                legend: { position: 'bottom', labels: { usePointStyle: true } }
+            },
+            cutout: '60%'
+        }
+    });
+}
+
+function generateFinancialReport() {
+    showToast('Génération du rapport financier en cours...', 'info', 3000);
+}
+</script>
+{% endblock %}

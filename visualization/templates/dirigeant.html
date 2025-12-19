@@ -1,0 +1,973 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="dirigeant-dashboard page-transition-enter">
+    <!-- Hero Section -->
+    <div class="dashboard-hero">
+        <div class="hero-content">
+            <div class="hero-badge" style="background: linear-gradient(135deg, #10b981, #059669);">
+                <i data-lucide="building-2"></i>
+                <span>Dirigeant / Business</span>
+            </div>
+            <h1>Vue Stratégique</h1>
+            <p class="hero-subtitle">
+                Pilotez votre portefeuille IA avec une vision 360°. ROI, risques métier, conformité et tendances clés.
+            </p>
+        </div>
+        <div class="hero-actions">
+            <a href="/global" class="btn btn-outline">
+                <i data-lucide="globe"></i>
+                <span>Vue Globale</span>
+            </a>
+            <button class="btn btn-primary" onclick="generateExecutiveReport()">
+                <i data-lucide="file-text"></i>
+                <span>Rapport Exécutif</span>
+            </button>
+        </div>
+    </div>
+
+    <!-- Executive KPIs -->
+    <div class="exec-kpi-grid">
+        <div class="exec-kpi-card exec-kpi-highlight">
+            <div class="exec-kpi-icon">
+                <i data-lucide="trending-up"></i>
+            </div>
+            <div class="exec-kpi-content">
+                <span class="exec-kpi-label">ROI Global IA</span>
+                <span class="exec-kpi-value">+247%</span>
+                <span class="exec-kpi-trend trend-up">
+                    <i data-lucide="arrow-up"></i>
+                    +18% vs trimestre précédent
+                </span>
+            </div>
+        </div>
+
+        <div class="exec-kpi-card">
+            <div class="exec-kpi-icon" style="background: linear-gradient(135deg, #6366f1, #8b5cf6);">
+                <i data-lucide="brain"></i>
+            </div>
+            <div class="exec-kpi-content">
+                <span class="exec-kpi-label">Systèmes IA</span>
+                <span class="exec-kpi-value">24</span>
+                <span class="exec-kpi-trend trend-neutral">
+                    <i data-lucide="minus"></i>
+                    Portefeuille stable
+                </span>
+            </div>
+        </div>
+
+        <div class="exec-kpi-card">
+            <div class="exec-kpi-icon" style="background: linear-gradient(135deg, #10b981, #059669);">
+                <i data-lucide="shield-check"></i>
+            </div>
+            <div class="exec-kpi-content">
+                <span class="exec-kpi-label">Score de Confiance</span>
+                <span class="exec-kpi-value">87%</span>
+                <span class="exec-kpi-trend trend-up">
+                    <i data-lucide="arrow-up"></i>
+                    +2.3% cette semaine
+                </span>
+            </div>
+        </div>
+
+        <div class="exec-kpi-card">
+            <div class="exec-kpi-icon" style="background: linear-gradient(135deg, #f59e0b, #d97706);">
+                <i data-lucide="alert-triangle"></i>
+            </div>
+            <div class="exec-kpi-content">
+                <span class="exec-kpi-label">Risques Ouverts</span>
+                <span class="exec-kpi-value">3</span>
+                <span class="exec-kpi-trend trend-warning">
+                    <i data-lucide="alert-circle"></i>
+                    1 critique, 2 modérés
+                </span>
+            </div>
+        </div>
+    </div>
+
+    <!-- Main Content Grid -->
+    <div class="exec-grid">
+        <!-- Business Value -->
+        <div class="card card-lg">
+            <div class="card-header">
+                <h3>
+                    <i data-lucide="bar-chart-3"></i>
+                    Valeur Business Générée
+                </h3>
+                <div class="time-selector">
+                    <button class="time-btn active" data-range="month">Mois</button>
+                    <button class="time-btn" data-range="quarter">Trimestre</button>
+                    <button class="time-btn" data-range="year">Année</button>
+                </div>
+            </div>
+            <div class="card-body">
+                <div class="value-summary">
+                    <div class="value-item">
+                        <span class="value-number">€2.4M</span>
+                        <span class="value-label">Économies réalisées</span>
+                    </div>
+                    <div class="value-item">
+                        <span class="value-number">€5.7M</span>
+                        <span class="value-label">Revenus additionnels</span>
+                    </div>
+                    <div class="value-item">
+                        <span class="value-number">34%</span>
+                        <span class="value-label">Gain de productivité</span>
+                    </div>
+                </div>
+                <canvas id="businessValueChart" height="250"></canvas>
+            </div>
+        </div>
+
+        <!-- Risk Overview -->
+        <div class="card card-lg">
+            <div class="card-header">
+                <h3>
+                    <i data-lucide="shield-alert"></i>
+                    Cartographie des Risques
+                </h3>
+                <a href="/compliance" class="btn btn-ghost btn-sm">
+                    Détails
+                    <i data-lucide="arrow-right"></i>
+                </a>
+            </div>
+            <div class="card-body">
+                <div class="risk-matrix" id="riskMatrix">
+                    <!-- SVG Risk Matrix -->
+                </div>
+                <div class="risk-legend">
+                    <div class="risk-legend-item">
+                        <span class="risk-dot critical"></span>
+                        <span>Critique (1)</span>
+                    </div>
+                    <div class="risk-legend-item">
+                        <span class="risk-dot high"></span>
+                        <span>Élevé (2)</span>
+                    </div>
+                    <div class="risk-legend-item">
+                        <span class="risk-dot medium"></span>
+                        <span>Modéré (4)</span>
+                    </div>
+                    <div class="risk-legend-item">
+                        <span class="risk-dot low"></span>
+                        <span>Faible (8)</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Strategic Decisions -->
+        <div class="card">
+            <div class="card-header">
+                <h3>
+                    <i data-lucide="lightbulb"></i>
+                    Recommandations Stratégiques
+                </h3>
+            </div>
+            <div class="card-body">
+                <div class="recommendations-list">
+                    <div class="recommendation-item priority-high">
+                        <div class="rec-priority">Urgent</div>
+                        <h4>Drift critique sur le scoring crédit</h4>
+                        <p>Impact potentiel : €150K/mois de pertes. Action requise sous 48h.</p>
+                        <button class="btn btn-primary btn-sm" onclick="investigateDrift()">
+                            Investiguer
+                        </button>
+                    </div>
+                    <div class="recommendation-item priority-medium">
+                        <div class="rec-priority">Opportunité</div>
+                        <h4>Optimisation possible des coûts</h4>
+                        <p>€45K d'économies mensuelles identifiées sur l'infrastructure ML.</p>
+                        <button class="btn btn-outline btn-sm">
+                            Voir le plan
+                        </button>
+                    </div>
+                    <div class="recommendation-item priority-info">
+                        <div class="rec-priority">Info</div>
+                        <h4>Nouveau modèle prêt pour production</h4>
+                        <p>NLP-Classifier-v3 a passé tous les tests avec un score de 94%.</p>
+                        <button class="btn btn-ghost btn-sm">
+                            Détails
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Conformity Summary -->
+        <div class="card">
+            <div class="card-header">
+                <h3>
+                    <i data-lucide="scale"></i>
+                    Conformité Réglementaire
+                </h3>
+                <a href="/juridique" class="btn btn-ghost btn-sm">
+                    Détails
+                    <i data-lucide="arrow-right"></i>
+                </a>
+            </div>
+            <div class="card-body">
+                <div class="compliance-gauge">
+                    <div class="gauge-container" id="complianceGauge"></div>
+                    <div class="gauge-label">
+                        <span class="gauge-value">92%</span>
+                        <span class="gauge-text">Conformité Globale</span>
+                    </div>
+                </div>
+                <div class="compliance-breakdown">
+                    <div class="compliance-row">
+                        <span class="compliance-name">🇪🇺 EU AI Act</span>
+                        <div class="compliance-mini-bar">
+                            <div class="compliance-mini-progress" style="width: 92%;"></div>
+                        </div>
+                        <span class="compliance-score">92%</span>
+                    </div>
+                    <div class="compliance-row">
+                        <span class="compliance-name">🔒 RGPD</span>
+                        <div class="compliance-mini-bar">
+                            <div class="compliance-mini-progress" style="width: 98%;"></div>
+                        </div>
+                        <span class="compliance-score">98%</span>
+                    </div>
+                    <div class="compliance-row">
+                        <span class="compliance-name">🛡️ Sécurité</span>
+                        <div class="compliance-mini-bar">
+                            <div class="compliance-mini-progress" style="width: 88%;"></div>
+                        </div>
+                        <span class="compliance-score">88%</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Cost Overview -->
+        <div class="card">
+            <div class="card-header">
+                <h3>
+                    <i data-lucide="wallet"></i>
+                    Budget & Coûts
+                </h3>
+                <a href="/financier" class="btn btn-ghost btn-sm">
+                    FinOps
+                    <i data-lucide="arrow-right"></i>
+                </a>
+            </div>
+            <div class="card-body">
+                <div class="budget-overview">
+                    <div class="budget-progress">
+                        <div class="budget-header">
+                            <span>Budget mensuel IA</span>
+                            <span>€85K / €100K</span>
+                        </div>
+                        <div class="budget-bar">
+                            <div class="budget-fill" style="width: 85%;"></div>
+                        </div>
+                        <div class="budget-status status-ok">
+                            <i data-lucide="check-circle"></i>
+                            Dans le budget - 15% de marge
+                        </div>
+                    </div>
+                    <div class="budget-breakdown">
+                        <div class="budget-item">
+                            <span class="budget-category">Inférence</span>
+                            <span class="budget-amount">€38K</span>
+                        </div>
+                        <div class="budget-item">
+                            <span class="budget-category">Training</span>
+                            <span class="budget-amount">€25K</span>
+                        </div>
+                        <div class="budget-item">
+                            <span class="budget-category">Infrastructure</span>
+                            <span class="budget-amount">€22K</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- AI Portfolio -->
+        <div class="card">
+            <div class="card-header">
+                <h3>
+                    <i data-lucide="grid-3x3"></i>
+                    Portefeuille IA
+                </h3>
+            </div>
+            <div class="card-body">
+                <div class="portfolio-grid">
+                    <div class="portfolio-item status-operational">
+                        <div class="portfolio-icon"><i data-lucide="message-square"></i></div>
+                        <span class="portfolio-name">Chatbot Client</span>
+                        <span class="portfolio-status">Opérationnel</span>
+                    </div>
+                    <div class="portfolio-item status-operational">
+                        <div class="portfolio-icon"><i data-lucide="credit-card"></i></div>
+                        <span class="portfolio-name">Scoring Crédit</span>
+                        <span class="portfolio-status">Opérationnel</span>
+                    </div>
+                    <div class="portfolio-item status-warning">
+                        <div class="portfolio-icon"><i data-lucide="shopping-cart"></i></div>
+                        <span class="portfolio-name">Recommandation</span>
+                        <span class="portfolio-status">Dégradé</span>
+                    </div>
+                    <div class="portfolio-item status-operational">
+                        <div class="portfolio-icon"><i data-lucide="shield"></i></div>
+                        <span class="portfolio-name">Fraude Detection</span>
+                        <span class="portfolio-status">Opérationnel</span>
+                    </div>
+                    <div class="portfolio-item status-operational">
+                        <div class="portfolio-icon"><i data-lucide="file-search"></i></div>
+                        <span class="portfolio-name">Doc Analyzer</span>
+                        <span class="portfolio-status">Opérationnel</span>
+                    </div>
+                    <div class="portfolio-item status-critical">
+                        <div class="portfolio-icon"><i data-lucide="user-check"></i></div>
+                        <span class="portfolio-name">KYC Automation</span>
+                        <span class="portfolio-status">Critique</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Trend Analysis -->
+        <div class="card card-full">
+            <div class="card-header">
+                <h3>
+                    <i data-lucide="line-chart"></i>
+                    Évolution des Indicateurs Clés
+                </h3>
+                <div class="chart-legend">
+                    <span class="legend-item"><span class="legend-color" style="background: #10b981;"></span>Confiance</span>
+                    <span class="legend-item"><span class="legend-color" style="background: #6366f1;"></span>Performance</span>
+                    <span class="legend-item"><span class="legend-color" style="background: #f59e0b;"></span>Risque</span>
+                </div>
+            </div>
+            <div class="card-body">
+                <canvas id="trendAnalysisChart" height="200"></canvas>
+            </div>
+        </div>
+    </div>
+</div>
+
+<style>
+/* Dirigeant Dashboard Styles */
+.dirigeant-dashboard {
+    padding: var(--space-6);
+    max-width: 1600px;
+    margin: 0 auto;
+}
+
+.dashboard-hero {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: var(--space-6) 0;
+    margin-bottom: var(--space-6);
+}
+
+.hero-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: var(--space-2);
+    padding: var(--space-2) var(--space-4);
+    color: white;
+    border-radius: var(--radius-full);
+    font-size: 0.875rem;
+    font-weight: 600;
+    margin-bottom: var(--space-3);
+}
+
+.hero-badge svg { width: 16px; height: 16px; }
+
+.hero-content h1 {
+    font-size: 2.5rem;
+    font-weight: 700;
+    margin-bottom: var(--space-2);
+}
+
+.hero-subtitle {
+    font-size: 1rem;
+    color: var(--text-secondary);
+    max-width: 500px;
+}
+
+.hero-actions { display: flex; gap: var(--space-3); }
+
+/* Executive KPI Grid */
+.exec-kpi-grid {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: var(--space-4);
+    margin-bottom: var(--space-8);
+}
+
+.exec-kpi-card {
+    display: flex;
+    align-items: center;
+    gap: var(--space-4);
+    padding: var(--space-5);
+    background: var(--bg-card);
+    border: 1px solid var(--border-color);
+    border-radius: var(--radius-lg);
+    transition: all 0.3s ease;
+}
+
+.exec-kpi-card:hover {
+    transform: translateY(-4px);
+    box-shadow: var(--shadow-lg);
+}
+
+.exec-kpi-highlight {
+    background: linear-gradient(135deg, rgba(16, 185, 129, 0.1), rgba(5, 150, 105, 0.05));
+    border-color: rgba(16, 185, 129, 0.3);
+}
+
+.exec-kpi-icon {
+    width: 64px;
+    height: 64px;
+    background: linear-gradient(135deg, #D4A017, #8B4513);
+    border-radius: var(--radius-lg);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: white;
+    flex-shrink: 0;
+}
+
+.exec-kpi-icon svg { width: 32px; height: 32px; }
+
+.exec-kpi-label {
+    font-size: 0.875rem;
+    color: var(--text-secondary);
+    display: block;
+}
+
+.exec-kpi-value {
+    font-size: 2rem;
+    font-weight: 700;
+    display: block;
+    margin: var(--space-1) 0;
+}
+
+.exec-kpi-trend {
+    display: flex;
+    align-items: center;
+    gap: var(--space-1);
+    font-size: 0.75rem;
+}
+
+.exec-kpi-trend svg { width: 14px; height: 14px; }
+
+.trend-up { color: #10b981; }
+.trend-down { color: #ef4444; }
+.trend-neutral { color: var(--text-secondary); }
+.trend-warning { color: #f59e0b; }
+
+/* Executive Grid */
+.exec-grid {
+    display: grid;
+    grid-template-columns: repeat(12, 1fr);
+    gap: var(--space-5);
+}
+
+.card { grid-column: span 4; }
+.card-lg { grid-column: span 6; }
+.card-full { grid-column: span 12; }
+
+/* Value Summary */
+.value-summary {
+    display: flex;
+    justify-content: space-around;
+    padding: var(--space-4) 0;
+    margin-bottom: var(--space-4);
+    border-bottom: 1px solid var(--border-color);
+}
+
+.value-item { text-align: center; }
+
+.value-number {
+    font-size: 1.75rem;
+    font-weight: 700;
+    color: var(--color-primary);
+    display: block;
+}
+
+.value-label {
+    font-size: 0.875rem;
+    color: var(--text-secondary);
+}
+
+/* Recommendations */
+.recommendations-list {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-4);
+}
+
+.recommendation-item {
+    padding: var(--space-4);
+    border-radius: var(--radius-md);
+    background: var(--bg-body);
+}
+
+.rec-priority {
+    display: inline-block;
+    padding: var(--space-1) var(--space-2);
+    border-radius: var(--radius-sm);
+    font-size: 0.6875rem;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    margin-bottom: var(--space-2);
+}
+
+.priority-high .rec-priority {
+    background: rgba(239, 68, 68, 0.1);
+    color: #ef4444;
+}
+
+.priority-medium .rec-priority {
+    background: rgba(245, 158, 11, 0.1);
+    color: #f59e0b;
+}
+
+.priority-info .rec-priority {
+    background: rgba(59, 130, 246, 0.1);
+    color: #3b82f6;
+}
+
+.recommendation-item h4 {
+    font-size: 0.9375rem;
+    font-weight: 600;
+    margin-bottom: var(--space-1);
+}
+
+.recommendation-item p {
+    font-size: 0.8125rem;
+    color: var(--text-secondary);
+    margin-bottom: var(--space-3);
+}
+
+/* Compliance Gauge */
+.compliance-gauge {
+    display: flex;
+    align-items: center;
+    gap: var(--space-6);
+    margin-bottom: var(--space-4);
+}
+
+.gauge-container {
+    width: 100px;
+    height: 100px;
+}
+
+.gauge-value {
+    font-size: 2rem;
+    font-weight: 700;
+    color: #10b981;
+    display: block;
+}
+
+.gauge-text {
+    font-size: 0.875rem;
+    color: var(--text-secondary);
+}
+
+.compliance-breakdown {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-2);
+}
+
+.compliance-row {
+    display: flex;
+    align-items: center;
+    gap: var(--space-2);
+}
+
+.compliance-name {
+    width: 100px;
+    font-size: 0.8125rem;
+}
+
+.compliance-mini-bar {
+    flex: 1;
+    height: 6px;
+    background: var(--bg-body);
+    border-radius: var(--radius-full);
+    overflow: hidden;
+}
+
+.compliance-mini-progress {
+    height: 100%;
+    background: linear-gradient(90deg, #D4A017, #10b981);
+    border-radius: var(--radius-full);
+}
+
+.compliance-score {
+    font-size: 0.8125rem;
+    font-weight: 600;
+    min-width: 35px;
+    text-align: right;
+}
+
+/* Budget Overview */
+.budget-progress {
+    margin-bottom: var(--space-4);
+}
+
+.budget-header {
+    display: flex;
+    justify-content: space-between;
+    font-size: 0.875rem;
+    margin-bottom: var(--space-2);
+}
+
+.budget-bar {
+    height: 12px;
+    background: var(--bg-body);
+    border-radius: var(--radius-full);
+    overflow: hidden;
+    margin-bottom: var(--space-2);
+}
+
+.budget-fill {
+    height: 100%;
+    background: linear-gradient(90deg, #10b981, #059669);
+    border-radius: var(--radius-full);
+}
+
+.budget-status {
+    display: flex;
+    align-items: center;
+    gap: var(--space-2);
+    font-size: 0.8125rem;
+}
+
+.budget-status svg { width: 14px; height: 14px; }
+
+.status-ok { color: #10b981; }
+
+.budget-breakdown {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-2);
+    padding-top: var(--space-4);
+    border-top: 1px solid var(--border-color);
+}
+
+.budget-item {
+    display: flex;
+    justify-content: space-between;
+    font-size: 0.875rem;
+}
+
+.budget-amount { font-weight: 600; }
+
+/* Portfolio Grid */
+.portfolio-grid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: var(--space-3);
+}
+
+.portfolio-item {
+    display: flex;
+    align-items: center;
+    gap: var(--space-3);
+    padding: var(--space-3);
+    border-radius: var(--radius-md);
+    background: var(--bg-body);
+}
+
+.portfolio-icon {
+    width: 36px;
+    height: 36px;
+    border-radius: var(--radius-sm);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: var(--color-primary);
+    color: white;
+}
+
+.portfolio-icon svg { width: 18px; height: 18px; }
+
+.portfolio-name {
+    flex: 1;
+    font-size: 0.8125rem;
+    font-weight: 500;
+}
+
+.portfolio-status {
+    font-size: 0.6875rem;
+    padding: var(--space-1) var(--space-2);
+    border-radius: var(--radius-sm);
+}
+
+.status-operational .portfolio-status {
+    background: rgba(16, 185, 129, 0.1);
+    color: #10b981;
+}
+
+.status-warning .portfolio-status {
+    background: rgba(245, 158, 11, 0.1);
+    color: #f59e0b;
+}
+
+.status-critical .portfolio-status {
+    background: rgba(239, 68, 68, 0.1);
+    color: #ef4444;
+}
+
+/* Risk Legend */
+.risk-legend {
+    display: flex;
+    justify-content: center;
+    gap: var(--space-4);
+    margin-top: var(--space-4);
+}
+
+.risk-legend-item {
+    display: flex;
+    align-items: center;
+    gap: var(--space-2);
+    font-size: 0.75rem;
+}
+
+.risk-dot {
+    width: 12px;
+    height: 12px;
+    border-radius: 50%;
+}
+
+.risk-dot.critical { background: #ef4444; }
+.risk-dot.high { background: #f59e0b; }
+.risk-dot.medium { background: #3b82f6; }
+.risk-dot.low { background: #10b981; }
+
+/* Chart Legend */
+.chart-legend {
+    display: flex;
+    gap: var(--space-4);
+}
+
+.legend-item {
+    display: flex;
+    align-items: center;
+    gap: var(--space-2);
+    font-size: 0.75rem;
+}
+
+.legend-color {
+    width: 12px;
+    height: 12px;
+    border-radius: var(--radius-sm);
+}
+
+/* Responsive */
+@media (max-width: 1400px) {
+    .exec-kpi-grid { grid-template-columns: repeat(2, 1fr); }
+}
+
+@media (max-width: 1024px) {
+    .card-lg { grid-column: span 12; }
+    .card { grid-column: span 6; }
+}
+
+@media (max-width: 768px) {
+    .dashboard-hero { flex-direction: column; text-align: center; gap: var(--space-4); }
+    .exec-kpi-grid { grid-template-columns: 1fr; }
+    .card { grid-column: span 12; }
+    .portfolio-grid { grid-template-columns: 1fr; }
+}
+</style>
+
+<script>
+document.addEventListener('DOMContentLoaded', () => {
+    lucide.createIcons();
+    initDirigeantDashboard();
+});
+
+function initDirigeantDashboard() {
+    initBusinessValueChart();
+    initRiskMatrix();
+    initComplianceGauge();
+    initTrendAnalysisChart();
+}
+
+function initBusinessValueChart() {
+    const ctx = document.getElementById('businessValueChart');
+    if (!ctx) return;
+
+    new Chart(ctx, {
+        type: 'bar',
+        data: {
+            labels: ['Jan', 'Fév', 'Mar', 'Avr', 'Mai', 'Juin'],
+            datasets: [
+                {
+                    label: 'Économies',
+                    data: [320, 380, 420, 450, 480, 520],
+                    backgroundColor: '#10b981',
+                    borderRadius: 4
+                },
+                {
+                    label: 'Revenus additionnels',
+                    data: [850, 920, 980, 1050, 1100, 1180],
+                    backgroundColor: '#D4A017',
+                    borderRadius: 4
+                }
+            ]
+        },
+        options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            plugins: {
+                legend: {
+                    position: 'bottom',
+                    labels: { usePointStyle: true }
+                }
+            },
+            scales: {
+                y: {
+                    beginAtZero: true,
+                    ticks: { callback: v => '€' + v + 'K' }
+                }
+            }
+        }
+    });
+}
+
+function initRiskMatrix() {
+    const container = document.getElementById('riskMatrix');
+    if (!container) return;
+
+    // Risk matrix visualization
+    container.innerHTML = `
+        <svg viewBox="0 0 200 200" style="width: 100%; max-width: 300px; margin: 0 auto; display: block;">
+            <!-- Grid -->
+            <defs>
+                <linearGradient id="riskGradient" x1="0%" y1="100%" x2="100%" y2="0%">
+                    <stop offset="0%" style="stop-color:#10b981;stop-opacity:0.2"/>
+                    <stop offset="50%" style="stop-color:#f59e0b;stop-opacity:0.2"/>
+                    <stop offset="100%" style="stop-color:#ef4444;stop-opacity:0.2"/>
+                </linearGradient>
+            </defs>
+            <rect x="20" y="20" width="160" height="160" fill="url(#riskGradient)" rx="8"/>
+
+            <!-- Axis labels -->
+            <text x="100" y="195" text-anchor="middle" font-size="10" fill="var(--text-secondary)">Probabilité →</text>
+            <text x="10" y="100" text-anchor="middle" font-size="10" fill="var(--text-secondary)" transform="rotate(-90 10 100)">Impact →</text>
+
+            <!-- Grid lines -->
+            <line x1="20" y1="100" x2="180" y2="100" stroke="var(--border-color)" stroke-dasharray="4"/>
+            <line x1="100" y1="20" x2="100" y2="180" stroke="var(--border-color)" stroke-dasharray="4"/>
+
+            <!-- Risk points -->
+            <circle cx="150" cy="40" r="12" fill="#ef4444" opacity="0.9"/>
+            <text x="150" y="44" text-anchor="middle" font-size="8" fill="white" font-weight="bold">1</text>
+
+            <circle cx="130" cy="70" r="10" fill="#f59e0b" opacity="0.9"/>
+            <text x="130" y="74" text-anchor="middle" font-size="8" fill="white" font-weight="bold">2</text>
+
+            <circle cx="60" cy="90" r="10" fill="#f59e0b" opacity="0.9"/>
+            <text x="60" y="94" text-anchor="middle" font-size="8" fill="white" font-weight="bold">1</text>
+
+            <circle cx="70" cy="130" r="8" fill="#3b82f6" opacity="0.9"/>
+            <circle cx="110" cy="120" r="8" fill="#3b82f6" opacity="0.9"/>
+            <circle cx="90" cy="145" r="8" fill="#3b82f6" opacity="0.9"/>
+            <circle cx="140" cy="135" r="8" fill="#3b82f6" opacity="0.9"/>
+
+            <circle cx="45" cy="155" r="6" fill="#10b981" opacity="0.9"/>
+            <circle cx="65" cy="165" r="6" fill="#10b981" opacity="0.9"/>
+            <circle cx="85" cy="168" r="6" fill="#10b981" opacity="0.9"/>
+            <circle cx="110" cy="160" r="6" fill="#10b981" opacity="0.9"/>
+            <circle cx="130" cy="165" r="6" fill="#10b981" opacity="0.9"/>
+            <circle cx="150" cy="158" r="6" fill="#10b981" opacity="0.9"/>
+            <circle cx="165" cy="165" r="6" fill="#10b981" opacity="0.9"/>
+            <circle cx="55" cy="145" r="6" fill="#10b981" opacity="0.9"/>
+        </svg>
+    `;
+}
+
+function initComplianceGauge() {
+    const container = document.getElementById('complianceGauge');
+    if (!container) return;
+
+    container.innerHTML = `
+        <svg viewBox="0 0 100 60" style="width: 100%; height: 100%;">
+            <defs>
+                <linearGradient id="gaugeGrad" x1="0%" y1="0%" x2="100%" y2="0%">
+                    <stop offset="0%" style="stop-color:#ef4444"/>
+                    <stop offset="50%" style="stop-color:#f59e0b"/>
+                    <stop offset="100%" style="stop-color:#10b981"/>
+                </linearGradient>
+            </defs>
+            <path d="M 10 55 A 40 40 0 0 1 90 55" fill="none" stroke="#e5e7eb" stroke-width="8" stroke-linecap="round"/>
+            <path d="M 10 55 A 40 40 0 0 1 90 55" fill="none" stroke="url(#gaugeGrad)" stroke-width="8" stroke-linecap="round" stroke-dasharray="126" stroke-dashoffset="10"/>
+            <circle cx="82" cy="35" r="4" fill="#10b981"/>
+        </svg>
+    `;
+}
+
+function initTrendAnalysisChart() {
+    const ctx = document.getElementById('trendAnalysisChart');
+    if (!ctx) return;
+
+    new Chart(ctx, {
+        type: 'line',
+        data: {
+            labels: ['Sem 1', 'Sem 2', 'Sem 3', 'Sem 4', 'Sem 5', 'Sem 6', 'Sem 7', 'Sem 8'],
+            datasets: [
+                {
+                    label: 'Confiance',
+                    data: [82, 84, 83, 85, 86, 85, 87, 87],
+                    borderColor: '#10b981',
+                    backgroundColor: 'rgba(16, 185, 129, 0.1)',
+                    fill: false,
+                    tension: 0.4
+                },
+                {
+                    label: 'Performance',
+                    data: [75, 78, 80, 79, 82, 84, 85, 86],
+                    borderColor: '#6366f1',
+                    backgroundColor: 'rgba(99, 102, 241, 0.1)',
+                    fill: false,
+                    tension: 0.4
+                },
+                {
+                    label: 'Risque (inversé)',
+                    data: [70, 72, 75, 73, 78, 80, 82, 85],
+                    borderColor: '#f59e0b',
+                    backgroundColor: 'rgba(245, 158, 11, 0.1)',
+                    fill: false,
+                    tension: 0.4
+                }
+            ]
+        },
+        options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            plugins: {
+                legend: { display: false }
+            },
+            scales: {
+                y: {
+                    min: 60,
+                    max: 100,
+                    ticks: { callback: v => v + '%' }
+                }
+            }
+        }
+    });
+}
+
+function generateExecutiveReport() {
+    showToast('Génération du rapport exécutif en cours...', 'info', 3000);
+}
+
+function investigateDrift() {
+    window.location.href = '/causal';
+}
+</script>
+{% endblock %}

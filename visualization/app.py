@@ -376,6 +376,81 @@ async def personas_view(request: Request):
     )
 
 
+@app.get("/global", response_class=HTMLResponse)
+async def global_view(request: Request):
+    """Global overview dashboard - consolidated view for all personas"""
+    i18n = create_i18n_context(request)
+    return templates.TemplateResponse(
+        "global.html",
+        {
+            "request": request,
+            "title": f"{APP_TITLE} - Vue Globale",
+            "active_page": "global",
+            **i18n
+        }
+    )
+
+
+@app.get("/dirigeant", response_class=HTMLResponse)
+async def dirigeant_view(request: Request):
+    """Dirigeant/Business strategic dashboard"""
+    i18n = create_i18n_context(request)
+    return templates.TemplateResponse(
+        "dirigeant.html",
+        {
+            "request": request,
+            "title": f"{APP_TITLE} - Vue Dirigeant",
+            "active_page": "dirigeant",
+            **i18n
+        }
+    )
+
+
+@app.get("/tech", response_class=HTMLResponse)
+async def tech_view(request: Request):
+    """Tech (DSI/RSSI) dashboard - IT governance and security"""
+    i18n = create_i18n_context(request)
+    return templates.TemplateResponse(
+        "tech.html",
+        {
+            "request": request,
+            "title": f"{APP_TITLE} - Vue Tech (DSI/RSSI)",
+            "active_page": "tech",
+            **i18n
+        }
+    )
+
+
+@app.get("/juridique", response_class=HTMLResponse)
+async def juridique_view(request: Request):
+    """Juridique/Compliance dashboard - EU AI Act, GDPR"""
+    i18n = create_i18n_context(request)
+    return templates.TemplateResponse(
+        "juridique.html",
+        {
+            "request": request,
+            "title": f"{APP_TITLE} - Conformité Juridique",
+            "active_page": "juridique",
+            **i18n
+        }
+    )
+
+
+@app.get("/financier", response_class=HTMLResponse)
+async def financier_view(request: Request):
+    """Financier/FinOps dashboard - costs, budgets, ROI"""
+    i18n = create_i18n_context(request)
+    return templates.TemplateResponse(
+        "financier.html",
+        {
+            "request": request,
+            "title": f"{APP_TITLE} - Vue Financier",
+            "active_page": "financier",
+            **i18n
+        }
+    )
+
+
 # ============================================================================
 # Request tracking middleware
 # ============================================================================
