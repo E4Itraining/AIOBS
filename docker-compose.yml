@@ -274,9 +274,7 @@ services:
 networks:
   aiobs-network:
     driver: bridge
-    ipam:
-      config:
-        - subnet: 172.28.0.0/16
+    # Note: No explicit subnet - Docker assigns automatically to avoid conflicts
   # Dedicated network for test runner to avoid conflicts with main services
   test-network:
     driver: bridge
