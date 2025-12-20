@@ -296,14 +296,26 @@
     let previouslyFocusedElement = null;
 
     function toggleCommandPalette() {
+        // Ensure the command palette is created
+        createCommandPalette();
+
         state.commandPaletteOpen = !state.commandPaletteOpen;
         const palette = document.getElementById('commandPalette');
+
+        // Safety check - if element still doesn't exist, exit gracefully
+        if (!palette) {
+            console.warn('Command palette element not found');
+            return;
+        }
 
         if (state.commandPaletteOpen) {
             previouslyFocusedElement = document.activeElement;
             palette.classList.add('open');
-            document.getElementById('commandInput').focus();
-            document.getElementById('commandInput').value = '';
+            const input = document.getElementById('commandInput');
+            if (input) {
+                input.focus();
+                input.value = '';
+            }
             state.selectedCommandIndex = 0;
             renderCommands(COMMANDS);
             // Announce to screen readers
@@ -464,9 +476,18 @@
     }
 
     window.toggleQuickInsights = function() {
+        // Ensure the quick insights panel is created
+        createQuickInsightsPanel();
+
         state.quickInsightsOpen = !state.quickInsightsOpen;
         const panel = document.getElementById('quickInsightsContainer');
         const trigger = document.getElementById('quickInsightsTrigger');
+
+        // Safety check - if element still doesn't exist, exit gracefully
+        if (!panel) {
+            console.warn('Quick insights panel not found');
+            return;
+        }
 
         if (state.quickInsightsOpen) {
             panel.classList.add('open');
@@ -828,8 +849,17 @@
     let shortcutsPreviousFocus = null;
 
     window.toggleShortcutsModal = function() {
+        // Ensure the shortcuts modal is created
+        createShortcutsModal();
+
         state.shortcutsModalOpen = !state.shortcutsModalOpen;
         const modal = document.getElementById('shortcutsModal');
+
+        // Safety check - if element still doesn't exist, exit gracefully
+        if (!modal) {
+            console.warn('Shortcuts modal not found');
+            return;
+        }
 
         if (state.shortcutsModalOpen) {
             shortcutsPreviousFocus = document.activeElement;
