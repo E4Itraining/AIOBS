@@ -1500,3 +1500,108 @@ select:focus-visible {
     transform: none;
     background: inherit;
 }
+
+/* ========== DARK MODE ENHANCEMENTS ========== */
+[data-theme="dark"] {
+    /* Extended dark mode variables */
+    --bg-elevated: #2D2D4A;
+    --text-on-primary: #1A1A2E;
+    --color-primary-dark: #C89915;
+
+    /* Skip-to-content in dark mode */
+    .skip-to-content {
+        background: var(--color-primary);
+        color: var(--text-on-primary);
+    }
+
+    /* Empty states */
+    .empty-state {
+        background: var(--bg-card);
+        border-color: var(--border-color);
+    }
+
+    .empty-state--no-alerts {
+        background: linear-gradient(180deg, rgba(16, 185, 129, 0.1) 0%, var(--bg-card) 100%);
+    }
+
+    .empty-state--error {
+        background: linear-gradient(180deg, rgba(239, 68, 68, 0.1) 0%, var(--bg-card) 100%);
+    }
+
+    /* Cards and panels */
+    .card,
+    .quick-stat,
+    .insight-card,
+    .executive-summary {
+        background: var(--bg-card);
+        border-color: var(--border-color);
+    }
+
+    /* Help bubble */
+    .help-panel {
+        background: var(--bg-card);
+        border-color: var(--border-color);
+    }
+
+    /* Chatbot */
+    .chatbot-panel {
+        background: var(--bg-card);
+    }
+
+    .chatbot-welcome-icon {
+        background: var(--bg-elevated);
+    }
+
+    /* Journey steps */
+    .journey-step {
+        background: var(--bg-elevated);
+        border-color: var(--border-color);
+    }
+
+    .journey-step.active {
+        background: var(--color-primary);
+    }
+
+    /* Search results */
+    .search-results {
+        background: var(--bg-card);
+        border-color: var(--border-color);
+    }
+
+    .search-result-item:hover {
+        background: var(--bg-hover);
+    }
+
+    /* Toast notifications */
+    .toast {
+        background: var(--bg-card);
+        border-color: var(--border-color);
+    }
+
+    /* Pulse animation for dark mode */
+    .pulse-alert {
+        animation: pulseGlowDark 2s ease-in-out infinite;
+    }
+}
+
+@keyframes pulseGlowDark {
+    0%, 100% {
+        box-shadow: 0 0 0 0 rgba(239, 68, 68, 0.5);
+    }
+    50% {
+        box-shadow: 0 0 0 10px rgba(239, 68, 68, 0);
+    }
+}
+
+/* High Contrast Mode Support */
+@media (prefers-contrast: high) {
+    :root {
+        --border-color: #333;
+        --text-secondary: #555;
+    }
+
+    [data-theme="dark"] {
+        --border-color: #666;
+        --text-secondary: #AAA;
+    }
+}

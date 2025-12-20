@@ -8,6 +8,7 @@ import cors from 'cors';
 import { createServer } from 'http';
 import { WebSocketServer, WebSocket } from 'ws';
 import { v4 as uuidv4 } from 'uuid';
+import { logger } from './utils/logger';
 
 // Import routes
 import { dashboardRouter } from './api/routes/dashboard';
@@ -51,7 +52,7 @@ app.use((req: Request, res: Response, next: NextFunction) => {
   const start = Date.now();
   res.on('finish', () => {
     const duration = Date.now() - start;
-    console.log(`${req.method} ${req.path} ${res.statusCode} ${duration}ms`);
+    logger.request(req.method, req.path, res.statusCode, duration);
   });
   next();
 });
@@ -207,7 +208,7 @@ app.use((req: Request, res: Response) => {
 
 // Error handler
 app.use((err: Error, req: Request, res: Response, next: NextFunction) => {
-  console.error('Error:', err);
+  logger.error('Request error', { message: err.message, stack: err.stack, path: req.path });
   res.status(500).json({
     success: false,
     error: 'Internal Server Error',
@@ -241,7 +242,7 @@ async function findAvailablePort(startPort: number): Promise<number> {
     if (await isPortAvailable(port)) {
       return port;
     }
-    console.log(`Port ${port} is in use, trying port ${port + 1}...`);
+    logger.warn(`Port ${port} is in use, trying port ${port + 1}...`, { port, attempt });
   }
   throw new Error(`Could not find an available port after ${MAX_PORT_ATTEMPTS} attempts`);
 }
@@ -259,7 +260,7 @@ async function startServer(): Promise<void> {
     const realtimeService = RealtimeService.getInstance(wss);
 
     wss.on('connection', (ws: WebSocket) => {
-      console.log('WebSocket client connected');
+      logger.debug('WebSocket client connected');
 
       // Send welcome message
       ws.send(JSON.stringify({
@@ -279,41 +280,33 @@ async function startServer(): Promise<void> {
       });
 
       ws.on('close', () => {
-        console.log('WebSocket client disconnected');
+        logger.debug('WebSocket client disconnected');
         realtimeService.removeClient(ws);
       });
     });
 
     // Handle server errors
     server.on('error', (err: NodeJS.ErrnoException) => {
-      console.error('Server error:', err);
+      logger.error('Server error', { message: err.message, code: err.code });
       process.exit(1);
     });
 
     // Start listening
     server.listen(port, '0.0.0.0', () => {
-      const portStr = port.toString().padEnd(5, ' ');
-      console.log(`
-╔══════════════════════════════════════════════════════════════╗
-║                    AIOBS Platform v${VERSION}                     ║
-║              AI Observability Hub - Backend API              ║
-╠══════════════════════════════════════════════════════════════╣
-║  HTTP Server:    http://localhost:${portStr}                      ║
-║  WebSocket:      ws://localhost:${portStr}/ws                     ║
-║  Health Check:   http://localhost:${portStr}/health               ║
-║  API Docs:       http://localhost:${portStr}/api/docs             ║
-╚══════════════════════════════════════════════════════════════╝
-      `);
+      logger.info(`AIOBS Platform v${VERSION} started`, { port, version: VERSION });
+      logger.info(`HTTP Server: http://localhost:${port}`);
+      logger.info(`WebSocket: ws://localhost:${port}/ws`);
+      logger.info(`Health Check: http://localhost:${port}/health`);
 
       // Initialize demo data
       dataStore.initialize();
     });
   } catch (err) {
-    console.error(`\nError: ${(err as Error).message}`);
-    console.error(`Ports ${DEFAULT_PORT}-${DEFAULT_PORT + MAX_PORT_ATTEMPTS - 1} are all in use.`);
-    console.error('\nSuggestions:');
-    console.error('  1. Stop other processes using these ports');
-    console.error('  2. Set a different PORT environment variable: PORT=4000 npm start');
+    logger.error('Failed to start server', {
+      message: (err as Error).message,
+      portRange: `${DEFAULT_PORT}-${DEFAULT_PORT + MAX_PORT_ATTEMPTS - 1}`,
+    });
+    logger.error('Suggestions: Stop other processes or set PORT env variable');
     process.exit(1);
   }
 }

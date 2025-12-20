@@ -4,6 +4,7 @@
  */
 
 import { v4 as uuidv4 } from 'uuid';
+import { logger } from '../../utils/logger';
 
 export interface Service {
   id: string;
@@ -107,14 +108,14 @@ class DataStoreImpl {
   initialize(): void {
     if (this.initialized) return;
 
-    console.log('Initializing AIOBS Data Store...');
+    logger.info('Initializing AIOBS Data Store...');
     this.seedServices();
     this.seedAlerts();
     this.seedCognitiveMetrics();
     this.seedSLOs();
     this.seedMetricsSeries();
     this.initialized = true;
-    console.log('Data Store initialized with demo data');
+    logger.info('Data Store initialized with demo data');
 
     // Start real-time data simulation
     this.startSimulation();

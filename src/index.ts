@@ -6,6 +6,7 @@
  */
 
 import * as http from 'http';
+import { logger } from './utils/logger';
 
 // Core Types
 export * from './core/types';
@@ -220,8 +221,8 @@ function startServer(): void {
   });
 
   server.listen(PORT, '0.0.0.0', () => {
-    console.log(`AIOBS Platform v${VERSION} running on port ${PORT}`);
-    console.log(`Health check available at http://localhost:${PORT}/health`);
+    logger.info(`AIOBS Platform v${VERSION} running on port ${PORT}`);
+    logger.info(`Health check available at http://localhost:${PORT}/health`);
   });
 }
 
