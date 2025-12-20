@@ -9,6 +9,7 @@ from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import HTMLResponse, PlainTextResponse
 import os
 import time
+import logging
 import psutil
 
 from .routers import (
@@ -19,6 +20,9 @@ from .i18n import I18nMiddleware, SUPPORTED_LANGUAGES, get_translator
 from .i18n.middleware import create_i18n_context
 from .routers.realtime import start_background_tasks, stop_background_tasks
 from .routers.ingestion import startup as ingestion_startup, shutdown as ingestion_shutdown
+
+# Configure logging
+logger = logging.getLogger("aiobs.app")
 
 # Application metadata
 APP_TITLE = "AIOBS - AI Observability Hub"
@@ -67,13 +71,19 @@ app = FastAPI(
     redoc_url="/api/redoc",
 )
 
-# CORS middleware for development
+# CORS configuration from validated settings
+from .config import get_cors_settings
+
+cors_settings = get_cors_settings()
+CORS_ORIGINS = cors_settings.origins_list
+logger.info(f"CORS configured with {len(CORS_ORIGINS)} origins")
+
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["*"],  # Configure appropriately for production
+    allow_origins=CORS_ORIGINS,
     allow_credentials=True,
-    allow_methods=["*"],
-    allow_headers=["*"],
+    allow_methods=["GET", "POST", "PUT", "DELETE", "PATCH", "OPTIONS"],
+    allow_headers=["Authorization", "Content-Type", "X-Request-ID", "Accept-Language"],
 )
 
 # i18n middleware for multilingual support
@@ -190,6 +200,30 @@ async def profile_dashboard(request: Request, profile_id: str):
             "description": "Empreinte carbone, consommation énergétique et reporting ESG",
             "color": "#059669",
             "icon": "leaf"
+        },
+        "governance_dsi": {
+            "name": "DSI / CIO",
+            "description": "Gouvernance IT stratégique, portefeuille IA, budget et transformation digitale",
+            "color": "#6366f1",
+            "icon": "landmark"
+        },
+        "governance_rsi": {
+            "name": "RSI / IT Manager",
+            "description": "Gestion opérationnelle IT, systèmes IA, projets et ressources équipe",
+            "color": "#3b82f6",
+            "icon": "settings"
+        },
+        "privacy_dpo": {
+            "name": "Data Protection Officer",
+            "description": "Protection des données, GDPR, registre des traitements et droits des personnes",
+            "color": "#8b5cf6",
+            "icon": "user-check"
+        },
+        "legal_counsel": {
+            "name": "Legal Counsel",
+            "description": "Risques juridiques IA, contrats, propriété intellectuelle et veille réglementaire",
+            "color": "#0ea5e9",
+            "icon": "scale"
         }
     }
 

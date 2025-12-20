@@ -400,49 +400,49 @@
                 </thead>
                 <tbody id="auditTable">
                     <tr>
-                        <td>2025-01-15 14:32:15</td>
-                        <td>Model Deployment</td>
-                        <td>john.smith@company.com</td>
-                        <td>recommendation-v2.3</td>
-                        <td>DEPLOY</td>
-                        <td><span class="badge badge-success">Success</span></td>
-                        <td><button class="btn btn-ghost btn-sm" onclick="viewAuditDetails('AUD-001')"><i data-lucide="eye"></i></button></td>
+                        <td data-label="Timestamp">2025-01-15 14:32:15</td>
+                        <td data-label="Event">Model Deployment</td>
+                        <td data-label="User">john.smith@company.com</td>
+                        <td data-label="Resource">recommendation-v2.3</td>
+                        <td data-label="Action">DEPLOY</td>
+                        <td data-label="Status"><span class="badge badge-success">Success</span></td>
+                        <td data-label="Details"><button class="btn btn-ghost btn-sm" onclick="viewAuditDetails('AUD-001')"><i data-lucide="eye"></i></button></td>
                     </tr>
                     <tr>
-                        <td>2025-01-15 12:18:42</td>
-                        <td>Data Access</td>
-                        <td>ml-pipeline@service</td>
-                        <td>customer-features</td>
-                        <td>READ</td>
-                        <td><span class="badge badge-success">Success</span></td>
-                        <td><button class="btn btn-ghost btn-sm" onclick="viewAuditDetails('AUD-002')"><i data-lucide="eye"></i></button></td>
+                        <td data-label="Timestamp">2025-01-15 12:18:42</td>
+                        <td data-label="Event">Data Access</td>
+                        <td data-label="User">ml-pipeline@service</td>
+                        <td data-label="Resource">customer-features</td>
+                        <td data-label="Action">READ</td>
+                        <td data-label="Status"><span class="badge badge-success">Success</span></td>
+                        <td data-label="Details"><button class="btn btn-ghost btn-sm" onclick="viewAuditDetails('AUD-002')"><i data-lucide="eye"></i></button></td>
+                    </tr>
+                    <tr data-status="critical">
+                        <td data-label="Timestamp">2025-01-15 10:45:33</td>
+                        <td data-label="Event">Access Denied</td>
+                        <td data-label="User">unknown@external.com</td>
+                        <td data-label="Resource">fraud-model-v1</td>
+                        <td data-label="Action">ACCESS</td>
+                        <td data-label="Status"><span class="badge badge-danger">Blocked</span></td>
+                        <td data-label="Details"><button class="btn btn-ghost btn-sm" onclick="viewAuditDetails('AUD-003')"><i data-lucide="eye"></i></button></td>
                     </tr>
                     <tr>
-                        <td>2025-01-15 10:45:33</td>
-                        <td>Access Denied</td>
-                        <td>unknown@external.com</td>
-                        <td>fraud-model-v1</td>
-                        <td>ACCESS</td>
-                        <td><span class="badge badge-danger">Blocked</span></td>
-                        <td><button class="btn btn-ghost btn-sm" onclick="viewAuditDetails('AUD-003')"><i data-lucide="eye"></i></button></td>
+                        <td data-label="Timestamp">2025-01-15 09:12:08</td>
+                        <td data-label="Event">Configuration Change</td>
+                        <td data-label="User">admin@company.com</td>
+                        <td data-label="Resource">drift-threshold</td>
+                        <td data-label="Action">UPDATE</td>
+                        <td data-label="Status"><span class="badge badge-success">Success</span></td>
+                        <td data-label="Details"><button class="btn btn-ghost btn-sm" onclick="viewAuditDetails('AUD-004')"><i data-lucide="eye"></i></button></td>
                     </tr>
                     <tr>
-                        <td>2025-01-15 09:12:08</td>
-                        <td>Configuration Change</td>
-                        <td>admin@company.com</td>
-                        <td>drift-threshold</td>
-                        <td>UPDATE</td>
-                        <td><span class="badge badge-success">Success</span></td>
-                        <td><button class="btn btn-ghost btn-sm" onclick="viewAuditDetails('AUD-004')"><i data-lucide="eye"></i></button></td>
-                    </tr>
-                    <tr>
-                        <td>2025-01-14 22:45:19</td>
-                        <td>Model Retrain</td>
-                        <td>scheduler@service</td>
-                        <td>churn-predictor</td>
-                        <td>TRAIN</td>
-                        <td><span class="badge badge-success">Success</span></td>
-                        <td><button class="btn btn-ghost btn-sm" onclick="viewAuditDetails('AUD-005')"><i data-lucide="eye"></i></button></td>
+                        <td data-label="Timestamp">2025-01-14 22:45:19</td>
+                        <td data-label="Event">Model Retrain</td>
+                        <td data-label="User">scheduler@service</td>
+                        <td data-label="Resource">churn-predictor</td>
+                        <td data-label="Action">TRAIN</td>
+                        <td data-label="Status"><span class="badge badge-success">Success</span></td>
+                        <td data-label="Details"><button class="btn btn-ghost btn-sm" onclick="viewAuditDetails('AUD-005')"><i data-lucide="eye"></i></button></td>
                     </tr>
                 </tbody>
             </table>

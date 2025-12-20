@@ -387,6 +387,7 @@ TRANSLATIONS = {
             'skip_tour': 'Skip tour',
             'start_dashboard': 'Go to Dashboard',
             'prompt': 'New here? Click the help button to get started!',
+            'select_persona': 'Select your profile to personalize your experience',
             # Enhanced profile descriptions
             'ml_engineer_desc': 'Model health, multi-drift detection, cognitive metrics, reliability analysis, and causal root cause investigation',
             'devops_desc': 'SLO/SLI monitoring, service topology, performance metrics, alerts management, and deployment tracking',
@@ -497,6 +498,19 @@ TRANSLATIONS = {
             'placeholder': 'Search pages, metrics, services...',
             'results': 'Quick Navigation',
             'no_results': 'No results found'
+        },
+        'a11y': {
+            'skip_to_content': 'Skip to main content',
+            'loading': 'Loading...',
+            'menu_open': 'Open menu',
+            'menu_close': 'Close menu',
+            'expand': 'Expand',
+            'collapse': 'Collapse',
+            'required_field': 'Required field',
+            'error_message': 'Error:',
+            'success_message': 'Success:',
+            'warning_message': 'Warning:',
+            'info_message': 'Information:'
         }
     },
 
@@ -760,6 +774,7 @@ TRANSLATIONS = {
             'skip_tour': 'Passer la visite',
             'start_dashboard': 'Aller au tableau de bord',
             'prompt': 'Nouveau ici ? Cliquez sur le bouton d\'aide pour commencer !',
+            'select_persona': 'Sélectionnez votre profil pour personnaliser votre expérience',
             # Descriptions enrichies des profils
             'ml_engineer_desc': 'Santé des modèles, détection multi-dérive, métriques cognitives, analyse de fiabilité et investigation causale',
             'devops_desc': 'Monitoring SLO/SLI, topologie de services, métriques de performance, gestion des alertes et suivi des déploiements',
@@ -870,6 +885,19 @@ TRANSLATIONS = {
             'placeholder': 'Rechercher pages, métriques, services...',
             'results': 'Navigation rapide',
             'no_results': 'Aucun résultat trouvé'
+        },
+        'a11y': {
+            'skip_to_content': 'Aller au contenu principal',
+            'loading': 'Chargement...',
+            'menu_open': 'Ouvrir le menu',
+            'menu_close': 'Fermer le menu',
+            'expand': 'Développer',
+            'collapse': 'Réduire',
+            'required_field': 'Champ obligatoire',
+            'error_message': 'Erreur :',
+            'success_message': 'Succès :',
+            'warning_message': 'Attention :',
+            'info_message': 'Information :'
         }
     },
 
