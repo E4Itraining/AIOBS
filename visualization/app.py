@@ -204,6 +204,30 @@ async def profile_dashboard(request: Request, profile_id: str):
             "description": "Empreinte carbone, consommation énergétique et reporting ESG",
             "color": "#059669",
             "icon": "leaf"
+        },
+        "governance_dsi": {
+            "name": "DSI / CIO",
+            "description": "Gouvernance IT stratégique, portefeuille IA, budget et transformation digitale",
+            "color": "#6366f1",
+            "icon": "landmark"
+        },
+        "governance_rsi": {
+            "name": "RSI / IT Manager",
+            "description": "Gestion opérationnelle IT, systèmes IA, projets et ressources équipe",
+            "color": "#3b82f6",
+            "icon": "settings"
+        },
+        "privacy_dpo": {
+            "name": "Data Protection Officer",
+            "description": "Protection des données, GDPR, registre des traitements et droits des personnes",
+            "color": "#8b5cf6",
+            "icon": "user-check"
+        },
+        "legal_counsel": {
+            "name": "Legal Counsel",
+            "description": "Risques juridiques IA, contrats, propriété intellectuelle et veille réglementaire",
+            "color": "#0ea5e9",
+            "icon": "scale"
         }
     }
 

@@ -1092,7 +1092,7 @@
                 const response = await fetch('/api/assistant/query', {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({ question: message, context: chatHistory.slice(-6) })
+                    body: JSON.stringify({ query: message, context: { history: chatHistory.slice(-6) }, language: window.GASKIA.lang })
                 });
 
                 // Remove typing indicator

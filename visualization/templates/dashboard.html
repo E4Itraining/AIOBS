@@ -255,6 +255,167 @@ const PROFILE_CONFIG = {
             { label: 'Conformité', route: '/compliance' },
             { label: 'Coûts', route: '/finops' }
         ]
+    },
+    'security_soc': {
+        color: '#ef4444',
+        icon: 'shield-alert',
+        title: 'Security SOC Dashboard',
+        narrative: 'Centre de sécurité IA : surveillance des menaces, incidents et posture sécurité en temps réel.',
+        features: [
+            { icon: 'shield', label: 'Posture Sécurité' },
+            { icon: 'alert-triangle', label: 'Menaces' },
+            { icon: 'activity', label: 'Incidents' },
+            { icon: 'eye', label: 'Surveillance' }
+        ],
+        tips: [
+            { icon: 'shield', title: 'Security Score', desc: 'Surveillez le score de posture sécurité global' },
+            { icon: 'alert-octagon', title: 'Alertes', desc: 'Configurez des alertes pour les menaces critiques' },
+            { icon: 'clock', title: 'Timeline', desc: 'Analysez la chronologie des événements de sécurité' }
+        ],
+        journey: [
+            { label: 'Dashboard', route: `/profile/${profileId}`, active: true },
+            { label: 'Security', route: '/security' },
+            { label: 'Monitoring', route: '/monitoring' },
+            { label: 'Compliance', route: '/compliance' }
+        ]
+    },
+    'compliance_legal': {
+        color: '#f59e0b',
+        icon: 'scale',
+        title: 'Compliance Dashboard',
+        narrative: 'Conformité réglementaire IA : EU AI Act, GDPR, audit trails et documentation.',
+        features: [
+            { icon: 'check-square', label: 'Conformité' },
+            { icon: 'clipboard', label: 'Audit Trail' },
+            { icon: 'book', label: 'Régulations' },
+            { icon: 'file-text', label: 'Documentation' }
+        ],
+        tips: [
+            { icon: 'shield-check', title: 'EU AI Act', desc: 'Suivez votre conformité avec le règlement européen' },
+            { icon: 'search', title: 'Audit', desc: 'Consultez l\'historique complet des actions' },
+            { icon: 'file-check', title: 'Evidence', desc: 'Générez des preuves de conformité' }
+        ],
+        journey: [
+            { label: 'Dashboard', route: `/profile/${profileId}`, active: true },
+            { label: 'Compliance', route: '/compliance' },
+            { label: 'Juridique', route: '/juridique' },
+            { label: 'Security', route: '/security' }
+        ]
+    },
+    'sustainability_esg': {
+        color: '#059669',
+        icon: 'leaf',
+        title: 'ESG / GreenOps Dashboard',
+        narrative: 'Impact environnemental de l\'IA : empreinte carbone, consommation énergétique et reporting ESG.',
+        features: [
+            { icon: 'leaf', label: 'Carbone' },
+            { icon: 'zap', label: 'Énergie' },
+            { icon: 'globe', label: 'Régions' },
+            { icon: 'lightbulb', label: 'Optimisations' }
+        ],
+        tips: [
+            { icon: 'trending-down', title: 'Réduction', desc: 'Suivez vos objectifs de réduction carbone' },
+            { icon: 'map', title: 'Régions', desc: 'Comparez l\'impact par région géographique' },
+            { icon: 'file-text', title: 'Reporting', desc: 'Exportez les rapports ESG' }
+        ],
+        journey: [
+            { label: 'Dashboard', route: `/profile/${profileId}`, active: true },
+            { label: 'GreenOps', route: '/greenops' },
+            { label: 'FinOps', route: '/finops' },
+            { label: 'Compliance', route: '/compliance' }
+        ]
+    },
+    'governance_dsi': {
+        color: '#6366f1',
+        icon: 'landmark',
+        title: 'DSI / CIO Dashboard',
+        narrative: 'Gouvernance IT stratégique : portefeuille IA, budget, risques et transformation digitale.',
+        features: [
+            { icon: 'grid', label: 'Portfolio IA' },
+            { icon: 'wallet', label: 'Budget' },
+            { icon: 'alert-triangle', label: 'Risques' },
+            { icon: 'refresh-cw', label: 'Transformation' }
+        ],
+        tips: [
+            { icon: 'briefcase', title: 'Stratégie', desc: 'Alignez le portfolio IA avec les objectifs business' },
+            { icon: 'trending-up', title: 'ROI', desc: 'Mesurez le retour sur investissement IA' },
+            { icon: 'users', title: 'Équipes', desc: 'Suivez l\'allocation des ressources' }
+        ],
+        journey: [
+            { label: 'Dashboard', route: `/profile/${profileId}`, active: true },
+            { label: 'Executive', route: '/executive' },
+            { label: 'Tech', route: '/tech' },
+            { label: 'FinOps', route: '/finops' }
+        ]
+    },
+    'governance_rsi': {
+        color: '#3b82f6',
+        icon: 'settings',
+        title: 'RSI / IT Manager Dashboard',
+        narrative: 'Gestion opérationnelle IT : systèmes IA, projets, incidents et ressources équipe.',
+        features: [
+            { icon: 'server', label: 'Systèmes' },
+            { icon: 'folder-kanban', label: 'Projets' },
+            { icon: 'alert-circle', label: 'Incidents' },
+            { icon: 'users', label: 'Ressources' }
+        ],
+        tips: [
+            { icon: 'activity', title: 'Monitoring', desc: 'Surveillez les systèmes IA en production' },
+            { icon: 'target', title: 'SLA', desc: 'Suivez le respect des SLA' },
+            { icon: 'clock', title: 'Planning', desc: 'Gérez le planning des projets IA' }
+        ],
+        journey: [
+            { label: 'Dashboard', route: `/profile/${profileId}`, active: true },
+            { label: 'Monitoring', route: '/monitoring' },
+            { label: 'Unified', route: '/unified' },
+            { label: 'Security', route: '/security' }
+        ]
+    },
+    'privacy_dpo': {
+        color: '#8b5cf6',
+        icon: 'user-check',
+        title: 'DPO Dashboard',
+        narrative: 'Protection des données : GDPR, registre de traitements, DPIA et droits des personnes.',
+        features: [
+            { icon: 'shield', label: 'GDPR Score' },
+            { icon: 'database', label: 'Traitements' },
+            { icon: 'file-search', label: 'DPIA' },
+            { icon: 'user-check', label: 'DSAR' }
+        ],
+        tips: [
+            { icon: 'clipboard', title: 'Registre', desc: 'Tenez à jour le registre des traitements IA' },
+            { icon: 'clock', title: 'Délais', desc: 'Surveillez les délais de réponse aux demandes' },
+            { icon: 'share-2', title: 'Flux', desc: 'Cartographiez les flux de données personnelles' }
+        ],
+        journey: [
+            { label: 'Dashboard', route: `/profile/${profileId}`, active: true },
+            { label: 'Compliance', route: '/compliance' },
+            { label: 'Juridique', route: '/juridique' },
+            { label: 'Security', route: '/security' }
+        ]
+    },
+    'legal_counsel': {
+        color: '#0ea5e9',
+        icon: 'scale',
+        title: 'Legal Counsel Dashboard',
+        narrative: 'Risques juridiques IA : contrats, propriété intellectuelle, responsabilité et veille réglementaire.',
+        features: [
+            { icon: 'file-signature', label: 'Contrats' },
+            { icon: 'lightbulb', label: 'IP' },
+            { icon: 'shield-alert', label: 'Responsabilité' },
+            { icon: 'book-open', label: 'Veille' }
+        ],
+        tips: [
+            { icon: 'alert-triangle', title: 'Risques', desc: 'Évaluez les risques juridiques par système IA' },
+            { icon: 'book', title: 'EU AI Act', desc: 'Suivez les exigences du règlement européen' },
+            { icon: 'file-text', title: 'Contrats', desc: 'Vérifiez la conformité des contrats IA' }
+        ],
+        journey: [
+            { label: 'Dashboard', route: `/profile/${profileId}`, active: true },
+            { label: 'Juridique', route: '/juridique' },
+            { label: 'Compliance', route: '/compliance' },
+            { label: 'Impact', route: '/impact' }
+        ]
     }
 };
 
