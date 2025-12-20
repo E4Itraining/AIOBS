@@ -230,30 +230,255 @@ async def get_metrics(request: Request):
 
 ---
 
-## 5. AMÉLIORATIONS UX/FONCTIONNELLES
+## 5. ANALYSE UX, FONCTIONNALITÉS & PARCOURS UTILISATEURS
 
-### 5.1 Messages Français/Anglais Mixtes
-Plusieurs templates mélangent les langues:
-- `dashboard.html`: "Fonctionnalité à venir"
-- `app.py`: "Tableau de bord personnalisé" (devrait utiliser i18n)
+### 5.1 Architecture Multi-Persona (12 Personas)
 
-**Correction:** Utiliser systématiquement le système i18n
+La plateforme propose une architecture adaptative selon le rôle utilisateur:
+
+| Catégorie | Persona | Focus Principal |
+|-----------|---------|-----------------|
+| **Technique** | ML Engineer | Drift, cognitive metrics, fiabilité modèles |
+| | Data Scientist | Qualité données, features, expérimentations |
+| | DevOps Engineer | SLOs, infrastructure, latence, uptime |
+| **Business** | Executive/Dirigeant | ROI, KPIs stratégiques, conformité |
+| | Product Owner | Features IA, satisfaction utilisateur, adoption |
+| **Spécialiste** | Security Analyst (RSSI) | Posture sécurité, menaces, incidents |
+| | Compliance Officer | GDPR, EU AI Act, audit trails |
+| | ESG Manager | Empreinte carbone, durabilité |
+| **Gouvernance** | DSI | Portefeuille IA, budget, transformation |
+| | RSI | Gestion opérationnelle IT, projets |
+| | DPO | Protection données, DPIA, droits |
+| | Legal Counsel | Risques juridiques, contrats, IP |
 
 ---
 
-### 5.2 Gestion d'Erreurs Inconsistante
-Certaines routes API n'ont pas de gestion d'erreur complète:
+### 5.2 Parcours Utilisateurs par Persona
 
-```python
-# Recommandé
-@app.exception_handler(Exception)
-async def global_exception_handler(request: Request, exc: Exception):
-    logger.error(f"Unhandled error: {exc}", exc_info=True)
-    return JSONResponse(
-        status_code=500,
-        content={"error": "Internal server error", "request_id": request.state.request_id}
-    )
+#### ML Engineer
 ```
+Dashboard (KPIs) → Tech View → Causal Analysis → Monitoring → Impact
+```
+**Widgets clés:** Trust Gauge, Drift Timeline, Reliability Radar, Model Inventory
+
+#### DevOps Engineer
+```
+Monitoring (Live) → Dashboard → Unified View → Security → Compliance
+```
+**Widgets clés:** SLO Status, Service Topology, Latency Charts, Health Table
+
+#### Executive/Dirigeant
+```
+Dashboard (KPIs) → Executive View → Compliance → FinOps → Reports
+```
+**Widgets clés:** Business KPIs, Cost Breakdown, Trust Trends, Risk Banner
+
+#### Compliance Officer
+```
+Compliance → Security → Executive → Dashboard → Audit Trail
+```
+**Widgets clés:** Compliance Grid, Framework Cards (EU AI Act, GDPR), Audit Findings
+
+---
+
+### 5.3 Pages Disponibles (18 pages)
+
+| Page | URL | Personas Cibles |
+|------|-----|-----------------|
+| Dashboard | `/` | Tous |
+| Profile Dashboard | `/profile/{id}` | Persona sélectionné |
+| Unified View | `/unified` | Tech, Executive |
+| Causal Analysis | `/causal` | ML/Data Engineers |
+| Impact Analysis | `/impact` | Executive, Product |
+| Executive View | `/executive` | Business Leaders |
+| Compliance | `/compliance` | Compliance, DPO, Legal |
+| Security Center | `/security` | Security, RSSI |
+| GreenOps | `/greenops` | ESG, Executive |
+| FinOps | `/finops` | CFO, Executive, DSI |
+| Monitoring | `/monitoring` | DevOps, Security |
+| Global View | `/global` | Decision makers |
+| Onboarding | `/onboarding` | Nouveaux utilisateurs |
+| Personas | `/personas` | Tous |
+| Dirigeant | `/dirigeant` | Business Leaders (FR) |
+| Tech (DSI/RSSI) | `/tech` | IT Leadership |
+| Juridique | `/juridique` | Legal, Compliance |
+| Financier | `/financier` | Finance |
+
+---
+
+### 5.4 Fonctionnalités UX Implémentées
+
+| Pattern | Statut | Description |
+|---------|--------|-------------|
+| Persona-Based UI | ✅ Implémenté | Dashboards adaptatifs par rôle |
+| Guided Onboarding | ✅ Implémenté | Wizard 3 étapes (Welcome → Profile → Tour) |
+| Command Palette | ✅ Implémenté | Cmd+K pour navigation rapide (17+ items) |
+| Theme Switching | ⚠️ Partiel | Light/Dark, mais couleurs dark incomplètes |
+| i18n Multilingue | ✅ Implémenté | 8 langues (EN, FR, DE, ES, IT, PT, JA, ZH) |
+| Toast Notifications | ✅ Implémenté | Success/Error/Warning/Info |
+| Real-Time Updates | ⚠️ Partiel | RealtimeUpdater class, mais données démo |
+| AI Chatbot | ❌ Non fonctionnel | UI présente, mais pas d'intégration backend |
+| Guided Tours | ⚠️ Partiel | Tours configurés, mais selectors hardcodés |
+| Breadcrumb Nav | ⚠️ Partiel | Page active seulement, pas de hiérarchie |
+| Accordion Nav | ✅ Implémenté | Sections collapsibles, état persisté |
+| Responsive Design | ⚠️ Partiel | Mobile sidebar, mais tables non adaptées |
+
+---
+
+### 5.5 PROBLÈMES UX CRITIQUES
+
+#### 5.5.1 Onboarding Non Obligatoire
+**Problème:** Les utilisateurs peuvent accéder au dashboard sans sélectionner de persona
+- Affiche "All Profiles" générique au lieu d'une expérience personnalisée
+- Pas de redirection automatique vers `/onboarding` pour nouveaux utilisateurs
+
+**Correction recommandée:**
+```javascript
+// Dans index.html
+if (!localStorage.getItem('gaskia-persona') && !localStorage.getItem('gaskia-onboarding-complete')) {
+    window.location.href = '/onboarding';
+}
+```
+
+#### 5.5.2 Route Profile Non Fonctionnelle
+**Problème:** `/profile/{id}` existe mais le template `dashboard.html` n'affiche pas les widgets spécifiques
+
+**Fichiers concernés:**
+- `app.py:139-215` - Route définie avec PROFILE_META
+- `templates/dashboard.html` - Widgets hardcodés, pas de rendu dynamique
+
+**Correction recommandée:** Implémenter le rendu dynamique des widgets par profil
+
+#### 5.5.3 Données Démo Partout
+**Problème:** Toutes les métriques utilisent `generateDemoData()` au lieu d'API réelles
+
+**Impact:**
+- Trust Score: Valeur aléatoire
+- Charts: Données simulées
+- Services table: Mock data
+
+#### 5.5.4 Recherche Globale Non Connectée
+**Problème:** Le search (Cmd+K) utilise un index hardcodé de 17 items
+
+**Correction recommandée:** Créer endpoint `/api/search` avec indexation dynamique
+
+#### 5.5.5 Assistant IA Non Intégré
+**Problème:** Chat UI présent mais `/api/assistant/query` non implémenté
+
+**Impact:** Suggestions hardcodées, pas de réponses IA réelles
+
+---
+
+### 5.6 PROBLÈMES UX MOYENS
+
+| # | Problème | Impact | Correction |
+|---|----------|--------|------------|
+| 1 | Dark mode incomplet | Couleurs manquantes en dark | Compléter CSS variables |
+| 2 | RTL non fonctionnel | Arabe non supporté visuellement | Implémenter CSS RTL |
+| 3 | Tours mal positionnés | Overlay incorrect sur certains éléments | Selectors dynamiques |
+| 4 | Tables non responsives | Horizontally scroll sur mobile | Implémenter card layout |
+| 5 | Pas de skip-to-content | Accessibilité réduite | Ajouter skip link |
+| 6 | Focus indicators absents | Navigation clavier difficile | Ajouter :focus styles |
+| 7 | Keyboard shortcuts partiels | G+H, G+D non implémentés | Compléter shortcuts |
+| 8 | Empty states génériques | UX pauvre quand pas de données | Messages contextuels |
+
+---
+
+### 5.7 INCOHÉRENCES UX
+
+#### Langue mixte FR/EN
+- Sidebar: "Mes Essentiels" (FR) vs "Perspectives" (FR) vs "Compliance" (EN)
+- Toasts: "Fonctionnalité à venir" (FR) vs "Success" (EN)
+- Boutons: Mix FR/EN selon les pages
+
+#### Terminologie inconsistante
+- "Dirigeant" vs "Executive" pour le même concept
+- "Tech View" vs "DSI/RSSI" pour IT Leadership
+- "Juridique" vs "Legal" vs "Compliance"
+
+#### Styles boutons différents
+- `.btn`, `.persona-select-btn`, `.feature-try` ont des styles différents
+- États disabled non stylés uniformément
+
+---
+
+### 5.8 ACCESSIBILITÉ (A11Y)
+
+#### Implémenté
+- HTML sémantique (nav, main, header)
+- Icônes + textes combinés
+- Contraste couleurs acceptable
+
+#### Manquant
+| Élément | Statut | WCAG |
+|---------|--------|------|
+| Skip-to-content link | ❌ | 2.4.1 |
+| Focus indicators | ❌ | 2.4.7 |
+| ARIA labels complets | ⚠️ Partiel | 4.1.2 |
+| aria-live pour toasts | ❌ | 4.1.3 |
+| Form validation a11y | ❌ | 3.3.1 |
+| Keyboard trap in modals | ❌ | 2.1.2 |
+
+---
+
+### 5.9 RESPONSIVE DESIGN
+
+#### Breakpoints actuels
+```css
+@media (max-width: 1200px) { /* 3 → 2 colonnes */ }
+@media (max-width: 768px)  { /* 2 → 1 colonne */ }
+```
+
+#### Problèmes mobile
+| Élément | Problème | Solution |
+|---------|----------|----------|
+| Tables | Overflow horizontal | Card layout ou scroll |
+| Modals | Taille fixe | Full-screen sur mobile |
+| Formulaires | Inputs trop petits | Min 44px height |
+| Navigation | Bottom nav absent | Ajouter bottom bar |
+
+---
+
+### 5.10 DESIGN SYSTEM (GASKIA)
+
+#### Couleurs Brand
+| Nom | Hex | Usage |
+|-----|-----|-------|
+| Or Sahel | `#D4A017` | Primary, accents |
+| Bleu Nuit | `#1A1A2E` | Secondary, dark bg |
+| Blanc Chaud | `#F5F5F0` | Light bg |
+| Terre Cuite | `#8B4513` | Accents |
+
+#### Typography
+- **Headings:** Space Grotesk (400, 500, 700)
+- **Body:** Inter (300-700)
+
+#### Spacing Scale
+- `--space-1` à `--space-8`: 4px à 32px
+
+---
+
+### 5.11 RECOMMANDATIONS UX PRIORITAIRES
+
+#### Priorité Haute
+1. [ ] **Forcer onboarding** pour nouveaux utilisateurs
+2. [ ] **Implémenter dashboards dynamiques** par persona
+3. [ ] **Connecter APIs réelles** (supprimer données démo)
+4. [ ] **Intégrer Assistant IA** ou retirer le chat
+5. [ ] **Uniformiser langue** (tout EN ou tout FR selon locale)
+
+#### Priorité Moyenne
+6. [ ] Compléter dark mode (CSS variables)
+7. [ ] Implémenter recherche globale backend
+8. [ ] Ajouter skip-to-content et focus indicators
+9. [ ] Rendre tables responsives (card layout mobile)
+10. [ ] Corriger positioning des guided tours
+
+#### Priorité Basse
+11. [ ] Implémenter tous les keyboard shortcuts
+12. [ ] Ajouter RTL support complet
+13. [ ] Améliorer empty states
+14. [ ] Ajouter bottom navigation mobile
 
 ---
 
@@ -312,19 +537,122 @@ async def global_exception_handler(request: Request, exc: Exception):
 | Documentation | Excellente | - |
 | Architecture | Bonne | - |
 | Sécurité | 60% | 90% |
+| UX/Fonctionnalités | 65% | 95% |
+| Accessibilité | 40% | 80% |
+| Mobile Responsive | 50% | 90% |
 
 ---
 
-## 9. CONCLUSION
+## 9. SYNTHÈSE PAR DOMAINE
 
-AIOBS v1.0.0 présente une **architecture solide** et une **documentation excellente**. Les corrections critiques (debug code, CORS, types) sont rapides à implémenter. Le projet est à environ **70% de production-ready**.
+### 9.1 Code & Architecture
+| Aspect | Statut | Priorité |
+|--------|--------|----------|
+| Debug code en production | ❌ Critique | Immédiat |
+| CORS wildcard | ❌ Critique | Immédiat |
+| Types `any` | ⚠️ Moyen | Court terme |
+| UUID dupliqué | ⚠️ Moyen | Court terme |
+| Tests insuffisants | ⚠️ Moyen | Moyen terme |
 
-**Estimation effort:**
-- Phase 1: 2-4 heures
-- Phase 2: 4-8 heures
-- Phase 3: 2-3 jours
-- Phase 4: 1 semaine
+### 9.2 UX & Fonctionnalités
+| Aspect | Statut | Priorité |
+|--------|--------|----------|
+| Onboarding non forcé | ❌ Critique | Immédiat |
+| Dashboards par persona | ⚠️ Partiel | Haute |
+| Assistant IA | ❌ Non fonctionnel | Haute |
+| Recherche globale | ⚠️ Partiel | Moyenne |
+| Dark mode | ⚠️ Incomplet | Basse |
+
+### 9.3 Parcours Utilisateurs
+| Aspect | Statut | Priorité |
+|--------|--------|----------|
+| ML Engineer journey | ✅ Défini | - |
+| Executive journey | ✅ Défini | - |
+| DevOps journey | ✅ Défini | - |
+| Widgets dynamiques | ❌ Non implémenté | Haute |
+| APIs connectées | ❌ Données démo | Haute |
+
+### 9.4 Accessibilité
+| Aspect | Statut | Priorité |
+|--------|--------|----------|
+| Skip-to-content | ❌ Absent | Moyenne |
+| Focus indicators | ❌ Absent | Moyenne |
+| ARIA labels | ⚠️ Partiel | Moyenne |
+| Keyboard nav | ⚠️ Partiel | Basse |
 
 ---
 
-*Rapport généré automatiquement - AIOBS Analysis Tool*
+## 10. PLAN D'ACTION CONSOLIDÉ
+
+### Phase 1: Corrections Critiques (Immédiat - 4-6h)
+| # | Tâche | Fichier(s) |
+|---|-------|-----------|
+| 1 | Supprimer code debug | `visualization/run.py` |
+| 2 | Configurer CORS sécurisé | `visualization/app.py` |
+| 3 | Typer interfaces | `src/index.ts` |
+| 4 | Forcer onboarding nouveaux users | `templates/index.html` |
+
+### Phase 2: UX Critique (Court terme - 2-3j)
+| # | Tâche | Impact |
+|---|-------|--------|
+| 5 | Dashboards dynamiques par persona | UX personnalisée |
+| 6 | Connecter APIs réelles | Données live |
+| 7 | Intégrer/retirer Assistant IA | Cohérence UI |
+| 8 | Uniformiser langue FR/EN | Cohérence i18n |
+
+### Phase 3: Qualité Code (Moyen terme - 1 sem)
+| # | Tâche | Impact |
+|---|-------|--------|
+| 9 | Centraliser UUID | Code propre |
+| 10 | Logger structuré | Debug production |
+| 11 | Tests unitaires 80% | Fiabilité |
+| 12 | Validation env vars | Robustesse |
+
+### Phase 4: Polish UX (Long terme - 2 sem)
+| # | Tâche | Impact |
+|---|-------|--------|
+| 13 | Compléter dark mode | UX cohérente |
+| 14 | Accessibilité WCAG AA | Conformité |
+| 15 | Responsive tables | Mobile UX |
+| 16 | Keyboard shortcuts complets | Power users |
+| 17 | Guided tours dynamiques | Onboarding |
+
+---
+
+## 11. CONCLUSION
+
+### Forces du Projet
+- ✅ **Architecture multi-persona** bien pensée (12 personas, parcours définis)
+- ✅ **Design system** cohérent (GASKIA brand)
+- ✅ **i18n** robuste (8 langues)
+- ✅ **Documentation** excellente
+- ✅ **Infrastructure Docker** production-ready
+
+### Faiblesses Principales
+- ❌ **Données démo** partout (aucune API réelle connectée)
+- ❌ **Assistant IA** non fonctionnel (UI sans backend)
+- ❌ **Dashboards persona** non dynamiques
+- ❌ **Code debug** en production
+- ❌ **Accessibilité** insuffisante
+
+### Statut Global
+
+| Domaine | Complétude | Production Ready |
+|---------|------------|------------------|
+| Architecture | 85% | ✅ |
+| Backend Code | 70% | ⚠️ |
+| Frontend UI | 80% | ⚠️ |
+| Fonctionnalités | 60% | ❌ |
+| UX/Parcours | 65% | ❌ |
+| Accessibilité | 40% | ❌ |
+| Sécurité | 60% | ❌ |
+| **GLOBAL** | **66%** | **❌** |
+
+### Effort Estimé pour Production
+- **MVP fonctionnel**: 1-2 semaines
+- **Production ready**: 3-4 semaines
+- **Enterprise grade**: 6-8 semaines
+
+---
+
+*Rapport généré le 20 décembre 2025 - AIOBS Analysis Tool v1.0*
