@@ -2,23 +2,26 @@
 AIOBS Reliability and Hallucination Tests
 Tests for model reliability, confidence calibration, and hallucination detection
 """
-import pytest
+
 import math
 import random
 import statistics
-from datetime import datetime, timedelta
-from typing import List, Dict, Tuple, Optional, Any
 from dataclasses import dataclass
+from datetime import datetime, timedelta
 from enum import Enum
+from typing import Any, Dict, List, Optional, Tuple
 
+import pytest
 
 # =============================================================================
 # Reliability Metrics Implementation
 # =============================================================================
 
+
 @dataclass
 class CalibrationResult:
     """Result of calibration analysis"""
+
     expected_calibration_error: float  # ECE
     maximum_calibration_error: float  # MCE
     brier_score: float
@@ -29,6 +32,7 @@ class CalibrationResult:
 @dataclass
 class HallucinationResult:
     """Result of hallucination analysis"""
+
     grounding_score: float  # 0-1, higher = more grounded
     consistency_score: float  # 0-1, higher = more consistent
     factuality_score: float  # 0-1, higher = more factual
@@ -40,6 +44,7 @@ class HallucinationResult:
 @dataclass
 class StabilityResult:
     """Result of prediction stability analysis"""
+
     variation_coefficient: float
     max_deviation: float
     mean_std: float
@@ -50,20 +55,14 @@ class ReliabilityAnalyzer:
     """Analyzes model reliability and trustworthiness"""
 
     def __init__(
-        self,
-        n_bins: int = 10,
-        calibration_threshold: float = 0.1,
-        stability_threshold: float = 0.1
+        self, n_bins: int = 10, calibration_threshold: float = 0.1, stability_threshold: float = 0.1
     ):
         self.n_bins = n_bins
         self.calibration_threshold = calibration_threshold
         self.stability_threshold = stability_threshold
 
     def compute_calibration(
-        self,
-        confidences: List[float],
-        predictions: List[int],
-        labels: List[int]
+        self, confidences: List[float], predictions: List[int], labels: List[int]
     ) -> CalibrationResult:
         """
         Compute calibration metrics for a classifier.
@@ -88,7 +87,8 @@ class ReliabilityAnalyzer:
 
             # Get samples in this bin
             in_bin = [
-                (c, p, l) for c, p, l in zip(confidences, predictions, labels)
+                (c, p, l)
+                for c, p, l in zip(confidences, predictions, labels)
                 if bin_lower <= c < bin_upper or (i == self.n_bins - 1 and c == bin_upper)
             ]
 
@@ -111,11 +111,15 @@ class ReliabilityAnalyzer:
         )
 
         # Maximum Calibration Error (MCE)
-        mce = max(
-            abs(acc - conf)
-            for acc, conf, count in zip(bin_accuracies, bin_confidences, bin_counts)
-            if count > 0
-        ) if any(c > 0 for c in bin_counts) else 0
+        mce = (
+            max(
+                abs(acc - conf)
+                for acc, conf, count in zip(bin_accuracies, bin_confidences, bin_counts)
+                if count > 0
+            )
+            if any(c > 0 for c in bin_counts)
+            else 0
+        )
 
         # Brier Score (lower is better)
         correct = [1 if p == l else 0 for p, l in zip(predictions, labels)]
@@ -133,7 +137,7 @@ class ReliabilityAnalyzer:
             maximum_calibration_error=mce,
             brier_score=brier,
             reliability_diagram=reliability_diagram,
-            is_well_calibrated=ece < self.calibration_threshold
+            is_well_calibrated=ece < self.calibration_threshold,
         )
 
     def compute_stability(
@@ -171,23 +175,25 @@ class ReliabilityAnalyzer:
 
         mean_cv = statistics.mean(variations)
         max_deviation = max(max_devs)
-        mean_std = statistics.mean([
-            statistics.stdev([predictions[run][i] for run in range(n_runs)])
-            for i in range(n_samples)
-        ]) if n_runs > 1 else 0
+        mean_std = (
+            statistics.mean(
+                [
+                    statistics.stdev([predictions[run][i] for run in range(n_runs)])
+                    for i in range(n_samples)
+                ]
+            )
+            if n_runs > 1
+            else 0
+        )
 
         return StabilityResult(
             variation_coefficient=mean_cv,
             max_deviation=max_deviation,
             mean_std=mean_std,
-            is_stable=mean_cv < self.stability_threshold
+            is_stable=mean_cv < self.stability_threshold,
         )
 
-    def compute_uncertainty_quality(
-        self,
-        uncertainties: List[float],
-        errors: List[float]
-    ) -> float:
+    def compute_uncertainty_quality(self, uncertainties: List[float], errors: List[float]) -> float:
         """
         Compute correlation between uncertainty and actual errors.
         Good uncertainty: high uncertainty correlates with high errors.
@@ -200,10 +206,7 @@ class ReliabilityAnalyzer:
         mean_unc = sum(uncertainties) / n
         mean_err = sum(errors) / n
 
-        numerator = sum(
-            (u - mean_unc) * (e - mean_err)
-            for u, e in zip(uncertainties, errors)
-        )
+        numerator = sum((u - mean_unc) * (e - mean_err) for u, e in zip(uncertainties, errors))
 
         denom_unc = math.sqrt(sum((u - mean_unc) ** 2 for u in uncertainties))
         denom_err = math.sqrt(sum((e - mean_err) ** 2 for e in errors))
@@ -217,19 +220,11 @@ class ReliabilityAnalyzer:
 class HallucinationDetector:
     """Detects hallucination patterns in model outputs"""
 
-    def __init__(
-        self,
-        grounding_threshold: float = 0.7,
-        consistency_threshold: float = 0.8
-    ):
+    def __init__(self, grounding_threshold: float = 0.7, consistency_threshold: float = 0.8):
         self.grounding_threshold = grounding_threshold
         self.consistency_threshold = consistency_threshold
 
-    def compute_grounding_score(
-        self,
-        outputs: List[str],
-        sources: List[str]
-    ) -> float:
+    def compute_grounding_score(self, outputs: List[str], sources: List[str]) -> float:
         """
         Compute how well outputs are grounded in source material.
         Uses simple word overlap as a proxy (real implementation would use NLI).
@@ -252,10 +247,7 @@ class HallucinationDetector:
 
         return total_score / len(outputs)
 
-    def compute_consistency_score(
-        self,
-        responses: List[str]
-    ) -> float:
+    def compute_consistency_score(self, responses: List[str]) -> float:
         """
         Compute self-consistency across multiple responses.
         Consistent model gives similar answers to same question.
@@ -289,11 +281,7 @@ class HallucinationDetector:
 
         return intersection / union if union > 0 else 0.0
 
-    def detect_contradiction(
-        self,
-        claim: str,
-        context: str
-    ) -> bool:
+    def detect_contradiction(self, claim: str, context: str) -> bool:
         """
         Detect if claim contradicts context.
         Simple implementation - real version would use NLI model.
@@ -315,7 +303,7 @@ class HallucinationDetector:
         self,
         outputs: List[str],
         sources: Optional[List[str]] = None,
-        multiple_responses: Optional[List[List[str]]] = None
+        multiple_responses: Optional[List[List[str]]] = None,
     ) -> HallucinationResult:
         """
         Comprehensive hallucination analysis.
@@ -360,12 +348,14 @@ class HallucinationDetector:
                         max_overlap = max(max_overlap, overlap)
 
                 if max_overlap < self.grounding_threshold:
-                    flagged.append({
-                        "index": i,
-                        "output": output[:100],
-                        "grounding_score": max_overlap,
-                        "reason": "Low grounding in source material"
-                    })
+                    flagged.append(
+                        {
+                            "index": i,
+                            "output": output[:100],
+                            "grounding_score": max_overlap,
+                            "reason": "Low grounding in source material",
+                        }
+                    )
 
         return HallucinationResult(
             grounding_score=grounding,
@@ -373,13 +363,14 @@ class HallucinationDetector:
             factuality_score=factuality,
             confidence_alignment=confidence_alignment,
             hallucination_risk=risk,
-            flagged_outputs=flagged
+            flagged_outputs=flagged,
         )
 
 
 # =============================================================================
 # Reliability Tests
 # =============================================================================
+
 
 class TestCalibration:
     """Tests for calibration metrics"""
@@ -505,10 +496,7 @@ class TestStability:
         random.seed(42)
 
         # Significantly varying predictions
-        predictions = [
-            [random.gauss(0.5, 0.2) for _ in range(10)]
-            for _ in range(5)
-        ]
+        predictions = [[random.gauss(0.5, 0.2) for _ in range(10)] for _ in range(5)]
 
         result = analyzer.compute_stability(predictions)
 
@@ -521,10 +509,7 @@ class TestStability:
 
         # Small variations
         base = [0.5, 0.6, 0.7, 0.8, 0.9]
-        predictions = [
-            [v + random.gauss(0, 0.01) for v in base]
-            for _ in range(5)
-        ]
+        predictions = [[v + random.gauss(0, 0.01) for v in base] for _ in range(5)]
 
         result = analyzer.compute_stability(predictions)
 
@@ -580,6 +565,7 @@ class TestUncertaintyQuality:
 # Hallucination Tests
 # =============================================================================
 
+
 class TestHallucinationDetection:
     """Tests for hallucination detection"""
 
@@ -589,13 +575,10 @@ class TestHallucinationDetection:
 
     def test_well_grounded_output(self, detector):
         """Output grounded in sources should have high score"""
-        outputs = [
-            "The capital of France is Paris.",
-            "Paris is located in France."
-        ]
+        outputs = ["The capital of France is Paris.", "Paris is located in France."]
         sources = [
             "France is a country in Europe. Its capital is Paris.",
-            "Paris is the capital and largest city of France."
+            "Paris is the capital and largest city of France.",
         ]
 
         score = detector.compute_grounding_score(outputs, sources)
@@ -604,13 +587,10 @@ class TestHallucinationDetection:
 
     def test_ungrounded_output(self, detector):
         """Output not grounded in sources should have low score"""
-        outputs = [
-            "Elephants can fly using their ears.",
-            "The moon is made of cheese."
-        ]
+        outputs = ["Elephants can fly using their ears.", "The moon is made of cheese."]
         sources = [
             "Elephants are large mammals that live in Africa and Asia.",
-            "The moon is Earth's natural satellite."
+            "The moon is Earth's natural satellite.",
         ]
 
         score = detector.compute_grounding_score(outputs, sources)
@@ -619,11 +599,7 @@ class TestHallucinationDetection:
 
     def test_consistent_responses(self, detector):
         """Similar responses should have high consistency"""
-        responses = [
-            "The answer is 42.",
-            "The answer equals 42.",
-            "42 is the answer."
-        ]
+        responses = ["The answer is 42.", "The answer equals 42.", "42 is the answer."]
 
         score = detector.compute_consistency_score(responses)
 
@@ -631,11 +607,7 @@ class TestHallucinationDetection:
 
     def test_inconsistent_responses(self, detector):
         """Contradictory responses should have low consistency"""
-        responses = [
-            "Yes, definitely true.",
-            "No, absolutely false.",
-            "Maybe, I'm not sure."
-        ]
+        responses = ["Yes, definitely true.", "No, absolutely false.", "Maybe, I'm not sure."]
 
         score = detector.compute_consistency_score(responses)
 
@@ -674,13 +646,8 @@ class TestHallucinationDetection:
 
     def test_high_risk_flagging(self, detector):
         """High-risk outputs should be flagged"""
-        outputs = [
-            "Completely made up statement with no basis.",
-            "Another fabricated claim."
-        ]
-        sources = [
-            "This is the actual source material about real topics."
-        ]
+        outputs = ["Completely made up statement with no basis.", "Another fabricated claim."]
+        sources = ["This is the actual source material about real topics."]
 
         result = detector.analyze(outputs, sources)
 
@@ -691,6 +658,7 @@ class TestHallucinationDetection:
 # =============================================================================
 # Out-of-Distribution Detection Tests
 # =============================================================================
+
 
 class TestOODDetection:
     """Tests for out-of-distribution detection"""
@@ -752,59 +720,66 @@ class TestOODDetection:
 # Combined Trust Score Tests
 # =============================================================================
 
+
 class TestTrustScore:
     """Tests for combined trust score calculation"""
 
     def test_high_trust_good_metrics(self):
         """Good metrics should result in high trust"""
-        def compute_trust(calibration: float, stability: float,
-                          hallucination_risk: float, ood_rate: float) -> float:
+
+        def compute_trust(
+            calibration: float, stability: float, hallucination_risk: float, ood_rate: float
+        ) -> float:
             # Invert hallucination risk and OOD rate
             return (
-                0.25 * (1 - calibration) +  # Lower ECE = higher trust
-                0.25 * stability +
-                0.25 * (1 - hallucination_risk) +
-                0.25 * (1 - ood_rate)
+                0.25 * (1 - calibration)  # Lower ECE = higher trust
+                + 0.25 * stability
+                + 0.25 * (1 - hallucination_risk)
+                + 0.25 * (1 - ood_rate)
             )
 
         trust = compute_trust(
             calibration=0.05,  # Low ECE (good)
-            stability=0.95,   # High stability (good)
+            stability=0.95,  # High stability (good)
             hallucination_risk=0.1,  # Low risk (good)
-            ood_rate=0.05     # Low OOD rate (good)
+            ood_rate=0.05,  # Low OOD rate (good)
         )
 
         assert trust > 0.8
 
     def test_low_trust_bad_metrics(self):
         """Bad metrics should result in low trust"""
-        def compute_trust(calibration: float, stability: float,
-                          hallucination_risk: float, ood_rate: float) -> float:
+
+        def compute_trust(
+            calibration: float, stability: float, hallucination_risk: float, ood_rate: float
+        ) -> float:
             return (
-                0.25 * (1 - calibration) +
-                0.25 * stability +
-                0.25 * (1 - hallucination_risk) +
-                0.25 * (1 - ood_rate)
+                0.25 * (1 - calibration)
+                + 0.25 * stability
+                + 0.25 * (1 - hallucination_risk)
+                + 0.25 * (1 - ood_rate)
             )
 
         trust = compute_trust(
-            calibration=0.4,   # High ECE (bad)
-            stability=0.3,    # Low stability (bad)
+            calibration=0.4,  # High ECE (bad)
+            stability=0.3,  # Low stability (bad)
             hallucination_risk=0.8,  # High risk (bad)
-            ood_rate=0.5      # High OOD rate (bad)
+            ood_rate=0.5,  # High OOD rate (bad)
         )
 
         assert trust < 0.5
 
     def test_trust_score_bounds(self):
         """Trust score should be bounded [0, 1]"""
-        def compute_trust(calibration: float, stability: float,
-                          hallucination_risk: float, ood_rate: float) -> float:
+
+        def compute_trust(
+            calibration: float, stability: float, hallucination_risk: float, ood_rate: float
+        ) -> float:
             score = (
-                0.25 * (1 - calibration) +
-                0.25 * stability +
-                0.25 * (1 - hallucination_risk) +
-                0.25 * (1 - ood_rate)
+                0.25 * (1 - calibration)
+                + 0.25 * stability
+                + 0.25 * (1 - hallucination_risk)
+                + 0.25 * (1 - ood_rate)
             )
             return max(0, min(1, score))
 
@@ -817,6 +792,7 @@ class TestTrustScore:
 # Degradation Detection Tests
 # =============================================================================
 
+
 class TestDegradationDetection:
     """Tests for performance degradation detection"""
 
@@ -825,8 +801,7 @@ class TestDegradationDetection:
         baseline = {"accuracy": 0.95, "latency_ms": 50}
         current = {"accuracy": 0.94, "latency_ms": 52}
 
-        def detect_degradation(baseline: Dict, current: Dict,
-                               threshold: float = 0.1) -> List[str]:
+        def detect_degradation(baseline: Dict, current: Dict, threshold: float = 0.1) -> List[str]:
             degraded = []
             for metric in baseline:
                 if metric in current:
@@ -852,8 +827,7 @@ class TestDegradationDetection:
         baseline = {"accuracy": 0.95}
         current = {"accuracy": 0.80}  # 15% drop
 
-        def detect_degradation(baseline: Dict, current: Dict,
-                               threshold: float = 0.1) -> List[str]:
+        def detect_degradation(baseline: Dict, current: Dict, threshold: float = 0.1) -> List[str]:
             degraded = []
             for metric in baseline:
                 if metric in current:
@@ -873,8 +847,7 @@ class TestDegradationDetection:
         baseline = {"latency_ms": 50}
         current = {"latency_ms": 100}  # 100% increase
 
-        def detect_degradation(baseline: Dict, current: Dict,
-                               threshold: float = 0.2) -> List[str]:
+        def detect_degradation(baseline: Dict, current: Dict, threshold: float = 0.2) -> List[str]:
             degraded = []
             for metric in baseline:
                 if metric in current:

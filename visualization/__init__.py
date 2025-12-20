@@ -14,7 +14,7 @@ __version__ = "1.0.0"
 __author__ = "AIOBS Team"
 
 from .app import app, create_app
-from .core import CognitiveEngine, CausalEngine, ImpactAnalyzer, UnifiedObservabilityView
+from .core import CausalEngine, CognitiveEngine, ImpactAnalyzer, UnifiedObservabilityView
 
 __all__ = [
     "app",

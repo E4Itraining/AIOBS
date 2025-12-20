@@ -2,28 +2,31 @@
 AIOBS Test Configuration - Shared Fixtures and Configuration
 Central configuration for all test suites
 """
-import pytest
+
 import asyncio
-import json
+import os
 import random
 import string
-from datetime import datetime, timedelta
-from typing import Dict, List, Any, Generator, Optional
-from dataclasses import dataclass, asdict
-from unittest.mock import MagicMock, AsyncMock
 import sys
-import os
+from dataclasses import dataclass
+from datetime import datetime
+from typing import Any, Dict, List
+from unittest.mock import AsyncMock
+
+import pytest
 
 # Add project root to path
-sys.path.insert(0, os.path.join(os.path.dirname(__file__), '..'))
+sys.path.insert(0, os.path.join(os.path.dirname(__file__), ".."))
 
 # =============================================================================
 # Test Data Factories
 # =============================================================================
 
+
 @dataclass
 class MockMetric:
     """Mock metric data"""
+
     name: str
     value: float
     labels: Dict[str, str]
@@ -33,6 +36,7 @@ class MockMetric:
 @dataclass
 class MockPrediction:
     """Mock prediction data"""
+
     model_id: str
     input_data: Dict[str, Any]
     output: Any
@@ -44,6 +48,7 @@ class MockPrediction:
 @dataclass
 class MockDriftData:
     """Mock drift detection data"""
+
     reference: List[float]
     current: List[float]
     feature_name: str
@@ -54,26 +59,22 @@ class TestDataFactory:
 
     @staticmethod
     def random_string(length: int = 10) -> str:
-        return ''.join(random.choices(string.ascii_letters + string.digits, k=length))
+        return "".join(random.choices(string.ascii_letters + string.digits, k=length))
 
     @staticmethod
     def create_metric(
-        name: str = None,
-        value: float = None,
-        labels: Dict[str, str] = None
+        name: str = None, value: float = None, labels: Dict[str, str] = None
     ) -> MockMetric:
         return MockMetric(
             name=name or f"metric_{TestDataFactory.random_string(5)}",
             value=value if value is not None else random.uniform(0, 100),
             labels=labels or {"env": "test", "model": "test-model"},
-            timestamp=datetime.utcnow()
+            timestamp=datetime.utcnow(),
         )
 
     @staticmethod
     def create_prediction(
-        model_id: str = None,
-        confidence: float = None,
-        latency_ms: float = None
+        model_id: str = None, confidence: float = None, latency_ms: float = None
     ) -> MockPrediction:
         return MockPrediction(
             model_id=model_id or f"model_{TestDataFactory.random_string(5)}",
@@ -81,28 +82,23 @@ class TestDataFactory:
             output=random.choice([0, 1]),
             confidence=confidence if confidence is not None else random.uniform(0.5, 1.0),
             latency_ms=latency_ms if latency_ms is not None else random.uniform(10, 200),
-            timestamp=datetime.utcnow()
+            timestamp=datetime.utcnow(),
         )
 
     @staticmethod
-    def create_drift_data(
-        drift_magnitude: float = 0.0,
-        sample_size: int = 100
-    ) -> MockDriftData:
+    def create_drift_data(drift_magnitude: float = 0.0, sample_size: int = 100) -> MockDriftData:
         """Create drift data with specified drift magnitude"""
         reference = [random.gauss(0, 1) for _ in range(sample_size)]
         current = [random.gauss(drift_magnitude, 1) for _ in range(sample_size)]
         return MockDriftData(
             reference=reference,
             current=current,
-            feature_name=f"feature_{TestDataFactory.random_string(5)}"
+            feature_name=f"feature_{TestDataFactory.random_string(5)}",
         )
 
     @staticmethod
     def create_time_series(
-        length: int = 100,
-        trend: str = "stable",
-        anomaly_indices: List[int] = None
+        length: int = 100, trend: str = "stable", anomaly_indices: List[int] = None
     ) -> List[float]:
         """Create time series with optional trend and anomalies"""
         base = [random.gauss(50, 5) for _ in range(length)]
@@ -125,6 +121,7 @@ class TestDataFactory:
 # =============================================================================
 # Security Test Data
 # =============================================================================
+
 
 class SecurityTestVectors:
     """Collection of security test vectors"""
@@ -216,6 +213,7 @@ class SecurityTestVectors:
 # Pytest Fixtures
 # =============================================================================
 
+
 @pytest.fixture
 def test_data_factory():
     """Provide test data factory"""
@@ -273,14 +271,13 @@ def time_series_degrading(test_data_factory):
 @pytest.fixture
 def time_series_anomalous(test_data_factory):
     """Generate time series with anomalies"""
-    return test_data_factory.create_time_series(
-        anomaly_indices=[20, 45, 78]
-    )
+    return test_data_factory.create_time_series(anomaly_indices=[20, 45, 78])
 
 
 # =============================================================================
 # Mock Services
 # =============================================================================
+
 
 @pytest.fixture
 def mock_redis():
@@ -316,6 +313,7 @@ def mock_openobserve():
 # Async Helpers
 # =============================================================================
 
+
 @pytest.fixture
 def event_loop():
     """Create event loop for async tests"""
@@ -327,6 +325,7 @@ def event_loop():
 # =============================================================================
 # Test Configuration
 # =============================================================================
+
 
 def pytest_configure(config):
     """Configure pytest markers"""
@@ -352,12 +351,8 @@ def pytest_collection_modifyitems(config, items):
 
 def pytest_addoption(parser):
     """Add custom command line options"""
-    parser.addoption(
-        "--runslow", action="store_true", default=False, help="Run slow tests"
-    )
-    parser.addoption(
-        "--runstress", action="store_true", default=False, help="Run stress tests"
-    )
+    parser.addoption("--runslow", action="store_true", default=False, help="Run slow tests")
+    parser.addoption("--runstress", action="store_true", default=False, help="Run stress tests")
     parser.addoption(
         "--continuous", action="store_true", default=False, help="Run in continuous mode"
     )

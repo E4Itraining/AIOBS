@@ -2,19 +2,22 @@
 AIOBS Visualization - Data Models
 Pydantic schemas for type-safe API and data handling
 """
+
 from datetime import datetime
 from enum import Enum
-from typing import Optional, List, Dict, Any
-from pydantic import BaseModel, Field, ConfigDict
+from typing import Any, Dict, List, Optional
 from uuid import UUID
 
+from pydantic import BaseModel, ConfigDict, Field
 
 # ============================================================================
 # ENUMS - User Profiles & Categories
 # ============================================================================
 
+
 class UserProfile(str, Enum):
     """User profile types for adaptive UI"""
+
     # Technical profiles
     TECH_ML_ENGINEER = "tech_ml_engineer"
     TECH_DEVOPS = "tech_devops"
@@ -27,14 +30,15 @@ class UserProfile(str, Enum):
     COMPLIANCE_LEGAL = "compliance_legal"
     SUSTAINABILITY_ESG = "sustainability_esg"
     # Governance profiles (French IT roles)
-    GOVERNANCE_DSI = "governance_dsi"          # Directeur des Systèmes d'Information
-    GOVERNANCE_RSI = "governance_rsi"          # Responsable des Systèmes d'Information
-    PRIVACY_DPO = "privacy_dpo"                # Data Protection Officer
-    LEGAL_COUNSEL = "legal_counsel"            # Juriste / Legal Counsel
+    GOVERNANCE_DSI = "governance_dsi"  # Directeur des Systèmes d'Information
+    GOVERNANCE_RSI = "governance_rsi"  # Responsable des Systèmes d'Information
+    PRIVACY_DPO = "privacy_dpo"  # Data Protection Officer
+    LEGAL_COUNSEL = "legal_counsel"  # Juriste / Legal Counsel
 
 
 class RiskLevel(str, Enum):
     """Risk severity levels"""
+
     CRITICAL = "critical"
     HIGH = "high"
     MEDIUM = "medium"
@@ -44,6 +48,7 @@ class RiskLevel(str, Enum):
 
 class TrendDirection(str, Enum):
     """Trend direction indicators"""
+
     UP = "up"
     DOWN = "down"
     STABLE = "stable"
@@ -52,6 +57,7 @@ class TrendDirection(str, Enum):
 
 class MetricCategory(str, Enum):
     """Categories of metrics for filtering"""
+
     COGNITIVE = "cognitive"
     PERFORMANCE = "performance"
     COST = "cost"
@@ -64,8 +70,10 @@ class MetricCategory(str, Enum):
 # CORE METRICS MODELS
 # ============================================================================
 
+
 class TrustScore(BaseModel):
     """Overall trust score with breakdown"""
+
     model_config = ConfigDict(extra="forbid")
 
     overall: float = Field(..., ge=0, le=1, description="Overall trust score 0-1")
@@ -79,6 +87,7 @@ class TrustScore(BaseModel):
 
 class DriftMetrics(BaseModel):
     """Drift detection metrics"""
+
     data_drift_score: float = Field(..., ge=0, le=1)
     concept_drift_score: float = Field(..., ge=0, le=1)
     prediction_drift_score: float = Field(..., ge=0, le=1)
@@ -89,6 +98,7 @@ class DriftMetrics(BaseModel):
 
 class ReliabilityMetrics(BaseModel):
     """Model reliability metrics"""
+
     confidence_calibration: float = Field(..., ge=0, le=1)
     prediction_stability: float = Field(..., ge=0, le=1)
     uncertainty_quality: float = Field(..., ge=0, le=1)
@@ -97,6 +107,7 @@ class ReliabilityMetrics(BaseModel):
 
 class CostMetrics(BaseModel):
     """FinOps cost metrics"""
+
     inference_cost_per_1k: float = Field(..., ge=0)
     daily_cost: float = Field(..., ge=0)
     monthly_projection: float = Field(..., ge=0)
@@ -107,6 +118,7 @@ class CostMetrics(BaseModel):
 
 class CarbonMetrics(BaseModel):
     """GreenOps carbon metrics"""
+
     carbon_intensity_gco2_kwh: float = Field(..., ge=0)
     energy_consumption_kwh: float = Field(..., ge=0)
     carbon_footprint_kgco2: float = Field(..., ge=0)
@@ -116,6 +128,7 @@ class CarbonMetrics(BaseModel):
 
 class SecurityMetrics(BaseModel):
     """Security posture metrics"""
+
     prompt_injection_attempts: int = Field(..., ge=0)
     data_leak_risks: int = Field(..., ge=0)
     jailbreak_attempts: int = Field(..., ge=0)
@@ -127,8 +140,10 @@ class SecurityMetrics(BaseModel):
 # MODEL & SYSTEM SNAPSHOTS
 # ============================================================================
 
+
 class ModelSnapshot(BaseModel):
     """Complete model health snapshot"""
+
     model_config = ConfigDict(protected_namespaces=())
 
     model_id: str
@@ -159,6 +174,7 @@ class ModelSnapshot(BaseModel):
 
 class SystemOverview(BaseModel):
     """System-wide overview for dashboards"""
+
     total_models: int
     healthy_models: int
     degraded_models: int
@@ -178,8 +194,10 @@ class SystemOverview(BaseModel):
 # IMPACT ANALYSIS MODELS
 # ============================================================================
 
+
 class ImpactNode(BaseModel):
     """Node in impact analysis graph"""
+
     node_id: str
     node_type: str  # model, feature, infrastructure, business_metric
     name: str
@@ -189,6 +207,7 @@ class ImpactNode(BaseModel):
 
 class ImpactEdge(BaseModel):
     """Edge in impact analysis graph"""
+
     source_id: str
     target_id: str
     weight: float = Field(..., ge=0, le=1)
@@ -197,6 +216,7 @@ class ImpactEdge(BaseModel):
 
 class ImpactAnalysis(BaseModel):
     """Complete impact analysis result"""
+
     analysis_id: str
     trigger_event: str
     affected_scope: List[str]
@@ -217,8 +237,10 @@ class ImpactAnalysis(BaseModel):
 # DASHBOARD & UI MODELS
 # ============================================================================
 
+
 class DashboardWidget(BaseModel):
     """Widget configuration for dynamic dashboards"""
+
     widget_id: str
     widget_type: str  # chart, gauge, table, alert_list, kpi_card
     title: str
@@ -230,6 +252,7 @@ class DashboardWidget(BaseModel):
 
 class ProfileDashboard(BaseModel):
     """Dashboard configuration per profile"""
+
     profile: UserProfile
     name: str
     description: str
@@ -240,6 +263,7 @@ class ProfileDashboard(BaseModel):
 
 class NavigationItem(BaseModel):
     """Navigation menu item"""
+
     id: str
     label: str
     icon: str
@@ -252,8 +276,10 @@ class NavigationItem(BaseModel):
 # API RESPONSE MODELS
 # ============================================================================
 
+
 class APIResponse(BaseModel):
     """Standard API response wrapper"""
+
     success: bool = True
     data: Any = None
     error: Optional[str] = None
@@ -262,6 +288,7 @@ class APIResponse(BaseModel):
 
 class PaginatedResponse(BaseModel):
     """Paginated API response"""
+
     items: List[Any]
     total: int
     page: int

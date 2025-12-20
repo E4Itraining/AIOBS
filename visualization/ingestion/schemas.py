@@ -3,28 +3,31 @@ AIOBS Data Ingestion Schemas
 Pydantic models for secure data injection with Data Act compliance
 """
 
-from datetime import datetime
-from typing import Dict, List, Optional, Any, Union
-from enum import Enum
-from pydantic import BaseModel, Field, field_validator, model_validator
 import hashlib
 import re
+from datetime import datetime
+from enum import Enum
+from typing import Any, Dict, List, Optional, Union
+
+from pydantic import BaseModel, Field, field_validator, model_validator
 
 
 class DataCategory(str, Enum):
     """Data categories per Data Act classification"""
-    OPERATIONAL = "operational"          # System metrics, logs
-    BEHAVIORAL = "behavioral"            # User behavior patterns
-    PERFORMANCE = "performance"          # Model performance metrics
-    FINANCIAL = "financial"              # Cost, revenue data
-    COMPLIANCE = "compliance"            # Audit, governance
-    ENVIRONMENTAL = "environmental"      # Carbon, energy
-    PERSONAL = "personal"                # PII - requires special handling
-    CONFIDENTIAL = "confidential"        # Business secrets
+
+    OPERATIONAL = "operational"  # System metrics, logs
+    BEHAVIORAL = "behavioral"  # User behavior patterns
+    PERFORMANCE = "performance"  # Model performance metrics
+    FINANCIAL = "financial"  # Cost, revenue data
+    COMPLIANCE = "compliance"  # Audit, governance
+    ENVIRONMENTAL = "environmental"  # Carbon, energy
+    PERSONAL = "personal"  # PII - requires special handling
+    CONFIDENTIAL = "confidential"  # Business secrets
 
 
 class DataSensitivity(str, Enum):
     """Data sensitivity levels"""
+
     PUBLIC = "public"
     INTERNAL = "internal"
     CONFIDENTIAL = "confidential"
@@ -33,16 +36,18 @@ class DataSensitivity(str, Enum):
 
 class RetentionPolicy(str, Enum):
     """Data retention policies"""
-    EPHEMERAL = "ephemeral"      # Delete after processing
-    SHORT = "short"              # 7 days
-    MEDIUM = "medium"            # 30 days
-    LONG = "long"                # 90 days
-    ARCHIVE = "archive"          # 1 year
-    PERMANENT = "permanent"      # Never delete
+
+    EPHEMERAL = "ephemeral"  # Delete after processing
+    SHORT = "short"  # 7 days
+    MEDIUM = "medium"  # 30 days
+    LONG = "long"  # 90 days
+    ARCHIVE = "archive"  # 1 year
+    PERMANENT = "permanent"  # Never delete
 
 
 class IngestionSource(str, Enum):
     """Source types for data ingestion"""
+
     AI_MODEL = "ai_model"
     PIPELINE = "pipeline"
     INFRASTRUCTURE = "infrastructure"
@@ -57,11 +62,13 @@ class IngestionSource(str, Enum):
 # Base Models
 # =============================================================================
 
+
 class DataActMetadata(BaseModel):
     """
     Data Act compliance metadata
     Required for all data ingestion to ensure EU Data Act compliance
     """
+
     data_category: DataCategory
     sensitivity: DataSensitivity = DataSensitivity.INTERNAL
     retention_policy: RetentionPolicy = RetentionPolicy.MEDIUM
@@ -72,35 +79,38 @@ class DataActMetadata(BaseModel):
     legal_basis: str = Field(default="legitimate_interest")
     data_controller: str = Field(default="aiobs-platform")
 
-    @field_validator('processing_purpose')
+    @field_validator("processing_purpose")
     @classmethod
     def validate_purpose(cls, v):
         """Ensure processing purpose is meaningful"""
         if len(v.split()) < 3:
-            raise ValueError('Processing purpose must be descriptive (at least 3 words)')
+            raise ValueError("Processing purpose must be descriptive (at least 3 words)")
         return v
 
 
 class IngestionMetadata(BaseModel):
     """Common metadata for all ingestion requests"""
+
     source: IngestionSource
     source_id: str = Field(..., min_length=1, max_length=256)
     correlation_id: Optional[str] = None
     trace_id: Optional[str] = None
     span_id: Optional[str] = None
     timestamp: datetime = Field(default_factory=datetime.utcnow)
-    environment: str = Field(default="production", pattern=r'^(production|staging|development|test)$')
+    environment: str = Field(
+        default="production", pattern=r"^(production|staging|development|test)$"
+    )
     version: str = Field(default="1.0")
     tags: Dict[str, str] = Field(default_factory=dict)
 
-    @field_validator('source_id')
+    @field_validator("source_id")
     @classmethod
     def sanitize_source_id(cls, v):
         """Sanitize source_id to prevent injection"""
         # Only allow alphanumeric, dash, underscore, dot
-        sanitized = re.sub(r'[^a-zA-Z0-9_\-\.]', '', v)
+        sanitized = re.sub(r"[^a-zA-Z0-9_\-\.]", "", v)
         if sanitized != v:
-            raise ValueError('source_id contains invalid characters')
+            raise ValueError("source_id contains invalid characters")
         return v
 
 
@@ -108,22 +118,24 @@ class IngestionMetadata(BaseModel):
 # Metric Ingestion
 # =============================================================================
 
+
 class MetricValue(BaseModel):
     """Single metric value"""
-    name: str = Field(..., min_length=1, max_length=256, pattern=r'^[a-zA-Z_][a-zA-Z0-9_]*$')
+
+    name: str = Field(..., min_length=1, max_length=256, pattern=r"^[a-zA-Z_][a-zA-Z0-9_]*$")
     value: float
     unit: Optional[str] = None
     timestamp: Optional[datetime] = None
     labels: Dict[str, str] = Field(default_factory=dict)
 
-    @field_validator('labels')
+    @field_validator("labels")
     @classmethod
     def validate_labels(cls, v):
         """Validate and sanitize labels"""
         sanitized = {}
         for key, value in v.items():
             # Sanitize keys
-            clean_key = re.sub(r'[^a-zA-Z0-9_]', '_', key)[:64]
+            clean_key = re.sub(r"[^a-zA-Z0-9_]", "_", key)[:64]
             # Sanitize values
             clean_value = str(value)[:256]
             sanitized[clean_key] = clean_value
@@ -135,6 +147,7 @@ class MetricIngestionRequest(BaseModel):
     Request for ingesting metrics into VictoriaMetrics
     Supports single or batch metric ingestion
     """
+
     metrics: List[MetricValue] = Field(..., min_length=1, max_length=10000)
     metadata: IngestionMetadata
     compliance: DataActMetadata
@@ -143,10 +156,12 @@ class MetricIngestionRequest(BaseModel):
     api_key_hash: Optional[str] = None
     signature: Optional[str] = None
 
-    @model_validator(mode='after')
+    @model_validator(mode="after")
     def compute_integrity_hash(self):
         """Compute integrity hash for audit trail"""
-        content = f"{len(self.metrics)}:{self.metadata.source_id}:{self.metadata.timestamp.isoformat()}"
+        content = (
+            f"{len(self.metrics)}:{self.metadata.source_id}:{self.metadata.timestamp.isoformat()}"
+        )
         self._integrity_hash = hashlib.sha256(content.encode()).hexdigest()[:16]
         return self
 
@@ -155,8 +170,10 @@ class MetricIngestionRequest(BaseModel):
 # Log Ingestion
 # =============================================================================
 
+
 class LogLevel(str, Enum):
     """Log severity levels"""
+
     TRACE = "trace"
     DEBUG = "debug"
     INFO = "info"
@@ -167,6 +184,7 @@ class LogLevel(str, Enum):
 
 class LogEntry(BaseModel):
     """Single log entry"""
+
     level: LogLevel = LogLevel.INFO
     message: str = Field(..., min_length=1, max_length=65536)
     timestamp: datetime = Field(default_factory=datetime.utcnow)
@@ -175,15 +193,15 @@ class LogEntry(BaseModel):
     exception: Optional[str] = None
     stack_trace: Optional[str] = None
 
-    @field_validator('message')
+    @field_validator("message")
     @classmethod
     def sanitize_message(cls, v):
         """Sanitize log message to prevent log injection"""
         # Remove control characters except newline and tab
-        sanitized = re.sub(r'[\x00-\x08\x0b\x0c\x0e-\x1f\x7f]', '', v)
+        sanitized = re.sub(r"[\x00-\x08\x0b\x0c\x0e-\x1f\x7f]", "", v)
         return sanitized
 
-    @field_validator('context')
+    @field_validator("context")
     @classmethod
     def sanitize_context(cls, v):
         """Sanitize context to remove sensitive data patterns"""
@@ -192,12 +210,12 @@ class LogEntry(BaseModel):
             r'api[_-]?key["\s:=]+[^,}\s]+',
             r'secret["\s:=]+[^,}\s]+',
             r'token["\s:=]+[^,}\s]+',
-            r'bearer\s+[a-zA-Z0-9\-._~+/]+=*',
+            r"bearer\s+[a-zA-Z0-9\-._~+/]+=*",
         ]
 
         context_str = str(v)
         for pattern in sensitive_patterns:
-            context_str = re.sub(pattern, '[REDACTED]', context_str, flags=re.IGNORECASE)
+            context_str = re.sub(pattern, "[REDACTED]", context_str, flags=re.IGNORECASE)
 
         return v  # Return original but flag if sensitive
 
@@ -206,8 +224,9 @@ class LogIngestionRequest(BaseModel):
     """
     Request for ingesting logs into OpenObserve
     """
+
     logs: List[LogEntry] = Field(..., min_length=1, max_length=10000)
-    stream: str = Field(default="aiobs-logs", pattern=r'^[a-zA-Z0-9_\-]+$')
+    stream: str = Field(default="aiobs-logs", pattern=r"^[a-zA-Z0-9_\-]+$")
     metadata: IngestionMetadata
     compliance: DataActMetadata
 
@@ -216,8 +235,10 @@ class LogIngestionRequest(BaseModel):
 # Event Ingestion
 # =============================================================================
 
+
 class EventType(str, Enum):
     """Event types for real-time processing"""
+
     ALERT = "alert"
     INCIDENT = "incident"
     DEPLOYMENT = "deployment"
@@ -234,6 +255,7 @@ class EventType(str, Enum):
 
 class EventSeverity(str, Enum):
     """Event severity levels"""
+
     INFO = "info"
     LOW = "low"
     MEDIUM = "medium"
@@ -243,6 +265,7 @@ class EventSeverity(str, Enum):
 
 class Event(BaseModel):
     """Single event"""
+
     event_type: EventType
     severity: EventSeverity = EventSeverity.INFO
     title: str = Field(..., min_length=1, max_length=256)
@@ -260,6 +283,7 @@ class EventIngestionRequest(BaseModel):
     Request for ingesting events into Redis pub/sub
     Events are broadcast to WebSocket clients in real-time
     """
+
     events: List[Event] = Field(..., min_length=1, max_length=1000)
     channels: List[str] = Field(default_factory=lambda: ["all"])
     metadata: IngestionMetadata
@@ -270,22 +294,24 @@ class EventIngestionRequest(BaseModel):
 # Batch Ingestion
 # =============================================================================
 
+
 class BatchIngestionRequest(BaseModel):
     """
     Combined batch ingestion request
     For efficient bulk data loading
     """
+
     metrics: Optional[List[MetricValue]] = None
     logs: Optional[List[LogEntry]] = None
     events: Optional[List[Event]] = None
     metadata: IngestionMetadata
     compliance: DataActMetadata
 
-    @model_validator(mode='after')
+    @model_validator(mode="after")
     def validate_not_empty(self):
         """Ensure at least one data type is provided"""
         if not self.metrics and not self.logs and not self.events:
-            raise ValueError('At least one of metrics, logs, or events must be provided')
+            raise ValueError("At least one of metrics, logs, or events must be provided")
         return self
 
 
@@ -293,8 +319,10 @@ class BatchIngestionRequest(BaseModel):
 # Response Models
 # =============================================================================
 
+
 class IngestionStatus(str, Enum):
     """Ingestion status"""
+
     SUCCESS = "success"
     PARTIAL = "partial"
     FAILED = "failed"
@@ -304,6 +332,7 @@ class IngestionStatus(str, Enum):
 
 class IngestionResponse(BaseModel):
     """Response for ingestion requests"""
+
     status: IngestionStatus
     request_id: str
     timestamp: datetime = Field(default_factory=datetime.utcnow)
@@ -333,8 +362,10 @@ class IngestionResponse(BaseModel):
 # Prompt Injection & Security Testing Schemas
 # =============================================================================
 
+
 class TestCategory(str, Enum):
     """Security test categories"""
+
     PROMPT_INJECTION = "prompt_injection"
     SQL_INJECTION = "sql_injection"
     XSS = "xss"
@@ -350,6 +381,7 @@ class SecurityTestPayload(BaseModel):
     Payload for security testing (prompt injection, etc.)
     Used for authorized security testing only
     """
+
     test_category: TestCategory
     test_id: str = Field(..., min_length=1, max_length=64)
     payload: str = Field(..., max_length=65536)
@@ -367,6 +399,7 @@ class SecurityTestRequest(BaseModel):
     Request for security testing injection
     Requires explicit authorization
     """
+
     tests: List[SecurityTestPayload] = Field(..., min_length=1, max_length=100)
     dry_run: bool = Field(default=True)
     report_only: bool = Field(default=True)

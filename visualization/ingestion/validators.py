@@ -3,28 +3,30 @@ AIOBS Data Validators
 Security validation and Data Act compliance enforcement
 """
 
-from datetime import datetime, timedelta
-from typing import Dict, List, Optional, Any, Tuple, Set
-from dataclasses import dataclass, field as dataclass_field
-import re
 import hashlib
 import json
+import re
+from dataclasses import dataclass
+from dataclasses import field as dataclass_field
+from datetime import datetime, timedelta
 from enum import Enum
+from typing import Any, Dict, List, Optional, Set, Tuple
 
 from .schemas import (
+    BatchIngestionRequest,
+    DataActMetadata,
     DataCategory,
     DataSensitivity,
-    MetricIngestionRequest,
-    LogIngestionRequest,
     EventIngestionRequest,
-    BatchIngestionRequest,
+    LogIngestionRequest,
+    MetricIngestionRequest,
     SecurityTestRequest,
-    DataActMetadata
 )
 
 
 class ValidationSeverity(Enum):
     """Validation issue severity"""
+
     INFO = "info"
     WARNING = "warning"
     ERROR = "error"
@@ -34,6 +36,7 @@ class ValidationSeverity(Enum):
 @dataclass
 class ValidationIssue:
     """Single validation issue"""
+
     code: str
     message: str
     severity: ValidationSeverity
@@ -44,20 +47,25 @@ class ValidationIssue:
 @dataclass
 class ValidationResult:
     """Result of validation"""
+
     is_valid: bool
     issues: List[ValidationIssue] = dataclass_field(default_factory=list)
     sanitized_data: Optional[Any] = None
     audit_trail: Dict[str, Any] = dataclass_field(default_factory=dict)
 
-    def add_issue(self, code: str, message: str, severity: ValidationSeverity,
-                  field: Optional[str] = None, details: Optional[Dict] = None):
-        self.issues.append(ValidationIssue(
-            code=code,
-            message=message,
-            severity=severity,
-            field=field,
-            details=details or {}
-        ))
+    def add_issue(
+        self,
+        code: str,
+        message: str,
+        severity: ValidationSeverity,
+        field: Optional[str] = None,
+        details: Optional[Dict] = None,
+    ):
+        self.issues.append(
+            ValidationIssue(
+                code=code, message=message, severity=severity, field=field, details=details or {}
+            )
+        )
         if severity in (ValidationSeverity.ERROR, ValidationSeverity.CRITICAL):
             self.is_valid = False
 
@@ -70,76 +78,76 @@ class DataValidator:
 
     # Prompt injection patterns
     PROMPT_INJECTION_PATTERNS = [
-        r'ignore\s+(previous|all|above)\s+instructions?',
-        r'disregard\s+(previous|all|above)',
-        r'forget\s+(everything|all|previous)',
-        r'system\s*:\s*you\s+are',
-        r'assistant\s*:\s*',
-        r'\[system\]',
-        r'\[assistant\]',
-        r'<\|im_start\|>',
-        r'<\|im_end\|>',
-        r'jailbreak',
-        r'pretend\s+you\s+are',
-        r'act\s+as\s+if',
-        r'roleplay\s+as',
-        r'bypass\s+(safety|filter|restriction)',
-        r'override\s+(system|instruction)',
-        r'new\s+instruction',
-        r'from\s+now\s+on',
-        r'do\s+not\s+follow\s+(the|your)\s+(rules|instructions)',
+        r"ignore\s+(previous|all|above)\s+instructions?",
+        r"disregard\s+(previous|all|above)",
+        r"forget\s+(everything|all|previous)",
+        r"system\s*:\s*you\s+are",
+        r"assistant\s*:\s*",
+        r"\[system\]",
+        r"\[assistant\]",
+        r"<\|im_start\|>",
+        r"<\|im_end\|>",
+        r"jailbreak",
+        r"pretend\s+you\s+are",
+        r"act\s+as\s+if",
+        r"roleplay\s+as",
+        r"bypass\s+(safety|filter|restriction)",
+        r"override\s+(system|instruction)",
+        r"new\s+instruction",
+        r"from\s+now\s+on",
+        r"do\s+not\s+follow\s+(the|your)\s+(rules|instructions)",
     ]
 
     # SQL injection patterns
     SQL_INJECTION_PATTERNS = [
         r"('\s*(or|and)\s*'?\d*'?\s*=\s*'?\d*)",
-        r'(;\s*(drop|delete|truncate|update|insert)\s+)',
-        r'(union\s+(all\s+)?select)',
-        r'(--\s*$)',
-        r'(/\*.*\*/)',
+        r"(;\s*(drop|delete|truncate|update|insert)\s+)",
+        r"(union\s+(all\s+)?select)",
+        r"(--\s*$)",
+        r"(/\*.*\*/)",
         r"('\s*;\s*--)",
-        r'(\bexec\s*\()',
-        r'(\bexecute\s+)',
-        r'(xp_cmdshell)',
+        r"(\bexec\s*\()",
+        r"(\bexecute\s+)",
+        r"(xp_cmdshell)",
     ]
 
     # XSS patterns
     XSS_PATTERNS = [
-        r'<script[^>]*>',
-        r'javascript\s*:',
-        r'on(load|error|click|mouseover|submit)\s*=',
-        r'<iframe[^>]*>',
-        r'<object[^>]*>',
-        r'<embed[^>]*>',
-        r'expression\s*\(',
-        r'vbscript\s*:',
+        r"<script[^>]*>",
+        r"javascript\s*:",
+        r"on(load|error|click|mouseover|submit)\s*=",
+        r"<iframe[^>]*>",
+        r"<object[^>]*>",
+        r"<embed[^>]*>",
+        r"expression\s*\(",
+        r"vbscript\s*:",
     ]
 
     # Command injection patterns
     COMMAND_INJECTION_PATTERNS = [
-        r'[;&|`$]',
-        r'\$\([^)]+\)',
-        r'`[^`]+`',
-        r'\|\|',
-        r'&&',
-        r'>\s*/',
-        r'<\s*/',
-        r'\brm\s+-rf',
-        r'\bsudo\b',
-        r'\bchmod\b',
-        r'\bchown\b',
+        r"[;&|`$]",
+        r"\$\([^)]+\)",
+        r"`[^`]+`",
+        r"\|\|",
+        r"&&",
+        r">\s*/",
+        r"<\s*/",
+        r"\brm\s+-rf",
+        r"\bsudo\b",
+        r"\bchmod\b",
+        r"\bchown\b",
     ]
 
     # Sensitive data patterns (for masking)
     SENSITIVE_PATTERNS = {
-        'credit_card': r'\b(?:\d{4}[-\s]?){3}\d{4}\b',
-        'ssn': r'\b\d{3}-\d{2}-\d{4}\b',
-        'email': r'\b[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[A-Z|a-z]{2,}\b',
-        'phone': r'\b(?:\+\d{1,3}[-.\s]?)?\(?\d{3}\)?[-.\s]?\d{3}[-.\s]?\d{4}\b',
-        'api_key': r'\b(api[_-]?key|apikey)\s*[=:]\s*["\']?[\w\-]+["\']?',
-        'password': r'\b(password|passwd|pwd)\s*[=:]\s*["\']?[^\s"\']+["\']?',
-        'bearer_token': r'\bBearer\s+[A-Za-z0-9\-._~+/]+=*',
-        'jwt': r'\beyJ[A-Za-z0-9\-_]+\.eyJ[A-Za-z0-9\-_]+\.[A-Za-z0-9\-_]+',
+        "credit_card": r"\b(?:\d{4}[-\s]?){3}\d{4}\b",
+        "ssn": r"\b\d{3}-\d{2}-\d{4}\b",
+        "email": r"\b[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[A-Z|a-z]{2,}\b",
+        "phone": r"\b(?:\+\d{1,3}[-.\s]?)?\(?\d{3}\)?[-.\s]?\d{3}[-.\s]?\d{4}\b",
+        "api_key": r'\b(api[_-]?key|apikey)\s*[=:]\s*["\']?[\w\-]+["\']?',
+        "password": r'\b(password|passwd|pwd)\s*[=:]\s*["\']?[^\s"\']+["\']?',
+        "bearer_token": r"\bBearer\s+[A-Za-z0-9\-._~+/]+=*",
+        "jwt": r"\beyJ[A-Za-z0-9\-_]+\.eyJ[A-Za-z0-9\-_]+\.[A-Za-z0-9\-_]+",
     }
 
     def __init__(self, strict_mode: bool = True):
@@ -151,18 +159,11 @@ class DataValidator:
         self._prompt_injection_re = [
             re.compile(p, re.IGNORECASE) for p in self.PROMPT_INJECTION_PATTERNS
         ]
-        self._sql_injection_re = [
-            re.compile(p, re.IGNORECASE) for p in self.SQL_INJECTION_PATTERNS
-        ]
-        self._xss_re = [
-            re.compile(p, re.IGNORECASE) for p in self.XSS_PATTERNS
-        ]
-        self._command_injection_re = [
-            re.compile(p) for p in self.COMMAND_INJECTION_PATTERNS
-        ]
+        self._sql_injection_re = [re.compile(p, re.IGNORECASE) for p in self.SQL_INJECTION_PATTERNS]
+        self._xss_re = [re.compile(p, re.IGNORECASE) for p in self.XSS_PATTERNS]
+        self._command_injection_re = [re.compile(p) for p in self.COMMAND_INJECTION_PATTERNS]
         self._sensitive_re = {
-            k: re.compile(v, re.IGNORECASE)
-            for k, v in self.SENSITIVE_PATTERNS.items()
+            k: re.compile(v, re.IGNORECASE) for k, v in self.SENSITIVE_PATTERNS.items()
         }
 
     def validate_metrics(self, request: MetricIngestionRequest) -> ValidationResult:
@@ -292,7 +293,7 @@ class DataValidator:
                 "SEC001",
                 "Security test requires source_id",
                 ValidationSeverity.ERROR,
-                "metadata.source_id"
+                "metadata.source_id",
             )
 
         for test in request.tests:
@@ -301,14 +302,14 @@ class DataValidator:
                     "SEC002",
                     "Security test requires authorization",
                     ValidationSeverity.ERROR,
-                    "tests[].authorized_by"
+                    "tests[].authorized_by",
                 )
             if not test.authorization_ticket:
                 result.add_issue(
                     "SEC003",
                     "Security test requires authorization ticket",
                     ValidationSeverity.ERROR,
-                    "tests[].authorization_ticket"
+                    "tests[].authorization_ticket",
                 )
 
         result.audit_trail = {
@@ -316,7 +317,7 @@ class DataValidator:
             "timestamp": datetime.utcnow().isoformat(),
             "test_count": len(request.tests),
             "categories": list(set(t.test_category.value for t in request.tests)),
-            "dry_run": request.dry_run
+            "dry_run": request.dry_run,
         }
 
         return result
@@ -324,12 +325,12 @@ class DataValidator:
     def _validate_metadata(self, metadata, result: ValidationResult):
         """Validate ingestion metadata"""
         # Check source_id format
-        if not re.match(r'^[a-zA-Z0-9_\-\.]+$', metadata.source_id):
+        if not re.match(r"^[a-zA-Z0-9_\-\.]+$", metadata.source_id):
             result.add_issue(
                 "META001",
                 "Invalid source_id format",
                 ValidationSeverity.ERROR,
-                "metadata.source_id"
+                "metadata.source_id",
             )
 
         # Check timestamp is not in the future
@@ -338,7 +339,7 @@ class DataValidator:
                 "META002",
                 "Timestamp cannot be in the future",
                 ValidationSeverity.WARNING,
-                "metadata.timestamp"
+                "metadata.timestamp",
             )
 
         # Check timestamp is not too old
@@ -347,7 +348,7 @@ class DataValidator:
                 "META003",
                 "Timestamp is too old (>7 days)",
                 ValidationSeverity.WARNING,
-                "metadata.timestamp"
+                "metadata.timestamp",
             )
 
     def _validate_compliance(self, compliance: DataActMetadata, result: ValidationResult):
@@ -358,18 +359,19 @@ class DataValidator:
                 "COMP001",
                 "Personal data requires verified consent",
                 ValidationSeverity.ERROR,
-                "compliance.consent_verified"
+                "compliance.consent_verified",
             )
 
         # Cross-border transfer requires special handling
         if compliance.cross_border_transfer and compliance.sensitivity in (
-            DataSensitivity.CONFIDENTIAL, DataSensitivity.RESTRICTED
+            DataSensitivity.CONFIDENTIAL,
+            DataSensitivity.RESTRICTED,
         ):
             result.add_issue(
                 "COMP002",
                 "Cross-border transfer of sensitive data requires additional verification",
                 ValidationSeverity.WARNING,
-                "compliance.cross_border_transfer"
+                "compliance.cross_border_transfer",
             )
 
         # Restricted data requires explicit legal basis
@@ -379,7 +381,7 @@ class DataValidator:
                     "COMP003",
                     "Restricted data requires explicit legal basis (not just legitimate interest)",
                     ValidationSeverity.ERROR,
-                    "compliance.legal_basis"
+                    "compliance.legal_basis",
                 )
 
     def _check_injection(self, value: str, result: ValidationResult, field: str) -> bool:
@@ -397,7 +399,7 @@ class DataValidator:
                     f"Potential prompt injection detected",
                     ValidationSeverity.CRITICAL if self.strict_mode else ValidationSeverity.WARNING,
                     field,
-                    {"pattern": pattern.pattern[:50]}
+                    {"pattern": pattern.pattern[:50]},
                 )
                 detected = True
                 break
@@ -410,7 +412,7 @@ class DataValidator:
                     "Potential SQL injection detected",
                     ValidationSeverity.CRITICAL if self.strict_mode else ValidationSeverity.WARNING,
                     field,
-                    {"pattern": pattern.pattern[:50]}
+                    {"pattern": pattern.pattern[:50]},
                 )
                 detected = True
                 break
@@ -423,7 +425,7 @@ class DataValidator:
                     "Potential XSS detected",
                     ValidationSeverity.ERROR,
                     field,
-                    {"pattern": pattern.pattern[:50]}
+                    {"pattern": pattern.pattern[:50]},
                 )
                 detected = True
                 break
@@ -436,7 +438,7 @@ class DataValidator:
                     "Potential command injection detected",
                     ValidationSeverity.CRITICAL if self.strict_mode else ValidationSeverity.WARNING,
                     field,
-                    {"pattern": pattern.pattern[:30]}
+                    {"pattern": pattern.pattern[:30]},
                 )
                 detected = True
                 break
@@ -455,7 +457,7 @@ class DataValidator:
                     f"Sensitive data detected: {data_type}",
                     ValidationSeverity.WARNING,
                     field,
-                    {"data_type": data_type}
+                    {"data_type": data_type},
                 )
 
     def _validate_metric_value(self, value: float, result: ValidationResult, field: str) -> bool:
@@ -464,10 +466,7 @@ class DataValidator:
 
         if math.isnan(value) or math.isinf(value):
             result.add_issue(
-                "VAL001",
-                "Metric value must be a finite number",
-                ValidationSeverity.ERROR,
-                field
+                "VAL001", "Metric value must be a finite number", ValidationSeverity.ERROR, field
             )
             return False
 
@@ -477,7 +476,7 @@ class DataValidator:
                 "VAL002",
                 "Metric value exceeds reasonable bounds",
                 ValidationSeverity.WARNING,
-                field
+                field,
             )
 
         return True
@@ -486,15 +485,17 @@ class DataValidator:
         """Generate audit trail for the validation"""
         return {
             "timestamp": datetime.utcnow().isoformat(),
-            "source_id": getattr(request.metadata, 'source_id', 'unknown'),
-            "source": getattr(request.metadata, 'source', 'unknown'),
+            "source_id": getattr(request.metadata, "source_id", "unknown"),
+            "source": getattr(request.metadata, "source", "unknown"),
             "validation_passed": result.is_valid,
             "issues_count": len(result.issues),
-            "critical_issues": sum(1 for i in result.issues if i.severity == ValidationSeverity.CRITICAL),
+            "critical_issues": sum(
+                1 for i in result.issues if i.severity == ValidationSeverity.CRITICAL
+            ),
             "error_issues": sum(1 for i in result.issues if i.severity == ValidationSeverity.ERROR),
             "integrity_hash": hashlib.sha256(
                 f"{request.metadata.source_id}:{datetime.utcnow().isoformat()}".encode()
-            ).hexdigest()[:32]
+            ).hexdigest()[:32],
         }
 
 
@@ -510,7 +511,7 @@ class DataActCompliance:
         "medium": 30,
         "long": 90,
         "archive": 365,
-        "permanent": -1  # No limit
+        "permanent": -1,  # No limit
     }
 
     # Required fields for each data category
@@ -534,9 +535,13 @@ class DataActCompliance:
         required = self.REQUIRED_FIELDS.get(compliance.data_category, [])
         for field in required:
             value = getattr(compliance, field, None)
-            if value is None or (isinstance(value, bool) and value is False and field == "consent_verified"):
+            if value is None or (
+                isinstance(value, bool) and value is False and field == "consent_verified"
+            ):
                 if compliance.data_category == DataCategory.PERSONAL:
-                    issues.append(f"Field '{field}' is required for {compliance.data_category.value} data")
+                    issues.append(
+                        f"Field '{field}' is required for {compliance.data_category.value} data"
+                    )
 
         # Check cross-border transfer rules
         if compliance.cross_border_transfer:
@@ -555,14 +560,16 @@ class DataActCompliance:
                 )
 
         # Log audit entry
-        self.audit_log.append({
-            "timestamp": datetime.utcnow().isoformat(),
-            "action": "compliance_check",
-            "data_category": compliance.data_category.value,
-            "sensitivity": compliance.sensitivity.value,
-            "compliant": len(issues) == 0,
-            "issues": issues
-        })
+        self.audit_log.append(
+            {
+                "timestamp": datetime.utcnow().isoformat(),
+                "action": "compliance_check",
+                "data_category": compliance.data_category.value,
+                "sensitivity": compliance.sensitivity.value,
+                "compliant": len(issues) == 0,
+                "issues": issues,
+            }
+        )
 
         return len(issues) == 0, issues
 
@@ -598,12 +605,14 @@ class DataActCompliance:
             "status": "compliant" if compliant_count == total_count else "non_compliant",
             "total_checks": total_count,
             "compliant_checks": compliant_count,
-            "compliance_rate": round(compliant_count / total_count * 100, 2) if total_count > 0 else 0,
-            "categories_checked": list(set(
-                entry.get("data_category", "unknown") for entry in self.audit_log
-            )),
+            "compliance_rate": (
+                round(compliant_count / total_count * 100, 2) if total_count > 0 else 0
+            ),
+            "categories_checked": list(
+                set(entry.get("data_category", "unknown") for entry in self.audit_log)
+            ),
             "common_issues": self._get_common_issues(),
-            "last_check": self.audit_log[-1]["timestamp"] if self.audit_log else None
+            "last_check": self.audit_log[-1]["timestamp"] if self.audit_log else None,
         }
 
     def _get_common_issues(self) -> List[Dict[str, Any]]:

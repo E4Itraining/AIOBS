@@ -2,11 +2,13 @@
 AIOBS Metrics API Router
 Endpoints for metrics, time series, and analysis
 """
+
 from datetime import datetime, timedelta
 from typing import List, Optional
-from fastapi import APIRouter, Query, HTTPException
 
-from ..core import CognitiveEngine, CausalEngine, ImpactAnalyzer, UnifiedObservabilityView
+from fastapi import APIRouter, HTTPException, Query
+
+from ..core import CausalEngine, CognitiveEngine, ImpactAnalyzer, UnifiedObservabilityView
 from ..models.schemas import APIResponse
 
 router = APIRouter(prefix="/api/metrics", tags=["metrics"])
@@ -50,8 +52,8 @@ async def get_trust_score(model_id: str) -> APIResponse:
                 "hallucination_risk": trust_data.hallucination_risk if trust_data else 0,
                 "degradation_risk": trust_data.degradation_risk if trust_data else 0,
             },
-            "trend": trust_data.trend if trust_data else "unknown"
-        }
+            "trend": trust_data.trend if trust_data else "unknown",
+        },
     )
 
 
@@ -59,7 +61,7 @@ async def get_trust_score(model_id: str) -> APIResponse:
 async def get_time_series(
     metrics: str = Query(..., description="Comma-separated metric names"),
     hours: int = Query(24, ge=1, le=720, description="Time range in hours"),
-    granularity: str = Query("hour", description="Data granularity")
+    granularity: str = Query("hour", description="Data granularity"),
 ) -> APIResponse:
     """
     Get time series data for specified metrics.
@@ -67,17 +69,16 @@ async def get_time_series(
     metric_list = [m.strip() for m in metrics.split(",")]
 
     from ..core.unified_view import TimeGranularity
+
     gran_map = {
         "minute": TimeGranularity.MINUTE,
         "hour": TimeGranularity.HOUR,
-        "day": TimeGranularity.DAY
+        "day": TimeGranularity.DAY,
     }
     gran = gran_map.get(granularity, TimeGranularity.HOUR)
 
     data = unified_view.get_time_series(
-        metric_names=metric_list,
-        time_range=timedelta(hours=hours),
-        granularity=gran
+        metric_names=metric_list, time_range=timedelta(hours=hours), granularity=gran
     )
 
     # Convert to JSON-serializable format
@@ -86,10 +87,7 @@ async def get_time_series(
         result[name] = {
             "metric_name": ts.metric_name,
             "unit": ts.unit,
-            "points": [
-                {"timestamp": p.timestamp.isoformat(), "value": p.value}
-                for p in ts.points
-            ]
+            "points": [{"timestamp": p.timestamp.isoformat(), "value": p.value} for p in ts.points],
         }
 
     return APIResponse(success=True, data=result)
@@ -98,15 +96,14 @@ async def get_time_series(
 @router.get("/correlation")
 async def get_correlation_matrix(
     metrics: str = Query(..., description="Comma-separated metric names"),
-    hours: int = Query(24, ge=1, le=720)
+    hours: int = Query(24, ge=1, le=720),
 ) -> APIResponse:
     """
     Get correlation matrix between metrics.
     """
     metric_list = [m.strip() for m in metrics.split(",")]
     matrix = unified_view.get_correlation_matrix(
-        metrics=metric_list,
-        time_range=timedelta(hours=hours)
+        metrics=metric_list, time_range=timedelta(hours=hours)
     )
 
     return APIResponse(success=True, data=matrix)
@@ -114,15 +111,13 @@ async def get_correlation_matrix(
 
 @router.get("/anomalies")
 async def get_anomalies(
-    hours: int = Query(24, ge=1, le=720),
-    min_severity: str = Query("low")
+    hours: int = Query(24, ge=1, le=720), min_severity: str = Query("low")
 ) -> APIResponse:
     """
     Get detected anomalies.
     """
     anomalies = unified_view.get_anomalies(
-        time_range=timedelta(hours=hours),
-        min_severity=min_severity
+        time_range=timedelta(hours=hours), min_severity=min_severity
     )
 
     # Convert datetime to string
@@ -148,7 +143,7 @@ async def get_causal_graph(scenario: str = "drift_incident") -> APIResponse:
             "type": n.node_type.value,
             "name": n.name,
             "description": n.description,
-            "impact_score": n.impact_score
+            "impact_score": n.impact_score,
         }
         for n in graph.nodes.values()
     ]
@@ -159,26 +154,17 @@ async def get_causal_graph(scenario: str = "drift_incident") -> APIResponse:
             "target": e.target_id,
             "type": e.edge_type.value,
             "weight": e.weight,
-            "confidence": e.confidence
+            "confidence": e.confidence,
         }
         for e in graph.edges
     ]
 
-    return APIResponse(
-        success=True,
-        data={
-            "id": graph.id,
-            "nodes": nodes,
-            "edges": edges
-        }
-    )
+    return APIResponse(success=True, data={"id": graph.id, "nodes": nodes, "edges": edges})
 
 
 @router.post("/impact/analyze")
 async def analyze_impact(
-    event_type: str = Query(...),
-    affected_models: str = Query(""),
-    hours: int = Query(24)
+    event_type: str = Query(...), affected_models: str = Query(""), hours: int = Query(24)
 ) -> APIResponse:
     """
     Analyze business impact of an event.
@@ -186,10 +172,7 @@ async def analyze_impact(
     models = [m.strip() for m in affected_models.split(",") if m.strip()]
 
     report = impact_analyzer.analyze_event_impact(
-        event_type=event_type,
-        event_data={},
-        affected_models=models,
-        time_window_hours=hours
+        event_type=event_type, event_data={}, affected_models=models, time_window_hours=hours
     )
 
     # Convert to JSON-serializable format
@@ -207,13 +190,13 @@ async def analyze_impact(
                     "domain": i.domain.value,
                     "delta_pct": i.delta_percentage,
                     "severity": i.severity.value,
-                    "monetary_impact": i.monetary_impact
+                    "monetary_impact": i.monetary_impact,
                 }
                 for i in report.impacts
             ],
             "recommendations": report.recommendations,
-            "mitigations": report.mitigation_actions
-        }
+            "mitigations": report.mitigation_actions,
+        },
     )
 
 

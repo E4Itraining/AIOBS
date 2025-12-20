@@ -3,15 +3,16 @@ AIOBS i18n Middleware
 Handles language detection and context for requests
 """
 
-from typing import Optional
 from contextvars import ContextVar
+from typing import Optional
+
 from fastapi import Request
 from starlette.middleware.base import BaseHTTPMiddleware
 
-from .translations import SUPPORTED_LANGUAGES, DEFAULT_LANGUAGE, get_translator
+from .translations import DEFAULT_LANGUAGE, SUPPORTED_LANGUAGES, get_translator
 
 # Context variable for current language
-_current_language: ContextVar[str] = ContextVar('current_language', default=DEFAULT_LANGUAGE)
+_current_language: ContextVar[str] = ContextVar("current_language", default=DEFAULT_LANGUAGE)
 
 
 def get_current_language() -> str:
@@ -59,17 +60,17 @@ class I18nMiddleware(BaseHTTPMiddleware):
         """Detect the preferred language for the request"""
 
         # 1. Check query parameter
-        lang = request.query_params.get('lang')
+        lang = request.query_params.get("lang")
         if lang and lang in SUPPORTED_LANGUAGES:
             return lang
 
         # 2. Check cookie
-        lang = request.cookies.get('aiobs_lang')
+        lang = request.cookies.get("aiobs_lang")
         if lang and lang in SUPPORTED_LANGUAGES:
             return lang
 
         # 3. Check Accept-Language header
-        accept_lang = request.headers.get('Accept-Language', '')
+        accept_lang = request.headers.get("Accept-Language", "")
         lang = self._parse_accept_language(accept_lang)
         if lang:
             return lang
@@ -88,13 +89,13 @@ class I18nMiddleware(BaseHTTPMiddleware):
 
         # Parse language preferences with quality values
         languages = []
-        for part in header.split(','):
+        for part in header.split(","):
             part = part.strip()
-            if ';' in part:
-                lang, q = part.split(';')
+            if ";" in part:
+                lang, q = part.split(";")
                 lang = lang.strip()
                 try:
-                    q = float(q.split('=')[1])
+                    q = float(q.split("=")[1])
                 except (ValueError, IndexError):
                     q = 1.0
             else:
@@ -102,7 +103,7 @@ class I18nMiddleware(BaseHTTPMiddleware):
                 q = 1.0
 
             # Extract base language (e.g., 'fr' from 'fr-FR')
-            base_lang = lang.split('-')[0].lower()
+            base_lang = lang.split("-")[0].lower()
             languages.append((base_lang, q))
 
         # Sort by quality value (descending)
@@ -124,7 +125,7 @@ def create_i18n_context(request: Request) -> dict:
     {{ t('nav.dashboard') }}
     {{ t('messages.loading') }}
     """
-    lang = getattr(request.state, 'language', DEFAULT_LANGUAGE)
+    lang = getattr(request.state, "language", DEFAULT_LANGUAGE)
     translator = get_translator()
 
     def t(key: str, **kwargs) -> str:
@@ -136,9 +137,9 @@ def create_i18n_context(request: Request) -> dict:
         return translator.get_all(lang)
 
     return {
-        'lang': lang,
-        'languages': SUPPORTED_LANGUAGES,
-        'is_rtl': SUPPORTED_LANGUAGES.get(lang, {}).get('rtl', False),
-        't': t,
-        'translations': get_all_translations()
+        "lang": lang,
+        "languages": SUPPORTED_LANGUAGES,
+        "is_rtl": SUPPORTED_LANGUAGES.get(lang, {}).get("rtl", False),
+        "t": t,
+        "translations": get_all_translations(),
     }

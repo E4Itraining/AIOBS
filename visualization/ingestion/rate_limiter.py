@@ -3,17 +3,18 @@ AIOBS Rate Limiter
 Token bucket and sliding window rate limiting for data ingestion
 """
 
-from datetime import datetime, timedelta
-from typing import Dict, Optional, Tuple
-from dataclasses import dataclass, field
-from enum import Enum
 import asyncio
 import hashlib
 import time
+from dataclasses import dataclass, field
+from datetime import datetime, timedelta
+from enum import Enum
+from typing import Dict, Optional, Tuple
 
 
 class RateLimitStrategy(Enum):
     """Rate limiting strategies"""
+
     TOKEN_BUCKET = "token_bucket"
     SLIDING_WINDOW = "sliding_window"
     FIXED_WINDOW = "fixed_window"
@@ -23,6 +24,7 @@ class RateLimitStrategy(Enum):
 @dataclass
 class RateLimitConfig:
     """Rate limit configuration"""
+
     # Requests per window
     requests_per_second: int = 100
     requests_per_minute: int = 3000
@@ -48,6 +50,7 @@ class RateLimitConfig:
 @dataclass
 class RateLimitState:
     """State for a rate limiter bucket"""
+
     tokens: float
     last_update: float
     request_count: int = 0
@@ -59,6 +62,7 @@ class RateLimitState:
 @dataclass
 class RateLimitResult:
     """Result of a rate limit check"""
+
     allowed: bool
     remaining_requests: int
     remaining_bytes: int
@@ -78,14 +82,12 @@ class RateLimiter:
         self._buckets: Dict[str, RateLimitState] = {}
         self._global_state = RateLimitState(
             tokens=float(self.config.requests_per_second * self.config.burst_multiplier),
-            last_update=time.time()
+            last_update=time.time(),
         )
         self._lock = asyncio.Lock()
 
     async def check_rate_limit(
-        self,
-        source_id: str,
-        request_size_bytes: int = 0
+        self, source_id: str, request_size_bytes: int = 0
     ) -> RateLimitResult:
         """
         Check if request is within rate limits
@@ -125,7 +127,7 @@ class RateLimiter:
                 allowed=True,
                 remaining_requests=int(bucket.tokens),
                 remaining_bytes=self._get_bytes_remaining(bucket, current_time),
-                reset_time=datetime.utcnow() + timedelta(seconds=60 - (current_time % 60))
+                reset_time=datetime.utcnow() + timedelta(seconds=60 - (current_time % 60)),
             )
 
     async def check_global_rate_limit(self, request_size_bytes: int = 0) -> RateLimitResult:
@@ -135,17 +137,14 @@ class RateLimiter:
             self._refill_tokens(self._global_state, current_time)
 
             if self._global_state.tokens < 1:
-                return self._create_denied_result(
-                    self._global_state,
-                    "Global rate limit exceeded"
-                )
+                return self._create_denied_result(self._global_state, "Global rate limit exceeded")
 
             self._global_state.tokens -= 1
             return RateLimitResult(
                 allowed=True,
                 remaining_requests=int(self._global_state.tokens),
                 remaining_bytes=self.config.bytes_per_second,
-                reset_time=datetime.utcnow() + timedelta(seconds=1)
+                reset_time=datetime.utcnow() + timedelta(seconds=1),
             )
 
     def _get_or_create_bucket(self, source_id: str, current_time: float) -> RateLimitState:
@@ -156,7 +155,7 @@ class RateLimiter:
             self._buckets[bucket_key] = RateLimitState(
                 tokens=float(self.config.requests_per_second * self.config.burst_multiplier),
                 last_update=current_time,
-                window_start=current_time
+                window_start=current_time,
             )
 
         return self._buckets[bucket_key]
@@ -205,8 +204,8 @@ class RateLimiter:
 
         # Calculate retry after with exponential backoff
         backoff = min(
-            self.config.backoff_base_seconds * (self.config.backoff_multiplier ** bucket.violations),
-            self.config.backoff_max_seconds
+            self.config.backoff_base_seconds * (self.config.backoff_multiplier**bucket.violations),
+            self.config.backoff_max_seconds,
         )
 
         return RateLimitResult(
@@ -215,7 +214,7 @@ class RateLimiter:
             remaining_bytes=0,
             reset_time=datetime.utcnow() + timedelta(seconds=backoff),
             retry_after_seconds=backoff,
-            reason=reason
+            reason=reason,
         )
 
     def _hash_source_id(self, source_id: str) -> str:
@@ -234,8 +233,8 @@ class RateLimiter:
                     "requests_per_second": self.config.requests_per_second,
                     "requests_per_minute": self.config.requests_per_minute,
                     "bytes_per_second": self.config.bytes_per_second,
-                    "strategy": self.config.strategy.value
-                }
+                    "strategy": self.config.strategy.value,
+                },
             }
 
     async def reset_bucket(self, source_id: str):
@@ -250,7 +249,8 @@ class RateLimiter:
         async with self._lock:
             current_time = time.time()
             expired_keys = [
-                key for key, bucket in self._buckets.items()
+                key
+                for key, bucket in self._buckets.items()
                 if current_time - bucket.last_update > max_age_seconds
             ]
             for key in expired_keys:
@@ -268,7 +268,7 @@ class AdaptiveRateLimiter(RateLimiter):
         self,
         config: Optional[RateLimitConfig] = None,
         low_load_multiplier: float = 1.5,
-        high_load_multiplier: float = 0.5
+        high_load_multiplier: float = 0.5,
     ):
         super().__init__(config)
         self.low_load_multiplier = low_load_multiplier
@@ -280,9 +280,7 @@ class AdaptiveRateLimiter(RateLimiter):
         self._current_load = max(0.0, min(1.0, load))
 
     async def check_rate_limit(
-        self,
-        source_id: str,
-        request_size_bytes: int = 0
+        self, source_id: str, request_size_bytes: int = 0
     ) -> RateLimitResult:
         """Check rate limit with adaptive adjustment"""
         # Adjust config based on load
@@ -310,16 +308,14 @@ class DistributedRateLimiter:
         self,
         redis_client,
         config: Optional[RateLimitConfig] = None,
-        key_prefix: str = "aiobs:ratelimit:"
+        key_prefix: str = "aiobs:ratelimit:",
     ):
         self.redis = redis_client
         self.config = config or RateLimitConfig()
         self.key_prefix = key_prefix
 
     async def check_rate_limit(
-        self,
-        source_id: str,
-        request_size_bytes: int = 0
+        self, source_id: str, request_size_bytes: int = 0
     ) -> RateLimitResult:
         """Check rate limit using Redis"""
         key = f"{self.key_prefix}{self._hash_source_id(source_id)}"
@@ -341,14 +337,14 @@ class DistributedRateLimiter:
                 remaining_bytes=0,
                 reset_time=datetime.utcnow() + timedelta(seconds=60 - (current_time % 60)),
                 retry_after_seconds=60 - (current_time % 60),
-                reason="Rate limit exceeded"
+                reason="Rate limit exceeded",
             )
 
         return RateLimitResult(
             allowed=True,
             remaining_requests=self.config.requests_per_minute - current_count,
             remaining_bytes=self.config.bytes_per_minute,
-            reset_time=datetime.utcnow() + timedelta(seconds=60 - (current_time % 60))
+            reset_time=datetime.utcnow() + timedelta(seconds=60 - (current_time % 60)),
         )
 
     def _hash_source_id(self, source_id: str) -> str:

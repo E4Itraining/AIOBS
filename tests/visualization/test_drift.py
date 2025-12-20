@@ -2,19 +2,21 @@
 AIOBS Drift Detection Tests
 Comprehensive tests for data drift, concept drift, and prediction drift
 """
-import pytest
+
 import math
 import random
 import statistics
-from datetime import datetime, timedelta
-from typing import List, Dict, Tuple, Optional
 from dataclasses import dataclass
+from datetime import datetime, timedelta
 from enum import Enum
+from typing import Dict, List, Optional, Tuple
 
+import pytest
 
 # =============================================================================
 # Drift Detection Implementations for Testing
 # =============================================================================
+
 
 class DriftType(Enum):
     DATA = "data"
@@ -39,9 +41,7 @@ class DriftDetector:
         self.threshold = threshold
 
     def kolmogorov_smirnov_test(
-        self,
-        reference: List[float],
-        current: List[float]
+        self, reference: List[float], current: List[float]
     ) -> Tuple[float, float]:
         """
         Kolmogorov-Smirnov test for distribution comparison
@@ -78,10 +78,7 @@ class DriftDetector:
         return max_diff, p_value
 
     def population_stability_index(
-        self,
-        reference: List[float],
-        current: List[float],
-        bins: int = 10
+        self, reference: List[float], current: List[float], bins: int = 10
     ) -> float:
         """
         Population Stability Index (PSI) for distribution comparison
@@ -128,10 +125,7 @@ class DriftDetector:
         return psi
 
     def jensen_shannon_divergence(
-        self,
-        reference: List[float],
-        current: List[float],
-        bins: int = 10
+        self, reference: List[float], current: List[float], bins: int = 10
     ) -> float:
         """
         Jensen-Shannon Divergence - symmetric measure of distribution difference
@@ -170,11 +164,7 @@ class DriftDetector:
         js = 0.5 * kl_div(p, m) + 0.5 * kl_div(q, m)
         return min(1.0, math.sqrt(js))  # Return square root for interpretability
 
-    def wasserstein_distance(
-        self,
-        reference: List[float],
-        current: List[float]
-    ) -> float:
+    def wasserstein_distance(self, reference: List[float], current: List[float]) -> float:
         """
         Wasserstein (Earth Mover's) distance between distributions
         Also known as Kantorovich-Rubinstein distance
@@ -210,10 +200,7 @@ class DriftDetector:
         return distance / val_range  # Normalized
 
     def detect_concept_drift(
-        self,
-        predictions: List[float],
-        labels: List[float],
-        window_size: int = 50
+        self, predictions: List[float], labels: List[float], window_size: int = 50
     ) -> Tuple[bool, float]:
         """
         Detect concept drift using error rate monitoring (ADWIN-like)
@@ -226,8 +213,8 @@ class DriftDetector:
         errors = [abs(p - l) for p, l in zip(predictions, labels)]
 
         # Split into windows
-        first_half = errors[:len(errors) // 2]
-        second_half = errors[len(errors) // 2:]
+        first_half = errors[: len(errors) // 2]
+        second_half = errors[len(errors) // 2 :]
 
         # Compare error rates
         first_rate = statistics.mean(first_half)
@@ -242,9 +229,7 @@ class DriftDetector:
         return drift_score > self.threshold, drift_score
 
     def detect_prediction_drift(
-        self,
-        reference_preds: List[float],
-        current_preds: List[float]
+        self, reference_preds: List[float], current_preds: List[float]
     ) -> DriftResult:
         """
         Detect prediction drift using multiple metrics
@@ -267,14 +252,15 @@ class DriftDetector:
                 "ks_statistic": ks_stat,
                 "ks_pvalue": ks_pvalue,
                 "psi": psi,
-                "js_divergence": js_div
-            }
+                "js_divergence": js_div,
+            },
         )
 
 
 # =============================================================================
 # Drift Detection Tests
 # =============================================================================
+
 
 class TestKolmogorovSmirnovTest:
     """Tests for KS test implementation"""
@@ -437,9 +423,7 @@ class TestJensenShannonDivergence:
         js_medium = detector.jensen_shannon_divergence(
             ref, [random.gauss(2, 1) for _ in range(300)]
         )
-        js_large = detector.jensen_shannon_divergence(
-            ref, [random.gauss(5, 1) for _ in range(300)]
-        )
+        js_large = detector.jensen_shannon_divergence(ref, [random.gauss(5, 1) for _ in range(300)])
 
         assert js_small < js_medium < js_large
 
@@ -471,12 +455,8 @@ class TestWassersteinDistance:
         random.seed(42)
         ref = [random.gauss(0, 1) for _ in range(300)]
 
-        w_small = detector.wasserstein_distance(
-            ref, [random.gauss(1, 1) for _ in range(300)]
-        )
-        w_large = detector.wasserstein_distance(
-            ref, [random.gauss(3, 1) for _ in range(300)]
-        )
+        w_small = detector.wasserstein_distance(ref, [random.gauss(1, 1) for _ in range(300)])
+        w_large = detector.wasserstein_distance(ref, [random.gauss(3, 1) for _ in range(300)])
 
         assert w_small < w_large
 
@@ -569,6 +549,7 @@ class TestPredictionDriftDetection:
 # Multi-feature Drift Detection Tests
 # =============================================================================
 
+
 class TestMultiFeatureDrift:
     """Tests for multi-feature drift scenarios"""
 
@@ -590,9 +571,7 @@ class TestMultiFeatureDrift:
 
         drifted_features = []
         for name in features_ref:
-            _, pvalue = detector.kolmogorov_smirnov_test(
-                features_ref[name], features_curr[name]
-            )
+            _, pvalue = detector.kolmogorov_smirnov_test(features_ref[name], features_curr[name])
             if pvalue < 0.05:
                 drifted_features.append(name)
 
@@ -629,17 +608,22 @@ class TestMultiFeatureDrift:
 # Drift Severity Classification Tests
 # =============================================================================
 
+
 class TestDriftSeverity:
     """Tests for drift severity classification"""
 
-    @pytest.mark.parametrize("psi,expected_severity", [
-        (0.05, "none"),
-        (0.15, "moderate"),
-        (0.30, "severe"),
-        (0.50, "critical"),
-    ])
+    @pytest.mark.parametrize(
+        "psi,expected_severity",
+        [
+            (0.05, "none"),
+            (0.15, "moderate"),
+            (0.30, "severe"),
+            (0.50, "critical"),
+        ],
+    )
     def test_psi_severity_classification(self, psi, expected_severity):
         """PSI values should map to correct severity"""
+
         def classify_psi_severity(psi_value: float) -> str:
             if psi_value < 0.1:
                 return "none"
@@ -657,6 +641,7 @@ class TestDriftSeverity:
 # Continuous Drift Monitoring Tests
 # =============================================================================
 
+
 class TestContinuousDriftMonitoring:
     """Tests for continuous drift monitoring scenarios"""
 
@@ -666,17 +651,16 @@ class TestContinuousDriftMonitoring:
         random.seed(42)
 
         # Simulate streaming data with drift at t=500
-        data_stream = (
-            [random.gauss(0, 1) for _ in range(500)] +  # Before drift
-            [random.gauss(2, 1) for _ in range(500)]     # After drift
-        )
+        data_stream = [random.gauss(0, 1) for _ in range(500)] + [  # Before drift
+            random.gauss(2, 1) for _ in range(500)
+        ]  # After drift
 
         window_size = 100
         drift_detected_at = None
 
         for i in range(window_size, len(data_stream) - window_size, 50):
-            ref_window = data_stream[i - window_size:i]
-            curr_window = data_stream[i:i + window_size]
+            ref_window = data_stream[i - window_size : i]
+            curr_window = data_stream[i : i + window_size]
 
             _, pvalue = detector.kolmogorov_smirnov_test(ref_window, curr_window)
 
@@ -696,8 +680,8 @@ class TestContinuousDriftMonitoring:
         data = [random.gauss(i / 500, 1) for i in range(n_points)]  # Mean: 0 -> 2
 
         # Compare first quarter vs last quarter
-        first_quarter = data[:n_points // 4]
-        last_quarter = data[-n_points // 4:]
+        first_quarter = data[: n_points // 4]
+        last_quarter = data[-n_points // 4 :]
 
         _, pvalue = detector.kolmogorov_smirnov_test(first_quarter, last_quarter)
 
@@ -713,10 +697,8 @@ class TestContinuousDriftMonitoring:
         n_periods = 10
 
         # Two consecutive periods should be similar
-        period1 = [math.sin(2 * math.pi * i / period) + random.gauss(0, 0.1)
-                   for i in range(period)]
-        period2 = [math.sin(2 * math.pi * i / period) + random.gauss(0, 0.1)
-                   for i in range(period)]
+        period1 = [math.sin(2 * math.pi * i / period) + random.gauss(0, 0.1) for i in range(period)]
+        period2 = [math.sin(2 * math.pi * i / period) + random.gauss(0, 0.1) for i in range(period)]
 
         _, pvalue = detector.kolmogorov_smirnov_test(period1, period2)
 
@@ -726,6 +708,7 @@ class TestContinuousDriftMonitoring:
 # =============================================================================
 # Edge Cases and Robustness Tests
 # =============================================================================
+
 
 class TestDriftEdgeCases:
     """Edge cases and robustness tests"""

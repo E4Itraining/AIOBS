@@ -3,7 +3,7 @@ AIOBS i18n API Router
 Provides language-related API endpoints
 """
 
-from fastapi import APIRouter, Response, Request
+from fastapi import APIRouter, Request, Response
 from fastapi.responses import JSONResponse
 
 from ..i18n import SUPPORTED_LANGUAGES, get_translator
@@ -21,19 +21,16 @@ async def get_languages():
     """
     languages = [
         {
-            'code': code,
-            'name': info['name'],
-            'native': info['native'],
-            'flag': info['flag'],
-            'rtl': info['rtl']
+            "code": code,
+            "name": info["name"],
+            "native": info["native"],
+            "flag": info["flag"],
+            "rtl": info["rtl"],
         }
         for code, info in SUPPORTED_LANGUAGES.items()
     ]
 
-    return {
-        'success': True,
-        'data': languages
-    }
+    return {"success": True, "data": languages}
 
 
 @router.get("/translations/{lang}")
@@ -50,22 +47,13 @@ async def get_translations(lang: str):
     if lang not in SUPPORTED_LANGUAGES:
         return JSONResponse(
             status_code=400,
-            content={
-                'success': False,
-                'error': f'Language {lang} is not supported'
-            }
+            content={"success": False, "error": f"Language {lang} is not supported"},
         )
 
     translator = get_translator()
     translations = translator.get_all(lang)
 
-    return {
-        'success': True,
-        'data': {
-            'language': lang,
-            'translations': translations
-        }
-    }
+    return {"success": True, "data": {"language": lang, "translations": translations}}
 
 
 @router.post("/set-language/{lang}")
@@ -82,27 +70,24 @@ async def set_language(lang: str, response: Response):
     if lang not in SUPPORTED_LANGUAGES:
         return JSONResponse(
             status_code=400,
-            content={
-                'success': False,
-                'error': f'Language {lang} is not supported'
-            }
+            content={"success": False, "error": f"Language {lang} is not supported"},
         )
 
     # Set cookie (expires in 1 year)
     response.set_cookie(
-        key='aiobs_lang',
+        key="aiobs_lang",
         value=lang,
         max_age=365 * 24 * 60 * 60,  # 1 year
         httponly=False,  # Allow JS access
-        samesite='lax'
+        samesite="lax",
     )
 
     return {
-        'success': True,
-        'data': {
-            'language': lang,
-            'message': f'Language set to {SUPPORTED_LANGUAGES[lang]["name"]}'
-        }
+        "success": True,
+        "data": {
+            "language": lang,
+            "message": f'Language set to {SUPPORTED_LANGUAGES[lang]["name"]}',
+        },
     }
 
 
@@ -114,12 +99,9 @@ async def get_current_language(request: Request):
     Returns:
         Current language code and info
     """
-    lang = getattr(request.state, 'language', 'en')
+    lang = getattr(request.state, "language", "en")
 
     return {
-        'success': True,
-        'data': {
-            'code': lang,
-            **SUPPORTED_LANGUAGES.get(lang, SUPPORTED_LANGUAGES['en'])
-        }
+        "success": True,
+        "data": {"code": lang, **SUPPORTED_LANGUAGES.get(lang, SUPPORTED_LANGUAGES["en"])},
     }

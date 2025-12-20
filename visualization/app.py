@@ -2,24 +2,33 @@
 AIOBS Visualization Platform
 FastAPI Application - Lightweight, Modern, Interactive
 """
-from fastapi import FastAPI, Request
-from fastapi.staticfiles import StaticFiles
-from fastapi.templating import Jinja2Templates
-from fastapi.middleware.cors import CORSMiddleware
-from fastapi.responses import HTMLResponse, PlainTextResponse
+
+import logging
 import os
 import time
-import logging
-import psutil
 
-from .routers import (
-    dashboard_router, metrics_router, profiles_router, i18n_router,
-    realtime_router, assistant_router, ingestion_router, monitoring_router
-)
-from .i18n import I18nMiddleware, SUPPORTED_LANGUAGES, get_translator
+import psutil
+from fastapi import FastAPI, Request
+from fastapi.middleware.cors import CORSMiddleware
+from fastapi.responses import HTMLResponse, PlainTextResponse
+from fastapi.staticfiles import StaticFiles
+from fastapi.templating import Jinja2Templates
+
+from .i18n import SUPPORTED_LANGUAGES, I18nMiddleware, get_translator
 from .i18n.middleware import create_i18n_context
+from .routers import (
+    assistant_router,
+    dashboard_router,
+    i18n_router,
+    ingestion_router,
+    metrics_router,
+    monitoring_router,
+    profiles_router,
+    realtime_router,
+)
+from .routers.ingestion import shutdown as ingestion_shutdown
+from .routers.ingestion import startup as ingestion_startup
 from .routers.realtime import start_background_tasks, stop_background_tasks
-from .routers.ingestion import startup as ingestion_startup, shutdown as ingestion_shutdown
 
 # Configure logging
 logger = logging.getLogger("aiobs.app")
@@ -37,6 +46,7 @@ AIOBS provides unified observability for AI systems with:
 - **Unified Monitoring**: Single pane of glass for all AI operations
 """
 APP_VERSION = "1.0.0"
+
 
 # Metrics state for tracking
 class MetricsState:
@@ -59,6 +69,7 @@ class MetricsState:
 
     def uptime(self) -> float:
         return time.time() - self.start_time
+
 
 metrics_state = MetricsState()
 
@@ -112,6 +123,7 @@ app.include_router(monitoring_router)
 # Application Lifecycle Events
 # =============================================================================
 
+
 @app.on_event("startup")
 async def startup_event():
     """Start background tasks and services on application startup"""
@@ -130,6 +142,7 @@ async def shutdown_event():
 # HTML Routes (Server-Side Rendered Pages)
 # ============================================================================
 
+
 @app.get("/", response_class=HTMLResponse)
 async def index(request: Request):
     """Main dashboard page"""
@@ -141,8 +154,8 @@ async def index(request: Request):
             "title": APP_TITLE,
             "version": APP_VERSION,
             "active_page": "dashboard",
-            **i18n
-        }
+            **i18n,
+        },
     )
 
 
@@ -157,82 +170,85 @@ async def profile_dashboard(request: Request, profile_id: str):
             "name": "ML Engineer",
             "description": "Drift detection, cognitive metrics, reliability analysis et performance ML",
             "color": "#6366f1",
-            "icon": "brain"
+            "icon": "brain",
         },
         "tech_devops": {
             "name": "DevOps Engineer",
             "description": "SLOs/SLIs, latences, uptime et monitoring infrastructure",
             "color": "#3b82f6",
-            "icon": "server"
+            "icon": "server",
         },
         "tech_data_scientist": {
             "name": "Data Scientist",
             "description": "Data quality, feature analysis, experiments et statistiques",
             "color": "#8b5cf6",
-            "icon": "database"
+            "icon": "database",
         },
         "business_product": {
             "name": "Product Owner",
             "description": "AI features, user experience, adoption et impact business",
             "color": "#f59e0b",
-            "icon": "zap"
+            "icon": "zap",
         },
         "business_executive": {
             "name": "Executive",
             "description": "KPIs stratégiques, ROI, conformité et vue d'ensemble",
             "color": "#10b981",
-            "icon": "briefcase"
+            "icon": "briefcase",
         },
         "security_soc": {
             "name": "Security Analyst",
             "description": "Posture sécurité, menaces, incidents et vulnérabilités",
             "color": "#ef4444",
-            "icon": "shield-alert"
+            "icon": "shield-alert",
         },
         "compliance_legal": {
             "name": "Compliance Officer",
             "description": "Conformité réglementaire, audit trail et documentation",
             "color": "#f59e0b",
-            "icon": "scale"
+            "icon": "scale",
         },
         "sustainability_esg": {
             "name": "ESG Manager",
             "description": "Empreinte carbone, consommation énergétique et reporting ESG",
             "color": "#059669",
-            "icon": "leaf"
+            "icon": "leaf",
         },
         "governance_dsi": {
             "name": "DSI / CIO",
             "description": "Gouvernance IT stratégique, portefeuille IA, budget et transformation digitale",
             "color": "#6366f1",
-            "icon": "landmark"
+            "icon": "landmark",
         },
         "governance_rsi": {
             "name": "RSI / IT Manager",
             "description": "Gestion opérationnelle IT, systèmes IA, projets et ressources équipe",
             "color": "#3b82f6",
-            "icon": "settings"
+            "icon": "settings",
         },
         "privacy_dpo": {
             "name": "Data Protection Officer",
             "description": "Protection des données, GDPR, registre des traitements et droits des personnes",
             "color": "#8b5cf6",
-            "icon": "user-check"
+            "icon": "user-check",
         },
         "legal_counsel": {
             "name": "Legal Counsel",
             "description": "Risques juridiques IA, contrats, propriété intellectuelle et veille réglementaire",
             "color": "#0ea5e9",
-            "icon": "scale"
-        }
+            "icon": "scale",
+        },
     }
 
-    meta = PROFILE_META.get(profile_id, {
-        "name": profile_id.replace("_", " ").title(),
-        "description": "Tableau de bord personnalisé",
-        "color": "#6366f1",
-        "icon": "layout-dashboard"
-    })
+    meta = PROFILE_META.get(
+        profile_id,
+        {
+            "name": profile_id.replace("_", " ").title(),
+            "description": "Tableau de bord personnalisé",
+            "color": "#6366f1",
+            "icon": "layout-dashboard",
+        },
+    )
 
     return templates.TemplateResponse(
         "dashboard.html",
@@ -244,8 +260,8 @@ async def profile_dashboard(request: Request, profile_id: str):
             "profile_description": meta["description"],
             "profile_color": meta["color"],
             "profile_icon": meta["icon"],
-            **i18n
-        }
+            **i18n,
+        },
     )
 
 
@@ -259,8 +275,8 @@ async def unified_view(request: Request):
             "request": request,
             "title": f"{APP_TITLE} - {i18n['t']('nav.unified_view')}",
             "active_page": "unified",
-            **i18n
-        }
+            **i18n,
+        },
     )
 
 
@@ -274,8 +290,8 @@ async def causal_view(request: Request):
             "request": request,
             "title": f"{APP_TITLE} - {i18n['t']('causal.title')}",
             "active_page": "causal",
-            **i18n
-        }
+            **i18n,
+        },
     )
 
 
@@ -289,8 +305,8 @@ async def impact_view(request: Request):
             "request": request,
             "title": f"{APP_TITLE} - {i18n['t']('causal.impact')}",
             "active_page": "impact",
-            **i18n
-        }
+            **i18n,
+        },
     )
 
 
@@ -304,8 +320,8 @@ async def executive_view(request: Request):
             "request": request,
             "title": f"{APP_TITLE} - Executive Dashboard",
             "active_page": "executive",
-            **i18n
-        }
+            **i18n,
+        },
     )
 
 
@@ -319,8 +335,8 @@ async def compliance_view(request: Request):
             "request": request,
             "title": f"{APP_TITLE} - Compliance & Governance",
             "active_page": "compliance",
-            **i18n
-        }
+            **i18n,
+        },
     )
 
 
@@ -334,8 +350,8 @@ async def greenops_view(request: Request):
             "request": request,
             "title": f"{APP_TITLE} - GreenOps Sustainability",
             "active_page": "greenops",
-            **i18n
-        }
+            **i18n,
+        },
     )
 
 
@@ -349,8 +365,8 @@ async def finops_view(request: Request):
             "request": request,
             "title": f"{APP_TITLE} - FinOps Cost Management",
             "active_page": "finops",
-            **i18n
-        }
+            **i18n,
+        },
     )
 
 
@@ -364,8 +380,8 @@ async def monitoring_view(request: Request):
             "request": request,
             "title": f"{APP_TITLE} - Live Monitoring",
             "active_page": "monitoring",
-            **i18n
-        }
+            **i18n,
+        },
     )
 
 
@@ -379,8 +395,8 @@ async def security_view(request: Request):
             "request": request,
             "title": f"{APP_TITLE} - Security Center",
             "active_page": "security",
-            **i18n
-        }
+            **i18n,
+        },
     )
 
 
@@ -394,8 +410,8 @@ async def onboarding_view(request: Request):
             "request": request,
             "title": f"{APP_TITLE} - Welcome",
             "active_page": "onboarding",
-            **i18n
-        }
+            **i18n,
+        },
     )
 
 
@@ -409,8 +425,8 @@ async def personas_view(request: Request):
             "request": request,
             "title": f"{APP_TITLE} - Parcours Utilisateurs",
             "active_page": "personas",
-            **i18n
-        }
+            **i18n,
+        },
     )
 
 
@@ -424,8 +440,8 @@ async def global_view(request: Request):
             "request": request,
             "title": f"{APP_TITLE} - Vue Globale",
             "active_page": "global",
-            **i18n
-        }
+            **i18n,
+        },
     )
 
 
@@ -439,8 +455,8 @@ async def dirigeant_view(request: Request):
             "request": request,
             "title": f"{APP_TITLE} - Vue Dirigeant",
             "active_page": "dirigeant",
-            **i18n
-        }
+            **i18n,
+        },
     )
 
 
@@ -454,8 +470,8 @@ async def tech_view(request: Request):
             "request": request,
             "title": f"{APP_TITLE} - Vue Tech (DSI/RSSI)",
             "active_page": "tech",
-            **i18n
-        }
+            **i18n,
+        },
     )
 
 
@@ -469,8 +485,8 @@ async def juridique_view(request: Request):
             "request": request,
             "title": f"{APP_TITLE} - Conformité Juridique",
             "active_page": "juridique",
-            **i18n
-        }
+            **i18n,
+        },
     )
 
 
@@ -484,14 +500,15 @@ async def financier_view(request: Request):
             "request": request,
             "title": f"{APP_TITLE} - Vue Financier",
             "active_page": "financier",
-            **i18n
-        }
+            **i18n,
+        },
     )
 
 
 # ============================================================================
 # Request tracking middleware
 # ============================================================================
+
 
 @app.middleware("http")
 async def track_requests(request: Request, call_next):
@@ -507,19 +524,17 @@ async def track_requests(request: Request, call_next):
 # Health Check
 # ============================================================================
 
+
 @app.get("/health")
 async def health_check():
     """Health check endpoint"""
-    return {
-        "status": "healthy",
-        "version": APP_VERSION,
-        "service": "aiobs-visualization"
-    }
+    return {"status": "healthy", "version": APP_VERSION, "service": "aiobs-visualization"}
 
 
 # ============================================================================
 # Prometheus-compatible Metrics Endpoint
 # ============================================================================
+
 
 @app.get("/metrics", response_class=PlainTextResponse)
 async def prometheus_metrics():
@@ -551,20 +566,22 @@ async def prometheus_metrics():
     ]
 
     if memory_info:
-        metrics_lines.extend([
-            "",
-            "# HELP aiobs_visualization_memory_rss_bytes Resident set size",
-            "# TYPE aiobs_visualization_memory_rss_bytes gauge",
-            f"aiobs_visualization_memory_rss_bytes {memory_info.rss}",
-            "",
-            "# HELP aiobs_visualization_memory_vms_bytes Virtual memory size",
-            "# TYPE aiobs_visualization_memory_vms_bytes gauge",
-            f"aiobs_visualization_memory_vms_bytes {memory_info.vms}",
-            "",
-            "# HELP aiobs_visualization_cpu_percent CPU usage percentage",
-            "# TYPE aiobs_visualization_cpu_percent gauge",
-            f"aiobs_visualization_cpu_percent {cpu_percent:.2f}",
-        ])
+        metrics_lines.extend(
+            [
+                "",
+                "# HELP aiobs_visualization_memory_rss_bytes Resident set size",
+                "# TYPE aiobs_visualization_memory_rss_bytes gauge",
+                f"aiobs_visualization_memory_rss_bytes {memory_info.rss}",
+                "",
+                "# HELP aiobs_visualization_memory_vms_bytes Virtual memory size",
+                "# TYPE aiobs_visualization_memory_vms_bytes gauge",
+                f"aiobs_visualization_memory_vms_bytes {memory_info.vms}",
+                "",
+                "# HELP aiobs_visualization_cpu_percent CPU usage percentage",
+                "# TYPE aiobs_visualization_cpu_percent gauge",
+                f"aiobs_visualization_cpu_percent {cpu_percent:.2f}",
+            ]
+        )
 
     return "\n".join(metrics_lines) + "\n"
 
@@ -572,6 +589,7 @@ async def prometheus_metrics():
 # ============================================================================
 # Entry Point
 # ============================================================================
+
 
 def create_app() -> FastAPI:
     """Factory function for creating the application"""
