@@ -1218,3 +1218,285 @@
         display: none !important;
     }
 }
+
+/* ========== ACCESSIBILITY ENHANCEMENTS (WCAG 2.1 AA) ========== */
+
+/* Skip to Content Link (WCAG 2.4.1) */
+.skip-to-content {
+    position: absolute;
+    top: -100px;
+    left: 50%;
+    transform: translateX(-50%);
+    background: var(--color-primary);
+    color: var(--color-white, #fff);
+    padding: var(--space-3) var(--space-5);
+    border-radius: var(--radius-md);
+    font-weight: 600;
+    font-size: 0.875rem;
+    text-decoration: none;
+    z-index: 10000;
+    transition: top 0.2s ease;
+    box-shadow: var(--shadow-lg);
+}
+
+.skip-to-content:focus {
+    top: var(--space-4);
+    outline: 3px solid var(--color-primary);
+    outline-offset: 2px;
+}
+
+/* Focus Indicators (WCAG 2.4.7) */
+*:focus {
+    outline: none;
+}
+
+*:focus-visible {
+    outline: 3px solid var(--color-primary);
+    outline-offset: 2px;
+    border-radius: var(--radius-sm);
+}
+
+/* Interactive Elements Focus */
+a:focus-visible,
+button:focus-visible,
+input:focus-visible,
+select:focus-visible,
+textarea:focus-visible,
+[tabindex]:focus-visible {
+    outline: 3px solid var(--color-primary);
+    outline-offset: 2px;
+    box-shadow: 0 0 0 4px rgba(212, 160, 23, 0.2);
+}
+
+/* Navigation Links Focus */
+.nav-link:focus-visible {
+    outline: 2px solid var(--color-primary);
+    outline-offset: -2px;
+    background: var(--bg-hover);
+}
+
+/* Button Focus States */
+.btn:focus-visible {
+    outline: 3px solid var(--color-primary);
+    outline-offset: 2px;
+    box-shadow: 0 0 0 4px rgba(212, 160, 23, 0.3);
+}
+
+.btn-primary:focus-visible {
+    outline-color: var(--color-white, #fff);
+    box-shadow: 0 0 0 4px var(--color-primary);
+}
+
+/* Card Focus States */
+.card:focus-visible,
+.kpi-card:focus-visible {
+    outline: 3px solid var(--color-primary);
+    outline-offset: 2px;
+    box-shadow: var(--shadow-lg), 0 0 0 4px rgba(212, 160, 23, 0.2);
+}
+
+/* Form Input Focus */
+input:focus-visible,
+textarea:focus-visible,
+select:focus-visible {
+    border-color: var(--color-primary);
+    box-shadow: 0 0 0 3px rgba(212, 160, 23, 0.2);
+}
+
+/* Search Input Focus */
+.search-input:focus-visible {
+    border-color: var(--color-primary);
+    box-shadow: 0 0 0 3px rgba(212, 160, 23, 0.2);
+}
+
+/* Sidebar Close Button Focus */
+.sidebar-close:focus-visible {
+    outline: 2px solid var(--color-primary);
+    outline-offset: 2px;
+}
+
+/* Menu Toggle Focus */
+.menu-toggle:focus-visible {
+    outline: 2px solid var(--color-primary);
+    outline-offset: 2px;
+}
+
+/* Accordion Header Focus */
+.nav-accordion-header:focus-visible {
+    outline: 2px solid var(--color-primary);
+    outline-offset: -2px;
+    background: var(--bg-hover);
+}
+
+/* Modal Focus Trap Styles */
+.tour-overlay:focus,
+.help-panel:focus,
+.chatbot-panel:focus {
+    outline: none;
+}
+
+/* High Contrast Mode Support */
+@media (prefers-contrast: high) {
+    *:focus-visible {
+        outline-width: 4px;
+        outline-color: currentColor;
+    }
+
+    .btn:focus-visible {
+        outline-width: 4px;
+    }
+}
+
+/* Reduced Motion Support */
+@media (prefers-reduced-motion: reduce) {
+    .skip-to-content {
+        transition: none;
+    }
+
+    *:focus-visible {
+        transition: none;
+    }
+}
+
+/* ========== EMPTY STATES ========== */
+.empty-state {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: var(--space-8);
+    text-align: center;
+    background: var(--bg-card);
+    border-radius: var(--radius-lg);
+    border: 2px dashed var(--border-color);
+}
+
+.empty-state-icon {
+    width: 64px;
+    height: 64px;
+    color: var(--text-tertiary);
+    margin-bottom: var(--space-4);
+    opacity: 0.5;
+}
+
+.empty-state-title {
+    font-size: 1.125rem;
+    font-weight: 600;
+    color: var(--text-primary);
+    margin-bottom: var(--space-2);
+}
+
+.empty-state-description {
+    font-size: 0.875rem;
+    color: var(--text-secondary);
+    max-width: 300px;
+    margin-bottom: var(--space-5);
+}
+
+.empty-state-action {
+    display: inline-flex;
+    align-items: center;
+    gap: var(--space-2);
+}
+
+/* Context-specific Empty States */
+.empty-state--no-alerts {
+    border-color: var(--color-success);
+    background: linear-gradient(180deg, rgba(16, 185, 129, 0.05) 0%, var(--bg-card) 100%);
+}
+
+.empty-state--no-alerts .empty-state-icon {
+    color: var(--color-success);
+    opacity: 1;
+}
+
+.empty-state--no-data {
+    border-color: var(--color-warning);
+}
+
+.empty-state--error {
+    border-color: var(--color-danger);
+    background: linear-gradient(180deg, rgba(239, 68, 68, 0.05) 0%, var(--bg-card) 100%);
+}
+
+/* ========== BUTTON CONSISTENCY ========== */
+/* Base Button Reset */
+.btn,
+.persona-select-btn,
+.feature-try,
+.suggestion-chip,
+.chat-action-btn,
+.language-option {
+    font-family: var(--font-body);
+    font-weight: 500;
+    cursor: pointer;
+    border: none;
+    transition: all var(--transition-fast);
+}
+
+/* Unified Button Sizes */
+.btn--sm,
+.suggestion-chip,
+.chat-action-btn {
+    padding: var(--space-2) var(--space-3);
+    font-size: 0.75rem;
+    border-radius: var(--radius-sm);
+}
+
+.btn--md,
+.btn,
+.persona-select-btn,
+.feature-try {
+    padding: var(--space-3) var(--space-4);
+    font-size: 0.875rem;
+    border-radius: var(--radius-md);
+}
+
+.btn--lg {
+    padding: var(--space-4) var(--space-6);
+    font-size: 1rem;
+    border-radius: var(--radius-lg);
+}
+
+/* Unified Button Colors */
+.btn-primary,
+.persona-select-btn.active,
+.feature-try {
+    background: var(--color-primary);
+    color: var(--text-on-primary, #1A1A2E);
+}
+
+.btn-primary:hover,
+.persona-select-btn.active:hover,
+.feature-try:hover {
+    background: var(--color-primary-dark, #B8890F);
+    transform: translateY(-1px);
+}
+
+.btn-secondary,
+.persona-select-btn:not(.active) {
+    background: var(--bg-elevated);
+    color: var(--text-primary);
+    border: 1px solid var(--border-color);
+}
+
+.btn-secondary:hover,
+.persona-select-btn:not(.active):hover {
+    background: var(--bg-hover);
+    border-color: var(--color-primary);
+}
+
+/* Disabled Button States */
+.btn:disabled,
+.persona-select-btn:disabled,
+.feature-try:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+    transform: none;
+}
+
+.btn:disabled:hover,
+.persona-select-btn:disabled:hover {
+    transform: none;
+    background: inherit;
+}
