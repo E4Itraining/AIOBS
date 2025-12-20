@@ -1,0 +1,276 @@
+# AIOBS - Continuous Integration & Testing Pipeline
+# Runs on push to main/develop and on pull requests
+
+name: CI/CD Pipeline
+
+on:
+  push:
+    branches: [main, develop, 'feature/**']
+  pull_request:
+    branches: [main, develop]
+  schedule:
+    # Run daily at 6 AM UTC for continuous monitoring
+    - cron: '0 6 * * *'
+  workflow_dispatch:
+    inputs:
+      test_suite:
+        description: 'Test suite to run'
+        required: false
+        default: 'all'
+        type: choice
+        options:
+          - all
+          - unit
+          - integration
+          - security
+          - drift
+          - stress
+
+env:
+  PYTHON_VERSION: '3.11'
+  NODE_VERSION: '20'
+
+jobs:
+  # ===========================================================================
+  # Python Tests (pytest)
+  # ===========================================================================
+  python-tests:
+    name: Python Tests
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        python-version: ['3.10', '3.11', '3.12']
+      fail-fast: false
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Set up Python ${{ matrix.python-version }}
+        uses: actions/setup-python@v5
+        with:
+          python-version: ${{ matrix.python-version }}
+          cache: 'pip'
+
+      - name: Install dependencies
+        run: |
+          python -m pip install --upgrade pip
+          pip install -e ".[test]"
+
+      - name: Run pytest (all tests)
+        if: github.event.inputs.test_suite == '' || github.event.inputs.test_suite == 'all'
+        run: |
+          python -m pytest tests/ \
+            -v \
+            --tb=short \
+            --cov=visualization \
+            --cov-report=xml \
+            --cov-report=html \
+            --junitxml=test_reports/pytest-results-${{ matrix.python-version }}.xml
+
+      - name: Run pytest (specific suite)
+        if: github.event.inputs.test_suite != '' && github.event.inputs.test_suite != 'all'
+        run: |
+          python -m pytest tests/ \
+            -v \
+            --tb=short \
+            -m "${{ github.event.inputs.test_suite }}" \
+            --junitxml=test_reports/pytest-results-${{ matrix.python-version }}.xml
+
+      - name: Upload coverage to Codecov
+        if: matrix.python-version == '3.11'
+        uses: codecov/codecov-action@v4
+        with:
+          files: ./coverage.xml
+          flags: python
+          name: python-coverage
+          fail_ci_if_error: false
+
+      - name: Upload test results
+        uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: pytest-results-${{ matrix.python-version }}
+          path: |
+            test_reports/
+            htmlcov/
+          retention-days: 30
+
+  # ===========================================================================
+  # TypeScript Tests (Jest)
+  # ===========================================================================
+  typescript-tests:
+    name: TypeScript Tests
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+          cache: 'npm'
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Run Jest tests
+        run: npm run test:ci
+
+      - name: Upload coverage to Codecov
+        uses: codecov/codecov-action@v4
+        with:
+          files: ./coverage/lcov.info
+          flags: typescript
+          name: typescript-coverage
+          fail_ci_if_error: false
+
+      - name: Upload test results
+        uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: jest-results
+          path: |
+            coverage/
+            junit.xml
+          retention-days: 30
+
+  # ===========================================================================
+  # Linting & Code Quality
+  # ===========================================================================
+  code-quality:
+    name: Code Quality
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: ${{ env.PYTHON_VERSION }}
+          cache: 'pip'
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+          cache: 'npm'
+
+      - name: Install Python linters
+        run: |
+          pip install black isort flake8 mypy
+
+      - name: Install Node dependencies
+        run: npm ci
+
+      - name: Check Python formatting (black)
+        run: black --check --diff visualization/ tests/
+
+      - name: Check Python imports (isort)
+        run: isort --check-only --diff visualization/ tests/
+
+      - name: Python linting (flake8)
+        run: flake8 visualization/ tests/ --max-line-length=100 --ignore=E501,W503
+
+      - name: TypeScript linting (ESLint)
+        run: npm run lint
+
+  # ===========================================================================
+  # Security Scanning
+  # ===========================================================================
+  security-tests:
+    name: Security Tests
+    runs-on: ubuntu-latest
+    if: github.event_name == 'pull_request' || github.event.inputs.test_suite == 'security'
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: ${{ env.PYTHON_VERSION }}
+          cache: 'pip'
+
+      - name: Install dependencies
+        run: |
+          pip install -e ".[test]"
+          pip install bandit safety
+
+      - name: Run security tests
+        run: |
+          python -m pytest tests/ -v -m security --tb=short
+
+      - name: Bandit security scan
+        run: bandit -r visualization/ -ll -ii
+
+      - name: Safety dependency check
+        run: safety check --full-report || true
+
+  # ===========================================================================
+  # Docker Build & Integration Tests
+  # ===========================================================================
+  docker-integration:
+    name: Docker Integration
+    runs-on: ubuntu-latest
+    needs: [python-tests, typescript-tests]
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v3
+
+      - name: Build Docker images
+        run: |
+          docker-compose build visualization backend
+
+      - name: Run integration tests
+        run: |
+          docker-compose --profile test run --rm test
+        env:
+          TEST_SUITE: integration
+          TEST_COVERAGE: true
+
+      - name: Upload integration test results
+        uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: integration-results
+          path: test_reports/
+          retention-days: 30
+
+      - name: Cleanup
+        if: always()
+        run: docker-compose down -v
+
+  # ===========================================================================
+  # Test Summary Report
+  # ===========================================================================
+  test-summary:
+    name: Test Summary
+    runs-on: ubuntu-latest
+    needs: [python-tests, typescript-tests, code-quality]
+    if: always()
+
+    steps:
+      - name: Download all artifacts
+        uses: actions/download-artifact@v4
+        with:
+          path: all-results
+
+      - name: Create summary
+        run: |
+          echo "## Test Results Summary" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "| Test Suite | Status |" >> $GITHUB_STEP_SUMMARY
+          echo "|------------|--------|" >> $GITHUB_STEP_SUMMARY
+          echo "| Python Tests | ${{ needs.python-tests.result }} |" >> $GITHUB_STEP_SUMMARY
+          echo "| TypeScript Tests | ${{ needs.typescript-tests.result }} |" >> $GITHUB_STEP_SUMMARY
+          echo "| Code Quality | ${{ needs.code-quality.result }} |" >> $GITHUB_STEP_SUMMARY
