@@ -253,6 +253,8 @@ h3 { font-size: 1.5rem; font-weight: 500; }    /* 24px */
     flex: 1;
     padding: var(--space-4);
     overflow-y: auto;
+    display: flex;
+    flex-direction: column;
 }
 
 .nav-group {
@@ -297,6 +299,220 @@ h3 { font-size: 1.5rem; font-weight: 500; }    /* 24px */
     width: 20px;
     height: 20px;
     flex-shrink: 0;
+}
+
+/* ========== Persona Indicator ========== */
+.persona-indicator {
+    margin-bottom: var(--space-4);
+    cursor: pointer;
+}
+
+.persona-badge {
+    display: flex;
+    align-items: center;
+    gap: var(--space-3);
+    padding: var(--space-3) var(--space-4);
+    background: linear-gradient(135deg, var(--bg-active) 0%, var(--bg-hover) 100%);
+    border: 1px solid var(--border-color);
+    border-radius: var(--radius-lg);
+    transition: all var(--transition-fast);
+}
+
+.persona-indicator:hover .persona-badge {
+    border-color: var(--color-primary);
+    box-shadow: var(--shadow-sm);
+}
+
+.persona-indicator.has-persona .persona-badge {
+    border-color: var(--color-primary);
+    background: linear-gradient(135deg, var(--color-primary-light) 0%, var(--bg-active) 100%);
+}
+
+.persona-icon {
+    width: 24px;
+    height: 24px;
+    color: var(--color-primary);
+    flex-shrink: 0;
+}
+
+.persona-info {
+    flex: 1;
+    min-width: 0;
+}
+
+.persona-label {
+    display: block;
+    font-size: 0.625rem;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    color: var(--text-tertiary);
+    line-height: 1.2;
+}
+
+.persona-name {
+    display: block;
+    font-size: 0.875rem;
+    font-weight: 600;
+    color: var(--text-primary);
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.persona-indicator.has-persona .persona-name {
+    color: var(--color-primary);
+}
+
+.persona-chevron {
+    width: 16px;
+    height: 16px;
+    color: var(--text-tertiary);
+    flex-shrink: 0;
+    transition: transform var(--transition-fast);
+}
+
+/* ========== Nav Essentials Section ========== */
+.nav-group-essentials {
+    background: var(--bg-card);
+    border: 1px solid var(--border-light);
+    border-radius: var(--radius-lg);
+    padding: var(--space-3);
+    margin-bottom: var(--space-4);
+}
+
+.nav-group-essentials .nav-group-title {
+    display: flex;
+    align-items: center;
+    gap: var(--space-2);
+    color: var(--color-primary);
+    margin-bottom: var(--space-2);
+}
+
+.nav-group-essentials .nav-group-title .title-icon {
+    width: 14px;
+    height: 14px;
+}
+
+.nav-essentials-list .nav-link {
+    padding: var(--space-2) var(--space-3);
+}
+
+.nav-essentials-list .nav-link.active {
+    background: var(--color-primary);
+    color: var(--text-inverse);
+}
+
+.nav-essentials-list .nav-link.active svg {
+    color: var(--text-inverse);
+}
+
+/* ========== Nav Explore Section ========== */
+.nav-group-explore {
+    margin-bottom: var(--space-4);
+}
+
+.nav-group-explore > .nav-group-title {
+    display: flex;
+    align-items: center;
+    gap: var(--space-2);
+    color: var(--text-tertiary);
+    margin-bottom: var(--space-2);
+}
+
+.nav-group-explore > .nav-group-title .title-icon {
+    width: 14px;
+    height: 14px;
+}
+
+/* ========== Nav Accordion ========== */
+.nav-accordion {
+    margin-bottom: var(--space-1);
+}
+
+.nav-accordion-header {
+    display: flex;
+    align-items: center;
+    gap: var(--space-3);
+    width: 100%;
+    padding: var(--space-2) var(--space-3);
+    background: transparent;
+    border: none;
+    border-radius: var(--radius-md);
+    color: var(--text-secondary);
+    font-size: 0.8125rem;
+    font-weight: 500;
+    cursor: pointer;
+    transition: all var(--transition-fast);
+    text-align: left;
+}
+
+.nav-accordion-header:hover {
+    background: var(--bg-hover);
+    color: var(--text-primary);
+}
+
+.nav-accordion-header svg:first-child {
+    width: 18px;
+    height: 18px;
+    flex-shrink: 0;
+}
+
+.nav-accordion-header span {
+    flex: 1;
+}
+
+.accordion-chevron {
+    width: 16px;
+    height: 16px;
+    color: var(--text-tertiary);
+    transition: transform var(--transition-fast);
+}
+
+.nav-accordion.open .accordion-chevron {
+    transform: rotate(90deg);
+}
+
+.nav-accordion-content {
+    display: none;
+    padding-left: var(--space-4);
+    margin-top: var(--space-1);
+}
+
+.nav-accordion.open .nav-accordion-content {
+    display: block;
+}
+
+.nav-accordion-content .nav-link {
+    padding: var(--space-2) var(--space-3);
+    font-size: 0.8125rem;
+}
+
+.nav-accordion-content .nav-link svg {
+    width: 16px;
+    height: 16px;
+}
+
+/* ========== Change Journey Link ========== */
+.nav-group-change {
+    margin-top: auto;
+    padding-top: var(--space-4);
+    border-top: 1px solid var(--border-light);
+}
+
+.nav-link-change {
+    background: var(--bg-hover);
+    border: 1px dashed var(--border-color);
+}
+
+.nav-link-change:hover {
+    background: var(--color-primary-light);
+    border-color: var(--color-primary);
+    color: var(--color-primary);
+}
+
+.nav-link-change svg {
+    color: var(--color-primary);
 }
 
 .sidebar-footer {

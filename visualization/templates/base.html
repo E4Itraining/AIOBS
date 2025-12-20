@@ -76,97 +76,157 @@
             </div>
 
             <nav class="sidebar-nav">
-                <!-- Accueil & Démarrage -->
-                <div class="nav-group">
-                    <span class="nav-group-title">{{ t('nav.getting_started') or 'Démarrage' }}</span>
-                    <a href="/" class="nav-link {% if active_page == 'dashboard' %}active{% endif %}">
-                        <i data-lucide="home"></i>
-                        <span>{{ t('nav.home') or 'Tableau de Bord' }}</span>
-                    </a>
-                    <a href="/personas" class="nav-link {% if active_page == 'personas' %}active{% endif %}">
-                        <i data-lucide="compass"></i>
-                        <span>{{ t('nav.personas') or 'Choisir un Parcours' }}</span>
-                    </a>
+                <!-- Persona Indicator -->
+                <div class="persona-indicator" id="personaIndicator">
+                    <div class="persona-badge">
+                        <i data-lucide="user-circle" class="persona-icon"></i>
+                        <div class="persona-info">
+                            <span class="persona-label">{{ t('nav.my_journey') or 'Mon Parcours' }}</span>
+                            <span class="persona-name" id="currentPersonaName">{{ t('nav.select_persona') or 'Sélectionner' }}</span>
+                        </div>
+                        <i data-lucide="chevron-down" class="persona-chevron"></i>
+                    </div>
                 </div>
 
-                <!-- Perspectives -->
-                <div class="nav-group">
-                    <span class="nav-group-title">{{ t('nav.personas_views') or 'Perspectives' }}</span>
-                    <a href="/global" class="nav-link {% if active_page == 'global' %}active{% endif %}">
-                        <i data-lucide="globe"></i>
-                        <span>{{ t('nav.global_view') or 'Global' }}</span>
-                    </a>
-                    <a href="/dirigeant" class="nav-link {% if active_page == 'dirigeant' %}active{% endif %}">
-                        <i data-lucide="building-2"></i>
-                        <span>{{ t('nav.dirigeant_view') or 'Business' }}</span>
-                    </a>
-                    <a href="/tech" class="nav-link {% if active_page == 'tech' %}active{% endif %}">
-                        <i data-lucide="server"></i>
-                        <span>{{ t('nav.tech_view') or 'Tech' }}</span>
-                    </a>
-                    <a href="/juridique" class="nav-link {% if active_page == 'juridique' %}active{% endif %}">
-                        <i data-lucide="gavel"></i>
-                        <span>{{ t('nav.juridique_view') or 'Juridique' }}</span>
-                    </a>
-                    <a href="/financier" class="nav-link {% if active_page == 'financier' %}active{% endif %}">
-                        <i data-lucide="wallet"></i>
-                        <span>{{ t('nav.financier_view') or 'Finance' }}</span>
-                    </a>
+                <!-- Mes Essentiels (Dynamic based on persona) -->
+                <div class="nav-group nav-group-essentials" id="navEssentials">
+                    <span class="nav-group-title">
+                        <i data-lucide="star" class="title-icon"></i>
+                        {{ t('nav.my_essentials') or 'Mes Essentiels' }}
+                    </span>
+                    <div class="nav-essentials-list" id="essentialsList">
+                        <!-- Dynamically populated based on persona -->
+                        <a href="/" class="nav-link {% if active_page == 'dashboard' %}active{% endif %}">
+                            <i data-lucide="home"></i>
+                            <span>{{ t('nav.home') or 'Tableau de Bord' }}</span>
+                        </a>
+                    </div>
                 </div>
 
-                <!-- Vues Techniques -->
-                <div class="nav-group">
-                    <span class="nav-group-title">{{ t('nav.technical_views') or 'Vues Techniques' }}</span>
-                    <a href="/unified" class="nav-link {% if active_page == 'unified' %}active{% endif %}">
-                        <i data-lucide="layout-dashboard"></i>
-                        <span>{{ t('nav.unified_view') or 'Vue Unifiée' }}</span>
-                    </a>
-                    <a href="/executive" class="nav-link {% if active_page == 'executive' %}active{% endif %}">
-                        <i data-lucide="briefcase"></i>
-                        <span>{{ t('nav.executive_view') or 'Vue Executive' }}</span>
-                    </a>
+                <!-- Explorer (Collapsible sections) -->
+                <div class="nav-group nav-group-explore">
+                    <span class="nav-group-title">
+                        <i data-lucide="compass" class="title-icon"></i>
+                        {{ t('nav.explore') or 'Explorer' }}
+                    </span>
+
+                    <!-- Accordion: Perspectives -->
+                    <div class="nav-accordion" data-accordion="perspectives">
+                        <button class="nav-accordion-header" onclick="toggleAccordion('perspectives')">
+                            <i data-lucide="eye"></i>
+                            <span>{{ t('nav.perspectives') or 'Perspectives' }}</span>
+                            <i data-lucide="chevron-right" class="accordion-chevron"></i>
+                        </button>
+                        <div class="nav-accordion-content">
+                            <a href="/global" class="nav-link {% if active_page == 'global' %}active{% endif %}">
+                                <i data-lucide="globe"></i>
+                                <span>{{ t('nav.global_view') or 'Global' }}</span>
+                            </a>
+                            <a href="/dirigeant" class="nav-link {% if active_page == 'dirigeant' %}active{% endif %}">
+                                <i data-lucide="building-2"></i>
+                                <span>{{ t('nav.dirigeant_view') or 'Business' }}</span>
+                            </a>
+                            <a href="/tech" class="nav-link {% if active_page == 'tech' %}active{% endif %}">
+                                <i data-lucide="server"></i>
+                                <span>{{ t('nav.tech_view') or 'Tech' }}</span>
+                            </a>
+                            <a href="/juridique" class="nav-link {% if active_page == 'juridique' %}active{% endif %}">
+                                <i data-lucide="gavel"></i>
+                                <span>{{ t('nav.juridique_view') or 'Juridique' }}</span>
+                            </a>
+                            <a href="/financier" class="nav-link {% if active_page == 'financier' %}active{% endif %}">
+                                <i data-lucide="wallet"></i>
+                                <span>{{ t('nav.financier_view') or 'Finance' }}</span>
+                            </a>
+                        </div>
+                    </div>
+
+                    <!-- Accordion: Vues -->
+                    <div class="nav-accordion" data-accordion="views">
+                        <button class="nav-accordion-header" onclick="toggleAccordion('views')">
+                            <i data-lucide="layout-dashboard"></i>
+                            <span>{{ t('nav.views') or 'Vues' }}</span>
+                            <i data-lucide="chevron-right" class="accordion-chevron"></i>
+                        </button>
+                        <div class="nav-accordion-content">
+                            <a href="/unified" class="nav-link {% if active_page == 'unified' %}active{% endif %}">
+                                <i data-lucide="layers"></i>
+                                <span>{{ t('nav.unified_view') or 'Vue Unifiée' }}</span>
+                            </a>
+                            <a href="/executive" class="nav-link {% if active_page == 'executive' %}active{% endif %}">
+                                <i data-lucide="briefcase"></i>
+                                <span>{{ t('nav.executive_view') or 'Vue Executive' }}</span>
+                            </a>
+                        </div>
+                    </div>
+
+                    <!-- Accordion: Analyse -->
+                    <div class="nav-accordion" data-accordion="analysis">
+                        <button class="nav-accordion-header" onclick="toggleAccordion('analysis')">
+                            <i data-lucide="brain"></i>
+                            <span>{{ t('nav.analysis') or 'Analyse' }}</span>
+                            <i data-lucide="chevron-right" class="accordion-chevron"></i>
+                        </button>
+                        <div class="nav-accordion-content">
+                            <a href="/causal" class="nav-link {% if active_page == 'causal' %}active{% endif %}">
+                                <i data-lucide="git-branch"></i>
+                                <span>{{ t('nav.causal_analysis') or 'Analyse Causale' }}</span>
+                            </a>
+                            <a href="/impact" class="nav-link {% if active_page == 'impact' %}active{% endif %}">
+                                <i data-lucide="trending-up"></i>
+                                <span>{{ t('nav.impact_analysis') or 'Analyse d\'Impact' }}</span>
+                            </a>
+                        </div>
+                    </div>
+
+                    <!-- Accordion: Opérations -->
+                    <div class="nav-accordion" data-accordion="operations">
+                        <button class="nav-accordion-header" onclick="toggleAccordion('operations')">
+                            <i data-lucide="settings"></i>
+                            <span>{{ t('nav.operations') or 'Opérations' }}</span>
+                            <i data-lucide="chevron-right" class="accordion-chevron"></i>
+                        </button>
+                        <div class="nav-accordion-content">
+                            <a href="/monitoring" class="nav-link {% if active_page == 'monitoring' %}active{% endif %}">
+                                <i data-lucide="activity"></i>
+                                <span>{{ t('nav.monitoring') or 'Monitoring Live' }}</span>
+                            </a>
+                            <a href="/finops" class="nav-link {% if active_page == 'finops' %}active{% endif %}">
+                                <i data-lucide="coins"></i>
+                                <span>{{ t('nav.finops') or 'Coûts & FinOps' }}</span>
+                            </a>
+                            <a href="/greenops" class="nav-link {% if active_page == 'greenops' %}active{% endif %}">
+                                <i data-lucide="leaf"></i>
+                                <span>{{ t('nav.greenops') or 'Impact Carbone' }}</span>
+                            </a>
+                        </div>
+                    </div>
+
+                    <!-- Accordion: Gouvernance -->
+                    <div class="nav-accordion" data-accordion="governance">
+                        <button class="nav-accordion-header" onclick="toggleAccordion('governance')">
+                            <i data-lucide="shield"></i>
+                            <span>{{ t('nav.governance') or 'Gouvernance' }}</span>
+                            <i data-lucide="chevron-right" class="accordion-chevron"></i>
+                        </button>
+                        <div class="nav-accordion-content">
+                            <a href="/compliance" class="nav-link {% if active_page == 'compliance' %}active{% endif %}">
+                                <i data-lucide="shield-check"></i>
+                                <span>{{ t('nav.compliance') or 'Conformité IA' }}</span>
+                            </a>
+                            <a href="/security" class="nav-link {% if active_page == 'security' %}active{% endif %}">
+                                <i data-lucide="lock"></i>
+                                <span>{{ t('nav.security') or 'Centre Sécurité' }}</span>
+                            </a>
+                        </div>
+                    </div>
                 </div>
 
-                <!-- Analyse & Intelligence -->
-                <div class="nav-group">
-                    <span class="nav-group-title">{{ t('nav.analysis') or 'Analyse & Intelligence' }}</span>
-                    <a href="/causal" class="nav-link {% if active_page == 'causal' %}active{% endif %}">
-                        <i data-lucide="git-branch"></i>
-                        <span>{{ t('nav.causal_analysis') or 'Analyse Causale' }}</span>
-                    </a>
-                    <a href="/impact" class="nav-link {% if active_page == 'impact' %}active{% endif %}">
-                        <i data-lucide="trending-up"></i>
-                        <span>{{ t('nav.impact_analysis') or 'Analyse d\'Impact' }}</span>
-                    </a>
-                </div>
-
-                <!-- Opérations -->
-                <div class="nav-group">
-                    <span class="nav-group-title">{{ t('nav.operations') or 'Opérations' }}</span>
-                    <a href="/monitoring" class="nav-link {% if active_page == 'monitoring' %}active{% endif %}">
-                        <i data-lucide="activity"></i>
-                        <span>{{ t('nav.monitoring') or 'Monitoring Live' }}</span>
-                    </a>
-                    <a href="/finops" class="nav-link {% if active_page == 'finops' %}active{% endif %}">
-                        <i data-lucide="coins"></i>
-                        <span>{{ t('nav.finops') or 'Coûts & FinOps' }}</span>
-                    </a>
-                    <a href="/greenops" class="nav-link {% if active_page == 'greenops' %}active{% endif %}">
-                        <i data-lucide="leaf"></i>
-                        <span>{{ t('nav.greenops') or 'Impact Carbone' }}</span>
-                    </a>
-                </div>
-
-                <!-- Gouvernance & Conformité -->
-                <div class="nav-group">
-                    <span class="nav-group-title">{{ t('nav.governance') or 'Gouvernance' }}</span>
-                    <a href="/compliance" class="nav-link {% if active_page == 'compliance' %}active{% endif %}">
-                        <i data-lucide="shield-check"></i>
-                        <span>{{ t('nav.compliance') or 'Conformité IA' }}</span>
-                    </a>
-                    <a href="/security" class="nav-link {% if active_page == 'security' %}active{% endif %}">
-                        <i data-lucide="lock"></i>
-                        <span>{{ t('nav.security') or 'Centre Sécurité' }}</span>
+                <!-- Change Journey Link -->
+                <div class="nav-group nav-group-change">
+                    <a href="/personas" class="nav-link nav-link-change {% if active_page == 'personas' %}active{% endif %}">
+                        <i data-lucide="refresh-cw"></i>
+                        <span>{{ t('nav.change_journey') or 'Changer de parcours' }}</span>
                     </a>
                 </div>
 
@@ -512,6 +572,252 @@
             if (selector && !selector.contains(e.target)) {
                 selector.classList.remove('open');
             }
+        });
+
+        // =============================================
+        // Adaptive Menu System (Persona-based)
+        // =============================================
+
+        // Persona journey configurations
+        const PERSONA_JOURNEYS = {
+            'business_executive': {
+                name: 'Dirigeant',
+                icon: 'briefcase',
+                essentials: [
+                    { url: '/', icon: 'home', label: 'Tableau de Bord' },
+                    { url: '/executive', icon: 'briefcase', label: 'Vue Executive' },
+                    { url: '/compliance', icon: 'shield-check', label: 'Conformité IA' },
+                    { url: '/finops', icon: 'coins', label: 'Coûts & FinOps' }
+                ]
+            },
+            'tech_ml_engineer': {
+                name: 'ML Engineer',
+                icon: 'cpu',
+                essentials: [
+                    { url: '/', icon: 'home', label: 'Tableau de Bord' },
+                    { url: '/tech', icon: 'server', label: 'Vue Tech' },
+                    { url: '/causal', icon: 'git-branch', label: 'Analyse Causale' },
+                    { url: '/monitoring', icon: 'activity', label: 'Monitoring Live' }
+                ]
+            },
+            'tech_data_scientist': {
+                name: 'Data Scientist',
+                icon: 'bar-chart-2',
+                essentials: [
+                    { url: '/', icon: 'home', label: 'Tableau de Bord' },
+                    { url: '/tech', icon: 'server', label: 'Vue Tech' },
+                    { url: '/causal', icon: 'git-branch', label: 'Analyse Causale' },
+                    { url: '/impact', icon: 'trending-up', label: 'Analyse d\'Impact' }
+                ]
+            },
+            'tech_devops': {
+                name: 'DevOps Engineer',
+                icon: 'terminal',
+                essentials: [
+                    { url: '/', icon: 'home', label: 'Tableau de Bord' },
+                    { url: '/monitoring', icon: 'activity', label: 'Monitoring Live' },
+                    { url: '/unified', icon: 'layers', label: 'Vue Unifiée' },
+                    { url: '/security', icon: 'lock', label: 'Centre Sécurité' }
+                ]
+            },
+            'compliance_legal': {
+                name: 'Compliance Officer',
+                icon: 'shield-check',
+                essentials: [
+                    { url: '/', icon: 'home', label: 'Tableau de Bord' },
+                    { url: '/compliance', icon: 'shield-check', label: 'Conformité IA' },
+                    { url: '/juridique', icon: 'gavel', label: 'Vue Juridique' },
+                    { url: '/security', icon: 'lock', label: 'Centre Sécurité' }
+                ]
+            },
+            'security_soc': {
+                name: 'Security SOC',
+                icon: 'shield',
+                essentials: [
+                    { url: '/', icon: 'home', label: 'Tableau de Bord' },
+                    { url: '/security', icon: 'lock', label: 'Centre Sécurité' },
+                    { url: '/monitoring', icon: 'activity', label: 'Monitoring Live' },
+                    { url: '/compliance', icon: 'shield-check', label: 'Conformité IA' }
+                ]
+            },
+            'sustainability_esg': {
+                name: 'ESG Manager',
+                icon: 'leaf',
+                essentials: [
+                    { url: '/', icon: 'home', label: 'Tableau de Bord' },
+                    { url: '/greenops', icon: 'leaf', label: 'Impact Carbone' },
+                    { url: '/finops', icon: 'coins', label: 'Coûts & FinOps' },
+                    { url: '/compliance', icon: 'shield-check', label: 'Conformité IA' }
+                ]
+            },
+            'governance_dsi': {
+                name: 'DSI / CIO',
+                icon: 'landmark',
+                essentials: [
+                    { url: '/', icon: 'home', label: 'Tableau de Bord' },
+                    { url: '/executive', icon: 'briefcase', label: 'Vue Executive' },
+                    { url: '/tech', icon: 'server', label: 'Vue Tech' },
+                    { url: '/finops', icon: 'coins', label: 'Coûts & FinOps' }
+                ]
+            },
+            'governance_rsi': {
+                name: 'RSI / IT Manager',
+                icon: 'settings',
+                essentials: [
+                    { url: '/', icon: 'home', label: 'Tableau de Bord' },
+                    { url: '/monitoring', icon: 'activity', label: 'Monitoring Live' },
+                    { url: '/unified', icon: 'layers', label: 'Vue Unifiée' },
+                    { url: '/security', icon: 'lock', label: 'Centre Sécurité' }
+                ]
+            },
+            'privacy_dpo': {
+                name: 'DPO',
+                icon: 'user-check',
+                essentials: [
+                    { url: '/', icon: 'home', label: 'Tableau de Bord' },
+                    { url: '/compliance', icon: 'shield-check', label: 'Conformité IA' },
+                    { url: '/juridique', icon: 'gavel', label: 'Vue Juridique' },
+                    { url: '/security', icon: 'lock', label: 'Centre Sécurité' }
+                ]
+            },
+            'legal_counsel': {
+                name: 'Legal Counsel',
+                icon: 'scale',
+                essentials: [
+                    { url: '/', icon: 'home', label: 'Tableau de Bord' },
+                    { url: '/juridique', icon: 'gavel', label: 'Vue Juridique' },
+                    { url: '/compliance', icon: 'shield-check', label: 'Conformité IA' },
+                    { url: '/impact', icon: 'trending-up', label: 'Analyse d\'Impact' }
+                ]
+            },
+            'business_product': {
+                name: 'Product Owner',
+                icon: 'package',
+                essentials: [
+                    { url: '/', icon: 'home', label: 'Tableau de Bord' },
+                    { url: '/dirigeant', icon: 'building-2', label: 'Vue Business' },
+                    { url: '/impact', icon: 'trending-up', label: 'Analyse d\'Impact' },
+                    { url: '/monitoring', icon: 'activity', label: 'Monitoring Live' }
+                ]
+            }
+        };
+
+        // Default essentials when no persona selected
+        const DEFAULT_ESSENTIALS = [
+            { url: '/', icon: 'home', label: 'Tableau de Bord' },
+            { url: '/global', icon: 'globe', label: 'Vue Globale' },
+            { url: '/executive', icon: 'briefcase', label: 'Vue Executive' },
+            { url: '/monitoring', icon: 'activity', label: 'Monitoring Live' }
+        ];
+
+        // Accordion state
+        let accordionState = JSON.parse(localStorage.getItem('gaskia-accordion-state') || '{}');
+
+        // Toggle accordion
+        function toggleAccordion(id) {
+            const accordion = document.querySelector(`[data-accordion="${id}"]`);
+            if (!accordion) return;
+
+            const isOpen = accordion.classList.contains('open');
+            accordion.classList.toggle('open', !isOpen);
+
+            // Save state
+            accordionState[id] = !isOpen;
+            localStorage.setItem('gaskia-accordion-state', JSON.stringify(accordionState));
+
+            lucide.createIcons();
+        }
+
+        // Restore accordion state
+        function restoreAccordionState() {
+            const currentPath = window.location.pathname;
+
+            Object.keys(accordionState).forEach(id => {
+                const accordion = document.querySelector(`[data-accordion="${id}"]`);
+                if (accordion && accordionState[id]) {
+                    accordion.classList.add('open');
+                }
+            });
+
+            // Auto-open accordion containing active page
+            document.querySelectorAll('.nav-accordion').forEach(accordion => {
+                const activeLink = accordion.querySelector('.nav-link.active');
+                if (activeLink) {
+                    accordion.classList.add('open');
+                }
+            });
+        }
+
+        // Load and apply current persona
+        function loadCurrentPersona() {
+            const savedPersona = localStorage.getItem('gaskia-persona') || localStorage.getItem('aiobs-persona');
+            const personaNameEl = document.getElementById('currentPersonaName');
+            const essentialsList = document.getElementById('essentialsList');
+            const personaIndicator = document.getElementById('personaIndicator');
+
+            if (savedPersona && PERSONA_JOURNEYS[savedPersona]) {
+                const persona = PERSONA_JOURNEYS[savedPersona];
+
+                // Update persona indicator
+                if (personaNameEl) {
+                    personaNameEl.textContent = persona.name;
+                }
+                if (personaIndicator) {
+                    personaIndicator.classList.add('has-persona');
+                    const iconEl = personaIndicator.querySelector('.persona-icon');
+                    if (iconEl) {
+                        iconEl.setAttribute('data-lucide', persona.icon);
+                    }
+                }
+
+                // Update essentials list
+                if (essentialsList) {
+                    const currentPath = window.location.pathname;
+                    essentialsList.innerHTML = persona.essentials.map(item => `
+                        <a href="${item.url}" class="nav-link ${currentPath === item.url ? 'active' : ''}">
+                            <i data-lucide="${item.icon}"></i>
+                            <span>${item.label}</span>
+                        </a>
+                    `).join('');
+                }
+            } else {
+                // No persona selected - show default essentials
+                if (personaNameEl) {
+                    personaNameEl.textContent = window.t('nav.select_persona') || 'Sélectionner';
+                }
+                if (essentialsList) {
+                    const currentPath = window.location.pathname;
+                    essentialsList.innerHTML = DEFAULT_ESSENTIALS.map(item => `
+                        <a href="${item.url}" class="nav-link ${currentPath === item.url ? 'active' : ''}">
+                            <i data-lucide="${item.icon}"></i>
+                            <span>${item.label}</span>
+                        </a>
+                    `).join('');
+                }
+            }
+
+            lucide.createIcons();
+        }
+
+        // Set persona (called from personas page)
+        function setPersona(personaId) {
+            localStorage.setItem('gaskia-persona', personaId);
+            loadCurrentPersona();
+        }
+
+        // Make setPersona globally available
+        window.setPersona = setPersona;
+        window.PERSONA_JOURNEYS = PERSONA_JOURNEYS;
+
+        // Initialize adaptive menu on DOM ready
+        document.addEventListener('DOMContentLoaded', () => {
+            loadCurrentPersona();
+            restoreAccordionState();
+        });
+
+        // Persona indicator click - go to personas page
+        document.getElementById('personaIndicator')?.addEventListener('click', () => {
+            window.location.href = '/personas';
         });
 
         // =============================================
