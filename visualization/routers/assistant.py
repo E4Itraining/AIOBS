@@ -1,16 +1,20 @@
 """
 AIOBS AI Assistant API
-Game-changer feature: Intelligent insights and natural language queries
+Game-changer feature: Real AI-powered intelligent insights and natural language queries
 """
 
-import random
+import logging
+import uuid
 from datetime import datetime
 from typing import Any, Dict, List, Optional
 
-from fastapi import APIRouter, HTTPException, Request
+from fastapi import APIRouter, HTTPException, Request, WebSocket, WebSocketDisconnect
 from pydantic import BaseModel, Field
 
+from ..services.llm_service import get_llm_service, LLMResponse
+
 router = APIRouter(prefix="/api/assistant", tags=["assistant"])
+logger = logging.getLogger("aiobs.assistant")
 
 
 # =============================================================================
@@ -21,9 +25,10 @@ router = APIRouter(prefix="/api/assistant", tags=["assistant"])
 class AssistantQuery(BaseModel):
     """User query to the AI assistant"""
 
-    query: str = Field(..., min_length=1, max_length=1000)
+    query: str = Field(..., min_length=1, max_length=2000)
     context: Optional[Dict[str, Any]] = None
     language: Optional[str] = "en"
+    session_id: Optional[str] = None
 
 
 class InsightRequest(BaseModel):
@@ -38,10 +43,28 @@ class AssistantResponse(BaseModel):
     """Response from AI assistant"""
 
     answer: str
-    insights: List[Dict[str, Any]]
-    suggested_actions: List[str]
-    related_metrics: List[str]
-    confidence: float
+    insights: List[Dict[str, Any]] = []
+    suggested_actions: List[str] = []
+    related_metrics: List[str] = []
+    confidence: float = 0.9
+    model: Optional[str] = None
+    provider: Optional[str] = None
+    session_id: Optional[str] = None
+
+
+class ConversationMessage(BaseModel):
+    """Single message in a conversation"""
+
+    role: str  # "user" or "assistant"
+    content: str
+    timestamp: str
+
+
+class ConversationHistory(BaseModel):
+    """Conversation history response"""
+
+    session_id: str
+    messages: List[ConversationMessage] = []
 
 
 # =============================================================================
@@ -54,26 +77,153 @@ async def query_assistant(request: Request, query: AssistantQuery):
     """
     Natural language query to the AI assistant
 
+    This endpoint uses real LLM integration (OpenAI, Anthropic, or fallback to mock)
+    to provide intelligent responses about your AI systems.
+
     The assistant can:
     - Explain metrics and their meanings
     - Analyze trends and anomalies
     - Suggest root causes for issues
     - Recommend actions
     - Answer questions about system health
+    - Provide cost optimization suggestions
+    - Analyze carbon footprint and sustainability
 
     Example queries:
     - "Why did the trust score drop?"
     - "What's causing the high latency?"
     - "Explain the drift detection results"
     - "What should I do about the reliability warning?"
+    - "How can I reduce my AI costs?"
+    - "Show me the carbon footprint analysis"
     """
-    # Get language from request state or default
+    # Get language from request state or query parameter
     lang = getattr(request.state, "language", query.language or "en")
 
-    # Simulate AI response based on query keywords
-    response = generate_assistant_response(query.query, lang)
+    # Generate session ID if not provided
+    session_id = query.session_id or str(uuid.uuid4())
 
-    return response
+    try:
+        # Get LLM service
+        llm_service = get_llm_service()
+
+        # Build context from current system state
+        context = query.context or {}
+        context["current_page"] = request.headers.get("referer", "unknown")
+        context["timestamp"] = datetime.utcnow().isoformat()
+
+        # Get response from LLM
+        llm_response: LLMResponse = await llm_service.chat(
+            query=query.query,
+            session_id=session_id,
+            context=context,
+            language=lang,
+        )
+
+        return AssistantResponse(
+            answer=llm_response.content,
+            insights=llm_response.insights,
+            suggested_actions=llm_response.suggested_actions,
+            related_metrics=llm_response.related_metrics,
+            confidence=llm_response.confidence,
+            model=llm_response.model,
+            provider=llm_response.provider,
+            session_id=session_id,
+        )
+
+    except Exception as e:
+        logger.error(f"Assistant query error: {e}")
+        error_msg = (
+            "Desolee, une erreur s'est produite. Veuillez reessayer."
+            if lang == "fr"
+            else "Sorry, an error occurred. Please try again."
+        )
+        return AssistantResponse(
+            answer=error_msg,
+            insights=[],
+            suggested_actions=[],
+            related_metrics=[],
+            confidence=0.0,
+            session_id=session_id,
+        )
+
+
+@router.websocket("/stream")
+async def stream_assistant(websocket: WebSocket):
+    """
+    WebSocket endpoint for streaming AI assistant responses
+
+    This provides real-time streaming of AI responses for a better user experience.
+
+    Message format (send):
+    {
+        "query": "Your question here",
+        "session_id": "optional-session-id",
+        "language": "en" or "fr",
+        "context": {}
+    }
+
+    Message format (receive):
+    {
+        "type": "chunk" | "done" | "error",
+        "content": "text chunk or full message",
+        "session_id": "session-id"
+    }
+    """
+    await websocket.accept()
+
+    try:
+        while True:
+            # Receive message from client
+            data = await websocket.receive_json()
+
+            query = data.get("query", "")
+            session_id = data.get("session_id") or str(uuid.uuid4())
+            language = data.get("language", "en")
+            context = data.get("context", {})
+
+            if not query:
+                await websocket.send_json({
+                    "type": "error",
+                    "content": "Query is required",
+                    "session_id": session_id,
+                })
+                continue
+
+            try:
+                # Get LLM service
+                llm_service = get_llm_service()
+
+                # Stream response chunks
+                async for chunk in llm_service.chat_stream(
+                    query=query,
+                    session_id=session_id,
+                    context=context,
+                    language=language,
+                ):
+                    await websocket.send_json({
+                        "type": "chunk",
+                        "content": chunk,
+                        "session_id": session_id,
+                    })
+
+                # Send completion message
+                await websocket.send_json({
+                    "type": "done",
+                    "content": "",
+                    "session_id": session_id,
+                })
+
+            except Exception as e:
+                logger.error(f"Streaming error: {e}")
+                await websocket.send_json({
+                    "type": "error",
+                    "content": str(e),
+                    "session_id": session_id,
+                })
+
+    except WebSocketDisconnect:
+        logger.info("WebSocket client disconnected")
 
 
 @router.get("/insights")
@@ -81,9 +231,9 @@ async def get_automated_insights(
     request: Request, metric_type: Optional[str] = None, time_range: str = "24h"
 ):
     """
-    Get automated AI-generated insights
+    Get AI-generated insights about your AI systems
 
-    Returns proactive insights about:
+    Uses the LLM to analyze current metrics and provide proactive insights about:
     - Anomaly detection results
     - Trend analysis
     - Performance recommendations
@@ -92,17 +242,51 @@ async def get_automated_insights(
     """
     lang = getattr(request.state, "language", "en")
 
-    insights = generate_insights(metric_type, time_range, lang)
+    try:
+        llm_service = get_llm_service()
 
-    return {
-        "success": True,
-        "data": {
-            "insights": insights,
-            "generated_at": datetime.utcnow().isoformat(),
-            "time_range": time_range,
-            "metric_type": metric_type,
-        },
-    }
+        # Generate insights query based on parameters
+        if lang == "fr":
+            if metric_type:
+                query = f"Genere des insights automatiques pour la metrique '{metric_type}' sur les dernieres {time_range}."
+            else:
+                query = f"Genere un resume des insights cles pour tous les systemes IA sur les dernieres {time_range}."
+        else:
+            if metric_type:
+                query = f"Generate automated insights for the '{metric_type}' metric over the last {time_range}."
+            else:
+                query = f"Generate a summary of key insights for all AI systems over the last {time_range}."
+
+        # Get response from LLM
+        response = await llm_service.chat(
+            query=query,
+            language=lang,
+            context={"metric_type": metric_type, "time_range": time_range},
+        )
+
+        return {
+            "success": True,
+            "data": {
+                "summary": response.content,
+                "insights": response.insights,
+                "recommendations": response.suggested_actions,
+                "generated_at": datetime.utcnow().isoformat(),
+                "time_range": time_range,
+                "metric_type": metric_type,
+                "model": response.model,
+            },
+        }
+
+    except Exception as e:
+        logger.error(f"Insights generation error: {e}")
+        return {
+            "success": False,
+            "error": str(e),
+            "data": {
+                "insights": [],
+                "generated_at": datetime.utcnow().isoformat(),
+            },
+        }
 
 
 @router.get("/recommendations")
@@ -116,19 +300,57 @@ async def get_recommendations(request: Request):
     - Reliability improvement
     - Compliance actions
     - Risk mitigation
+    - Sustainability improvements
     """
     lang = getattr(request.state, "language", "en")
 
-    recommendations = generate_recommendations(lang)
+    try:
+        llm_service = get_llm_service()
 
-    return {
-        "success": True,
-        "data": {"recommendations": recommendations, "generated_at": datetime.utcnow().isoformat()},
-    }
+        if lang == "fr":
+            query = (
+                "Genere des recommandations prioritaires pour ameliorer mes systemes IA dans les categories suivantes: "
+                "1) Optimisation des performances, 2) Reduction des couts, 3) Amelioration de la fiabilite, "
+                "4) Actions de conformite, 5) Attenuation des risques, 6) Durabilite."
+            )
+        else:
+            query = (
+                "Generate priority recommendations to improve my AI systems in the following categories: "
+                "1) Performance optimization, 2) Cost reduction, 3) Reliability improvement, "
+                "4) Compliance actions, 5) Risk mitigation, 6) Sustainability."
+            )
+
+        response = await llm_service.chat(query=query, language=lang)
+
+        return {
+            "success": True,
+            "data": {
+                "summary": response.content,
+                "recommendations": response.suggested_actions,
+                "related_metrics": response.related_metrics,
+                "generated_at": datetime.utcnow().isoformat(),
+                "model": response.model,
+            },
+        }
+
+    except Exception as e:
+        logger.error(f"Recommendations generation error: {e}")
+        return {
+            "success": False,
+            "error": str(e),
+            "data": {
+                "recommendations": [],
+                "generated_at": datetime.utcnow().isoformat(),
+            },
+        }
 
 
 @router.post("/explain/{metric_type}")
-async def explain_metric(request: Request, metric_type: str, data: Optional[Dict[str, Any]] = None):
+async def explain_metric(
+    request: Request,
+    metric_type: str,
+    data: Optional[Dict[str, Any]] = None
+):
     """
     Get AI explanation for a specific metric
 
@@ -145,9 +367,49 @@ async def explain_metric(request: Request, metric_type: str, data: Optional[Dict
     """
     lang = getattr(request.state, "language", "en")
 
-    explanation = generate_metric_explanation(metric_type, data, lang)
+    try:
+        llm_service = get_llm_service()
 
-    return {"success": True, "data": explanation}
+        if lang == "fr":
+            query = (
+                f"Explique en detail la metrique '{metric_type}' dans le contexte de l'observabilite IA. "
+                f"Inclus: 1) Definition, 2) Comment elle est calculee, 3) Plages de valeurs, "
+                f"4) Seuils (bon/attention/critique), 5) Actions recommandees pour l'ameliorer."
+            )
+        else:
+            query = (
+                f"Explain in detail the '{metric_type}' metric in the context of AI observability. "
+                f"Include: 1) Definition, 2) How it's calculated, 3) Value ranges, "
+                f"4) Thresholds (good/warning/critical), 5) Recommended actions to improve it."
+            )
+
+        context = {"metric_type": metric_type}
+        if data:
+            context["metric_data"] = data
+
+        response = await llm_service.chat(query=query, language=lang, context=context)
+
+        return {
+            "success": True,
+            "data": {
+                "metric_type": metric_type,
+                "explanation": response.content,
+                "suggested_actions": response.suggested_actions,
+                "related_metrics": response.related_metrics,
+                "model": response.model,
+            },
+        }
+
+    except Exception as e:
+        logger.error(f"Metric explanation error: {e}")
+        return {
+            "success": False,
+            "error": str(e),
+            "data": {
+                "metric_type": metric_type,
+                "explanation": "",
+            },
+        }
 
 
 @router.get("/root-cause/{incident_id}")
@@ -163,330 +425,103 @@ async def analyze_root_cause(request: Request, incident_id: str):
     """
     lang = getattr(request.state, "language", "en")
 
-    analysis = generate_root_cause_analysis(incident_id, lang)
+    try:
+        llm_service = get_llm_service()
 
-    return {"success": True, "data": analysis}
+        if lang == "fr":
+            query = (
+                f"Effectue une analyse de cause racine pour l'incident '{incident_id}'. "
+                f"Fournis: 1) Causes probables avec scores de confiance, 2) Facteurs contributifs, "
+                f"3) Chaine causale, 4) Etapes de remediation recommandees, 5) Actions preventives."
+            )
+        else:
+            query = (
+                f"Perform a root cause analysis for incident '{incident_id}'. "
+                f"Provide: 1) Probable causes with confidence scores, 2) Contributing factors, "
+                f"3) Causal chain, 4) Recommended remediation steps, 5) Preventive actions."
+            )
 
-
-# =============================================================================
-# Response Generation (Simulated AI - Replace with actual LLM in production)
-# =============================================================================
-
-
-def generate_assistant_response(query: str, lang: str) -> AssistantResponse:
-    """Generate assistant response based on query"""
-
-    query_lower = query.lower()
-
-    # Detect query intent and generate appropriate response
-    if any(word in query_lower for word in ["trust", "score", "confiance"]):
-        return AssistantResponse(
-            answer=get_localized_response("trust_explanation", lang),
-            insights=[
-                {
-                    "type": "trend",
-                    "title": "Trust Score Trend",
-                    "description": "Trust score has been stable over the past 24 hours",
-                    "severity": "info",
-                }
-            ],
-            suggested_actions=[
-                "Review drift detection results",
-                "Check reliability metrics",
-                "Verify model calibration",
-            ],
-            related_metrics=["drift", "reliability", "hallucination"],
-            confidence=0.92,
+        response = await llm_service.chat(
+            query=query,
+            language=lang,
+            context={"incident_id": incident_id}
         )
 
-    elif any(word in query_lower for word in ["drift", "dérive", "change"]):
-        return AssistantResponse(
-            answer=get_localized_response("drift_explanation", lang),
-            insights=[
-                {
-                    "type": "anomaly",
-                    "title": "Data Drift Detected",
-                    "description": "Feature distribution shift in input data",
-                    "severity": "warning",
-                }
-            ],
-            suggested_actions=[
-                "Investigate data source changes",
-                "Review feature distributions",
-                "Consider model retraining",
-            ],
-            related_metrics=["data_quality", "prediction_accuracy", "feature_importance"],
-            confidence=0.88,
-        )
-
-    elif any(word in query_lower for word in ["latency", "slow", "latence", "lent"]):
-        return AssistantResponse(
-            answer=get_localized_response("latency_explanation", lang),
-            insights=[
-                {
-                    "type": "performance",
-                    "title": "Latency Analysis",
-                    "description": "P99 latency within acceptable range",
-                    "severity": "info",
-                }
-            ],
-            suggested_actions=[
-                "Check infrastructure health",
-                "Review model complexity",
-                "Consider batch processing",
-            ],
-            related_metrics=["p50_latency", "p99_latency", "throughput"],
-            confidence=0.85,
-        )
-
-    elif any(word in query_lower for word in ["cost", "coût", "expense", "prix"]):
-        return AssistantResponse(
-            answer=get_localized_response("cost_explanation", lang),
-            insights=[
-                {
-                    "type": "finops",
-                    "title": "Cost Optimization Opportunity",
-                    "description": "Potential 15% savings with model routing",
-                    "severity": "info",
-                }
-            ],
-            suggested_actions=[
-                "Implement intelligent model routing",
-                "Review compute resource allocation",
-                "Consider spot instances for batch jobs",
-            ],
-            related_metrics=["daily_cost", "cost_per_inference", "resource_utilization"],
-            confidence=0.90,
-        )
-
-    else:
-        return AssistantResponse(
-            answer=get_localized_response("general_help", lang),
-            insights=[],
-            suggested_actions=[
-                "Review the dashboard for system overview",
-                "Check active alerts",
-                "Review cognitive metrics",
-            ],
-            related_metrics=["trust_score", "error_rate", "latency"],
-            confidence=0.75,
-        )
-
-
-def generate_insights(metric_type: Optional[str], time_range: str, lang: str) -> List[Dict]:
-    """Generate automated insights"""
-
-    insights = [
-        {
-            "id": "insight-1",
-            "type": "anomaly",
-            "severity": "warning",
-            "title": get_localized_text("insight_drift_title", lang),
-            "description": get_localized_text("insight_drift_desc", lang),
-            "metric": "drift",
-            "confidence": 0.87,
-            "timestamp": datetime.utcnow().isoformat(),
-        },
-        {
-            "id": "insight-2",
-            "type": "trend",
-            "severity": "info",
-            "title": get_localized_text("insight_reliability_title", lang),
-            "description": get_localized_text("insight_reliability_desc", lang),
-            "metric": "reliability",
-            "confidence": 0.92,
-            "timestamp": datetime.utcnow().isoformat(),
-        },
-        {
-            "id": "insight-3",
-            "type": "optimization",
-            "severity": "info",
-            "title": get_localized_text("insight_cost_title", lang),
-            "description": get_localized_text("insight_cost_desc", lang),
-            "metric": "cost",
-            "confidence": 0.85,
-            "timestamp": datetime.utcnow().isoformat(),
-        },
-    ]
-
-    if metric_type:
-        insights = [i for i in insights if i["metric"] == metric_type]
-
-    return insights
-
-
-def generate_recommendations(lang: str) -> List[Dict]:
-    """Generate AI-powered recommendations"""
-
-    return [
-        {
-            "id": "rec-1",
-            "category": "performance",
-            "priority": "high",
-            "title": get_localized_text("rec_caching_title", lang),
-            "description": get_localized_text("rec_caching_desc", lang),
-            "impact": "+25% throughput",
-            "effort": "medium",
-        },
-        {
-            "id": "rec-2",
-            "category": "cost",
-            "priority": "medium",
-            "title": get_localized_text("rec_routing_title", lang),
-            "description": get_localized_text("rec_routing_desc", lang),
-            "impact": "-20% cost",
-            "effort": "high",
-        },
-        {
-            "id": "rec-3",
-            "category": "reliability",
-            "priority": "high",
-            "title": get_localized_text("rec_monitoring_title", lang),
-            "description": get_localized_text("rec_monitoring_desc", lang),
-            "impact": "+15% reliability",
-            "effort": "low",
-        },
-    ]
-
-
-def generate_metric_explanation(metric_type: str, data: Optional[Dict], lang: str) -> Dict:
-    """Generate explanation for a metric"""
-
-    explanations = {
-        "trust_score": {
-            "definition": get_localized_text("def_trust_score", lang),
-            "calculation": "Weighted average of drift, reliability, hallucination, and degradation scores",
-            "range": "0.0 - 1.0 (higher is better)",
-            "thresholds": {"good": ">0.8", "warning": "0.6-0.8", "critical": "<0.6"},
-        },
-        "drift": {
-            "definition": get_localized_text("def_drift", lang),
-            "calculation": "Statistical comparison of input distributions over time",
-            "range": "0.0 - 1.0 (lower is better)",
-            "thresholds": {"good": "<0.1", "warning": "0.1-0.3", "critical": ">0.3"},
-        },
-        "reliability": {
-            "definition": get_localized_text("def_reliability", lang),
-            "calculation": "Combination of calibration, stability, and OOD detection",
-            "range": "0.0 - 1.0 (higher is better)",
-            "thresholds": {"good": ">0.9", "warning": "0.7-0.9", "critical": "<0.7"},
-        },
-    }
-
-    return explanations.get(
-        metric_type,
-        {
-            "definition": f"Metric: {metric_type}",
-            "calculation": "N/A",
-            "range": "N/A",
-            "thresholds": {},
-        },
-    )
-
-
-def generate_root_cause_analysis(incident_id: str, lang: str) -> Dict:
-    """Generate root cause analysis for an incident"""
-
-    return {
-        "incident_id": incident_id,
-        "status": "analyzed",
-        "probable_causes": [
-            {
-                "cause": "Data source schema change",
-                "confidence": 0.85,
-                "evidence": ["Feature distribution shift", "Missing columns detected"],
-                "category": "data",
+        return {
+            "success": True,
+            "data": {
+                "incident_id": incident_id,
+                "status": "analyzed",
+                "analysis": response.content,
+                "recommended_actions": response.suggested_actions,
+                "related_metrics": response.related_metrics,
+                "confidence": response.confidence,
+                "model": response.model,
             },
-            {
-                "cause": "Upstream service degradation",
-                "confidence": 0.72,
-                "evidence": ["Increased latency from API-gateway", "Timeout errors"],
-                "category": "infrastructure",
+        }
+
+    except Exception as e:
+        logger.error(f"Root cause analysis error: {e}")
+        return {
+            "success": False,
+            "error": str(e),
+            "data": {
+                "incident_id": incident_id,
+                "status": "error",
             },
-        ],
-        "contributing_factors": [
-            "High traffic volume during incident",
-            "Recent deployment (2 hours before incident)",
-        ],
-        "recommended_actions": [
-            {
-                "action": "Validate data schema compatibility",
-                "priority": "high",
-                "estimated_impact": "High - likely root cause",
+        }
+
+
+@router.delete("/session/{session_id}")
+async def clear_session(session_id: str):
+    """
+    Clear conversation history for a session
+    """
+    try:
+        llm_service = get_llm_service()
+        llm_service.clear_history(session_id)
+
+        return {
+            "success": True,
+            "message": f"Session {session_id} cleared",
+        }
+    except Exception as e:
+        logger.error(f"Session clear error: {e}")
+        return {
+            "success": False,
+            "error": str(e),
+        }
+
+
+@router.get("/status")
+async def get_assistant_status():
+    """
+    Get the current status of the AI assistant service
+
+    Returns information about:
+    - Active provider (OpenAI, Anthropic, or Mock)
+    - Model being used
+    - Service availability
+    """
+    try:
+        llm_service = get_llm_service()
+
+        return {
+            "success": True,
+            "data": {
+                "status": "online",
+                "provider": llm_service.config.provider.value,
+                "model": llm_service.config.model,
+                "max_tokens": llm_service.config.max_tokens,
+                "streaming_available": True,
             },
-            {
-                "action": "Review upstream service SLOs",
-                "priority": "medium",
-                "estimated_impact": "Medium - contributing factor",
+        }
+    except Exception as e:
+        logger.error(f"Status check error: {e}")
+        return {
+            "success": False,
+            "data": {
+                "status": "error",
+                "error": str(e),
             },
-        ],
-        "timeline": [
-            {"time": "14:00", "event": "Traffic spike detected"},
-            {"time": "14:15", "event": "Latency increase observed"},
-            {"time": "14:22", "event": "Error rate exceeded threshold"},
-            {"time": "14:30", "event": "Incident triggered"},
-        ],
-    }
-
-
-# =============================================================================
-# Localized Text (Simplified - in production, use i18n module)
-# =============================================================================
-
-LOCALIZED_RESPONSES = {
-    "en": {
-        "trust_explanation": "The Trust Score is a composite metric that reflects the overall reliability and trustworthiness of your AI system. It combines drift detection, reliability metrics, hallucination risk, and degradation indicators into a single 0-1 score. A score above 0.8 indicates healthy operation.",
-        "drift_explanation": "Drift refers to changes in the statistical properties of model inputs or outputs over time. This can indicate that the model is being used in scenarios different from its training data, potentially affecting accuracy.",
-        "latency_explanation": "Latency measures the time between request and response. P99 latency is the 99th percentile, meaning 99% of requests complete faster than this value. High latency can impact user experience and system throughput.",
-        "cost_explanation": "AI costs are driven by compute resources, API calls, and storage. Key optimization strategies include intelligent model routing (using smaller models for simpler queries) and caching frequently requested results.",
-        "general_help": "I can help you understand your AI system's health, metrics, and provide recommendations. Try asking about specific metrics like trust score, drift, latency, or costs.",
-        "insight_drift_title": "Data Drift Detected",
-        "insight_drift_desc": "Input data distribution has shifted by 15% compared to baseline. Consider investigating data source changes.",
-        "insight_reliability_title": "Reliability Improving",
-        "insight_reliability_desc": "Model reliability score has improved 5% over the past week due to recent calibration.",
-        "insight_cost_title": "Cost Optimization Available",
-        "insight_cost_desc": "Implementing model routing could reduce costs by approximately 20% based on query complexity analysis.",
-        "rec_caching_title": "Enable Response Caching",
-        "rec_caching_desc": "Cache responses for common queries to reduce compute costs and improve latency.",
-        "rec_routing_title": "Implement Smart Model Routing",
-        "rec_routing_desc": "Route simple queries to smaller, faster models to optimize cost-performance balance.",
-        "rec_monitoring_title": "Enhance Drift Monitoring",
-        "rec_monitoring_desc": "Add feature-level drift monitoring to catch distribution shifts earlier.",
-        "def_trust_score": "Composite metric measuring overall AI system trustworthiness",
-        "def_drift": "Measure of change in input/output distributions over time",
-        "def_reliability": "Assessment of model prediction consistency and calibration",
-    },
-    "fr": {
-        "trust_explanation": "Le Score de Confiance est une métrique composite qui reflète la fiabilité globale de votre système IA. Il combine la détection de dérive, les métriques de fiabilité, le risque d'hallucination et les indicateurs de dégradation en un score unique de 0 à 1. Un score supérieur à 0.8 indique un fonctionnement sain.",
-        "drift_explanation": "La dérive fait référence aux changements dans les propriétés statistiques des entrées ou sorties du modèle au fil du temps. Cela peut indiquer que le modèle est utilisé dans des scénarios différents de ses données d'entraînement.",
-        "latency_explanation": "La latence mesure le temps entre la requête et la réponse. La latence P99 est le 99e percentile, ce qui signifie que 99% des requêtes se terminent plus rapidement que cette valeur.",
-        "cost_explanation": "Les coûts de l'IA sont déterminés par les ressources de calcul, les appels API et le stockage. Les stratégies d'optimisation clés incluent le routage intelligent des modèles et la mise en cache.",
-        "general_help": "Je peux vous aider à comprendre la santé de votre système IA, les métriques et fournir des recommandations. Essayez de poser des questions sur des métriques spécifiques.",
-        "insight_drift_title": "Dérive de Données Détectée",
-        "insight_drift_desc": "La distribution des données d'entrée a changé de 15% par rapport à la référence.",
-        "insight_reliability_title": "Fiabilité en Amélioration",
-        "insight_reliability_desc": "Le score de fiabilité du modèle s'est amélioré de 5% au cours de la semaine.",
-        "insight_cost_title": "Optimisation des Coûts Disponible",
-        "insight_cost_desc": "L'implémentation du routage de modèle pourrait réduire les coûts d'environ 20%.",
-        "rec_caching_title": "Activer la Mise en Cache",
-        "rec_caching_desc": "Mettre en cache les réponses pour les requêtes courantes pour réduire les coûts.",
-        "rec_routing_title": "Implémenter le Routage Intelligent",
-        "rec_routing_desc": "Diriger les requêtes simples vers des modèles plus petits et rapides.",
-        "rec_monitoring_title": "Améliorer la Surveillance de Dérive",
-        "rec_monitoring_desc": "Ajouter une surveillance de dérive au niveau des caractéristiques.",
-        "def_trust_score": "Métrique composite mesurant la fiabilité globale du système IA",
-        "def_drift": "Mesure du changement dans les distributions entrées/sorties",
-        "def_reliability": "Évaluation de la cohérence et de la calibration des prédictions",
-    },
-}
-
-
-def get_localized_response(key: str, lang: str) -> str:
-    """Get localized response text"""
-    lang_responses = LOCALIZED_RESPONSES.get(lang, LOCALIZED_RESPONSES["en"])
-    return lang_responses.get(key, LOCALIZED_RESPONSES["en"].get(key, ""))
-
-
-def get_localized_text(key: str, lang: str) -> str:
-    """Get localized text"""
-    return get_localized_response(key, lang)
+        }

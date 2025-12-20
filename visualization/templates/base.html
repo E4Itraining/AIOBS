@@ -423,9 +423,14 @@
                         </span>
                     </div>
                 </div>
-                <button class="chatbot-minimize" onclick="toggleChatbot()">
-                    <i data-lucide="minus"></i>
-                </button>
+                <div style="display: flex; gap: var(--space-2);">
+                    <button class="chat-clear" onclick="clearChat()" title="{{ t('chatbot.clear') or 'Clear chat' }}">
+                        <i data-lucide="trash-2"></i>
+                    </button>
+                    <button class="chatbot-minimize" onclick="toggleChatbot()">
+                        <i data-lucide="minus"></i>
+                    </button>
+                </div>
             </div>
             <div class="chatbot-messages" id="chatbotMessages">
                 <div class="chatbot-welcome">
@@ -503,6 +508,7 @@
     <!-- Scripts -->
     <script src="/static/js/dashboard.js"></script>
     <script src="/static/js/ux-enhancements.js"></script>
+    <script src="/static/js/chatbot.js"></script>
     <script>
         // Initialize Lucide icons
         lucide.createIcons();
