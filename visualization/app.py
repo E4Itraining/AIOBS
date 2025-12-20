@@ -130,6 +130,7 @@ async def index(request: Request):
             "request": request,
             "title": APP_TITLE,
             "version": APP_VERSION,
+            "active_page": "dashboard",
             **i18n
         }
     )
@@ -223,6 +224,7 @@ async def unified_view(request: Request):
         {
             "request": request,
             "title": f"{APP_TITLE} - {i18n['t']('nav.unified_view')}",
+            "active_page": "unified",
             **i18n
         }
     )
@@ -237,6 +239,7 @@ async def causal_view(request: Request):
         {
             "request": request,
             "title": f"{APP_TITLE} - {i18n['t']('causal.title')}",
+            "active_page": "causal",
             **i18n
         }
     )
@@ -251,6 +254,7 @@ async def impact_view(request: Request):
         {
             "request": request,
             "title": f"{APP_TITLE} - {i18n['t']('causal.impact')}",
+            "active_page": "impact",
             **i18n
         }
     )
