@@ -398,15 +398,21 @@ export class HealingEngine {
         timeline: [],
       },
       actionAnalysis: {
-        byType: Object.fromEntries(
-          Object.entries(actionStats).map(([type, stats]) => [type, {
-            type: type as ActionType,
-            count: stats.count,
-            successRate: stats.count > 0 ? stats.successCount / stats.count : 0,
-            avgDuration: stats.count > 0 ? stats.totalDuration / stats.count : 0,
-            avgImprovement: 10,
-          }])
-        ),
+        byType: (() => {
+          const allActionTypes: ActionType[] = ['retrain', 'alert', 'rollback', 'scale', 'route', 'throttle', 'cache', 'fallback', 'restart', 'custom'];
+          const result: Record<ActionType, { type: ActionType; count: number; successRate: number; avgDuration: number; avgImprovement: number }> = {} as any;
+          for (const actionType of allActionTypes) {
+            const stats = actionStats[actionType];
+            result[actionType] = {
+              type: actionType,
+              count: stats?.count || 0,
+              successRate: stats && stats.count > 0 ? stats.successCount / stats.count : 0,
+              avgDuration: stats && stats.count > 0 ? stats.totalDuration / stats.count : 0,
+              avgImprovement: stats?.count ? 10 : 0,
+            };
+          }
+          return result;
+        })(),
         topActions: Object.entries(actionStats)
           .sort((a, b) => b[1].count - a[1].count)
           .slice(0, 5)

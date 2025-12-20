@@ -552,10 +552,10 @@ export class MultiAgentEngine {
   private initializeDemoData(): void {
     // Register demo agents
     const demoAgents = [
-      { name: 'Orchestrator', type: 'orchestrator' as const, model: 'claude-3-5-sonnet', provider: 'Anthropic', capabilities: [{ name: 'planning', description: 'Plans tasks', enabled: true }], tools: [], status: 'active' as const, metadata: { successRate: 0.98, avgLatencyMs: 450, costPerCall: 0.02 } },
-      { name: 'Research Agent', type: 'specialist' as const, model: 'gpt-4-turbo', provider: 'OpenAI', capabilities: [{ name: 'research', description: 'Research tasks', enabled: true }], tools: [], status: 'active' as const, metadata: { successRate: 0.95, avgLatencyMs: 800, costPerCall: 0.03 } },
-      { name: 'Code Agent', type: 'worker' as const, model: 'claude-3-5-sonnet', provider: 'Anthropic', capabilities: [{ name: 'coding', description: 'Write code', enabled: true }], tools: [], status: 'active' as const, metadata: { successRate: 0.96, avgLatencyMs: 600, costPerCall: 0.025 } },
-      { name: 'Reviewer Agent', type: 'critic' as const, model: 'gpt-4', provider: 'OpenAI', capabilities: [{ name: 'review', description: 'Review outputs', enabled: true }], tools: [], status: 'active' as const, metadata: { successRate: 0.99, avgLatencyMs: 300, costPerCall: 0.015 } },
+      { name: 'Orchestrator', type: 'orchestrator' as const, version: '1.0.0', model: 'claude-3-5-sonnet', provider: 'Anthropic', capabilities: [{ name: 'planning', description: 'Plans tasks', enabled: true }], tools: [], status: 'active' as const, metadata: { successRate: 0.98, avgLatencyMs: 450, costPerCall: 0.02 } },
+      { name: 'Research Agent', type: 'specialist' as const, version: '1.0.0', model: 'gpt-4-turbo', provider: 'OpenAI', capabilities: [{ name: 'research', description: 'Research tasks', enabled: true }], tools: [], status: 'active' as const, metadata: { successRate: 0.95, avgLatencyMs: 800, costPerCall: 0.03 } },
+      { name: 'Code Agent', type: 'worker' as const, version: '1.0.0', model: 'claude-3-5-sonnet', provider: 'Anthropic', capabilities: [{ name: 'coding', description: 'Write code', enabled: true }], tools: [], status: 'active' as const, metadata: { successRate: 0.96, avgLatencyMs: 600, costPerCall: 0.025 } },
+      { name: 'Reviewer Agent', type: 'critic' as const, version: '1.0.0', model: 'gpt-4', provider: 'OpenAI', capabilities: [{ name: 'review', description: 'Review outputs', enabled: true }], tools: [], status: 'active' as const, metadata: { successRate: 0.99, avgLatencyMs: 300, costPerCall: 0.015 } },
     ];
 
     for (const agent of demoAgents) {

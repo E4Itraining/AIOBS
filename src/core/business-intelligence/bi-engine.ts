@@ -191,9 +191,9 @@ export class BusinessIntelligenceEngine {
         totalBenefit,
         currency: 'USD',
         categories: [
-          { category: 'Revenue Increase', amount: totalBenefit * 0.50, percentage: 0.50, confidence: 0.85, methodology: 'A/B Test Attribution' },
-          { category: 'Cost Reduction', amount: totalBenefit * 0.30, percentage: 0.30, confidence: 0.90, methodology: 'Process Comparison' },
-          { category: 'Efficiency Gain', amount: totalBenefit * 0.20, percentage: 0.20, confidence: 0.75, methodology: 'Time Savings Analysis' },
+          { category: 'revenue-increase', amount: totalBenefit * 0.50, percentage: 0.50, confidence: 0.85, methodology: 'A/B Test Attribution' },
+          { category: 'cost-reduction', amount: totalBenefit * 0.30, percentage: 0.30, confidence: 0.90, methodology: 'Process Comparison' },
+          { category: 'efficiency-gain', amount: totalBenefit * 0.20, percentage: 0.20, confidence: 0.75, methodology: 'Time Savings Analysis' },
         ],
         timeline: [],
         quantified: totalBenefit * 0.8,
