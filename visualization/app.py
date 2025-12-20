@@ -506,6 +506,86 @@ async def financier_view(request: Request):
 
 
 # ============================================================================
+# New Differentiating Features - Routes
+# ============================================================================
+
+
+@app.get("/guardrails", response_class=HTMLResponse)
+async def guardrails_view(request: Request):
+    """GenAI Guardrails & Safety Mesh dashboard"""
+    i18n = create_i18n_context(request)
+    return templates.TemplateResponse(
+        "guardrails.html",
+        {
+            "request": request,
+            "title": f"{APP_TITLE} - GenAI Guardrails",
+            "active_page": "guardrails",
+            **i18n,
+        },
+    )
+
+
+@app.get("/multi-agent", response_class=HTMLResponse)
+async def multi_agent_view(request: Request):
+    """Multi-Agent Observability Hub dashboard"""
+    i18n = create_i18n_context(request)
+    return templates.TemplateResponse(
+        "multi-agent.html",
+        {
+            "request": request,
+            "title": f"{APP_TITLE} - Multi-Agent Hub",
+            "active_page": "multi-agent",
+            **i18n,
+        },
+    )
+
+
+@app.get("/supply-chain", response_class=HTMLResponse)
+async def supply_chain_view(request: Request):
+    """AI Supply Chain Security dashboard"""
+    i18n = create_i18n_context(request)
+    return templates.TemplateResponse(
+        "supply-chain.html",
+        {
+            "request": request,
+            "title": f"{APP_TITLE} - AI Supply Chain",
+            "active_page": "supply-chain",
+            **i18n,
+        },
+    )
+
+
+@app.get("/healing", response_class=HTMLResponse)
+async def healing_view(request: Request):
+    """Autonomous Healing & Self-Remediation dashboard"""
+    i18n = create_i18n_context(request)
+    return templates.TemplateResponse(
+        "healing.html",
+        {
+            "request": request,
+            "title": f"{APP_TITLE} - Autonomous Healing",
+            "active_page": "healing",
+            **i18n,
+        },
+    )
+
+
+@app.get("/business-intelligence", response_class=HTMLResponse)
+async def business_intelligence_view(request: Request):
+    """Business Intelligence & ROI dashboard"""
+    i18n = create_i18n_context(request)
+    return templates.TemplateResponse(
+        "business-intelligence.html",
+        {
+            "request": request,
+            "title": f"{APP_TITLE} - Business Intelligence",
+            "active_page": "business-intelligence",
+            **i18n,
+        },
+    )
+
+
+# ============================================================================
 # Request tracking middleware
 # ============================================================================
 

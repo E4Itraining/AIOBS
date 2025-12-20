@@ -1,0 +1,951 @@
+{% extends "base.html" %}
+
+{% set active_page = 'guardrails' %}
+
+{% block page_title %}GenAI Guardrails & Safety Mesh{% endblock %}
+{% block page_subtitle %}<p class="text-muted">Prompt injection protection, jailbreak detection, and content safety controls</p>{% endblock %}
+
+{% block topbar_actions %}
+<div class="live-indicator">
+    <span class="live-dot"></span>
+    <span>Real-time Protection</span>
+</div>
+<button class="btn btn-secondary" onclick="testPrompt()">
+    <i data-lucide="flask-conical"></i>
+    Test Prompt
+</button>
+<button class="btn btn-primary" onclick="viewPolicies()">
+    <i data-lucide="shield"></i>
+    Manage Policies
+</button>
+{% endblock %}
+
+{% block content %}
+<!-- Safety Mesh Overview -->
+<div class="guardrails-hero">
+    <div class="safety-score-main">
+        <div class="score-ring large">
+            <svg viewBox="0 0 120 120">
+                <circle cx="60" cy="60" r="54" fill="none" stroke="var(--border-color)" stroke-width="8"/>
+                <circle cx="60" cy="60" r="54" fill="none" stroke="var(--color-success)" stroke-width="8"
+                    stroke-dasharray="339.3" stroke-dashoffset="17" stroke-linecap="round"
+                    transform="rotate(-90 60 60)" id="safetyScoreRing"/>
+            </svg>
+            <div class="score-content">
+                <span class="score-value" id="safetyScore">95</span>
+                <span class="score-label">Safety Score</span>
+            </div>
+        </div>
+    </div>
+    <div class="safety-stats">
+        <div class="safety-stat">
+            <div class="stat-icon danger">
+                <i data-lucide="shield-off"></i>
+            </div>
+            <div class="stat-content">
+                <span class="stat-value" id="injectionBlocked">127</span>
+                <span class="stat-label">Injections Blocked (24h)</span>
+            </div>
+        </div>
+        <div class="safety-stat">
+            <div class="stat-icon warning">
+                <i data-lucide="key"></i>
+            </div>
+            <div class="stat-content">
+                <span class="stat-value" id="jailbreakAttempts">23</span>
+                <span class="stat-label">Jailbreak Attempts (24h)</span>
+            </div>
+        </div>
+        <div class="safety-stat">
+            <div class="stat-icon success">
+                <i data-lucide="check-circle"></i>
+            </div>
+            <div class="stat-content">
+                <span class="stat-value" id="safeRequests">99.7%</span>
+                <span class="stat-label">Safe Request Rate</span>
+            </div>
+        </div>
+        <div class="safety-stat">
+            <div class="stat-icon primary">
+                <i data-lucide="eye"></i>
+            </div>
+            <div class="stat-content">
+                <span class="stat-value" id="dataLeaksPrevented">0</span>
+                <span class="stat-label">Data Leaks Prevented</span>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Guardrail Components Grid -->
+<section class="mb-6">
+    <h2 class="section-title">Active Guardrails</h2>
+    <div class="guardrails-grid">
+        <div class="guardrail-card active">
+            <div class="guardrail-header">
+                <div class="guardrail-icon injection">
+                    <i data-lucide="shield-alert"></i>
+                </div>
+                <div class="guardrail-status">
+                    <span class="status-badge active">Active</span>
+                </div>
+            </div>
+            <h3>Prompt Injection Detection</h3>
+            <p>Real-time analysis of user inputs for injection attempts</p>
+            <div class="guardrail-stats">
+                <div class="stat">
+                    <span class="label">Detection Rate</span>
+                    <span class="value">99.8%</span>
+                </div>
+                <div class="stat">
+                    <span class="label">Avg Latency</span>
+                    <span class="value">12ms</span>
+                </div>
+            </div>
+            <div class="guardrail-patterns">
+                <span class="pattern-tag">System Override</span>
+                <span class="pattern-tag">Context Injection</span>
+                <span class="pattern-tag">Delimiter Attack</span>
+            </div>
+        </div>
+
+        <div class="guardrail-card active">
+            <div class="guardrail-header">
+                <div class="guardrail-icon jailbreak">
+                    <i data-lucide="unlock"></i>
+                </div>
+                <div class="guardrail-status">
+                    <span class="status-badge active">Active</span>
+                </div>
+            </div>
+            <h3>Jailbreak Prevention</h3>
+            <p>Detection of role-playing and boundary bypass attempts</p>
+            <div class="guardrail-stats">
+                <div class="stat">
+                    <span class="label">Patterns</span>
+                    <span class="value">47</span>
+                </div>
+                <div class="stat">
+                    <span class="label">Blocked Today</span>
+                    <span class="value">23</span>
+                </div>
+            </div>
+            <div class="guardrail-patterns">
+                <span class="pattern-tag">DAN Mode</span>
+                <span class="pattern-tag">Role Play</span>
+                <span class="pattern-tag">Hypothetical</span>
+            </div>
+        </div>
+
+        <div class="guardrail-card active">
+            <div class="guardrail-header">
+                <div class="guardrail-icon dlp">
+                    <i data-lucide="file-lock"></i>
+                </div>
+                <div class="guardrail-status">
+                    <span class="status-badge active">Active</span>
+                </div>
+            </div>
+            <h3>Data Loss Prevention</h3>
+            <p>PII, secrets, and sensitive data detection</p>
+            <div class="guardrail-stats">
+                <div class="stat">
+                    <span class="label">PII Types</span>
+                    <span class="value">12</span>
+                </div>
+                <div class="stat">
+                    <span class="label">Secrets Blocked</span>
+                    <span class="value">8</span>
+                </div>
+            </div>
+            <div class="guardrail-patterns">
+                <span class="pattern-tag">SSN</span>
+                <span class="pattern-tag">Credit Card</span>
+                <span class="pattern-tag">API Keys</span>
+            </div>
+        </div>
+
+        <div class="guardrail-card active">
+            <div class="guardrail-header">
+                <div class="guardrail-icon content">
+                    <i data-lucide="message-square-warning"></i>
+                </div>
+                <div class="guardrail-status">
+                    <span class="status-badge active">Active</span>
+                </div>
+            </div>
+            <h3>Content Safety</h3>
+            <p>Toxicity, bias, and harmful content filtering</p>
+            <div class="guardrail-stats">
+                <div class="stat">
+                    <span class="label">Categories</span>
+                    <span class="value">8</span>
+                </div>
+                <div class="stat">
+                    <span class="label">Filtered</span>
+                    <span class="value">45</span>
+                </div>
+            </div>
+            <div class="guardrail-patterns">
+                <span class="pattern-tag">Hate Speech</span>
+                <span class="pattern-tag">Violence</span>
+                <span class="pattern-tag">Adult</span>
+            </div>
+        </div>
+
+        <div class="guardrail-card active">
+            <div class="guardrail-header">
+                <div class="guardrail-icon bias">
+                    <i data-lucide="scale"></i>
+                </div>
+                <div class="guardrail-status">
+                    <span class="status-badge active">Active</span>
+                </div>
+            </div>
+            <h3>Bias Detection</h3>
+            <p>Monitor and flag biased outputs</p>
+            <div class="guardrail-stats">
+                <div class="stat">
+                    <span class="label">Dimensions</span>
+                    <span class="value">6</span>
+                </div>
+                <div class="stat">
+                    <span class="label">Flags</span>
+                    <span class="value">12</span>
+                </div>
+            </div>
+            <div class="guardrail-patterns">
+                <span class="pattern-tag">Gender</span>
+                <span class="pattern-tag">Race</span>
+                <span class="pattern-tag">Age</span>
+            </div>
+        </div>
+
+        <div class="guardrail-card active">
+            <div class="guardrail-header">
+                <div class="guardrail-icon semantic">
+                    <i data-lucide="radar"></i>
+                </div>
+                <div class="guardrail-status">
+                    <span class="status-badge active">Active</span>
+                </div>
+            </div>
+            <h3>Semantic Firewall</h3>
+            <p>Topic boundaries and off-topic prevention</p>
+            <div class="guardrail-stats">
+                <div class="stat">
+                    <span class="label">Topics</span>
+                    <span class="value">15</span>
+                </div>
+                <div class="stat">
+                    <span class="label">Redirected</span>
+                    <span class="value">34</span>
+                </div>
+            </div>
+            <div class="guardrail-patterns">
+                <span class="pattern-tag">Off-Topic</span>
+                <span class="pattern-tag">Scope Creep</span>
+                <span class="pattern-tag">Boundary</span>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Real-time Threat Feed -->
+<section class="mb-6">
+    <div class="grid grid-2">
+        <div class="card">
+            <div class="card-header">
+                <h3 class="card-title">Real-time Threat Feed</h3>
+                <span class="live-badge"><span class="live-dot"></span> Live</span>
+            </div>
+            <div class="threats-feed" id="threatsFeed">
+                <div class="threat-item blocked">
+                    <div class="threat-icon">
+                        <i data-lucide="shield-off"></i>
+                    </div>
+                    <div class="threat-content">
+                        <span class="threat-type">Prompt Injection</span>
+                        <span class="threat-details">"Ignore all previous instructions and..."</span>
+                        <span class="threat-time">Just now</span>
+                    </div>
+                    <span class="threat-status blocked">Blocked</span>
+                </div>
+                <div class="threat-item blocked">
+                    <div class="threat-icon">
+                        <i data-lucide="unlock"></i>
+                    </div>
+                    <div class="threat-content">
+                        <span class="threat-type">Jailbreak Attempt</span>
+                        <span class="threat-details">DAN prompt pattern detected</span>
+                        <span class="threat-time">2 min ago</span>
+                    </div>
+                    <span class="threat-status blocked">Blocked</span>
+                </div>
+                <div class="threat-item warning">
+                    <div class="threat-icon">
+                        <i data-lucide="file-warning"></i>
+                    </div>
+                    <div class="threat-content">
+                        <span class="threat-type">PII Detected</span>
+                        <span class="threat-details">Credit card number in output</span>
+                        <span class="threat-time">5 min ago</span>
+                    </div>
+                    <span class="threat-status warning">Redacted</span>
+                </div>
+            </div>
+        </div>
+
+        <div class="card">
+            <div class="card-header">
+                <h3 class="card-title">Threat Distribution (7d)</h3>
+            </div>
+            <div class="chart-container" style="height: 250px;">
+                <canvas id="threatDistribution"></canvas>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Policy Configuration -->
+<section class="mb-6">
+    <div class="card">
+        <div class="card-header">
+            <h3 class="card-title">Guardrail Policies</h3>
+            <button class="btn btn-secondary btn-sm" onclick="addPolicy()">
+                <i data-lucide="plus"></i>
+                Add Policy
+            </button>
+        </div>
+        <table class="data-table">
+            <thead>
+                <tr>
+                    <th>Policy Name</th>
+                    <th>Type</th>
+                    <th>Severity</th>
+                    <th>Action</th>
+                    <th>Triggers (24h)</th>
+                    <th>Status</th>
+                    <th></th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td>
+                        <div class="policy-name">
+                            <i data-lucide="shield-alert"></i>
+                            <span>Injection Blocker</span>
+                        </div>
+                    </td>
+                    <td><span class="badge badge-danger">Injection</span></td>
+                    <td><span class="severity critical">Critical</span></td>
+                    <td>Block + Log</td>
+                    <td>127</td>
+                    <td><span class="status-dot active"></span> Active</td>
+                    <td><button class="btn-icon"><i data-lucide="settings"></i></button></td>
+                </tr>
+                <tr>
+                    <td>
+                        <div class="policy-name">
+                            <i data-lucide="unlock"></i>
+                            <span>Jailbreak Prevention</span>
+                        </div>
+                    </td>
+                    <td><span class="badge badge-warning">Jailbreak</span></td>
+                    <td><span class="severity high">High</span></td>
+                    <td>Block + Alert</td>
+                    <td>23</td>
+                    <td><span class="status-dot active"></span> Active</td>
+                    <td><button class="btn-icon"><i data-lucide="settings"></i></button></td>
+                </tr>
+                <tr>
+                    <td>
+                        <div class="policy-name">
+                            <i data-lucide="file-lock"></i>
+                            <span>PII Protection</span>
+                        </div>
+                    </td>
+                    <td><span class="badge badge-primary">DLP</span></td>
+                    <td><span class="severity high">High</span></td>
+                    <td>Redact + Log</td>
+                    <td>45</td>
+                    <td><span class="status-dot active"></span> Active</td>
+                    <td><button class="btn-icon"><i data-lucide="settings"></i></button></td>
+                </tr>
+                <tr>
+                    <td>
+                        <div class="policy-name">
+                            <i data-lucide="message-square-warning"></i>
+                            <span>Toxicity Filter</span>
+                        </div>
+                    </td>
+                    <td><span class="badge badge-secondary">Content</span></td>
+                    <td><span class="severity medium">Medium</span></td>
+                    <td>Warn + Log</td>
+                    <td>12</td>
+                    <td><span class="status-dot active"></span> Active</td>
+                    <td><button class="btn-icon"><i data-lucide="settings"></i></button></td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+</section>
+
+<style>
+.section-title {
+    font-size: 1.125rem;
+    font-weight: 600;
+    margin-bottom: var(--space-4);
+}
+
+/* Live Indicator */
+.live-indicator {
+    display: flex;
+    align-items: center;
+    gap: var(--space-2);
+    padding: var(--space-2) var(--space-3);
+    background: var(--color-success-light);
+    color: var(--color-success);
+    border-radius: var(--radius-full);
+    font-size: 0.8125rem;
+    font-weight: 500;
+}
+
+.live-dot {
+    width: 8px;
+    height: 8px;
+    background: var(--color-success);
+    border-radius: 50%;
+    animation: pulse 2s infinite;
+}
+
+@keyframes pulse {
+    0%, 100% { opacity: 1; transform: scale(1); }
+    50% { opacity: 0.5; transform: scale(1.2); }
+}
+
+.live-badge {
+    display: flex;
+    align-items: center;
+    gap: var(--space-1);
+    padding: var(--space-1) var(--space-2);
+    background: var(--color-success-light);
+    color: var(--color-success);
+    border-radius: var(--radius-full);
+    font-size: 0.75rem;
+    font-weight: 500;
+}
+
+/* Guardrails Hero */
+.guardrails-hero {
+    display: flex;
+    gap: var(--space-6);
+    padding: var(--space-6);
+    background: var(--bg-card);
+    border: 1px solid var(--border-color);
+    border-radius: var(--radius-xl);
+    margin-bottom: var(--space-6);
+}
+
+.safety-score-main {
+    flex-shrink: 0;
+}
+
+.score-ring.large {
+    width: 150px;
+    height: 150px;
+}
+
+.score-ring svg {
+    width: 100%;
+    height: 100%;
+}
+
+.score-content {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    text-align: center;
+}
+
+.score-ring {
+    position: relative;
+}
+
+.score-value {
+    display: block;
+    font-size: 2.5rem;
+    font-weight: 700;
+    color: var(--color-success);
+}
+
+.score-label {
+    font-size: 0.75rem;
+    color: var(--text-secondary);
+}
+
+.safety-stats {
+    flex: 1;
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: var(--space-4);
+}
+
+.safety-stat {
+    display: flex;
+    gap: var(--space-3);
+    padding: var(--space-4);
+    background: var(--bg-hover);
+    border-radius: var(--radius-lg);
+}
+
+.stat-icon {
+    width: 44px;
+    height: 44px;
+    border-radius: var(--radius-lg);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.stat-icon svg {
+    width: 22px;
+    height: 22px;
+    color: white;
+}
+
+.stat-icon.danger { background: linear-gradient(135deg, #ef4444, #f87171); }
+.stat-icon.warning { background: linear-gradient(135deg, #f59e0b, #fbbf24); }
+.stat-icon.success { background: linear-gradient(135deg, #10b981, #34d399); }
+.stat-icon.primary { background: linear-gradient(135deg, #6366f1, #8b5cf6); }
+
+.stat-value {
+    display: block;
+    font-size: 1.5rem;
+    font-weight: 700;
+}
+
+.stat-label {
+    font-size: 0.75rem;
+    color: var(--text-secondary);
+}
+
+/* Guardrails Grid */
+.guardrails-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: var(--space-4);
+}
+
+.guardrail-card {
+    background: var(--bg-card);
+    border: 1px solid var(--border-color);
+    border-radius: var(--radius-xl);
+    padding: var(--space-4);
+    transition: all 0.2s ease;
+}
+
+.guardrail-card:hover {
+    border-color: var(--color-primary);
+    box-shadow: 0 4px 12px rgba(99, 102, 241, 0.1);
+}
+
+.guardrail-card.active {
+    border-left: 3px solid var(--color-success);
+}
+
+.guardrail-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: var(--space-3);
+}
+
+.guardrail-icon {
+    width: 40px;
+    height: 40px;
+    border-radius: var(--radius-lg);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.guardrail-icon svg {
+    width: 20px;
+    height: 20px;
+    color: white;
+}
+
+.guardrail-icon.injection { background: linear-gradient(135deg, #ef4444, #dc2626); }
+.guardrail-icon.jailbreak { background: linear-gradient(135deg, #f59e0b, #d97706); }
+.guardrail-icon.dlp { background: linear-gradient(135deg, #6366f1, #4f46e5); }
+.guardrail-icon.content { background: linear-gradient(135deg, #8b5cf6, #7c3aed); }
+.guardrail-icon.bias { background: linear-gradient(135deg, #06b6d4, #0891b2); }
+.guardrail-icon.semantic { background: linear-gradient(135deg, #10b981, #059669); }
+
+.status-badge {
+    padding: var(--space-1) var(--space-2);
+    border-radius: var(--radius-full);
+    font-size: 0.6875rem;
+    font-weight: 600;
+    text-transform: uppercase;
+}
+
+.status-badge.active {
+    background: var(--color-success-light);
+    color: var(--color-success);
+}
+
+.guardrail-card h3 {
+    font-size: 1rem;
+    font-weight: 600;
+    margin-bottom: var(--space-2);
+}
+
+.guardrail-card p {
+    font-size: 0.8125rem;
+    color: var(--text-secondary);
+    margin-bottom: var(--space-3);
+}
+
+.guardrail-stats {
+    display: flex;
+    gap: var(--space-4);
+    margin-bottom: var(--space-3);
+}
+
+.guardrail-stats .stat {
+    display: flex;
+    flex-direction: column;
+}
+
+.guardrail-stats .label {
+    font-size: 0.6875rem;
+    color: var(--text-secondary);
+    text-transform: uppercase;
+}
+
+.guardrail-stats .value {
+    font-size: 1rem;
+    font-weight: 600;
+}
+
+.guardrail-patterns {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--space-1);
+}
+
+.pattern-tag {
+    padding: var(--space-1) var(--space-2);
+    background: var(--bg-hover);
+    border-radius: var(--radius-md);
+    font-size: 0.6875rem;
+    color: var(--text-secondary);
+}
+
+/* Threats Feed */
+.threats-feed {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-3);
+    max-height: 300px;
+    overflow-y: auto;
+}
+
+.threat-item {
+    display: flex;
+    align-items: flex-start;
+    gap: var(--space-3);
+    padding: var(--space-3);
+    background: var(--bg-hover);
+    border-radius: var(--radius-lg);
+    border-left: 3px solid;
+}
+
+.threat-item.blocked { border-left-color: var(--color-danger); }
+.threat-item.warning { border-left-color: var(--color-warning); }
+
+.threat-icon {
+    width: 32px;
+    height: 32px;
+    border-radius: var(--radius-md);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+}
+
+.threat-item.blocked .threat-icon {
+    background: var(--color-danger-light);
+    color: var(--color-danger);
+}
+
+.threat-item.warning .threat-icon {
+    background: var(--color-warning-light);
+    color: var(--color-warning);
+}
+
+.threat-icon svg {
+    width: 16px;
+    height: 16px;
+}
+
+.threat-content {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-1);
+}
+
+.threat-type {
+    font-weight: 600;
+    font-size: 0.875rem;
+}
+
+.threat-details {
+    font-size: 0.75rem;
+    color: var(--text-secondary);
+    font-family: monospace;
+}
+
+.threat-time {
+    font-size: 0.6875rem;
+    color: var(--text-tertiary);
+}
+
+.threat-status {
+    padding: var(--space-1) var(--space-2);
+    border-radius: var(--radius-full);
+    font-size: 0.6875rem;
+    font-weight: 600;
+    text-transform: uppercase;
+}
+
+.threat-status.blocked {
+    background: var(--color-danger-light);
+    color: var(--color-danger);
+}
+
+.threat-status.warning {
+    background: var(--color-warning-light);
+    color: var(--color-warning);
+}
+
+/* Data Table */
+.data-table {
+    width: 100%;
+    border-collapse: collapse;
+}
+
+.data-table th,
+.data-table td {
+    padding: var(--space-3);
+    text-align: left;
+    border-bottom: 1px solid var(--border-color);
+}
+
+.data-table th {
+    font-size: 0.75rem;
+    font-weight: 600;
+    text-transform: uppercase;
+    color: var(--text-secondary);
+}
+
+.policy-name {
+    display: flex;
+    align-items: center;
+    gap: var(--space-2);
+}
+
+.policy-name svg {
+    width: 16px;
+    height: 16px;
+    color: var(--text-secondary);
+}
+
+.badge {
+    padding: var(--space-1) var(--space-2);
+    border-radius: var(--radius-full);
+    font-size: 0.6875rem;
+    font-weight: 500;
+}
+
+.badge-danger { background: var(--color-danger-light); color: var(--color-danger); }
+.badge-warning { background: var(--color-warning-light); color: var(--color-warning); }
+.badge-primary { background: var(--color-primary-light); color: var(--color-primary); }
+.badge-secondary { background: var(--bg-hover); color: var(--text-secondary); }
+
+.severity {
+    font-weight: 600;
+    font-size: 0.8125rem;
+}
+
+.severity.critical { color: var(--color-danger); }
+.severity.high { color: var(--color-warning); }
+.severity.medium { color: var(--color-primary); }
+
+.status-dot {
+    display: inline-block;
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    margin-right: var(--space-1);
+}
+
+.status-dot.active { background: var(--color-success); }
+
+.btn-icon {
+    padding: var(--space-2);
+    background: transparent;
+    border: none;
+    cursor: pointer;
+    border-radius: var(--radius-md);
+}
+
+.btn-icon:hover {
+    background: var(--bg-hover);
+}
+
+.btn-icon svg {
+    width: 16px;
+    height: 16px;
+    color: var(--text-secondary);
+}
+
+@media (max-width: 1200px) {
+    .guardrails-grid {
+        grid-template-columns: repeat(2, 1fr);
+    }
+}
+
+@media (max-width: 768px) {
+    .guardrails-hero {
+        flex-direction: column;
+    }
+
+    .safety-stats {
+        grid-template-columns: 1fr;
+    }
+
+    .guardrails-grid {
+        grid-template-columns: 1fr;
+    }
+}
+</style>
+{% endblock %}
+
+{% block scripts %}
+<script>
+document.addEventListener('DOMContentLoaded', async () => {
+    await loadGuardrailsData();
+    initCharts();
+    startLiveFeed();
+    lucide.createIcons();
+});
+
+async function loadGuardrailsData() {
+    try {
+        const response = await fetch('/api/guardrails/security-posture');
+        const result = await response.json();
+
+        if (result.success) {
+            // Update stats from API
+            console.log('Guardrails data loaded:', result.data);
+        }
+    } catch (error) {
+        console.error('Error loading guardrails data:', error);
+    }
+}
+
+function initCharts() {
+    const ctx = document.getElementById('threatDistribution');
+    if (ctx) {
+        new Chart(ctx, {
+            type: 'bar',
+            data: {
+                labels: ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'],
+                datasets: [{
+                    label: 'Injection',
+                    data: [18, 22, 15, 25, 20, 12, 15],
+                    backgroundColor: '#ef4444'
+                }, {
+                    label: 'Jailbreak',
+                    data: [3, 5, 4, 6, 3, 1, 1],
+                    backgroundColor: '#f59e0b'
+                }, {
+                    label: 'DLP',
+                    data: [8, 6, 10, 5, 9, 4, 3],
+                    backgroundColor: '#6366f1'
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                scales: {
+                    x: { stacked: true },
+                    y: { stacked: true }
+                },
+                plugins: {
+                    legend: {
+                        position: 'bottom'
+                    }
+                }
+            }
+        });
+    }
+}
+
+function startLiveFeed() {
+    setInterval(() => {
+        if (Math.random() > 0.7) {
+            addThreatToFeed();
+        }
+    }, 5000);
+}
+
+function addThreatToFeed() {
+    const threats = [
+        { type: 'Prompt Injection', details: 'System override attempt detected', status: 'blocked' },
+        { type: 'Jailbreak Attempt', details: 'Role-play manipulation detected', status: 'blocked' },
+        { type: 'PII Detected', details: 'Email address in output', status: 'warning' }
+    ];
+
+    const threat = threats[Math.floor(Math.random() * threats.length)];
+    const feed = document.getElementById('threatsFeed');
+    const item = document.createElement('div');
+    item.className = `threat-item ${threat.status}`;
+    item.innerHTML = `
+        <div class="threat-icon">
+            <i data-lucide="shield-alert"></i>
+        </div>
+        <div class="threat-content">
+            <span class="threat-type">${threat.type}</span>
+            <span class="threat-details">${threat.details}</span>
+            <span class="threat-time">Just now</span>
+        </div>
+        <span class="threat-status ${threat.status}">${threat.status === 'blocked' ? 'Blocked' : 'Redacted'}</span>
+    `;
+
+    feed.insertBefore(item, feed.firstChild);
+    lucide.createIcons();
+
+    if (feed.children.length > 10) {
+        feed.removeChild(feed.lastChild);
+    }
+}
+
+function testPrompt() {
+    showToast('Opening prompt testing interface...', 'info');
+}
+
+function viewPolicies() {
+    showToast('Opening policy management...', 'info');
+}
+
+function addPolicy() {
+    showToast('Opening policy creation wizard...', 'info');
+}
+</script>
+{% endblock %}

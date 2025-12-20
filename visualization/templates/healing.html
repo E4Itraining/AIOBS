@@ -1,0 +1,679 @@
+{% extends "base.html" %}
+
+{% set active_page = 'healing' %}
+
+{% block page_title %}Autonomous Healing{% endblock %}
+{% block page_subtitle %}<p class="text-muted">Self-remediation, rollback management, and predictive healing</p>{% endblock %}
+
+{% block topbar_actions %}
+<div class="live-indicator">
+    <span class="live-dot"></span>
+    <span>Auto-Healing Active</span>
+</div>
+<button class="btn btn-secondary" onclick="viewPolicies()">
+    <i data-lucide="settings"></i>
+    Policies
+</button>
+<button class="btn btn-primary" onclick="manualHeal()">
+    <i data-lucide="heart-pulse"></i>
+    Manual Heal
+</button>
+{% endblock %}
+
+{% block content %}
+<!-- Healing Overview -->
+<div class="healing-hero">
+    <div class="healing-stats-grid">
+        <div class="healing-stat-card">
+            <div class="stat-icon success">
+                <i data-lucide="heart-pulse"></i>
+            </div>
+            <div class="stat-content">
+                <span class="stat-value">47</span>
+                <span class="stat-label">Auto-Heals (7d)</span>
+            </div>
+        </div>
+        <div class="healing-stat-card">
+            <div class="stat-icon primary">
+                <i data-lucide="rotate-ccw"></i>
+            </div>
+            <div class="stat-content">
+                <span class="stat-value">12</span>
+                <span class="stat-label">Rollbacks (7d)</span>
+            </div>
+        </div>
+        <div class="healing-stat-card">
+            <div class="stat-icon warning">
+                <i data-lucide="clock"></i>
+            </div>
+            <div class="stat-content">
+                <span class="stat-value">45s</span>
+                <span class="stat-label">Avg MTTR</span>
+            </div>
+        </div>
+        <div class="healing-stat-card">
+            <div class="stat-icon success">
+                <i data-lucide="check-circle"></i>
+            </div>
+            <div class="stat-content">
+                <span class="stat-value">94%</span>
+                <span class="stat-label">Success Rate</span>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Active Healing Pipelines -->
+<section class="mb-6">
+    <div class="card">
+        <div class="card-header">
+            <h3 class="card-title">Active Healing Pipelines</h3>
+            <span class="badge badge-success">3 Active</span>
+        </div>
+        <div class="pipelines-grid">
+            <div class="pipeline-card active">
+                <div class="pipeline-header">
+                    <div class="pipeline-icon">
+                        <i data-lucide="activity"></i>
+                    </div>
+                    <div class="pipeline-status">
+                        <span class="status-dot active"></span>
+                        <span>Active</span>
+                    </div>
+                </div>
+                <h4>Performance Degradation</h4>
+                <p>Auto-scale and optimize resources when latency exceeds threshold</p>
+                <div class="pipeline-stats">
+                    <span><i data-lucide="zap"></i> 23 triggers</span>
+                    <span><i data-lucide="check"></i> 100% success</span>
+                </div>
+                <div class="pipeline-actions">
+                    <span class="trigger-badge">Latency > 500ms</span>
+                </div>
+            </div>
+
+            <div class="pipeline-card active">
+                <div class="pipeline-header">
+                    <div class="pipeline-icon">
+                        <i data-lucide="trending-down"></i>
+                    </div>
+                    <div class="pipeline-status">
+                        <span class="status-dot active"></span>
+                        <span>Active</span>
+                    </div>
+                </div>
+                <h4>Accuracy Drop Response</h4>
+                <p>Automatic rollback when model accuracy drops below baseline</p>
+                <div class="pipeline-stats">
+                    <span><i data-lucide="zap"></i> 8 triggers</span>
+                    <span><i data-lucide="check"></i> 87% success</span>
+                </div>
+                <div class="pipeline-actions">
+                    <span class="trigger-badge">Accuracy < 92%</span>
+                </div>
+            </div>
+
+            <div class="pipeline-card active">
+                <div class="pipeline-header">
+                    <div class="pipeline-icon">
+                        <i data-lucide="git-merge"></i>
+                    </div>
+                    <div class="pipeline-status">
+                        <span class="status-dot active"></span>
+                        <span>Active</span>
+                    </div>
+                </div>
+                <h4>Drift Correction</h4>
+                <p>Retrain trigger when data drift exceeds acceptable bounds</p>
+                <div class="pipeline-stats">
+                    <span><i data-lucide="zap"></i> 16 triggers</span>
+                    <span><i data-lucide="check"></i> 94% success</span>
+                </div>
+                <div class="pipeline-actions">
+                    <span class="trigger-badge">Drift > 15%</span>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Recent Healing Events & Predictions -->
+<section class="mb-6">
+    <div class="grid grid-2">
+        <!-- Recent Healing Events -->
+        <div class="card">
+            <div class="card-header">
+                <h3 class="card-title">Recent Healing Events</h3>
+                <span class="live-badge"><span class="live-dot"></span> Live</span>
+            </div>
+            <div class="healing-events-list" id="healingEventsList">
+                <div class="healing-event success">
+                    <div class="event-icon">
+                        <i data-lucide="check-circle"></i>
+                    </div>
+                    <div class="event-content">
+                        <span class="event-action">Auto-scaled recommendation-v2</span>
+                        <span class="event-trigger">Latency spike detected (723ms)</span>
+                        <span class="event-result">Resolved in 12 seconds</span>
+                        <span class="event-time">5 min ago</span>
+                    </div>
+                </div>
+                <div class="healing-event success">
+                    <div class="event-icon">
+                        <i data-lucide="rotate-ccw"></i>
+                    </div>
+                    <div class="event-content">
+                        <span class="event-action">Rollback llm-assistant to v2.3.1</span>
+                        <span class="event-trigger">Accuracy drop to 89%</span>
+                        <span class="event-result">Accuracy restored to 95%</span>
+                        <span class="event-time">1 hour ago</span>
+                    </div>
+                </div>
+                <div class="healing-event warning">
+                    <div class="event-icon">
+                        <i data-lucide="refresh-cw"></i>
+                    </div>
+                    <div class="event-content">
+                        <span class="event-action">Retrain triggered for fraud-detector</span>
+                        <span class="event-trigger">Data drift exceeded threshold</span>
+                        <span class="event-result">Training in progress (45%)</span>
+                        <span class="event-time">2 hours ago</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Predictive Healing -->
+        <div class="card">
+            <div class="card-header">
+                <h3 class="card-title">Predictive Healing Recommendations</h3>
+            </div>
+            <div class="predictions-list">
+                <div class="prediction-item high">
+                    <div class="prediction-probability">85%</div>
+                    <div class="prediction-content">
+                        <span class="prediction-model">code-generator</span>
+                        <span class="prediction-issue">Likely to require scaling in 2 hours</span>
+                        <span class="prediction-reason">Traffic pattern analysis suggests peak load</span>
+                    </div>
+                    <button class="btn btn-sm btn-primary">Pre-scale</button>
+                </div>
+                <div class="prediction-item medium">
+                    <div class="prediction-probability">62%</div>
+                    <div class="prediction-content">
+                        <span class="prediction-model">sentiment-analyzer</span>
+                        <span class="prediction-issue">Drift correction needed in ~4 hours</span>
+                        <span class="prediction-reason">Gradual feature distribution shift</span>
+                    </div>
+                    <button class="btn btn-sm btn-secondary">Schedule</button>
+                </div>
+                <div class="prediction-item low">
+                    <div class="prediction-probability">35%</div>
+                    <div class="prediction-content">
+                        <span class="prediction-model">recommendation-v2</span>
+                        <span class="prediction-issue">May need attention tomorrow</span>
+                        <span class="prediction-reason">Seasonal pattern detected</span>
+                    </div>
+                    <button class="btn btn-sm btn-secondary">Monitor</button>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Rollback History -->
+<section class="mb-6">
+    <div class="card">
+        <div class="card-header">
+            <h3 class="card-title">Rollback History</h3>
+        </div>
+        <table class="data-table">
+            <thead>
+                <tr>
+                    <th>Model</th>
+                    <th>From Version</th>
+                    <th>To Version</th>
+                    <th>Trigger</th>
+                    <th>Duration</th>
+                    <th>Status</th>
+                    <th>Date</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td>llm-assistant</td>
+                    <td>v2.4.0</td>
+                    <td>v2.3.1</td>
+                    <td>Accuracy drop</td>
+                    <td>45s</td>
+                    <td><span class="status-badge success">Successful</span></td>
+                    <td>Today, 14:32</td>
+                </tr>
+                <tr>
+                    <td>recommendation-v2</td>
+                    <td>v3.1.0</td>
+                    <td>v3.0.5</td>
+                    <td>Latency spike</td>
+                    <td>32s</td>
+                    <td><span class="status-badge success">Successful</span></td>
+                    <td>Yesterday, 09:15</td>
+                </tr>
+                <tr>
+                    <td>fraud-detector</td>
+                    <td>v1.2.0</td>
+                    <td>v1.1.8</td>
+                    <td>High error rate</td>
+                    <td>1m 12s</td>
+                    <td><span class="status-badge success">Successful</span></td>
+                    <td>Dec 18, 16:45</td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+</section>
+
+<style>
+.section-title {
+    font-size: 1.125rem;
+    font-weight: 600;
+    margin-bottom: var(--space-4);
+}
+
+.live-indicator {
+    display: flex;
+    align-items: center;
+    gap: var(--space-2);
+    padding: var(--space-2) var(--space-3);
+    background: var(--color-success-light);
+    color: var(--color-success);
+    border-radius: var(--radius-full);
+    font-size: 0.8125rem;
+    font-weight: 500;
+}
+
+.live-dot {
+    width: 8px;
+    height: 8px;
+    background: var(--color-success);
+    border-radius: 50%;
+    animation: pulse 2s infinite;
+}
+
+.live-badge {
+    display: flex;
+    align-items: center;
+    gap: var(--space-1);
+    padding: var(--space-1) var(--space-2);
+    background: var(--color-success-light);
+    color: var(--color-success);
+    border-radius: var(--radius-full);
+    font-size: 0.75rem;
+    font-weight: 500;
+}
+
+/* Healing Hero */
+.healing-hero {
+    margin-bottom: var(--space-6);
+}
+
+.healing-stats-grid {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: var(--space-4);
+}
+
+.healing-stat-card {
+    display: flex;
+    gap: var(--space-3);
+    padding: var(--space-4);
+    background: var(--bg-card);
+    border: 1px solid var(--border-color);
+    border-radius: var(--radius-xl);
+}
+
+.stat-icon {
+    width: 48px;
+    height: 48px;
+    border-radius: var(--radius-lg);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.stat-icon svg {
+    width: 24px;
+    height: 24px;
+    color: white;
+}
+
+.stat-icon.success { background: linear-gradient(135deg, #10b981, #34d399); }
+.stat-icon.primary { background: linear-gradient(135deg, #6366f1, #8b5cf6); }
+.stat-icon.warning { background: linear-gradient(135deg, #f59e0b, #fbbf24); }
+
+.stat-value {
+    display: block;
+    font-size: 1.75rem;
+    font-weight: 700;
+}
+
+.stat-label {
+    font-size: 0.8125rem;
+    color: var(--text-secondary);
+}
+
+/* Pipelines Grid */
+.pipelines-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: var(--space-4);
+}
+
+.pipeline-card {
+    padding: var(--space-4);
+    background: var(--bg-hover);
+    border-radius: var(--radius-lg);
+    border-left: 3px solid var(--color-success);
+}
+
+.pipeline-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: var(--space-3);
+}
+
+.pipeline-icon {
+    width: 36px;
+    height: 36px;
+    border-radius: var(--radius-md);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: var(--color-success-light);
+    color: var(--color-success);
+}
+
+.pipeline-icon svg {
+    width: 18px;
+    height: 18px;
+}
+
+.pipeline-status {
+    display: flex;
+    align-items: center;
+    gap: var(--space-1);
+    font-size: 0.75rem;
+    color: var(--text-secondary);
+}
+
+.status-dot {
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+}
+
+.status-dot.active {
+    background: var(--color-success);
+}
+
+.pipeline-card h4 {
+    font-size: 1rem;
+    font-weight: 600;
+    margin-bottom: var(--space-2);
+}
+
+.pipeline-card p {
+    font-size: 0.8125rem;
+    color: var(--text-secondary);
+    margin-bottom: var(--space-3);
+}
+
+.pipeline-stats {
+    display: flex;
+    gap: var(--space-3);
+    margin-bottom: var(--space-3);
+}
+
+.pipeline-stats span {
+    display: flex;
+    align-items: center;
+    gap: var(--space-1);
+    font-size: 0.75rem;
+    color: var(--text-secondary);
+}
+
+.pipeline-stats svg {
+    width: 12px;
+    height: 12px;
+}
+
+.trigger-badge {
+    padding: var(--space-1) var(--space-2);
+    background: var(--bg-card);
+    border-radius: var(--radius-md);
+    font-size: 0.6875rem;
+    font-family: monospace;
+    color: var(--text-secondary);
+}
+
+/* Healing Events List */
+.healing-events-list {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-3);
+}
+
+.healing-event {
+    display: flex;
+    gap: var(--space-3);
+    padding: var(--space-3);
+    background: var(--bg-hover);
+    border-radius: var(--radius-lg);
+    border-left: 3px solid;
+}
+
+.healing-event.success { border-left-color: var(--color-success); }
+.healing-event.warning { border-left-color: var(--color-warning); }
+
+.event-icon {
+    width: 36px;
+    height: 36px;
+    border-radius: var(--radius-md);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+}
+
+.healing-event.success .event-icon {
+    background: var(--color-success-light);
+    color: var(--color-success);
+}
+
+.healing-event.warning .event-icon {
+    background: var(--color-warning-light);
+    color: var(--color-warning);
+}
+
+.event-icon svg {
+    width: 18px;
+    height: 18px;
+}
+
+.event-content {
+    flex: 1;
+}
+
+.event-action {
+    display: block;
+    font-weight: 600;
+    font-size: 0.875rem;
+}
+
+.event-trigger,
+.event-result {
+    display: block;
+    font-size: 0.75rem;
+    color: var(--text-secondary);
+}
+
+.event-time {
+    display: block;
+    font-size: 0.6875rem;
+    color: var(--text-tertiary);
+    margin-top: var(--space-1);
+}
+
+/* Predictions List */
+.predictions-list {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-3);
+}
+
+.prediction-item {
+    display: flex;
+    align-items: center;
+    gap: var(--space-3);
+    padding: var(--space-3);
+    background: var(--bg-hover);
+    border-radius: var(--radius-lg);
+}
+
+.prediction-probability {
+    width: 48px;
+    height: 48px;
+    border-radius: var(--radius-lg);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: 700;
+    font-size: 0.875rem;
+    flex-shrink: 0;
+}
+
+.prediction-item.high .prediction-probability {
+    background: var(--color-danger-light);
+    color: var(--color-danger);
+}
+
+.prediction-item.medium .prediction-probability {
+    background: var(--color-warning-light);
+    color: var(--color-warning);
+}
+
+.prediction-item.low .prediction-probability {
+    background: var(--color-success-light);
+    color: var(--color-success);
+}
+
+.prediction-content {
+    flex: 1;
+}
+
+.prediction-model {
+    display: block;
+    font-weight: 600;
+    font-size: 0.875rem;
+}
+
+.prediction-issue {
+    display: block;
+    font-size: 0.8125rem;
+}
+
+.prediction-reason {
+    display: block;
+    font-size: 0.75rem;
+    color: var(--text-secondary);
+}
+
+/* Data Table */
+.data-table {
+    width: 100%;
+    border-collapse: collapse;
+}
+
+.data-table th,
+.data-table td {
+    padding: var(--space-3);
+    text-align: left;
+    border-bottom: 1px solid var(--border-color);
+}
+
+.data-table th {
+    font-size: 0.75rem;
+    font-weight: 600;
+    text-transform: uppercase;
+    color: var(--text-secondary);
+}
+
+.status-badge {
+    padding: var(--space-1) var(--space-2);
+    border-radius: var(--radius-full);
+    font-size: 0.6875rem;
+    font-weight: 600;
+    text-transform: uppercase;
+}
+
+.status-badge.success {
+    background: var(--color-success-light);
+    color: var(--color-success);
+}
+
+.badge {
+    padding: var(--space-1) var(--space-2);
+    border-radius: var(--radius-full);
+    font-size: 0.75rem;
+    font-weight: 500;
+}
+
+.badge-success {
+    background: var(--color-success-light);
+    color: var(--color-success);
+}
+
+@media (max-width: 1200px) {
+    .healing-stats-grid,
+    .pipelines-grid {
+        grid-template-columns: repeat(2, 1fr);
+    }
+}
+
+@media (max-width: 768px) {
+    .healing-stats-grid,
+    .pipelines-grid {
+        grid-template-columns: 1fr;
+    }
+}
+</style>
+{% endblock %}
+
+{% block scripts %}
+<script>
+document.addEventListener('DOMContentLoaded', async () => {
+    await loadHealingData();
+    lucide.createIcons();
+});
+
+async function loadHealingData() {
+    try {
+        const response = await fetch('/api/healing/analytics');
+        const result = await response.json();
+        if (result.success) {
+            console.log('Healing data loaded:', result.data);
+        }
+    } catch (error) {
+        console.error('Error loading healing data:', error);
+    }
+}
+
+function viewPolicies() {
+    showToast('Opening healing policies...', 'info');
+}
+
+function manualHeal() {
+    showToast('Opening manual healing wizard...', 'info');
+}
+</script>
+{% endblock %}
