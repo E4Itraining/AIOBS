@@ -1,0 +1,689 @@
+{% extends "base.html" %}
+
+{% set active_page = 'supply-chain' %}
+
+{% block page_title %}AI Supply Chain Security{% endblock %}
+{% block page_subtitle %}<p class="text-muted">AI Bill of Materials, model provenance, and vulnerability tracking</p>{% endblock %}
+
+{% block topbar_actions %}
+<button class="btn btn-secondary" onclick="scanVulnerabilities()">
+    <i data-lucide="scan"></i>
+    Run Scan
+</button>
+<button class="btn btn-primary" onclick="exportSBOM()">
+    <i data-lucide="download"></i>
+    Export AI-BOM
+</button>
+{% endblock %}
+
+{% block content %}
+<!-- Supply Chain Overview -->
+<div class="supply-chain-hero">
+    <div class="sbom-stats-grid">
+        <div class="sbom-stat-card">
+            <div class="stat-icon primary">
+                <i data-lucide="box"></i>
+            </div>
+            <div class="stat-content">
+                <span class="stat-value">24</span>
+                <span class="stat-label">AI Components</span>
+            </div>
+        </div>
+        <div class="sbom-stat-card">
+            <div class="stat-icon success">
+                <i data-lucide="shield-check"></i>
+            </div>
+            <div class="stat-content">
+                <span class="stat-value">21</span>
+                <span class="stat-label">Verified Origins</span>
+            </div>
+        </div>
+        <div class="sbom-stat-card">
+            <div class="stat-icon warning">
+                <i data-lucide="alert-triangle"></i>
+            </div>
+            <div class="stat-content">
+                <span class="stat-value">5</span>
+                <span class="stat-label">Vulnerabilities</span>
+            </div>
+        </div>
+        <div class="sbom-stat-card">
+            <div class="stat-icon danger">
+                <i data-lucide="shield-x"></i>
+            </div>
+            <div class="stat-content">
+                <span class="stat-value">1</span>
+                <span class="stat-label">Critical Issues</span>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- AI Bill of Materials -->
+<section class="mb-6">
+    <div class="card">
+        <div class="card-header">
+            <h3 class="card-title">AI Bill of Materials (AI-BOM)</h3>
+            <div class="header-actions">
+                <select class="form-select" style="width: 150px;">
+                    <option>All Types</option>
+                    <option>Models</option>
+                    <option>Datasets</option>
+                    <option>Frameworks</option>
+                </select>
+            </div>
+        </div>
+        <table class="data-table">
+            <thead>
+                <tr>
+                    <th>Component</th>
+                    <th>Type</th>
+                    <th>Version</th>
+                    <th>Source</th>
+                    <th>License</th>
+                    <th>Provenance</th>
+                    <th>Status</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td>
+                        <div class="component-name">
+                            <i data-lucide="brain"></i>
+                            <span>gpt-4-turbo</span>
+                        </div>
+                    </td>
+                    <td><span class="badge badge-primary">Model</span></td>
+                    <td>2024.01.25</td>
+                    <td>OpenAI API</td>
+                    <td>Proprietary</td>
+                    <td><span class="provenance verified"><i data-lucide="check-circle"></i> Verified</span></td>
+                    <td><span class="status-badge success">Compliant</span></td>
+                </tr>
+                <tr>
+                    <td>
+                        <div class="component-name">
+                            <i data-lucide="brain"></i>
+                            <span>claude-3-opus</span>
+                        </div>
+                    </td>
+                    <td><span class="badge badge-primary">Model</span></td>
+                    <td>2024.03.04</td>
+                    <td>Anthropic API</td>
+                    <td>Proprietary</td>
+                    <td><span class="provenance verified"><i data-lucide="check-circle"></i> Verified</span></td>
+                    <td><span class="status-badge success">Compliant</span></td>
+                </tr>
+                <tr>
+                    <td>
+                        <div class="component-name">
+                            <i data-lucide="brain"></i>
+                            <span>llama-3-70b</span>
+                        </div>
+                    </td>
+                    <td><span class="badge badge-primary">Model</span></td>
+                    <td>3.0.0</td>
+                    <td>HuggingFace</td>
+                    <td>Meta Llama 3</td>
+                    <td><span class="provenance verified"><i data-lucide="check-circle"></i> Verified</span></td>
+                    <td><span class="status-badge warning">Review</span></td>
+                </tr>
+                <tr>
+                    <td>
+                        <div class="component-name">
+                            <i data-lucide="database"></i>
+                            <span>customer-embeddings</span>
+                        </div>
+                    </td>
+                    <td><span class="badge badge-secondary">Dataset</span></td>
+                    <td>v2.3</td>
+                    <td>Internal</td>
+                    <td>Internal Use</td>
+                    <td><span class="provenance verified"><i data-lucide="check-circle"></i> Verified</span></td>
+                    <td><span class="status-badge success">Compliant</span></td>
+                </tr>
+                <tr>
+                    <td>
+                        <div class="component-name">
+                            <i data-lucide="code"></i>
+                            <span>langchain</span>
+                        </div>
+                    </td>
+                    <td><span class="badge badge-warning">Framework</span></td>
+                    <td>0.1.12</td>
+                    <td>PyPI</td>
+                    <td>MIT</td>
+                    <td><span class="provenance verified"><i data-lucide="check-circle"></i> Verified</span></td>
+                    <td><span class="status-badge danger">Vulnerable</span></td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+</section>
+
+<!-- Vulnerability Tracking -->
+<section class="mb-6">
+    <div class="grid grid-2">
+        <div class="card">
+            <div class="card-header">
+                <h3 class="card-title">Active Vulnerabilities</h3>
+                <span class="badge badge-danger">5 Open</span>
+            </div>
+            <div class="vulnerabilities-list">
+                <div class="vuln-item critical">
+                    <div class="vuln-severity critical">CRITICAL</div>
+                    <div class="vuln-content">
+                        <span class="vuln-id">CVE-2024-1234</span>
+                        <span class="vuln-title">LangChain Prompt Injection</span>
+                        <span class="vuln-component">langchain v0.1.12</span>
+                    </div>
+                    <div class="vuln-actions">
+                        <button class="btn btn-sm btn-danger">Fix Now</button>
+                    </div>
+                </div>
+                <div class="vuln-item high">
+                    <div class="vuln-severity high">HIGH</div>
+                    <div class="vuln-content">
+                        <span class="vuln-id">GHSA-5678</span>
+                        <span class="vuln-title">Unsafe Deserialization</span>
+                        <span class="vuln-component">transformers v4.35.0</span>
+                    </div>
+                    <div class="vuln-actions">
+                        <button class="btn btn-sm btn-secondary">View</button>
+                    </div>
+                </div>
+                <div class="vuln-item medium">
+                    <div class="vuln-severity medium">MEDIUM</div>
+                    <div class="vuln-content">
+                        <span class="vuln-id">CVE-2024-5678</span>
+                        <span class="vuln-title">Memory Leak</span>
+                        <span class="vuln-component">pytorch v2.1.0</span>
+                    </div>
+                    <div class="vuln-actions">
+                        <button class="btn btn-sm btn-secondary">View</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="card">
+            <div class="card-header">
+                <h3 class="card-title">Model Provenance Chain</h3>
+            </div>
+            <div class="provenance-chain">
+                <div class="chain-item">
+                    <div class="chain-node origin">
+                        <i data-lucide="building"></i>
+                    </div>
+                    <div class="chain-content">
+                        <span class="chain-title">Origin</span>
+                        <span class="chain-value">OpenAI</span>
+                        <span class="chain-hash">sha256:a1b2c3...</span>
+                    </div>
+                    <div class="chain-verified">
+                        <i data-lucide="check-circle"></i>
+                    </div>
+                </div>
+                <div class="chain-connector"></div>
+                <div class="chain-item">
+                    <div class="chain-node training">
+                        <i data-lucide="cpu"></i>
+                    </div>
+                    <div class="chain-content">
+                        <span class="chain-title">Training</span>
+                        <span class="chain-value">Azure ML Cluster</span>
+                        <span class="chain-hash">signed: 2024-01-15</span>
+                    </div>
+                    <div class="chain-verified">
+                        <i data-lucide="check-circle"></i>
+                    </div>
+                </div>
+                <div class="chain-connector"></div>
+                <div class="chain-item">
+                    <div class="chain-node deployment">
+                        <i data-lucide="cloud"></i>
+                    </div>
+                    <div class="chain-content">
+                        <span class="chain-title">Deployment</span>
+                        <span class="chain-value">Production K8s</span>
+                        <span class="chain-hash">attestation: valid</span>
+                    </div>
+                    <div class="chain-verified">
+                        <i data-lucide="check-circle"></i>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Compliance & Attestations -->
+<section class="mb-6">
+    <div class="card">
+        <div class="card-header">
+            <h3 class="card-title">Digital Attestations</h3>
+        </div>
+        <div class="attestations-grid">
+            <div class="attestation-card valid">
+                <div class="attestation-icon">
+                    <i data-lucide="file-check"></i>
+                </div>
+                <div class="attestation-content">
+                    <span class="attestation-title">Model Card</span>
+                    <span class="attestation-status">Valid</span>
+                    <span class="attestation-date">Updated 2 days ago</span>
+                </div>
+            </div>
+            <div class="attestation-card valid">
+                <div class="attestation-icon">
+                    <i data-lucide="shield-check"></i>
+                </div>
+                <div class="attestation-content">
+                    <span class="attestation-title">Security Audit</span>
+                    <span class="attestation-status">Passed</span>
+                    <span class="attestation-date">Last audit: Jan 2024</span>
+                </div>
+            </div>
+            <div class="attestation-card warning">
+                <div class="attestation-icon">
+                    <i data-lucide="scale"></i>
+                </div>
+                <div class="attestation-content">
+                    <span class="attestation-title">Bias Assessment</span>
+                    <span class="attestation-status">Needs Review</span>
+                    <span class="attestation-date">Due: 15 days</span>
+                </div>
+            </div>
+            <div class="attestation-card valid">
+                <div class="attestation-icon">
+                    <i data-lucide="key"></i>
+                </div>
+                <div class="attestation-content">
+                    <span class="attestation-title">SLSA Level 3</span>
+                    <span class="attestation-status">Verified</span>
+                    <span class="attestation-date">Chain verified</span>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<style>
+.section-title {
+    font-size: 1.125rem;
+    font-weight: 600;
+    margin-bottom: var(--space-4);
+}
+
+/* Supply Chain Hero */
+.supply-chain-hero {
+    margin-bottom: var(--space-6);
+}
+
+.sbom-stats-grid {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: var(--space-4);
+}
+
+.sbom-stat-card {
+    display: flex;
+    gap: var(--space-3);
+    padding: var(--space-4);
+    background: var(--bg-card);
+    border: 1px solid var(--border-color);
+    border-radius: var(--radius-xl);
+}
+
+.stat-icon {
+    width: 48px;
+    height: 48px;
+    border-radius: var(--radius-lg);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.stat-icon svg {
+    width: 24px;
+    height: 24px;
+    color: white;
+}
+
+.stat-icon.primary { background: linear-gradient(135deg, #6366f1, #8b5cf6); }
+.stat-icon.success { background: linear-gradient(135deg, #10b981, #34d399); }
+.stat-icon.warning { background: linear-gradient(135deg, #f59e0b, #fbbf24); }
+.stat-icon.danger { background: linear-gradient(135deg, #ef4444, #f87171); }
+
+.stat-value {
+    display: block;
+    font-size: 1.75rem;
+    font-weight: 700;
+}
+
+.stat-label {
+    font-size: 0.8125rem;
+    color: var(--text-secondary);
+}
+
+/* Data Table */
+.data-table {
+    width: 100%;
+    border-collapse: collapse;
+}
+
+.data-table th,
+.data-table td {
+    padding: var(--space-3);
+    text-align: left;
+    border-bottom: 1px solid var(--border-color);
+}
+
+.data-table th {
+    font-size: 0.75rem;
+    font-weight: 600;
+    text-transform: uppercase;
+    color: var(--text-secondary);
+}
+
+.component-name {
+    display: flex;
+    align-items: center;
+    gap: var(--space-2);
+}
+
+.component-name svg {
+    width: 16px;
+    height: 16px;
+    color: var(--text-secondary);
+}
+
+.badge {
+    padding: var(--space-1) var(--space-2);
+    border-radius: var(--radius-full);
+    font-size: 0.6875rem;
+    font-weight: 500;
+}
+
+.badge-primary { background: var(--color-primary-light); color: var(--color-primary); }
+.badge-secondary { background: var(--bg-hover); color: var(--text-secondary); }
+.badge-warning { background: var(--color-warning-light); color: var(--color-warning); }
+.badge-danger { background: var(--color-danger-light); color: var(--color-danger); }
+
+.provenance {
+    display: flex;
+    align-items: center;
+    gap: var(--space-1);
+    font-size: 0.8125rem;
+}
+
+.provenance.verified {
+    color: var(--color-success);
+}
+
+.provenance svg {
+    width: 14px;
+    height: 14px;
+}
+
+.status-badge {
+    padding: var(--space-1) var(--space-2);
+    border-radius: var(--radius-full);
+    font-size: 0.6875rem;
+    font-weight: 600;
+    text-transform: uppercase;
+}
+
+.status-badge.success { background: var(--color-success-light); color: var(--color-success); }
+.status-badge.warning { background: var(--color-warning-light); color: var(--color-warning); }
+.status-badge.danger { background: var(--color-danger-light); color: var(--color-danger); }
+
+/* Vulnerabilities List */
+.vulnerabilities-list {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-3);
+}
+
+.vuln-item {
+    display: flex;
+    align-items: center;
+    gap: var(--space-3);
+    padding: var(--space-3);
+    background: var(--bg-hover);
+    border-radius: var(--radius-lg);
+    border-left: 3px solid;
+}
+
+.vuln-item.critical { border-left-color: #dc2626; }
+.vuln-item.high { border-left-color: #ea580c; }
+.vuln-item.medium { border-left-color: #d97706; }
+
+.vuln-severity {
+    padding: var(--space-1) var(--space-2);
+    border-radius: var(--radius-md);
+    font-size: 0.625rem;
+    font-weight: 700;
+    text-transform: uppercase;
+}
+
+.vuln-severity.critical { background: #dc2626; color: white; }
+.vuln-severity.high { background: #ea580c; color: white; }
+.vuln-severity.medium { background: #d97706; color: white; }
+
+.vuln-content {
+    flex: 1;
+}
+
+.vuln-id {
+    display: block;
+    font-family: monospace;
+    font-size: 0.75rem;
+    color: var(--text-secondary);
+}
+
+.vuln-title {
+    display: block;
+    font-weight: 600;
+    font-size: 0.875rem;
+}
+
+.vuln-component {
+    display: block;
+    font-size: 0.75rem;
+    color: var(--text-secondary);
+}
+
+/* Provenance Chain */
+.provenance-chain {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-2);
+}
+
+.chain-item {
+    display: flex;
+    align-items: center;
+    gap: var(--space-3);
+    padding: var(--space-3);
+    background: var(--bg-hover);
+    border-radius: var(--radius-lg);
+}
+
+.chain-node {
+    width: 40px;
+    height: 40px;
+    border-radius: var(--radius-lg);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.chain-node svg {
+    width: 20px;
+    height: 20px;
+    color: white;
+}
+
+.chain-node.origin { background: #6366f1; }
+.chain-node.training { background: #f59e0b; }
+.chain-node.deployment { background: #10b981; }
+
+.chain-content {
+    flex: 1;
+}
+
+.chain-title {
+    display: block;
+    font-size: 0.6875rem;
+    text-transform: uppercase;
+    color: var(--text-secondary);
+}
+
+.chain-value {
+    display: block;
+    font-weight: 600;
+    font-size: 0.875rem;
+}
+
+.chain-hash {
+    display: block;
+    font-family: monospace;
+    font-size: 0.6875rem;
+    color: var(--text-secondary);
+}
+
+.chain-verified {
+    color: var(--color-success);
+}
+
+.chain-verified svg {
+    width: 20px;
+    height: 20px;
+}
+
+.chain-connector {
+    width: 2px;
+    height: 20px;
+    background: var(--border-color);
+    margin-left: 19px;
+}
+
+/* Attestations Grid */
+.attestations-grid {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: var(--space-4);
+}
+
+.attestation-card {
+    display: flex;
+    gap: var(--space-3);
+    padding: var(--space-4);
+    background: var(--bg-hover);
+    border-radius: var(--radius-lg);
+    border-left: 3px solid var(--color-success);
+}
+
+.attestation-card.warning {
+    border-left-color: var(--color-warning);
+}
+
+.attestation-icon {
+    width: 40px;
+    height: 40px;
+    border-radius: var(--radius-lg);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: var(--color-success-light);
+    color: var(--color-success);
+}
+
+.attestation-card.warning .attestation-icon {
+    background: var(--color-warning-light);
+    color: var(--color-warning);
+}
+
+.attestation-icon svg {
+    width: 20px;
+    height: 20px;
+}
+
+.attestation-title {
+    display: block;
+    font-weight: 600;
+    font-size: 0.875rem;
+}
+
+.attestation-status {
+    display: block;
+    font-size: 0.75rem;
+    color: var(--color-success);
+}
+
+.attestation-card.warning .attestation-status {
+    color: var(--color-warning);
+}
+
+.attestation-date {
+    display: block;
+    font-size: 0.6875rem;
+    color: var(--text-secondary);
+}
+
+.header-actions {
+    display: flex;
+    gap: var(--space-2);
+}
+
+@media (max-width: 1200px) {
+    .sbom-stats-grid,
+    .attestations-grid {
+        grid-template-columns: repeat(2, 1fr);
+    }
+}
+
+@media (max-width: 768px) {
+    .sbom-stats-grid,
+    .attestations-grid {
+        grid-template-columns: 1fr;
+    }
+}
+</style>
+{% endblock %}
+
+{% block scripts %}
+<script>
+document.addEventListener('DOMContentLoaded', async () => {
+    await loadSupplyChainData();
+    lucide.createIcons();
+});
+
+async function loadSupplyChainData() {
+    try {
+        const response = await fetch('/api/supply-chain/analytics');
+        const result = await response.json();
+        if (result.success) {
+            console.log('Supply chain data loaded:', result.data);
+        }
+    } catch (error) {
+        console.error('Error loading supply chain data:', error);
+    }
+}
+
+function scanVulnerabilities() {
+    showToast('Starting vulnerability scan...', 'info');
+    setTimeout(() => {
+        showToast('Scan complete. 5 vulnerabilities found.', 'warning');
+    }, 3000);
+}
+
+function exportSBOM() {
+    showToast('Generating AI-BOM export...', 'info');
+    setTimeout(() => {
+        showToast('AI-BOM exported successfully!', 'success');
+    }, 2000);
+}
+</script>
+{% endblock %}

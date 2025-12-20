@@ -1,0 +1,852 @@
+{% extends "base.html" %}
+
+{% set active_page = 'multi-agent' %}
+
+{% block page_title %}Multi-Agent Observability Hub{% endblock %}
+{% block page_subtitle %}<p class="text-muted">Agent topology, decision traces, and orchestration monitoring</p>{% endblock %}
+
+{% block topbar_actions %}
+<div class="live-indicator">
+    <span class="live-dot"></span>
+    <span>Live Tracing</span>
+</div>
+<button class="btn btn-secondary" onclick="viewTopology()">
+    <i data-lucide="network"></i>
+    View Topology
+</button>
+<button class="btn btn-primary" onclick="exportTraces()">
+    <i data-lucide="download"></i>
+    Export Traces
+</button>
+{% endblock %}
+
+{% block content %}
+<!-- Agent Registry Overview -->
+<div class="agents-hero">
+    <div class="agent-stats-grid">
+        <div class="agent-stat-card">
+            <div class="stat-icon primary">
+                <i data-lucide="bot"></i>
+            </div>
+            <div class="stat-content">
+                <span class="stat-value" id="totalAgents">12</span>
+                <span class="stat-label">Active Agents</span>
+            </div>
+        </div>
+        <div class="agent-stat-card">
+            <div class="stat-icon success">
+                <i data-lucide="activity"></i>
+            </div>
+            <div class="stat-content">
+                <span class="stat-value" id="activeSessions">847</span>
+                <span class="stat-label">Sessions (24h)</span>
+            </div>
+        </div>
+        <div class="agent-stat-card">
+            <div class="stat-icon warning">
+                <i data-lucide="git-branch"></i>
+            </div>
+            <div class="stat-content">
+                <span class="stat-value" id="avgDepth">4.2</span>
+                <span class="stat-label">Avg Decision Depth</span>
+            </div>
+        </div>
+        <div class="agent-stat-card">
+            <div class="stat-icon danger">
+                <i data-lucide="alert-triangle"></i>
+            </div>
+            <div class="stat-content">
+                <span class="stat-value" id="anomalies">3</span>
+                <span class="stat-label">Anomalies Detected</span>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Agent Topology Visualization -->
+<section class="mb-6">
+    <div class="card">
+        <div class="card-header">
+            <h3 class="card-title">Agent Topology</h3>
+            <div class="header-actions">
+                <select class="form-select" id="topologySession" style="width: 200px;">
+                    <option>All Sessions</option>
+                    <option>Session #session-001</option>
+                    <option>Session #session-002</option>
+                </select>
+                <button class="btn btn-secondary btn-sm" onclick="refreshTopology()">
+                    <i data-lucide="refresh-cw"></i>
+                </button>
+            </div>
+        </div>
+        <div class="topology-container" id="topologyContainer">
+            <div class="topology-visualization">
+                <svg id="topologySvg" width="100%" height="400"></svg>
+            </div>
+            <div class="topology-legend">
+                <div class="legend-item">
+                    <span class="legend-dot orchestrator"></span>
+                    <span>Orchestrator</span>
+                </div>
+                <div class="legend-item">
+                    <span class="legend-dot worker"></span>
+                    <span>Worker Agent</span>
+                </div>
+                <div class="legend-item">
+                    <span class="legend-dot specialist"></span>
+                    <span>Specialist</span>
+                </div>
+                <div class="legend-item">
+                    <span class="legend-dot tool"></span>
+                    <span>Tool/Function</span>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Agent Registry & Decision Traces -->
+<section class="mb-6">
+    <div class="grid grid-2">
+        <!-- Agent Registry -->
+        <div class="card">
+            <div class="card-header">
+                <h3 class="card-title">Agent Registry</h3>
+                <span class="badge badge-primary">12 Agents</span>
+            </div>
+            <div class="agents-list">
+                <div class="agent-item active">
+                    <div class="agent-icon orchestrator">
+                        <i data-lucide="crown"></i>
+                    </div>
+                    <div class="agent-info">
+                        <span class="agent-name">Master Orchestrator</span>
+                        <span class="agent-type">Orchestrator</span>
+                    </div>
+                    <div class="agent-metrics">
+                        <span class="metric"><i data-lucide="activity"></i> 245 calls</span>
+                        <span class="metric"><i data-lucide="clock"></i> 120ms</span>
+                    </div>
+                    <span class="agent-status active">Active</span>
+                </div>
+                <div class="agent-item active">
+                    <div class="agent-icon worker">
+                        <i data-lucide="bot"></i>
+                    </div>
+                    <div class="agent-info">
+                        <span class="agent-name">Research Agent</span>
+                        <span class="agent-type">Worker</span>
+                    </div>
+                    <div class="agent-metrics">
+                        <span class="metric"><i data-lucide="activity"></i> 189 calls</span>
+                        <span class="metric"><i data-lucide="clock"></i> 450ms</span>
+                    </div>
+                    <span class="agent-status active">Active</span>
+                </div>
+                <div class="agent-item active">
+                    <div class="agent-icon specialist">
+                        <i data-lucide="code"></i>
+                    </div>
+                    <div class="agent-info">
+                        <span class="agent-name">Code Generator</span>
+                        <span class="agent-type">Specialist</span>
+                    </div>
+                    <div class="agent-metrics">
+                        <span class="metric"><i data-lucide="activity"></i> 156 calls</span>
+                        <span class="metric"><i data-lucide="clock"></i> 890ms</span>
+                    </div>
+                    <span class="agent-status active">Active</span>
+                </div>
+                <div class="agent-item idle">
+                    <div class="agent-icon tool">
+                        <i data-lucide="wrench"></i>
+                    </div>
+                    <div class="agent-info">
+                        <span class="agent-name">Web Search Tool</span>
+                        <span class="agent-type">Tool</span>
+                    </div>
+                    <div class="agent-metrics">
+                        <span class="metric"><i data-lucide="activity"></i> 78 calls</span>
+                        <span class="metric"><i data-lucide="clock"></i> 1.2s</span>
+                    </div>
+                    <span class="agent-status idle">Idle</span>
+                </div>
+            </div>
+        </div>
+
+        <!-- Decision Traces -->
+        <div class="card">
+            <div class="card-header">
+                <h3 class="card-title">Recent Decision Traces</h3>
+                <span class="live-badge"><span class="live-dot"></span> Live</span>
+            </div>
+            <div class="traces-list" id="tracesList">
+                <div class="trace-item">
+                    <div class="trace-header">
+                        <span class="trace-id">#trace-a1b2c3</span>
+                        <span class="trace-time">2 min ago</span>
+                    </div>
+                    <div class="trace-path">
+                        <span class="path-node orchestrator">Orchestrator</span>
+                        <i data-lucide="arrow-right"></i>
+                        <span class="path-node worker">Research</span>
+                        <i data-lucide="arrow-right"></i>
+                        <span class="path-node tool">Web Search</span>
+                        <i data-lucide="arrow-right"></i>
+                        <span class="path-node specialist">Summarizer</span>
+                    </div>
+                    <div class="trace-metrics">
+                        <span><i data-lucide="clock"></i> 2.3s total</span>
+                        <span><i data-lucide="layers"></i> 4 steps</span>
+                        <span><i data-lucide="coins"></i> $0.012</span>
+                    </div>
+                </div>
+                <div class="trace-item">
+                    <div class="trace-header">
+                        <span class="trace-id">#trace-d4e5f6</span>
+                        <span class="trace-time">5 min ago</span>
+                    </div>
+                    <div class="trace-path">
+                        <span class="path-node orchestrator">Orchestrator</span>
+                        <i data-lucide="arrow-right"></i>
+                        <span class="path-node specialist">Code Gen</span>
+                        <i data-lucide="arrow-right"></i>
+                        <span class="path-node tool">Linter</span>
+                    </div>
+                    <div class="trace-metrics">
+                        <span><i data-lucide="clock"></i> 1.8s total</span>
+                        <span><i data-lucide="layers"></i> 3 steps</span>
+                        <span><i data-lucide="coins"></i> $0.008</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Anomaly Detection & Cost Attribution -->
+<section class="mb-6">
+    <div class="grid grid-2">
+        <!-- Anomaly Detection -->
+        <div class="card">
+            <div class="card-header">
+                <h3 class="card-title">Anomaly Detection</h3>
+            </div>
+            <div class="anomalies-list">
+                <div class="anomaly-item warning">
+                    <div class="anomaly-icon">
+                        <i data-lucide="alert-triangle"></i>
+                    </div>
+                    <div class="anomaly-content">
+                        <span class="anomaly-type">Loop Detected</span>
+                        <span class="anomaly-details">Agent "Research" called 15 times in session #s-789</span>
+                        <span class="anomaly-time">10 min ago</span>
+                    </div>
+                    <button class="btn btn-sm btn-secondary">Investigate</button>
+                </div>
+                <div class="anomaly-item danger">
+                    <div class="anomaly-icon">
+                        <i data-lucide="x-circle"></i>
+                    </div>
+                    <div class="anomaly-content">
+                        <span class="anomaly-type">Timeout Chain</span>
+                        <span class="anomaly-details">3 consecutive timeouts in orchestration path</span>
+                        <span class="anomaly-time">25 min ago</span>
+                    </div>
+                    <button class="btn btn-sm btn-secondary">Investigate</button>
+                </div>
+                <div class="anomaly-item info">
+                    <div class="anomaly-icon">
+                        <i data-lucide="info"></i>
+                    </div>
+                    <div class="anomaly-content">
+                        <span class="anomaly-type">Unusual Path</span>
+                        <span class="anomaly-details">First occurrence of this agent combination</span>
+                        <span class="anomaly-time">1 hour ago</span>
+                    </div>
+                    <button class="btn btn-sm btn-secondary">Review</button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Cost Attribution -->
+        <div class="card">
+            <div class="card-header">
+                <h3 class="card-title">Cost Attribution (24h)</h3>
+            </div>
+            <div class="chart-container" style="height: 200px;">
+                <canvas id="costAttribution"></canvas>
+            </div>
+            <div class="cost-breakdown">
+                <div class="cost-item">
+                    <span class="cost-agent">Master Orchestrator</span>
+                    <span class="cost-value">$12.45</span>
+                    <span class="cost-percent">35%</span>
+                </div>
+                <div class="cost-item">
+                    <span class="cost-agent">Code Generator</span>
+                    <span class="cost-value">$8.90</span>
+                    <span class="cost-percent">25%</span>
+                </div>
+                <div class="cost-item">
+                    <span class="cost-agent">Research Agent</span>
+                    <span class="cost-value">$7.15</span>
+                    <span class="cost-percent">20%</span>
+                </div>
+                <div class="cost-item">
+                    <span class="cost-agent">Others</span>
+                    <span class="cost-value">$7.00</span>
+                    <span class="cost-percent">20%</span>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<style>
+.section-title {
+    font-size: 1.125rem;
+    font-weight: 600;
+    margin-bottom: var(--space-4);
+}
+
+.live-indicator {
+    display: flex;
+    align-items: center;
+    gap: var(--space-2);
+    padding: var(--space-2) var(--space-3);
+    background: var(--color-success-light);
+    color: var(--color-success);
+    border-radius: var(--radius-full);
+    font-size: 0.8125rem;
+    font-weight: 500;
+}
+
+.live-dot {
+    width: 8px;
+    height: 8px;
+    background: var(--color-success);
+    border-radius: 50%;
+    animation: pulse 2s infinite;
+}
+
+.live-badge {
+    display: flex;
+    align-items: center;
+    gap: var(--space-1);
+    padding: var(--space-1) var(--space-2);
+    background: var(--color-success-light);
+    color: var(--color-success);
+    border-radius: var(--radius-full);
+    font-size: 0.75rem;
+    font-weight: 500;
+}
+
+/* Agents Hero */
+.agents-hero {
+    margin-bottom: var(--space-6);
+}
+
+.agent-stats-grid {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: var(--space-4);
+}
+
+.agent-stat-card {
+    display: flex;
+    gap: var(--space-3);
+    padding: var(--space-4);
+    background: var(--bg-card);
+    border: 1px solid var(--border-color);
+    border-radius: var(--radius-xl);
+}
+
+.stat-icon {
+    width: 48px;
+    height: 48px;
+    border-radius: var(--radius-lg);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.stat-icon svg {
+    width: 24px;
+    height: 24px;
+    color: white;
+}
+
+.stat-icon.primary { background: linear-gradient(135deg, #6366f1, #8b5cf6); }
+.stat-icon.success { background: linear-gradient(135deg, #10b981, #34d399); }
+.stat-icon.warning { background: linear-gradient(135deg, #f59e0b, #fbbf24); }
+.stat-icon.danger { background: linear-gradient(135deg, #ef4444, #f87171); }
+
+.stat-value {
+    display: block;
+    font-size: 1.75rem;
+    font-weight: 700;
+}
+
+.stat-label {
+    font-size: 0.8125rem;
+    color: var(--text-secondary);
+}
+
+/* Topology Container */
+.topology-container {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-4);
+}
+
+.topology-visualization {
+    background: var(--bg-hover);
+    border-radius: var(--radius-lg);
+    min-height: 400px;
+}
+
+.topology-legend {
+    display: flex;
+    gap: var(--space-4);
+    justify-content: center;
+}
+
+.legend-item {
+    display: flex;
+    align-items: center;
+    gap: var(--space-2);
+    font-size: 0.8125rem;
+}
+
+.legend-dot {
+    width: 12px;
+    height: 12px;
+    border-radius: 50%;
+}
+
+.legend-dot.orchestrator { background: #6366f1; }
+.legend-dot.worker { background: #10b981; }
+.legend-dot.specialist { background: #f59e0b; }
+.legend-dot.tool { background: #64748b; }
+
+/* Agents List */
+.agents-list {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-3);
+}
+
+.agent-item {
+    display: flex;
+    align-items: center;
+    gap: var(--space-3);
+    padding: var(--space-3);
+    background: var(--bg-hover);
+    border-radius: var(--radius-lg);
+}
+
+.agent-icon {
+    width: 36px;
+    height: 36px;
+    border-radius: var(--radius-md);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.agent-icon svg {
+    width: 18px;
+    height: 18px;
+    color: white;
+}
+
+.agent-icon.orchestrator { background: #6366f1; }
+.agent-icon.worker { background: #10b981; }
+.agent-icon.specialist { background: #f59e0b; }
+.agent-icon.tool { background: #64748b; }
+
+.agent-info {
+    flex: 1;
+}
+
+.agent-name {
+    display: block;
+    font-weight: 600;
+    font-size: 0.875rem;
+}
+
+.agent-type {
+    font-size: 0.75rem;
+    color: var(--text-secondary);
+}
+
+.agent-metrics {
+    display: flex;
+    gap: var(--space-3);
+}
+
+.agent-metrics .metric {
+    display: flex;
+    align-items: center;
+    gap: var(--space-1);
+    font-size: 0.75rem;
+    color: var(--text-secondary);
+}
+
+.agent-metrics .metric svg {
+    width: 12px;
+    height: 12px;
+}
+
+.agent-status {
+    padding: var(--space-1) var(--space-2);
+    border-radius: var(--radius-full);
+    font-size: 0.6875rem;
+    font-weight: 600;
+    text-transform: uppercase;
+}
+
+.agent-status.active {
+    background: var(--color-success-light);
+    color: var(--color-success);
+}
+
+.agent-status.idle {
+    background: var(--bg-hover);
+    color: var(--text-secondary);
+}
+
+/* Traces List */
+.traces-list {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-4);
+}
+
+.trace-item {
+    padding: var(--space-3);
+    background: var(--bg-hover);
+    border-radius: var(--radius-lg);
+}
+
+.trace-header {
+    display: flex;
+    justify-content: space-between;
+    margin-bottom: var(--space-2);
+}
+
+.trace-id {
+    font-family: monospace;
+    font-size: 0.8125rem;
+    font-weight: 600;
+}
+
+.trace-time {
+    font-size: 0.75rem;
+    color: var(--text-secondary);
+}
+
+.trace-path {
+    display: flex;
+    align-items: center;
+    gap: var(--space-2);
+    margin-bottom: var(--space-3);
+    flex-wrap: wrap;
+}
+
+.path-node {
+    padding: var(--space-1) var(--space-2);
+    border-radius: var(--radius-md);
+    font-size: 0.75rem;
+    font-weight: 500;
+}
+
+.path-node.orchestrator { background: rgba(99, 102, 241, 0.2); color: #6366f1; }
+.path-node.worker { background: rgba(16, 185, 129, 0.2); color: #10b981; }
+.path-node.specialist { background: rgba(245, 158, 11, 0.2); color: #f59e0b; }
+.path-node.tool { background: rgba(100, 116, 139, 0.2); color: #64748b; }
+
+.trace-path svg {
+    width: 14px;
+    height: 14px;
+    color: var(--text-secondary);
+}
+
+.trace-metrics {
+    display: flex;
+    gap: var(--space-3);
+}
+
+.trace-metrics span {
+    display: flex;
+    align-items: center;
+    gap: var(--space-1);
+    font-size: 0.75rem;
+    color: var(--text-secondary);
+}
+
+.trace-metrics svg {
+    width: 12px;
+    height: 12px;
+}
+
+/* Anomalies List */
+.anomalies-list {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-3);
+}
+
+.anomaly-item {
+    display: flex;
+    align-items: flex-start;
+    gap: var(--space-3);
+    padding: var(--space-3);
+    background: var(--bg-hover);
+    border-radius: var(--radius-lg);
+    border-left: 3px solid;
+}
+
+.anomaly-item.warning { border-left-color: var(--color-warning); }
+.anomaly-item.danger { border-left-color: var(--color-danger); }
+.anomaly-item.info { border-left-color: var(--color-primary); }
+
+.anomaly-icon {
+    width: 32px;
+    height: 32px;
+    border-radius: var(--radius-md);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+}
+
+.anomaly-item.warning .anomaly-icon {
+    background: var(--color-warning-light);
+    color: var(--color-warning);
+}
+
+.anomaly-item.danger .anomaly-icon {
+    background: var(--color-danger-light);
+    color: var(--color-danger);
+}
+
+.anomaly-item.info .anomaly-icon {
+    background: var(--color-primary-light);
+    color: var(--color-primary);
+}
+
+.anomaly-icon svg {
+    width: 16px;
+    height: 16px;
+}
+
+.anomaly-content {
+    flex: 1;
+}
+
+.anomaly-type {
+    display: block;
+    font-weight: 600;
+    font-size: 0.875rem;
+}
+
+.anomaly-details {
+    display: block;
+    font-size: 0.75rem;
+    color: var(--text-secondary);
+    margin-top: var(--space-1);
+}
+
+.anomaly-time {
+    display: block;
+    font-size: 0.6875rem;
+    color: var(--text-tertiary);
+    margin-top: var(--space-1);
+}
+
+/* Cost Breakdown */
+.cost-breakdown {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-2);
+    margin-top: var(--space-4);
+    padding-top: var(--space-4);
+    border-top: 1px solid var(--border-color);
+}
+
+.cost-item {
+    display: flex;
+    align-items: center;
+    gap: var(--space-3);
+    font-size: 0.8125rem;
+}
+
+.cost-agent {
+    flex: 1;
+}
+
+.cost-value {
+    font-weight: 600;
+}
+
+.cost-percent {
+    color: var(--text-secondary);
+    width: 40px;
+    text-align: right;
+}
+
+.header-actions {
+    display: flex;
+    gap: var(--space-2);
+}
+
+.badge {
+    padding: var(--space-1) var(--space-2);
+    border-radius: var(--radius-full);
+    font-size: 0.75rem;
+    font-weight: 500;
+}
+
+.badge-primary {
+    background: var(--color-primary-light);
+    color: var(--color-primary);
+}
+
+@media (max-width: 1200px) {
+    .agent-stats-grid {
+        grid-template-columns: repeat(2, 1fr);
+    }
+}
+
+@media (max-width: 768px) {
+    .agent-stats-grid {
+        grid-template-columns: 1fr;
+    }
+}
+</style>
+{% endblock %}
+
+{% block scripts %}
+<script>
+document.addEventListener('DOMContentLoaded', async () => {
+    await loadAgentData();
+    initCharts();
+    initTopology();
+    lucide.createIcons();
+});
+
+async function loadAgentData() {
+    try {
+        const response = await fetch('/api/multi-agent/analytics');
+        const result = await response.json();
+        if (result.success) {
+            console.log('Multi-agent data loaded:', result.data);
+        }
+    } catch (error) {
+        console.error('Error loading agent data:', error);
+    }
+}
+
+function initCharts() {
+    const ctx = document.getElementById('costAttribution');
+    if (ctx) {
+        new Chart(ctx, {
+            type: 'doughnut',
+            data: {
+                labels: ['Orchestrator', 'Code Gen', 'Research', 'Others'],
+                datasets: [{
+                    data: [35, 25, 20, 20],
+                    backgroundColor: ['#6366f1', '#f59e0b', '#10b981', '#64748b'],
+                    borderWidth: 0
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                cutout: '65%',
+                plugins: {
+                    legend: { display: false }
+                }
+            }
+        });
+    }
+}
+
+function initTopology() {
+    const svg = d3.select('#topologySvg');
+    const width = svg.node().getBoundingClientRect().width;
+    const height = 400;
+
+    // Sample topology data
+    const nodes = [
+        { id: 'orchestrator', name: 'Orchestrator', type: 'orchestrator', x: width/2, y: 50 },
+        { id: 'research', name: 'Research', type: 'worker', x: width/4, y: 150 },
+        { id: 'code', name: 'Code Gen', type: 'specialist', x: width/2, y: 150 },
+        { id: 'summarize', name: 'Summarizer', type: 'specialist', x: 3*width/4, y: 150 },
+        { id: 'websearch', name: 'Web Search', type: 'tool', x: width/4, y: 280 },
+        { id: 'linter', name: 'Linter', type: 'tool', x: width/2, y: 280 }
+    ];
+
+    const links = [
+        { source: 'orchestrator', target: 'research' },
+        { source: 'orchestrator', target: 'code' },
+        { source: 'orchestrator', target: 'summarize' },
+        { source: 'research', target: 'websearch' },
+        { source: 'code', target: 'linter' }
+    ];
+
+    // Draw links
+    const linkData = links.map(l => ({
+        source: nodes.find(n => n.id === l.source),
+        target: nodes.find(n => n.id === l.target)
+    }));
+
+    svg.selectAll('line')
+        .data(linkData)
+        .enter()
+        .append('line')
+        .attr('x1', d => d.source.x)
+        .attr('y1', d => d.source.y)
+        .attr('x2', d => d.target.x)
+        .attr('y2', d => d.target.y)
+        .attr('stroke', 'var(--border-color)')
+        .attr('stroke-width', 2);
+
+    // Draw nodes
+    const nodeGroups = svg.selectAll('g')
+        .data(nodes)
+        .enter()
+        .append('g')
+        .attr('transform', d => `translate(${d.x}, ${d.y})`);
+
+    nodeGroups.append('circle')
+        .attr('r', 25)
+        .attr('fill', d => {
+            const colors = { orchestrator: '#6366f1', worker: '#10b981', specialist: '#f59e0b', tool: '#64748b' };
+            return colors[d.type];
+        });
+
+    nodeGroups.append('text')
+        .attr('text-anchor', 'middle')
+        .attr('dy', 40)
+        .attr('fill', 'var(--text-secondary)')
+        .attr('font-size', '12px')
+        .text(d => d.name);
+}
+
+function viewTopology() {
+    showToast('Opening full topology view...', 'info');
+}
+
+function exportTraces() {
+    showToast('Exporting decision traces...', 'info');
+}
+
+function refreshTopology() {
+    showToast('Refreshing topology...', 'info');
+    initTopology();
+}
+</script>
+{% endblock %}

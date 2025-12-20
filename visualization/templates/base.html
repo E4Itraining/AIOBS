@@ -223,6 +223,37 @@
                                 <i data-lucide="lock"></i>
                                 <span>{{ t('nav.security') or 'Centre Sécurité' }}</span>
                             </a>
+                            <a href="/guardrails" class="nav-link {% if active_page == 'guardrails' %}active{% endif %}">
+                                <i data-lucide="shield-alert"></i>
+                                <span>{{ t('nav.guardrails') or 'GenAI Guardrails' }}</span>
+                            </a>
+                            <a href="/supply-chain" class="nav-link {% if active_page == 'supply-chain' %}active{% endif %}">
+                                <i data-lucide="box"></i>
+                                <span>{{ t('nav.supply_chain') or 'AI Supply Chain' }}</span>
+                            </a>
+                        </div>
+                    </div>
+
+                    <!-- Accordion: Intelligence -->
+                    <div class="nav-accordion" data-accordion="intelligence">
+                        <button class="nav-accordion-header" onclick="toggleAccordion('intelligence')">
+                            <i data-lucide="sparkles"></i>
+                            <span>{{ t('nav.intelligence') or 'Intelligence' }}</span>
+                            <i data-lucide="chevron-right" class="accordion-chevron"></i>
+                        </button>
+                        <div class="nav-accordion-content">
+                            <a href="/multi-agent" class="nav-link {% if active_page == 'multi-agent' %}active{% endif %}">
+                                <i data-lucide="network"></i>
+                                <span>{{ t('nav.multi_agent') or 'Multi-Agent Hub' }}</span>
+                            </a>
+                            <a href="/healing" class="nav-link {% if active_page == 'healing' %}active{% endif %}">
+                                <i data-lucide="heart-pulse"></i>
+                                <span>{{ t('nav.healing') or 'Auto-Healing' }}</span>
+                            </a>
+                            <a href="/business-intelligence" class="nav-link {% if active_page == 'business-intelligence' %}active{% endif %}">
+                                <i data-lucide="bar-chart-3"></i>
+                                <span>{{ t('nav.business_intelligence') or 'Business Intelligence' }}</span>
+                            </a>
                         </div>
                     </div>
                 </div>

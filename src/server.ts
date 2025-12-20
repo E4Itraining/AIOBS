@@ -20,6 +20,14 @@ import { causalRouter } from './api/routes/causal';
 import { sloRouter } from './api/routes/slo';
 import { ingestionRouter } from './api/routes/ingestion';
 
+// Import new feature routes
+import { guardrailsRouter } from './api/routes/guardrails';
+import { multiAgentRouter } from './api/routes/multi-agent';
+import { supplyChainRouter } from './api/routes/supply-chain';
+import { complianceAutoRouter } from './api/routes/compliance-auto';
+import { healingRouter } from './api/routes/healing';
+import { businessIntelligenceRouter } from './api/routes/business-intelligence';
+
 // Import services
 import { DataStore } from './api/services/data-store';
 import { RealtimeService } from './api/services/realtime';
@@ -161,6 +169,13 @@ app.get('/', (req: Request, res: Response) => {
       causal: '/api/causal',
       slo: '/api/slo',
       ingestion: '/api/ingest',
+      // New differentiating features
+      guardrails: '/api/guardrails',
+      multiAgent: '/api/multi-agent',
+      supplyChain: '/api/supply-chain',
+      complianceAuto: '/api/compliance-auto',
+      healing: '/api/healing',
+      businessIntelligence: '/api/business-intelligence',
     },
   });
 });
@@ -174,6 +189,14 @@ app.use('/api/cognitive', cognitiveRouter);
 app.use('/api/causal', causalRouter);
 app.use('/api/slo', sloRouter);
 app.use('/api/ingest', ingestionRouter);
+
+// New feature routes
+app.use('/api/guardrails', guardrailsRouter);
+app.use('/api/multi-agent', multiAgentRouter);
+app.use('/api/supply-chain', supplyChainRouter);
+app.use('/api/compliance-auto', complianceAutoRouter);
+app.use('/api/healing', healingRouter);
+app.use('/api/business-intelligence', businessIntelligenceRouter);
 
 // API docs placeholder
 app.get('/api/docs', (req: Request, res: Response) => {
