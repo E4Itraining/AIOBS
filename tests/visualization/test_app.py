@@ -13,7 +13,7 @@ class TestHealthEndpoint:
         health_response = {
             "status": "healthy",
             "version": "1.0.0",
-            "service": "aiobs-visualization"
+            "service": "aiobs-visualization",
         }
 
         assert health_response["status"] == "healthy"
@@ -26,7 +26,7 @@ class TestHealthEndpoint:
         health_response = {
             "status": "healthy",
             "version": "1.0.0",
-            "service": "aiobs-visualization"
+            "service": "aiobs-visualization",
         }
 
         for field in required_fields:
@@ -57,14 +57,14 @@ aiobs_visualization_uptime_seconds 100.00"""
             "aiobs_visualization_info",
             "aiobs_visualization_uptime_seconds",
             "aiobs_visualization_requests_total",
-            "aiobs_visualization_request_duration_ms"
+            "aiobs_visualization_request_duration_ms",
         ]
 
         mock_metrics_names = [
             "aiobs_visualization_info",
             "aiobs_visualization_uptime_seconds",
             "aiobs_visualization_requests_total",
-            "aiobs_visualization_request_duration_ms"
+            "aiobs_visualization_request_duration_ms",
         ]
 
         for metric in required_metrics:
@@ -76,11 +76,7 @@ class TestAPIResponseFormat:
 
     def test_success_response_format(self):
         """Success responses should have correct format"""
-        response = {
-            "success": True,
-            "data": {"key": "value"},
-            "timestamp": "2024-01-15T10:00:00Z"
-        }
+        response = {"success": True, "data": {"key": "value"}, "timestamp": "2024-01-15T10:00:00Z"}
 
         assert response["success"] is True
         assert "data" in response
@@ -88,11 +84,7 @@ class TestAPIResponseFormat:
 
     def test_error_response_format(self):
         """Error responses should have correct format"""
-        response = {
-            "success": False,
-            "error": "Not found",
-            "timestamp": "2024-01-15T10:00:00Z"
-        }
+        response = {"success": False, "error": "Not found", "timestamp": "2024-01-15T10:00:00Z"}
 
         assert response["success"] is False
         assert "error" in response
@@ -103,6 +95,7 @@ class TestMetricsState:
 
     def test_request_count_tracking(self):
         """Request count should be tracked correctly"""
+
         class MockMetricsState:
             def __init__(self):
                 self.request_count = 0
@@ -119,6 +112,7 @@ class TestMetricsState:
 
     def test_average_duration_calculation(self):
         """Average duration should be calculated correctly"""
+
         class MockMetricsState:
             def __init__(self):
                 self.request_durations: list[float] = []
@@ -140,6 +134,7 @@ class TestMetricsState:
 
     def test_empty_duration_handling(self):
         """Empty duration list should return 0"""
+
         class MockMetricsState:
             def __init__(self):
                 self.request_durations: list[float] = []
@@ -158,6 +153,7 @@ class TestDataValidation:
 
     def test_trust_score_validation(self):
         """Trust score should be between 0 and 1"""
+
         def validate_trust_score(score: float) -> bool:
             return 0.0 <= score <= 1.0
 
@@ -169,6 +165,7 @@ class TestDataValidation:
 
     def test_percentage_validation(self):
         """Percentage values should be between 0 and 100"""
+
         def validate_percentage(value: float) -> bool:
             return 0.0 <= value <= 100.0
 
@@ -180,6 +177,7 @@ class TestDataValidation:
 
     def test_latency_validation(self):
         """Latency values should be non-negative"""
+
         def validate_latency(ms: float) -> bool:
             return ms >= 0.0
 

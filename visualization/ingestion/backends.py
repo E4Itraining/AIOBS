@@ -3,19 +3,21 @@ AIOBS Backend Connectors
 Clients for VictoriaMetrics, OpenObserve, and Redis
 """
 
-from datetime import datetime, timedelta
-from typing import Dict, List, Optional, Any, Union
-from dataclasses import dataclass
 import asyncio
 import json
 import os
-import httpx
 from abc import ABC, abstractmethod
+from dataclasses import dataclass
+from datetime import datetime, timedelta
+from typing import Any, Dict, List, Optional, Union
+
+import httpx
 
 
 @dataclass
 class BackendConfig:
     """Configuration for backend connections"""
+
     url: str
     username: Optional[str] = None
     password: Optional[str] = None
@@ -57,7 +59,7 @@ class BackendConnector(BaseConnector):
                 base_url=self.config.url,
                 auth=auth,
                 timeout=httpx.Timeout(self.config.timeout_seconds),
-                verify=self.config.verify_ssl
+                verify=self.config.verify_ssl,
             )
         return self._client
 
@@ -67,12 +69,7 @@ class BackendConnector(BaseConnector):
             await self._client.aclose()
             self._client = None
 
-    async def _request_with_retry(
-        self,
-        method: str,
-        path: str,
-        **kwargs
-    ) -> httpx.Response:
+    async def _request_with_retry(self, method: str, path: str, **kwargs) -> httpx.Response:
         """Make HTTP request with retry logic"""
         client = await self._get_client()
         last_error = None
@@ -85,9 +82,7 @@ class BackendConnector(BaseConnector):
             except (httpx.HTTPStatusError, httpx.RequestError) as e:
                 last_error = e
                 if attempt < self.config.max_retries - 1:
-                    await asyncio.sleep(
-                        self.config.retry_delay_seconds * (2 ** attempt)
-                    )
+                    await asyncio.sleep(self.config.retry_delay_seconds * (2**attempt))
 
         raise last_error
 
@@ -170,7 +165,7 @@ class VictoriaMetricsClient(BackendConnector):
                 "POST",
                 "/api/v1/import/prometheus",
                 content=data,
-                headers={"Content-Type": "text/plain"}
+                headers={"Content-Type": "text/plain"},
             )
             return response.status_code in (200, 204)
         except Exception:
@@ -203,19 +198,15 @@ class VictoriaMetricsClient(BackendConnector):
                 "POST",
                 "/api/v1/import/prometheus",
                 content="\n".join(lines),
-                headers={"Content-Type": "text/plain"}
+                headers={"Content-Type": "text/plain"},
             )
             return {
                 "success": response.status_code in (200, 204),
                 "written": len(lines),
-                "status_code": response.status_code
+                "status_code": response.status_code,
             }
         except Exception as e:
-            return {
-                "success": False,
-                "written": 0,
-                "error": str(e)
-            }
+            return {"success": False, "written": 0, "error": str(e)}
 
     async def query(self, query: str, time: Optional[datetime] = None) -> Any:
         """
@@ -233,21 +224,13 @@ class VictoriaMetricsClient(BackendConnector):
             params["time"] = time.timestamp()
 
         try:
-            response = await self._request_with_retry(
-                "GET",
-                "/api/v1/query",
-                params=params
-            )
+            response = await self._request_with_retry("GET", "/api/v1/query", params=params)
             return response.json()
         except Exception as e:
             return {"status": "error", "error": str(e)}
 
     async def query_range(
-        self,
-        query: str,
-        start: datetime,
-        end: datetime,
-        step: str = "1m"
+        self, query: str, start: datetime, end: datetime, step: str = "1m"
     ) -> Any:
         """
         Query VictoriaMetrics range using PromQL
@@ -261,19 +244,10 @@ class VictoriaMetricsClient(BackendConnector):
         Returns:
             Query result
         """
-        params = {
-            "query": query,
-            "start": start.timestamp(),
-            "end": end.timestamp(),
-            "step": step
-        }
+        params = {"query": query, "start": start.timestamp(), "end": end.timestamp(), "step": step}
 
         try:
-            response = await self._request_with_retry(
-                "GET",
-                "/api/v1/query_range",
-                params=params
-            )
+            response = await self._request_with_retry("GET", "/api/v1/query_range", params=params)
             return response.json()
         except Exception as e:
             return {"status": "error", "error": str(e)}
@@ -316,7 +290,7 @@ class OpenObserveClient(BackendConnector):
             config = BackendConfig(
                 url=os.environ.get("OPENOBSERVE_URL", "http://openobserve:5080"),
                 username=os.environ.get("OPENOBSERVE_USER", "admin@aiobs.local"),
-                password=os.environ.get("OPENOBSERVE_PASSWORD", "Complexpass#123")
+                password=os.environ.get("OPENOBSERVE_PASSWORD", "Complexpass#123"),
             )
         super().__init__(config)
         self.org = "default"
@@ -351,9 +325,11 @@ class OpenObserveClient(BackendConnector):
         formatted_logs = []
         for log in logs:
             entry = {
-                "_timestamp": log.get("timestamp", datetime.utcnow()).isoformat() + "Z"
+                "_timestamp": (
+                    log.get("timestamp", datetime.utcnow()).isoformat() + "Z"
                     if isinstance(log.get("timestamp"), datetime)
-                    else log.get("timestamp", datetime.utcnow().isoformat() + "Z"),
+                    else log.get("timestamp", datetime.utcnow().isoformat() + "Z")
+                ),
                 "level": log.get("level", "info"),
                 "message": log.get("message", ""),
                 "logger": log.get("logger", "aiobs"),
@@ -374,9 +350,7 @@ class OpenObserveClient(BackendConnector):
 
         try:
             response = await self._request_with_retry(
-                "POST",
-                f"/api/{self.org}/{stream}/_json",
-                json=formatted_logs
+                "POST", f"/api/{self.org}/{stream}/_json", json=formatted_logs
             )
             return response.status_code in (200, 204)
         except Exception:
@@ -392,7 +366,7 @@ class OpenObserveClient(BackendConnector):
         query: str,
         start_time: Optional[datetime] = None,
         end_time: Optional[datetime] = None,
-        limit: int = 100
+        limit: int = 100,
     ) -> Dict[str, Any]:
         """
         Search logs in OpenObserve
@@ -422,9 +396,7 @@ class OpenObserveClient(BackendConnector):
 
         try:
             response = await self._request_with_retry(
-                "POST",
-                f"/api/{self.org}/_search",
-                json=search_body
+                "POST", f"/api/{self.org}/_search", json=search_body
             )
             return response.json()
         except Exception as e:
@@ -434,9 +406,7 @@ class OpenObserveClient(BackendConnector):
         """Create a new log stream"""
         try:
             response = await self._request_with_retry(
-                "POST",
-                f"/api/{self.org}/streams/{stream}",
-                json={"stream_type": "logs"}
+                "POST", f"/api/{self.org}/streams/{stream}", json={"stream_type": "logs"}
             )
             return response.status_code in (200, 201)
         except Exception:
@@ -449,11 +419,7 @@ class RedisClient(CacheConnector):
     Implements CacheConnector interface for consistent architecture
     """
 
-    def __init__(
-        self,
-        url: Optional[str] = None,
-        max_connections: int = 10
-    ):
+    def __init__(self, url: Optional[str] = None, max_connections: int = 10):
         self.url = url or os.environ.get("REDIS_URL", "redis://redis:6379")
         self.max_connections = max_connections
         self._pool = None
@@ -463,16 +429,16 @@ class RedisClient(CacheConnector):
         """Get or create Redis connection pool"""
         if self._pool is None:
             import redis.asyncio as redis
+
             self._pool = redis.ConnectionPool.from_url(
-                self.url,
-                max_connections=self.max_connections,
-                decode_responses=True
+                self.url, max_connections=self.max_connections, decode_responses=True
             )
         return self._pool
 
     async def _get_client(self):
         """Get Redis client from pool"""
         import redis.asyncio as redis
+
         pool = await self._get_pool()
         return redis.Redis(connection_pool=pool)
 
@@ -491,12 +457,7 @@ class RedisClient(CacheConnector):
         except Exception:
             return False
 
-    async def set(
-        self,
-        key: str,
-        value: Any,
-        ttl_seconds: Optional[int] = None
-    ) -> bool:
+    async def set(self, key: str, value: Any, ttl_seconds: Optional[int] = None) -> bool:
         """Set a value in Redis"""
         try:
             client = await self._get_client()
@@ -556,6 +517,7 @@ class RedisClient(CacheConnector):
     async def subscribe(self, *channels: str):
         """Subscribe to channels"""
         import redis.asyncio as redis
+
         client = await self._get_client()
         self._pubsub = client.pubsub()
         await self._pubsub.subscribe(*channels)
@@ -568,8 +530,7 @@ class RedisClient(CacheConnector):
 
         try:
             message = await self._pubsub.get_message(
-                ignore_subscribe_messages=True,
-                timeout=timeout
+                ignore_subscribe_messages=True, timeout=timeout
             )
             if message and message.get("data"):
                 try:
@@ -689,17 +650,17 @@ class BackendManager:
             "backends": {
                 "victoria_metrics": {
                     "healthy": health.get("victoria_metrics", False),
-                    "url": self.victoria_metrics.config.url if self.victoria_metrics else None
+                    "url": self.victoria_metrics.config.url if self.victoria_metrics else None,
                 },
                 "openobserve": {
                     "healthy": health.get("openobserve", False),
-                    "url": self.openobserve.config.url if self.openobserve else None
+                    "url": self.openobserve.config.url if self.openobserve else None,
                 },
                 "redis": {
                     "healthy": health.get("redis", False),
-                    "url": self.redis.url if self.redis else None
-                }
-            }
+                    "url": self.redis.url if self.redis else None,
+                },
+            },
         }
 
 

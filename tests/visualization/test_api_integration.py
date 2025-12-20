@@ -2,15 +2,17 @@
 AIOBS API Integration Tests
 Tests for API endpoints, request/response handling, and end-to-end flows
 """
-import pytest
-import json
+
 import asyncio
+import json
 import unittest
+from dataclasses import asdict, dataclass
 from datetime import datetime, timedelta
-from typing import Dict, List, Any, Optional
-from dataclasses import dataclass, asdict
-from unittest.mock import MagicMock, AsyncMock, patch
 from enum import Enum
+from typing import Any, Dict, List, Optional
+from unittest.mock import AsyncMock, MagicMock, patch
+
+import pytest
 
 
 def run_async(coro):
@@ -21,6 +23,7 @@ def run_async(coro):
 # =============================================================================
 # Mock API Client for Testing
 # =============================================================================
+
 
 class HTTPMethod(Enum):
     GET = "GET"
@@ -50,34 +53,37 @@ class MockAPIClient:
         method: HTTPMethod,
         path: str,
         body: Optional[Dict] = None,
-        headers: Optional[Dict] = None
+        headers: Optional[Dict] = None,
     ) -> APIResponse:
         """Make a mock API request"""
-        self.requests.append({
-            "method": method.value,
-            "path": path,
-            "body": body,
-            "headers": headers or {}
-        })
+        self.requests.append(
+            {"method": method.value, "path": path, "body": body, "headers": headers or {}}
+        )
 
         # Simulate different endpoints
         if path == "/health":
             return APIResponse(200, {"status": "healthy"}, {}, 5.0)
 
         elif path == "/api/metrics/cognitive":
-            return APIResponse(200, {
-                "trust_score": 0.85,
-                "drift_risk": 0.1,
-                "reliability": 0.9,
-                "hallucination_risk": 0.05
-            }, {}, 25.0)
+            return APIResponse(
+                200,
+                {
+                    "trust_score": 0.85,
+                    "drift_risk": 0.1,
+                    "reliability": 0.9,
+                    "hallucination_risk": 0.05,
+                },
+                {},
+                25.0,
+            )
 
         elif path == "/api/dashboard/summary":
-            return APIResponse(200, {
-                "total_models": 12,
-                "healthy_services": 28,
-                "alerts": {"total": 5, "critical": 1}
-            }, {}, 50.0)
+            return APIResponse(
+                200,
+                {"total_models": 12, "healthy_services": 28, "alerts": {"total": 5, "critical": 1}},
+                {},
+                50.0,
+            )
 
         elif path.startswith("/api/ingestion/"):
             if method == HTTPMethod.POST:
@@ -85,10 +91,9 @@ class MockAPIClient:
 
         elif path == "/api/assistant/query":
             if method == HTTPMethod.POST:
-                return APIResponse(200, {
-                    "response": "Here's the analysis...",
-                    "confidence": 0.9
-                }, {}, 200.0)
+                return APIResponse(
+                    200, {"response": "Here's the analysis...", "confidence": 0.9}, {}, 200.0
+                )
 
         # Default 404
         return APIResponse(404, {"error": "Not found"}, {}, 5.0)
@@ -103,6 +108,7 @@ class MockAPIClient:
 # =============================================================================
 # Request/Response Validation
 # =============================================================================
+
 
 class RequestValidator:
     """Validates API request format and content"""
@@ -199,6 +205,7 @@ class ResponseValidator:
 # API Integration Tests
 # =============================================================================
 
+
 class TestHealthEndpoint:
     """Tests for health check endpoint"""
 
@@ -259,9 +266,7 @@ class TestIngestionEndpoint:
         """Should accept valid metric data"""
         data = {
             "metadata": {"source_id": "test", "timestamp": datetime.utcnow().isoformat()},
-            "metrics": [
-                {"name": "cpu_usage", "value": 45.5, "labels": {"host": "server1"}}
-            ]
+            "metrics": [{"name": "cpu_usage", "value": 45.5, "labels": {"host": "server1"}}],
         }
 
         response = run_async(client.post("/api/ingestion/metrics", data))
@@ -276,9 +281,9 @@ class TestIngestionEndpoint:
         assert len(errors1) > 0
 
         # Invalid value type
-        errors2 = validator.validate_metric_request({
-            "metrics": [{"name": "test", "value": "not a number"}]
-        })
+        errors2 = validator.validate_metric_request(
+            {"metrics": [{"name": "test", "value": "not a number"}]}
+        )
         assert len(errors2) > 0
 
     def test_log_validation(self):
@@ -286,15 +291,13 @@ class TestIngestionEndpoint:
         validator = RequestValidator()
 
         # Valid
-        errors = validator.validate_log_request({
-            "logs": [{"message": "Test log", "level": "info"}]
-        })
+        errors = validator.validate_log_request(
+            {"logs": [{"message": "Test log", "level": "info"}]}
+        )
         assert len(errors) == 0
 
         # Invalid level
-        errors = validator.validate_log_request({
-            "logs": [{"message": "Test", "level": "invalid"}]
-        })
+        errors = validator.validate_log_request({"logs": [{"message": "Test", "level": "invalid"}]})
         assert len(errors) > 0
 
 
@@ -307,20 +310,18 @@ class TestAssistantEndpoint:
 
     def test_assistant_query(self, client):
         """Should handle assistant queries"""
-        response = run_async(client.post(
-            "/api/assistant/query",
-            {"query": "What is the current system health?"}
-        ))
+        response = run_async(
+            client.post("/api/assistant/query", {"query": "What is the current system health?"})
+        )
 
         assert response.status_code == 200
         assert "response" in response.body
 
     def test_assistant_has_confidence(self, client):
         """Assistant response should include confidence"""
-        response = run_async(client.post(
-            "/api/assistant/query",
-            {"query": "Explain the recent drift detection"}
-        ))
+        response = run_async(
+            client.post("/api/assistant/query", {"query": "Explain the recent drift detection"})
+        )
 
         assert "confidence" in response.body
 
@@ -345,11 +346,13 @@ class TestDashboardEndpoint:
 # Rate Limiting Tests
 # =============================================================================
 
+
 class TestRateLimiting:
     """Tests for rate limiting behavior"""
 
     def test_rate_limit_tracking(self):
         """Should track request rates"""
+
         class RateLimiter:
             def __init__(self, max_requests: int, window_seconds: int):
                 self.max_requests = max_requests
@@ -360,8 +363,7 @@ class TestRateLimiting:
                 now = datetime.utcnow()
                 # Remove old requests
                 self.requests = [
-                    r for r in self.requests
-                    if (now - r).total_seconds() < self.window_seconds
+                    r for r in self.requests if (now - r).total_seconds() < self.window_seconds
                 ]
 
                 if len(self.requests) >= self.max_requests:
@@ -381,6 +383,7 @@ class TestRateLimiting:
 
     def test_rate_limit_window_reset(self):
         """Rate limit should reset after window"""
+
         class RateLimiter:
             def __init__(self, max_requests: int, window_seconds: int):
                 self.max_requests = max_requests
@@ -389,7 +392,8 @@ class TestRateLimiting:
 
             def is_allowed(self, current_time: datetime) -> bool:
                 self.requests = [
-                    r for r in self.requests
+                    r
+                    for r in self.requests
                     if (current_time - r).total_seconds() < self.window_seconds
                 ]
 
@@ -417,11 +421,13 @@ class TestRateLimiting:
 # Authentication Tests
 # =============================================================================
 
+
 class TestAuthentication:
     """Tests for API authentication"""
 
     def test_valid_api_key(self):
         """Should accept valid API key"""
+
         def validate_api_key(key: str, valid_keys: set) -> bool:
             return key in valid_keys
 
@@ -432,6 +438,7 @@ class TestAuthentication:
 
     def test_jwt_validation(self):
         """Should validate JWT structure"""
+
         def validate_jwt_structure(token: str) -> bool:
             parts = token.split(".")
             return len(parts) == 3 and all(len(p) > 0 for p in parts)
@@ -447,6 +454,7 @@ class TestAuthentication:
 # Error Handling Tests
 # =============================================================================
 
+
 class TestErrorHandling:
     """Tests for API error handling"""
 
@@ -461,14 +469,9 @@ class TestErrorHandling:
 
     def test_error_response_format(self):
         """Error responses should have standard format"""
+
         def create_error_response(status: int, message: str, details: Dict = None) -> Dict:
-            return {
-                "error": {
-                    "status": status,
-                    "message": message,
-                    "details": details or {}
-                }
-            }
+            return {"error": {"status": status, "message": message, "details": details or {}}}
 
         error = create_error_response(400, "Invalid request", {"field": "name"})
 
@@ -481,6 +484,7 @@ class TestErrorHandling:
 # End-to-End Flow Tests
 # =============================================================================
 
+
 class TestEndToEndFlows:
     """Tests for complete API flows"""
 
@@ -491,12 +495,11 @@ class TestEndToEndFlows:
     def test_ingest_and_query_flow(self, client):
         """Complete flow: ingest data, then query"""
         # Step 1: Ingest metric
-        ingest_response = run_async(client.post(
-            "/api/ingestion/metrics",
-            {
-                "metrics": [{"name": "test_metric", "value": 42.0}]
-            }
-        ))
+        ingest_response = run_async(
+            client.post(
+                "/api/ingestion/metrics", {"metrics": [{"name": "test_metric", "value": 42.0}]}
+            )
+        )
         assert ingest_response.status_code == 202
 
         # Step 2: Query cognitive metrics
@@ -518,6 +521,7 @@ class TestEndToEndFlows:
 # Concurrent Request Tests
 # =============================================================================
 
+
 class TestConcurrentRequests:
     """Tests for concurrent API requests"""
 
@@ -527,6 +531,7 @@ class TestConcurrentRequests:
 
     def test_parallel_requests(self, client):
         """Should handle parallel requests"""
+
         async def run_parallel():
             # Create multiple concurrent requests
             tasks = [
@@ -556,6 +561,7 @@ class TestConcurrentRequests:
 # Response Time Tests
 # =============================================================================
 
+
 class TestResponseTimes:
     """Tests for API response times"""
 
@@ -575,10 +581,7 @@ class TestResponseTimes:
 
     def test_assistant_under_5s(self, client):
         """Assistant queries should be under 5s"""
-        response = run_async(client.post(
-            "/api/assistant/query",
-            {"query": "Test query"}
-        ))
+        response = run_async(client.post("/api/assistant/query", {"query": "Test query"}))
         assert response.elapsed_ms < 5000
 
 

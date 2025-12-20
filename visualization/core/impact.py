@@ -2,16 +2,18 @@
 AIOBS Impact Analyzer - Business Impact Attribution
 Links AI system events to business outcomes
 """
+
+import random
 from dataclasses import dataclass, field
 from datetime import datetime, timedelta
-from typing import Dict, List, Optional, Tuple
 from enum import Enum
-import random
+from typing import Dict, List, Optional, Tuple
 from uuid import uuid4
 
 
 class ImpactDomain(Enum):
     """Domains where impact is measured"""
+
     REVENUE = "revenue"
     COST = "cost"
     USER_EXPERIENCE = "user_experience"
@@ -23,6 +25,7 @@ class ImpactDomain(Enum):
 
 class ImpactSeverity(Enum):
     """Severity levels for impact"""
+
     CRITICAL = "critical"
     HIGH = "high"
     MEDIUM = "medium"
@@ -33,6 +36,7 @@ class ImpactSeverity(Enum):
 @dataclass
 class BusinessMetric:
     """A business metric that can be impacted"""
+
     id: str
     name: str
     domain: ImpactDomain
@@ -45,6 +49,7 @@ class BusinessMetric:
 @dataclass
 class ImpactVector:
     """Quantified impact on a specific metric"""
+
     metric_id: str
     metric_name: str
     domain: ImpactDomain
@@ -58,6 +63,7 @@ class ImpactVector:
 @dataclass
 class ImpactReport:
     """Complete impact analysis report"""
+
     report_id: str
     trigger_event: str
     trigger_timestamp: datetime
@@ -107,7 +113,7 @@ class ImpactAnalyzer:
         self,
         revenue_per_conversion: float = 100.0,
         cost_per_inference: float = 0.001,
-        carbon_cost_per_kg: float = 0.05
+        carbon_cost_per_kg: float = 0.05,
     ):
         self.revenue_per_conversion = revenue_per_conversion
         self.cost_per_inference = cost_per_inference
@@ -120,7 +126,7 @@ class ImpactAnalyzer:
         event_type: str,
         event_data: Dict,
         affected_models: List[str],
-        time_window_hours: int = 24
+        time_window_hours: int = 24,
     ) -> ImpactReport:
         """
         Analyze business impact of an AI system event.
@@ -156,9 +162,7 @@ class ImpactAnalyzer:
             impacts = self._analyze_generic_impact(event_data)
 
         # Calculate totals
-        total_monetary = sum(
-            i.monetary_impact for i in impacts if i.monetary_impact
-        )
+        total_monetary = sum(i.monetary_impact for i in impacts if i.monetary_impact)
 
         # Determine primary domain and severity
         primary_domain = self._determine_primary_domain(impacts)
@@ -181,13 +185,10 @@ class ImpactAnalyzer:
             contributing_factors=self._compute_contributing_factors(impacts),
             recommendations=recommendations,
             mitigation_actions=mitigations,
-            confidence_score=self._compute_confidence(impacts)
+            confidence_score=self._compute_confidence(impacts),
         )
 
-    def get_impact_summary(
-        self,
-        time_range_hours: int = 24
-    ) -> Dict:
+    def get_impact_summary(self, time_range_hours: int = 24) -> Dict:
         """
         Get summary of all impacts over a time period.
         For visualization dashboard.
@@ -202,28 +203,19 @@ class ImpactAnalyzer:
                 "cost": -15730.50,
                 "user_experience": -4000.00,
                 "compliance": 0,
-                "carbon": -2000.00
+                "carbon": -2000.00,
             },
-            "impact_by_severity": {
-                "critical": 1,
-                "high": 3,
-                "medium": 5,
-                "low": 3
-            },
+            "impact_by_severity": {"critical": 1, "high": 3, "medium": 5, "low": 3},
             "top_affected_models": [
                 {"model": "recommendation-v2", "impact": -18500},
                 {"model": "fraud-detector-v1", "impact": -12000},
                 {"model": "churn-predictor", "impact": -8730},
             ],
             "trend": "improving",  # vs previous period
-            "trend_pct": -15  # 15% less impact than before
+            "trend_pct": -15,  # 15% less impact than before
         }
 
-    def project_future_impact(
-        self,
-        current_state: Dict,
-        projection_days: int = 7
-    ) -> Dict:
+    def project_future_impact(self, current_state: Dict, projection_days: int = 7) -> Dict:
         """
         Project future impact based on current trends.
         """
@@ -238,11 +230,13 @@ class ImpactAnalyzer:
             day_impact = daily_impact * trend_factor
             cumulative += day_impact
 
-            projections.append({
-                "day": day,
-                "daily_impact": round(day_impact, 2),
-                "cumulative_impact": round(cumulative, 2)
-            })
+            projections.append(
+                {
+                    "day": day,
+                    "daily_impact": round(day_impact, 2),
+                    "cumulative_impact": round(cumulative, 2),
+                }
+            )
 
         return {
             "projection_days": projection_days,
@@ -250,7 +244,7 @@ class ImpactAnalyzer:
             "best_case": round(cumulative * 0.7, 2),
             "expected": round(cumulative, 2),
             "worst_case": round(cumulative * 1.5, 2),
-            "confidence": 0.75
+            "confidence": 0.75,
         }
 
     # =========================================================================
@@ -260,57 +254,67 @@ class ImpactAnalyzer:
     def _initialize_default_metrics(self):
         """Initialize default business metrics"""
         defaults = [
-            BusinessMetric("conversion_rate", "Conversion Rate", ImpactDomain.REVENUE, 0.05, 0.055, "%", True),
-            BusinessMetric("daily_revenue", "Daily Revenue", ImpactDomain.REVENUE, 50000, 55000, "$", True),
-            BusinessMetric("inference_cost", "Inference Cost", ImpactDomain.COST, 1500, 1200, "$", False),
-            BusinessMetric("latency_p99", "P99 Latency", ImpactDomain.USER_EXPERIENCE, 150, 100, "ms", False),
-            BusinessMetric("error_rate", "Error Rate", ImpactDomain.OPERATIONAL, 0.02, 0.01, "%", False),
-            BusinessMetric("carbon_daily", "Daily Carbon", ImpactDomain.CARBON, 50, 40, "kgCO2", False),
+            BusinessMetric(
+                "conversion_rate", "Conversion Rate", ImpactDomain.REVENUE, 0.05, 0.055, "%", True
+            ),
+            BusinessMetric(
+                "daily_revenue", "Daily Revenue", ImpactDomain.REVENUE, 50000, 55000, "$", True
+            ),
+            BusinessMetric(
+                "inference_cost", "Inference Cost", ImpactDomain.COST, 1500, 1200, "$", False
+            ),
+            BusinessMetric(
+                "latency_p99", "P99 Latency", ImpactDomain.USER_EXPERIENCE, 150, 100, "ms", False
+            ),
+            BusinessMetric(
+                "error_rate", "Error Rate", ImpactDomain.OPERATIONAL, 0.02, 0.01, "%", False
+            ),
+            BusinessMetric(
+                "carbon_daily", "Daily Carbon", ImpactDomain.CARBON, 50, 40, "kgCO2", False
+            ),
         ]
 
         for metric in defaults:
             self._metrics_registry[metric.id] = metric
 
-    def _analyze_drift_impact(
-        self,
-        event_data: Dict,
-        models: List[str]
-    ) -> List[ImpactVector]:
+    def _analyze_drift_impact(self, event_data: Dict, models: List[str]) -> List[ImpactVector]:
         """Analyze impact of drift events"""
         impacts = []
         drift_severity = event_data.get("drift_severity", 0.5)
 
         # Revenue impact from degraded predictions
         revenue_delta = -self.revenue_per_conversion * 1000 * drift_severity
-        impacts.append(ImpactVector(
-            metric_id="conversion_rate",
-            metric_name="Conversion Rate",
-            domain=ImpactDomain.REVENUE,
-            delta_value=-0.005 * drift_severity,
-            delta_percentage=-10 * drift_severity,
-            severity=self._severity_from_score(drift_severity),
-            confidence=0.75,
-            monetary_impact=revenue_delta
-        ))
+        impacts.append(
+            ImpactVector(
+                metric_id="conversion_rate",
+                metric_name="Conversion Rate",
+                domain=ImpactDomain.REVENUE,
+                delta_value=-0.005 * drift_severity,
+                delta_percentage=-10 * drift_severity,
+                severity=self._severity_from_score(drift_severity),
+                confidence=0.75,
+                monetary_impact=revenue_delta,
+            )
+        )
 
         # UX impact
-        impacts.append(ImpactVector(
-            metric_id="user_satisfaction",
-            metric_name="User Satisfaction",
-            domain=ImpactDomain.USER_EXPERIENCE,
-            delta_value=-5 * drift_severity,
-            delta_percentage=-5 * drift_severity,
-            severity=ImpactSeverity.MEDIUM,
-            confidence=0.6,
-            monetary_impact=-500 * drift_severity
-        ))
+        impacts.append(
+            ImpactVector(
+                metric_id="user_satisfaction",
+                metric_name="User Satisfaction",
+                domain=ImpactDomain.USER_EXPERIENCE,
+                delta_value=-5 * drift_severity,
+                delta_percentage=-5 * drift_severity,
+                severity=ImpactSeverity.MEDIUM,
+                confidence=0.6,
+                monetary_impact=-500 * drift_severity,
+            )
+        )
 
         return impacts
 
     def _analyze_degradation_impact(
-        self,
-        event_data: Dict,
-        models: List[str]
+        self, event_data: Dict, models: List[str]
     ) -> List[ImpactVector]:
         """Analyze impact of model degradation"""
         degradation_pct = event_data.get("degradation_pct", 15)
@@ -324,15 +328,11 @@ class ImpactAnalyzer:
                 delta_percentage=-degradation_pct,
                 severity=self._severity_from_percentage(degradation_pct),
                 confidence=0.8,
-                monetary_impact=-2500 * (degradation_pct / 10)
+                monetary_impact=-2500 * (degradation_pct / 10),
             )
         ]
 
-    def _analyze_cost_impact(
-        self,
-        event_data: Dict,
-        models: List[str]
-    ) -> List[ImpactVector]:
+    def _analyze_cost_impact(self, event_data: Dict, models: List[str]) -> List[ImpactVector]:
         """Analyze impact of cost anomalies"""
         cost_increase_pct = event_data.get("cost_increase_pct", 50)
 
@@ -345,15 +345,11 @@ class ImpactAnalyzer:
                 delta_percentage=cost_increase_pct,
                 severity=self._severity_from_percentage(cost_increase_pct),
                 confidence=0.95,
-                monetary_impact=1500 * (cost_increase_pct / 100)
+                monetary_impact=1500 * (cost_increase_pct / 100),
             )
         ]
 
-    def _analyze_latency_impact(
-        self,
-        event_data: Dict,
-        models: List[str]
-    ) -> List[ImpactVector]:
+    def _analyze_latency_impact(self, event_data: Dict, models: List[str]) -> List[ImpactVector]:
         """Analyze impact of latency spikes"""
         latency_increase_ms = event_data.get("latency_increase_ms", 100)
 
@@ -367,17 +363,15 @@ class ImpactAnalyzer:
                 domain=ImpactDomain.USER_EXPERIENCE,
                 delta_value=latency_increase_ms,
                 delta_percentage=latency_increase_ms,
-                severity=ImpactSeverity.HIGH if latency_increase_ms > 200 else ImpactSeverity.MEDIUM,
+                severity=(
+                    ImpactSeverity.HIGH if latency_increase_ms > 200 else ImpactSeverity.MEDIUM
+                ),
                 confidence=0.85,
-                monetary_impact=-self.revenue_per_conversion * 100 * (conversion_loss_pct / 100)
+                monetary_impact=-self.revenue_per_conversion * 100 * (conversion_loss_pct / 100),
             )
         ]
 
-    def _analyze_error_impact(
-        self,
-        event_data: Dict,
-        models: List[str]
-    ) -> List[ImpactVector]:
+    def _analyze_error_impact(self, event_data: Dict, models: List[str]) -> List[ImpactVector]:
         """Analyze impact of error rate increases"""
         error_rate_delta = event_data.get("error_rate_delta", 0.05)
 
@@ -390,15 +384,11 @@ class ImpactAnalyzer:
                 delta_percentage=error_rate_delta * 100,
                 severity=ImpactSeverity.CRITICAL if error_rate_delta > 0.1 else ImpactSeverity.HIGH,
                 confidence=0.9,
-                monetary_impact=-5000 * error_rate_delta * 10
+                monetary_impact=-5000 * error_rate_delta * 10,
             )
         ]
 
-    def _analyze_security_impact(
-        self,
-        event_data: Dict,
-        models: List[str]
-    ) -> List[ImpactVector]:
+    def _analyze_security_impact(self, event_data: Dict, models: List[str]) -> List[ImpactVector]:
         """Analyze impact of security incidents"""
         return [
             ImpactVector(
@@ -409,15 +399,11 @@ class ImpactAnalyzer:
                 delta_percentage=-20,
                 severity=ImpactSeverity.CRITICAL,
                 confidence=0.7,
-                monetary_impact=-50000
+                monetary_impact=-50000,
             )
         ]
 
-    def _analyze_compliance_impact(
-        self,
-        event_data: Dict,
-        models: List[str]
-    ) -> List[ImpactVector]:
+    def _analyze_compliance_impact(self, event_data: Dict, models: List[str]) -> List[ImpactVector]:
         """Analyze impact of compliance violations"""
         return [
             ImpactVector(
@@ -428,7 +414,7 @@ class ImpactAnalyzer:
                 delta_percentage=-100,
                 severity=ImpactSeverity.CRITICAL,
                 confidence=0.95,
-                monetary_impact=-100000  # Potential fine
+                monetary_impact=-100000,  # Potential fine
             )
         ]
 
@@ -443,7 +429,7 @@ class ImpactAnalyzer:
                 delta_percentage=-10,
                 severity=ImpactSeverity.LOW,
                 confidence=0.5,
-                monetary_impact=-1000
+                monetary_impact=-1000,
             )
         ]
 
@@ -477,8 +463,8 @@ class ImpactAnalyzer:
         domain_totals = {}
         for impact in impacts:
             if impact.monetary_impact:
-                domain_totals[impact.domain] = (
-                    domain_totals.get(impact.domain, 0) + abs(impact.monetary_impact)
+                domain_totals[impact.domain] = domain_totals.get(impact.domain, 0) + abs(
+                    impact.monetary_impact
                 )
 
         if not domain_totals:
@@ -496,7 +482,7 @@ class ImpactAnalyzer:
             ImpactSeverity.HIGH,
             ImpactSeverity.MEDIUM,
             ImpactSeverity.LOW,
-            ImpactSeverity.POSITIVE
+            ImpactSeverity.POSITIVE,
         ]
 
         for sev in severity_order:
@@ -505,10 +491,7 @@ class ImpactAnalyzer:
 
         return ImpactSeverity.LOW
 
-    def _compute_contributing_factors(
-        self,
-        impacts: List[ImpactVector]
-    ) -> Dict[str, float]:
+    def _compute_contributing_factors(self, impacts: List[ImpactVector]) -> Dict[str, float]:
         """Compute contribution of each factor"""
         if not impacts:
             return {}
@@ -517,10 +500,7 @@ class ImpactAnalyzer:
         if total == 0:
             return {i.metric_name: 1.0 / len(impacts) for i in impacts}
 
-        return {
-            i.metric_name: abs(i.monetary_impact or 0) / total
-            for i in impacts
-        }
+        return {i.metric_name: abs(i.monetary_impact or 0) / total for i in impacts}
 
     def _compute_confidence(self, impacts: List[ImpactVector]) -> float:
         """Compute overall confidence score"""
@@ -529,72 +509,57 @@ class ImpactAnalyzer:
 
         return sum(i.confidence for i in impacts) / len(impacts)
 
-    def _generate_recommendations(
-        self,
-        event_type: str,
-        impacts: List[ImpactVector]
-    ) -> List[str]:
+    def _generate_recommendations(self, event_type: str, impacts: List[ImpactVector]) -> List[str]:
         """Generate recommendations based on impact analysis"""
         recommendations = {
             "model_drift": [
                 "Investigate upstream data changes",
                 "Consider retraining with recent data",
-                "Enable drift monitoring alerts"
+                "Enable drift monitoring alerts",
             ],
             "model_degradation": [
                 "Review recent model changes",
                 "Check for data quality issues",
-                "Consider rollback to previous version"
+                "Consider rollback to previous version",
             ],
             "cost_anomaly": [
                 "Review auto-scaling configuration",
                 "Analyze traffic patterns",
-                "Consider cost-optimized model variants"
+                "Consider cost-optimized model variants",
             ],
             "latency_spike": [
                 "Check infrastructure health",
                 "Review model complexity",
-                "Consider caching strategies"
+                "Consider caching strategies",
             ],
             "error_rate_increase": [
                 "Review error logs for patterns",
                 "Check input validation",
-                "Enable circuit breakers"
+                "Enable circuit breakers",
             ],
             "security_incident": [
                 "Isolate affected systems",
                 "Review access logs",
-                "Enable enhanced monitoring"
+                "Enable enhanced monitoring",
             ],
             "compliance_violation": [
                 "Document incident thoroughly",
                 "Engage compliance team",
-                "Implement preventive controls"
-            ]
+                "Implement preventive controls",
+            ],
         }
 
         return recommendations.get(event_type, ["Monitor situation closely"])
 
-    def _generate_mitigations(
-        self,
-        event_type: str,
-        severity: ImpactSeverity
-    ) -> List[str]:
+    def _generate_mitigations(self, event_type: str, severity: ImpactSeverity) -> List[str]:
         """Generate mitigation actions based on severity"""
         if severity == ImpactSeverity.CRITICAL:
             return [
                 "Escalate to incident response team",
                 "Consider service degradation or failover",
-                "Notify stakeholders immediately"
+                "Notify stakeholders immediately",
             ]
         elif severity == ImpactSeverity.HIGH:
-            return [
-                "Create incident ticket",
-                "Begin root cause analysis",
-                "Prepare rollback plan"
-            ]
+            return ["Create incident ticket", "Begin root cause analysis", "Prepare rollback plan"]
         else:
-            return [
-                "Add to monitoring watchlist",
-                "Schedule review in next standup"
-            ]
+            return ["Add to monitoring watchlist", "Schedule review in next standup"]

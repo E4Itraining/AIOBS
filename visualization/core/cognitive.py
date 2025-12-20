@@ -2,12 +2,13 @@
 AIOBS Cognitive Engine - Python Implementation
 AI-specific metrics: drift, reliability, hallucination, degradation
 """
-from dataclasses import dataclass, field
-from datetime import datetime, timedelta
-from typing import Dict, List, Optional, Any
-from enum import Enum
+
 import math
 import random  # For demo data - replace with real computations
+from dataclasses import dataclass, field
+from datetime import datetime, timedelta
+from enum import Enum
+from typing import Any, Dict, List, Optional
 
 
 class DriftType(Enum):
@@ -19,6 +20,7 @@ class DriftType(Enum):
 @dataclass
 class DriftResult:
     """Drift detection result"""
+
     drift_type: DriftType
     score: float  # 0-1, higher = more drift
     is_significant: bool
@@ -30,6 +32,7 @@ class DriftResult:
 @dataclass
 class ReliabilityResult:
     """Model reliability analysis"""
+
     confidence_calibration: float  # 0-1
     prediction_stability: float  # 0-1
     uncertainty_quality: float  # 0-1
@@ -40,6 +43,7 @@ class ReliabilityResult:
 @dataclass
 class HallucinationIndicators:
     """Hallucination/factuality indicators"""
+
     grounding_score: float  # 0-1, how grounded in facts
     consistency_score: float  # 0-1, self-consistency
     factuality_score: float  # 0-1, factual accuracy
@@ -50,6 +54,7 @@ class HallucinationIndicators:
 @dataclass
 class DegradationSignal:
     """Performance degradation signals"""
+
     metric_name: str
     current_value: float
     baseline_value: float
@@ -61,6 +66,7 @@ class DegradationSignal:
 @dataclass
 class TrustIndicators:
     """Aggregated trust indicators"""
+
     overall_trust: float  # 0-1
     drift_risk: float  # 0-1 (inverted for trust)
     reliability: float  # 0-1
@@ -84,19 +90,14 @@ class CognitiveEngine:
     """
 
     # Trust weights (sum to 1.0)
-    WEIGHTS = {
-        "drift": 0.25,
-        "reliability": 0.30,
-        "hallucination": 0.25,
-        "degradation": 0.20
-    }
+    WEIGHTS = {"drift": 0.25, "reliability": 0.30, "hallucination": 0.25, "degradation": 0.20}
 
     def __init__(
         self,
         drift_threshold: float = 0.3,
         reliability_threshold: float = 0.7,
         hallucination_threshold: float = 0.2,
-        window_hours: int = 24
+        window_hours: int = 24,
     ):
         self.drift_threshold = drift_threshold
         self.reliability_threshold = reliability_threshold
@@ -108,7 +109,7 @@ class CognitiveEngine:
         self,
         model_id: str,
         current_data: Dict[str, List[float]],
-        reference_data: Optional[Dict[str, List[float]]] = None
+        reference_data: Optional[Dict[str, List[float]]] = None,
     ) -> Dict[str, DriftResult]:
         """
         Detect various types of drift for a model.
@@ -130,16 +131,13 @@ class CognitiveEngine:
                 is_significant=score > self.drift_threshold,
                 affected_features=self._identify_drifted_features(current_data, score),
                 reference_period=f"last_{self.window_hours}h",
-                comparison_period="baseline"
+                comparison_period="baseline",
             )
 
         return results
 
     def analyze_reliability(
-        self,
-        model_id: str,
-        predictions: List[Dict[str, Any]],
-        actuals: Optional[List[Any]] = None
+        self, model_id: str, predictions: List[Dict[str, Any]], actuals: Optional[List[Any]] = None
     ) -> ReliabilityResult:
         """
         Analyze model reliability through multiple lenses.
@@ -157,10 +155,10 @@ class CognitiveEngine:
         ood_rate = self._compute_ood_rate(predictions)
 
         overall = (
-            confidence_calibration * 0.3 +
-            prediction_stability * 0.3 +
-            uncertainty_quality * 0.2 +
-            ood_rate * 0.2
+            confidence_calibration * 0.3
+            + prediction_stability * 0.3
+            + uncertainty_quality * 0.2
+            + ood_rate * 0.2
         )
 
         return ReliabilityResult(
@@ -168,13 +166,11 @@ class CognitiveEngine:
             prediction_stability=prediction_stability,
             uncertainty_quality=uncertainty_quality,
             ood_detection_rate=ood_rate,
-            overall_reliability=overall
+            overall_reliability=overall,
         )
 
     def detect_hallucination_risk(
-        self,
-        model_id: str,
-        outputs: List[Dict[str, Any]]
+        self, model_id: str, outputs: List[Dict[str, Any]]
     ) -> HallucinationIndicators:
         """
         Assess hallucination/factuality risk for generative models.
@@ -204,14 +200,11 @@ class CognitiveEngine:
             consistency_score=consistency,
             factuality_score=factuality,
             citation_accuracy=citation,
-            risk_level=risk_level
+            risk_level=risk_level,
         )
 
     def track_degradation(
-        self,
-        model_id: str,
-        current_metrics: Dict[str, float],
-        baseline_metrics: Dict[str, float]
+        self, model_id: str, current_metrics: Dict[str, float], baseline_metrics: Dict[str, float]
     ) -> List[DegradationSignal]:
         """
         Track performance degradation over time.
@@ -239,14 +232,16 @@ class CognitiveEngine:
                 trend = "stable"
                 alert_level = "none"
 
-            signals.append(DegradationSignal(
-                metric_name=metric_name,
-                current_value=current_value,
-                baseline_value=baseline_value,
-                degradation_pct=degradation_pct,
-                trend=trend,
-                alert_level=alert_level
-            ))
+            signals.append(
+                DegradationSignal(
+                    metric_name=metric_name,
+                    current_value=current_value,
+                    baseline_value=baseline_value,
+                    degradation_pct=degradation_pct,
+                    trend=trend,
+                    alert_level=alert_level,
+                )
+            )
 
         return signals
 
@@ -256,7 +251,7 @@ class CognitiveEngine:
         drift_results: Dict[str, DriftResult],
         reliability: ReliabilityResult,
         hallucination: HallucinationIndicators,
-        degradation: List[DegradationSignal]
+        degradation: List[DegradationSignal],
     ) -> TrustIndicators:
         """
         Compute aggregated trust indicators from all cognitive metrics.
@@ -279,10 +274,10 @@ class CognitiveEngine:
 
         # Hallucination: average of indicators
         hallucination_avg = (
-            hallucination.grounding_score +
-            hallucination.consistency_score +
-            hallucination.factuality_score +
-            hallucination.citation_accuracy
+            hallucination.grounding_score
+            + hallucination.consistency_score
+            + hallucination.factuality_score
+            + hallucination.citation_accuracy
         ) / 4
         hallucination_trust = hallucination_avg
 
@@ -292,10 +287,10 @@ class CognitiveEngine:
 
         # Weighted overall trust
         overall_trust = (
-            self.WEIGHTS["drift"] * drift_trust +
-            self.WEIGHTS["reliability"] * reliability_trust +
-            self.WEIGHTS["hallucination"] * hallucination_trust +
-            self.WEIGHTS["degradation"] * degradation_trust
+            self.WEIGHTS["drift"] * drift_trust
+            + self.WEIGHTS["reliability"] * reliability_trust
+            + self.WEIGHTS["hallucination"] * hallucination_trust
+            + self.WEIGHTS["degradation"] * degradation_trust
         )
 
         # Determine trend
@@ -308,7 +303,7 @@ class CognitiveEngine:
             hallucination_risk=round(1 - hallucination_trust, 3),
             degradation_risk=round(degradation_risk, 3),
             trend=trend,
-            last_computed=datetime.utcnow()
+            last_computed=datetime.utcnow(),
         )
 
     def get_model_snapshot(self, model_id: str) -> Dict[str, Any]:
@@ -333,34 +328,28 @@ class CognitiveEngine:
             "reliability": vars(reliability),
             "hallucination": vars(hallucination),
             "degradation": [vars(d) for d in degradation],
-            "computed_at": datetime.utcnow().isoformat()
+            "computed_at": datetime.utcnow().isoformat(),
         }
 
     # =========================================================================
     # Private Helper Methods
     # =========================================================================
 
-    def _compute_drift_score(
-        self, model_id: str, drift_type: DriftType, data: Dict
-    ) -> float:
+    def _compute_drift_score(self, model_id: str, drift_type: DriftType, data: Dict) -> float:
         """Compute drift score - replace with real statistical tests"""
         # Demo: generate realistic scores
         base = hash(f"{model_id}_{drift_type.value}") % 100 / 100
         noise = random.uniform(-0.1, 0.1)
         return max(0, min(1, base * 0.5 + noise))
 
-    def _identify_drifted_features(
-        self, data: Dict, score: float
-    ) -> List[str]:
+    def _identify_drifted_features(self, data: Dict, score: float) -> List[str]:
         """Identify features with significant drift"""
         if score < self.drift_threshold:
             return []
         features = list(data.keys()) if data else ["feature_1", "feature_2"]
-        return features[:int(len(features) * score)]
+        return features[: int(len(features) * score)]
 
-    def _compute_calibration(
-        self, predictions: List[Dict], actuals: Optional[List]
-    ) -> float:
+    def _compute_calibration(self, predictions: List[Dict], actuals: Optional[List]) -> float:
         """Compute confidence calibration score"""
         return 0.75 + random.uniform(-0.1, 0.1)
 
@@ -436,5 +425,5 @@ class CognitiveEngine:
         return self.track_degradation(
             model_id,
             {"accuracy": 0.92, "latency": 45, "throughput": 1200},
-            {"accuracy": 0.95, "latency": 40, "throughput": 1500}
+            {"accuracy": 0.95, "latency": 40, "throughput": 1500},
         )

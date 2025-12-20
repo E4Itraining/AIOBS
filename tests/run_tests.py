@@ -10,21 +10,19 @@ Usage:
     python run_tests.py --parallel         # Run test suites in parallel
     python run_tests.py --report           # Generate HTML report
 """
+import argparse
+import concurrent.futures
+import json
+import shutil
+import signal
 import subprocess
 import sys
-import os
 import time
-import json
-import argparse
-import threading
-import signal
-import shutil
+from dataclasses import dataclass, field
 from datetime import datetime, timedelta
-from typing import List, Dict, Optional, Callable
-from dataclasses import dataclass, field, asdict
 from enum import Enum
 from pathlib import Path
-import concurrent.futures
+from typing import List
 
 
 def check_test_dependencies():
@@ -63,10 +61,10 @@ def check_test_dependencies():
         print("\n" + "=" * 60, file=sys.stderr)
         print("ERROR: Missing required test dependencies!", file=sys.stderr)
         print("=" * 60, file=sys.stderr)
-        print(f"\nThe following packages are required but not installed:", file=sys.stderr)
+        print("\nThe following packages are required but not installed:", file=sys.stderr)
         for pkg in missing:
             print(f"  - {pkg}", file=sys.stderr)
-        print(f"\nTo install them, run:", file=sys.stderr)
+        print("\nTo install them, run:", file=sys.stderr)
         print(f"  pip install {' '.join(missing)}", file=sys.stderr)
         print("=" * 60 + "\n", file=sys.stderr)
         sys.exit(1)
@@ -98,7 +96,7 @@ def find_pytest() -> str:
             [sys.executable, "-m", "pytest", "--version"],
             capture_output=True,
             text=True,
-            timeout=10
+            timeout=10,
         )
         if result.returncode == 0:
             return f"{sys.executable} -m pytest"
@@ -112,6 +110,7 @@ def find_pytest() -> str:
 # =============================================================================
 # Configuration
 # =============================================================================
+
 
 class TestSuite(Enum):
     UNIT = "unit"
@@ -128,6 +127,7 @@ class TestSuite(Enum):
 @dataclass
 class TestConfig:
     """Test configuration"""
+
     suite: TestSuite = TestSuite.ALL
     parallel: bool = False
     continuous: bool = False
@@ -145,6 +145,7 @@ class TestConfig:
 @dataclass
 class TestResult:
     """Result of a test run"""
+
     suite: str
     passed: int = 0
     failed: int = 0
@@ -159,6 +160,7 @@ class TestResult:
 @dataclass
 class OrchestratorReport:
     """Complete orchestrator report"""
+
     start_time: datetime
     end_time: datetime
     total_suites: int
@@ -179,42 +181,42 @@ TEST_SUITES = {
     TestSuite.DRIFT: {
         "path": "tests/visualization/test_drift.py",
         "markers": ["drift"],
-        "description": "Data drift, concept drift, and prediction drift tests"
+        "description": "Data drift, concept drift, and prediction drift tests",
     },
     TestSuite.SECURITY: {
         "path": "tests/visualization/test_security.py",
         "markers": ["security"],
-        "description": "Prompt injection, SQL injection, XSS, and security tests"
+        "description": "Prompt injection, SQL injection, XSS, and security tests",
     },
     TestSuite.RELIABILITY: {
         "path": "tests/visualization/test_reliability.py",
         "markers": ["unit"],
-        "description": "Model reliability, calibration, and hallucination tests"
+        "description": "Model reliability, calibration, and hallucination tests",
     },
     TestSuite.CAUSAL: {
         "path": "tests/visualization/test_causal.py",
         "markers": ["unit"],
-        "description": "Causal analysis and root cause detection tests"
+        "description": "Causal analysis and root cause detection tests",
     },
     TestSuite.IMPACT: {
         "path": "tests/visualization/test_impact.py",
         "markers": ["unit"],
-        "description": "Business impact and cost analysis tests"
+        "description": "Business impact and cost analysis tests",
     },
     TestSuite.API: {
         "path": "tests/visualization/test_api_integration.py",
         "markers": ["integration"],
-        "description": "API endpoint and integration tests"
+        "description": "API endpoint and integration tests",
     },
     TestSuite.STRESS: {
         "path": "tests/visualization/test_stress.py",
         "markers": ["stress"],
-        "description": "Load, stress, and performance tests"
+        "description": "Load, stress, and performance tests",
     },
     TestSuite.UNIT: {
         "path": "tests/visualization/test_core.py",
         "markers": ["unit"],
-        "description": "Core unit tests"
+        "description": "Core unit tests",
     },
 }
 
@@ -222,6 +224,7 @@ TEST_SUITES = {
 # =============================================================================
 # Test Runner
 # =============================================================================
+
 
 class TestRunner:
     """Runs individual test suites"""
@@ -235,17 +238,13 @@ class TestRunner:
         suite_config = TEST_SUITES.get(suite)
         if not suite_config:
             return TestResult(
-                suite=suite.value,
-                exit_code=1,
-                output=f"Unknown test suite: {suite.value}"
+                suite=suite.value, exit_code=1, output=f"Unknown test suite: {suite.value}"
             )
 
         test_path = self.project_root / suite_config["path"]
         if not test_path.exists():
             return TestResult(
-                suite=suite.value,
-                exit_code=1,
-                output=f"Test file not found: {test_path}"
+                suite=suite.value, exit_code=1, output=f"Test file not found: {test_path}"
             )
 
         # Build pytest command
@@ -290,7 +289,9 @@ class TestRunner:
         try:
             timeout_check = subprocess.run(
                 [pytest_cmd.split()[0] if " " in pytest_cmd else pytest_cmd, "--help"],
-                capture_output=True, text=True, timeout=5
+                capture_output=True,
+                text=True,
+                timeout=5,
             )
             if "--timeout" in timeout_check.stdout:
                 cmd.extend([f"--timeout={self.config.timeout_seconds}"])
@@ -309,7 +310,7 @@ class TestRunner:
                 cwd=str(self.project_root),
                 capture_output=True,
                 text=True,
-                timeout=self.config.timeout_seconds
+                timeout=self.config.timeout_seconds,
             )
             duration = time.time() - start_time
 
@@ -325,20 +326,18 @@ class TestRunner:
                 errors=errors,
                 duration_seconds=duration,
                 output=output,
-                exit_code=result.returncode
+                exit_code=result.returncode,
             )
 
         except subprocess.TimeoutExpired:
             return TestResult(
                 suite=suite.value,
                 exit_code=124,
-                output=f"Test suite timed out after {self.config.timeout_seconds}s"
+                output=f"Test suite timed out after {self.config.timeout_seconds}s",
             )
         except Exception as e:
             return TestResult(
-                suite=suite.value,
-                exit_code=1,
-                output=f"Error running tests: {str(e)}"
+                suite=suite.value, exit_code=1, output=f"Error running tests: {str(e)}"
             )
 
     def _parse_pytest_output(self, output: str) -> tuple:
@@ -347,19 +346,20 @@ class TestRunner:
 
         # Look for summary line like "5 passed, 2 failed, 1 skipped"
         import re
-        match = re.search(r'(\d+) passed', output)
+
+        match = re.search(r"(\d+) passed", output)
         if match:
             passed = int(match.group(1))
 
-        match = re.search(r'(\d+) failed', output)
+        match = re.search(r"(\d+) failed", output)
         if match:
             failed = int(match.group(1))
 
-        match = re.search(r'(\d+) skipped', output)
+        match = re.search(r"(\d+) skipped", output)
         if match:
             skipped = int(match.group(1))
 
-        match = re.search(r'(\d+) error', output)
+        match = re.search(r"(\d+) error", output)
         if match:
             errors = int(match.group(1))
 
@@ -369,6 +369,7 @@ class TestRunner:
 # =============================================================================
 # Test Orchestrator
 # =============================================================================
+
 
 class TestOrchestrator:
     """Orchestrates running multiple test suites"""
@@ -424,8 +425,7 @@ class TestOrchestrator:
 
         with concurrent.futures.ThreadPoolExecutor(max_workers=len(suites)) as executor:
             future_to_suite = {
-                executor.submit(self.runner.run_suite, suite): suite
-                for suite in suites
+                executor.submit(self.runner.run_suite, suite): suite for suite in suites
             }
 
             for future in concurrent.futures.as_completed(future_to_suite):
@@ -435,11 +435,9 @@ class TestOrchestrator:
                     self.results.append(result)
                     self._print_result(result)
                 except Exception as e:
-                    self.results.append(TestResult(
-                        suite=suite.value,
-                        exit_code=1,
-                        output=f"Exception: {str(e)}"
-                    ))
+                    self.results.append(
+                        TestResult(suite=suite.value, exit_code=1, output=f"Exception: {str(e)}")
+                    )
 
         return self._generate_report(start_time)
 
@@ -480,8 +478,10 @@ class TestOrchestrator:
         reset = "\033[0m"
 
         print(f"\n{color}{status}{reset}: {result.suite}")
-        print(f"  Passed: {result.passed}, Failed: {result.failed}, "
-              f"Skipped: {result.skipped}, Errors: {result.errors}")
+        print(
+            f"  Passed: {result.passed}, Failed: {result.failed}, "
+            f"Skipped: {result.skipped}, Errors: {result.errors}"
+        )
         print(f"  Duration: {result.duration_seconds:.2f}s")
 
         if result.exit_code != 0 and self.config.verbose:
@@ -508,7 +508,7 @@ class TestOrchestrator:
             total_passed=total_passed,
             total_failed=total_failed,
             total_skipped=total_skipped,
-            results=self.results
+            results=self.results,
         )
 
         self._print_report(report)
@@ -527,8 +527,10 @@ class TestOrchestrator:
         print(f"{'='*60}")
         print(f"Duration: {duration:.2f}s")
         print(f"Test Suites: {report.passed_suites} passed, {report.failed_suites} failed")
-        print(f"Tests: {report.total_passed} passed, {report.total_failed} failed, "
-              f"{report.total_skipped} skipped")
+        print(
+            f"Tests: {report.total_passed} passed, {report.total_failed} failed, "
+            f"{report.total_skipped} skipped"
+        )
 
         if report.failed_suites > 0:
             print("\nFailed Suites:")
@@ -564,10 +566,10 @@ class TestOrchestrator:
                     "errors": r.errors,
                     "duration_seconds": r.duration_seconds,
                     "exit_code": r.exit_code,
-                    "timestamp": r.timestamp.isoformat()
+                    "timestamp": r.timestamp.isoformat(),
                 }
                 for r in report.results
-            ]
+            ],
         }
 
         with open(report_file, "w") as f:
@@ -580,83 +582,51 @@ class TestOrchestrator:
 # CLI
 # =============================================================================
 
+
 def main():
     parser = argparse.ArgumentParser(
         description="AIOBS Test Orchestrator - Run comprehensive test suites"
     )
 
     parser.add_argument(
-        "--suite", "-s",
+        "--suite",
+        "-s",
         type=str,
         choices=[s.value for s in TestSuite],
         default="all",
-        help="Test suite to run (default: all)"
+        help="Test suite to run (default: all)",
     )
 
-    parser.add_argument(
-        "--parallel", "-p",
-        action="store_true",
-        help="Run test suites in parallel"
-    )
+    parser.add_argument("--parallel", "-p", action="store_true", help="Run test suites in parallel")
+
+    parser.add_argument("--continuous", "-c", action="store_true", help="Run tests continuously")
 
     parser.add_argument(
-        "--continuous", "-c",
-        action="store_true",
-        help="Run tests continuously"
-    )
-
-    parser.add_argument(
-        "--interval", "-i",
+        "--interval",
+        "-i",
         type=int,
         default=300,
-        help="Interval between continuous runs in seconds (default: 300)"
+        help="Interval between continuous runs in seconds (default: 300)",
+    )
+
+    parser.add_argument("--verbose", "-v", action="store_true", default=True, help="Verbose output")
+
+    parser.add_argument("--quiet", "-q", action="store_true", help="Quiet output")
+
+    parser.add_argument("--coverage", action="store_true", help="Run with coverage reporting")
+
+    parser.add_argument("--report", "-r", action="store_true", help="Generate test reports")
+
+    parser.add_argument(
+        "--max-failures", type=int, default=0, help="Stop after N failures (0 = no limit)"
     )
 
     parser.add_argument(
-        "--verbose", "-v",
-        action="store_true",
-        default=True,
-        help="Verbose output"
+        "--timeout", type=int, default=600, help="Timeout per test suite in seconds (default: 600)"
     )
 
     parser.add_argument(
-        "--quiet", "-q",
-        action="store_true",
-        help="Quiet output"
-    )
-
-    parser.add_argument(
-        "--coverage",
-        action="store_true",
-        help="Run with coverage reporting"
-    )
-
-    parser.add_argument(
-        "--report", "-r",
-        action="store_true",
-        help="Generate test reports"
-    )
-
-    parser.add_argument(
-        "--max-failures",
-        type=int,
-        default=0,
-        help="Stop after N failures (0 = no limit)"
-    )
-
-    parser.add_argument(
-        "--timeout",
-        type=int,
-        default=600,
-        help="Timeout per test suite in seconds (default: 600)"
-    )
-
-    parser.add_argument(
-        "--markers", "-m",
-        type=str,
-        nargs="+",
-        default=[],
-        help="Only run tests with these markers"
+        "--markers", "-m", type=str, nargs="+", default=[], help="Only run tests with these markers"
     )
 
     parser.add_argument(
@@ -664,14 +634,10 @@ def main():
         type=str,
         nargs="+",
         default=[],
-        help="Exclude tests with these markers"
+        help="Exclude tests with these markers",
     )
 
-    parser.add_argument(
-        "--list-suites",
-        action="store_true",
-        help="List available test suites"
-    )
+    parser.add_argument("--list-suites", action="store_true", help="List available test suites")
 
     args = parser.parse_args()
 
@@ -698,7 +664,7 @@ def main():
         max_failures=args.max_failures,
         timeout_seconds=args.timeout,
         markers=args.markers,
-        exclude_markers=args.exclude_markers
+        exclude_markers=args.exclude_markers,
     )
 
     # Create orchestrator

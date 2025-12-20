@@ -3,11 +3,11 @@ AIOBS Configuration Module
 Centralized environment variable validation using Pydantic Settings
 """
 
-from typing import List, Optional
-from functools import lru_cache
 import logging
+from functools import lru_cache
+from typing import List, Optional
 
-from pydantic import Field, field_validator, SecretStr
+from pydantic import Field, SecretStr, field_validator
 from pydantic_settings import BaseSettings, SettingsConfigDict
 
 logger = logging.getLogger("aiobs.config")
@@ -15,13 +15,10 @@ logger = logging.getLogger("aiobs.config")
 
 class ServerSettings(BaseSettings):
     """Server configuration settings"""
-    model_config = SettingsConfigDict(
-        env_prefix="AIOBS_",
-        case_sensitive=False,
-        extra="ignore"
-    )
 
-    host: str = Field(default="0.0.0.0", description="Server host address")
+    model_config = SettingsConfigDict(env_prefix="AIOBS_", case_sensitive=False, extra="ignore")
+
+    host: str = Field(default="0.0.0.0", description="Server host address")  # nosec B104 - intentional for Docker
     port: int = Field(default=8000, ge=1, le=65535, description="Server port")
     reload: bool = Field(default=True, description="Enable hot reload")
     log_level: str = Field(default="info", description="Logging level")
@@ -38,15 +35,13 @@ class ServerSettings(BaseSettings):
 
 class CORSSettings(BaseSettings):
     """CORS configuration settings"""
-    model_config = SettingsConfigDict(
-        case_sensitive=False,
-        extra="ignore"
-    )
+
+    model_config = SettingsConfigDict(case_sensitive=False, extra="ignore")
 
     cors_origins: str = Field(
         default="http://localhost:8000,http://localhost:3000,http://127.0.0.1:8000",
         alias="CORS_ORIGINS",
-        description="Comma-separated list of allowed origins"
+        description="Comma-separated list of allowed origins",
     )
 
     @property
@@ -68,20 +63,15 @@ class CORSSettings(BaseSettings):
 
 class SecuritySettings(BaseSettings):
     """Security-related settings"""
-    model_config = SettingsConfigDict(
-        env_prefix="AIOBS_",
-        case_sensitive=False,
-        extra="ignore"
-    )
+
+    model_config = SettingsConfigDict(env_prefix="AIOBS_", case_sensitive=False, extra="ignore")
 
     api_keys: str = Field(default="", description="Comma-separated list of valid API keys")
     signing_secret: SecretStr = Field(
-        default=SecretStr("dev-secret"),
-        description="HMAC signing secret for request verification"
+        default=SecretStr("dev-secret"), description="HMAC signing secret for request verification"
     )
     security_auth: str = Field(
-        default="",
-        description="Comma-separated list of valid security auth tokens"
+        default="", description="Comma-separated list of valid security auth tokens"
     )
 
     @property
@@ -101,35 +91,29 @@ class SecuritySettings(BaseSettings):
 
 class BackendSettings(BaseSettings):
     """Backend service connection settings"""
-    model_config = SettingsConfigDict(
-        case_sensitive=False,
-        extra="ignore"
-    )
+
+    model_config = SettingsConfigDict(case_sensitive=False, extra="ignore")
 
     victoria_metrics_url: str = Field(
         default="http://victoriametrics:8428",
         alias="VICTORIA_METRICS_URL",
-        description="VictoriaMetrics endpoint URL"
+        description="VictoriaMetrics endpoint URL",
     )
     openobserve_url: str = Field(
         default="http://openobserve:5080",
         alias="OPENOBSERVE_URL",
-        description="OpenObserve endpoint URL"
+        description="OpenObserve endpoint URL",
     )
     openobserve_user: str = Field(
-        default="admin@aiobs.local",
-        alias="OPENOBSERVE_USER",
-        description="OpenObserve username"
+        default="admin@aiobs.local", alias="OPENOBSERVE_USER", description="OpenObserve username"
     )
     openobserve_password: SecretStr = Field(
         default=SecretStr("Complexpass#123"),
         alias="OPENOBSERVE_PASSWORD",
-        description="OpenObserve password"
+        description="OpenObserve password",
     )
     redis_url: str = Field(
-        default="redis://redis:6379",
-        alias="REDIS_URL",
-        description="Redis connection URL"
+        default="redis://redis:6379", alias="REDIS_URL", description="Redis connection URL"
     )
 
     @field_validator("victoria_metrics_url", "openobserve_url")
@@ -149,10 +133,8 @@ class BackendSettings(BaseSettings):
 
 class Settings(BaseSettings):
     """Main application settings - combines all configuration"""
-    model_config = SettingsConfigDict(
-        case_sensitive=False,
-        extra="ignore"
-    )
+
+    model_config = SettingsConfigDict(case_sensitive=False, extra="ignore")
 
     # Nested settings
     server: ServerSettings = Field(default_factory=ServerSettings)

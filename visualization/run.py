@@ -4,14 +4,13 @@ AIOBS Visualization Platform - Runner
 Launch the FastAPI server for the visualization dashboard
 """
 
-import sys
-import os
 import logging
+import os
+import sys
 
 # Configure logging
 logging.basicConfig(
-    level=logging.INFO,
-    format="%(asctime)s - %(name)s - %(levelname)s - %(message)s"
+    level=logging.INFO, format="%(asctime)s - %(name)s - %(levelname)s - %(message)s"
 )
 logger = logging.getLogger("aiobs.runner")
 
@@ -64,9 +63,11 @@ def main() -> None:
         sys.exit(1)
 
     import uvicorn
+
     from visualization.config import get_settings, validate_production_settings
 
-    print("""
+    print(
+        """
     ╔═══════════════════════════════════════════════════════════╗
     ║                                                           ║
     ║     █████╗ ██╗ ██████╗ ██████╗ ███████╗                  ║
@@ -80,7 +81,8 @@ def main() -> None:
     ║         Trust Control Layer for AI Systems                ║
     ║                                                           ║
     ╚═══════════════════════════════════════════════════════════╝
-    """)
+    """
+    )
 
     # Load and validate configuration
     settings = get_settings()
@@ -104,7 +106,7 @@ def main() -> None:
         port=settings.server.port,
         reload=settings.server.reload,
         reload_dirs=["visualization"] if settings.server.reload else None,
-        log_level=settings.server.log_level
+        log_level=settings.server.log_level,
     )
 
 

@@ -9,6 +9,7 @@
     "dev": "ts-node-dev --respawn src/server.ts",
     "start": "node dist/server.js",
     "test": "jest",
+    "test:ci": "jest --coverage --ci --reporters=default --reporters=jest-junit",
     "test:coverage": "jest --coverage",
     "lint": "eslint src",
     "lint:fix": "eslint src --fix",
@@ -57,7 +58,8 @@
     "ts-node-dev": "^2.0.0",
     "typedoc": "^0.25.0",
     "typescript": "^5.2.0",
-    "typescript-eslint": "^8.49.0"
+    "typescript-eslint": "^8.49.0",
+    "jest-junit": "^16.0.0"
   },
   "engines": {
     "node": ">=18.0.0"

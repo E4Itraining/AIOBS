@@ -2,8 +2,10 @@
 AIOBS Dashboard API Router
 Endpoints for unified dashboard views
 """
+
 from datetime import timedelta
 from typing import Optional
+
 from fastapi import APIRouter, Query
 
 from ..core import UnifiedObservabilityView
@@ -20,11 +22,10 @@ async def get_overview(hours: int = Query(24, ge=1, le=720)) -> APIResponse:
     """
     Get unified dashboard overview data.
     """
-    from ..core.unified_view import ViewMode, TimeGranularity
+    from ..core.unified_view import TimeGranularity, ViewMode
 
     data = unified_view.get_dashboard_data(
-        view_mode=ViewMode.OVERVIEW,
-        time_range=timedelta(hours=hours)
+        view_mode=ViewMode.OVERVIEW, time_range=timedelta(hours=hours)
     )
 
     return APIResponse(
@@ -61,14 +62,16 @@ async def get_overview(hours: int = Query(24, ge=1, le=720)) -> APIResponse:
                 "trust": data.trust_trend,
                 "cost": data.cost_trend,
                 "carbon": data.carbon_trend,
-            }
-        }
+            },
+        },
     )
 
 
 @router.get("/services")
 async def get_services_health(
-    service_type: Optional[str] = Query(None, description="Filter by type: model, pipeline, infrastructure")
+    service_type: Optional[str] = Query(
+        None, description="Filter by type: model, pipeline, infrastructure"
+    )
 ) -> APIResponse:
     """
     Get health status for all services.
@@ -86,10 +89,10 @@ async def get_services_health(
                 "uptime_pct": s.uptime_pct,
                 "error_rate_pct": s.error_rate_pct,
                 "latency_p99_ms": s.latency_p99_ms,
-                "last_check": s.last_check.isoformat()
+                "last_check": s.last_check.isoformat(),
             }
             for s in services
-        ]
+        ],
     )
 
 

@@ -78,13 +78,13 @@ export class AIOBS {
    */
   static create(config?: AIBOSConfig): AIBOSInstance {
     // Import engines dynamically to avoid circular dependencies
-    // eslint-disable-next-line @typescript-eslint/no-var-requires
+    // eslint-disable-next-line @typescript-eslint/no-require-imports
     const { CognitiveMetricsEngine } = require('./core/cognitive/cognitive-engine');
-    // eslint-disable-next-line @typescript-eslint/no-var-requires
+    // eslint-disable-next-line @typescript-eslint/no-require-imports
     const { CausalEngine } = require('./core/causal/causal-engine');
-    // eslint-disable-next-line @typescript-eslint/no-var-requires
+    // eslint-disable-next-line @typescript-eslint/no-require-imports
     const { AuditEngine } = require('./governance/audit/audit-engine');
-    // eslint-disable-next-line @typescript-eslint/no-var-requires
+    // eslint-disable-next-line @typescript-eslint/no-require-imports
     const { SLOMonitor } = require('./governance/slo/slo-monitor');
 
     const instance: AIBOSInstance = {
@@ -96,7 +96,7 @@ export class AIOBS {
 
     // Initialize storage backend if configured
     if (config?.storage?.victoriaMetricsUrl && config?.storage?.openObserveUrl) {
-      // eslint-disable-next-line @typescript-eslint/no-var-requires
+      // eslint-disable-next-line @typescript-eslint/no-require-imports
       const { createAIOBSStorageBackend } = require('./storage');
       instance.storage = createAIOBSStorageBackend({
         victoriaMetricsUrl: config.storage.victoriaMetricsUrl,

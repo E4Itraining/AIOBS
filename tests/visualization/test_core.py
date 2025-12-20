@@ -1,14 +1,17 @@
 """
 AIOBS Core Module Tests
 """
-import pytest
+
 from datetime import datetime, timedelta
 from enum import Enum
 from typing import Dict, List, Optional
 
+import pytest
+
 
 class ViewMode(Enum):
     """Available view modes"""
+
     OVERVIEW = "overview"
     MODELS = "models"
     INFRASTRUCTURE = "infrastructure"
@@ -44,7 +47,7 @@ class TestUnifiedObservabilityView:
                 "trust": "stable",
                 "cost": "up",
                 "carbon": "down",
-            }
+            },
         }
 
         assert mock_dashboard_data["total_models"] == 12
@@ -79,7 +82,7 @@ class TestUnifiedObservabilityView:
             ],
             "edges": [
                 {"source": "gateway", "target": "router", "type": "request"},
-            ]
+            ],
         }
 
         assert "nodes" in mock_topology
@@ -99,12 +102,12 @@ class TestUnifiedObservabilityView:
                     "unit": "ms",
                     "compliance_pct": 99.2,
                     "error_budget_remaining_pct": 85,
-                    "status": "healthy"
+                    "status": "healthy",
                 },
             ],
             "overall_compliance_pct": 98.7,
             "slos_at_risk": 2,
-            "error_budget_burn_rate": 1.2
+            "error_budget_burn_rate": 1.2,
         }
 
         assert "slos" in mock_slo
@@ -121,14 +124,14 @@ class TestUnifiedObservabilityView:
                 "training": 8200.00,
                 "storage": 4530.50,
                 "networking": 2500.00,
-                "monitoring": 1500.00
+                "monitoring": 1500.00,
             },
             "by_model": {
                 "recommendation-v2": 18500.00,
             },
             "trend": "up",
             "trend_pct": 12,
-            "forecast_next_month": 50750.00
+            "forecast_next_month": 50750.00,
         }
 
         assert mock_costs["total"] == 45230.50
@@ -148,7 +151,7 @@ class TestUnifiedObservabilityView:
             },
             "recommendations": [
                 "Shift batch jobs to low-carbon hours",
-            ]
+            ],
         }
 
         assert mock_carbon["total_carbon_kg"] == 1250.5
@@ -161,7 +164,10 @@ class TestCognitiveEngine:
 
     def test_drift_detection(self):
         """Drift detection should identify data drift"""
-        def detect_drift(reference: List[float], current: List[float], threshold: float = 0.1) -> bool:
+
+        def detect_drift(
+            reference: List[float], current: List[float], threshold: float = 0.1
+        ) -> bool:
             ref_mean = sum(reference) / len(reference)
             curr_mean = sum(current) / len(current)
             drift = abs(curr_mean - ref_mean) / (ref_mean + 1e-10)
@@ -176,11 +182,9 @@ class TestCognitiveEngine:
 
     def test_reliability_scoring(self):
         """Reliability scoring should combine multiple factors"""
+
         def calculate_reliability(
-            calibration: float,
-            stability: float,
-            uncertainty: float,
-            ood_detection: float
+            calibration: float, stability: float, uncertainty: float, ood_detection: float
         ) -> float:
             weights = [0.3, 0.3, 0.2, 0.2]
             scores = [calibration, stability, uncertainty, ood_detection]
@@ -192,11 +196,9 @@ class TestCognitiveEngine:
 
     def test_trust_score_calculation(self):
         """Trust score should aggregate component scores"""
+
         def calculate_trust_score(
-            drift: float,
-            reliability: float,
-            hallucination: float,
-            degradation: float
+            drift: float, reliability: float, hallucination: float, degradation: float
         ) -> float:
             # Inverse drift and hallucination (lower is better)
             drift_score = 1 - drift
@@ -207,10 +209,7 @@ class TestCognitiveEngine:
             return sum(w * s for w, s in zip(weights, scores))
 
         trust = calculate_trust_score(
-            drift=0.1,
-            reliability=0.85,
-            hallucination=0.05,
-            degradation=0.9
+            drift=0.1, reliability=0.85, hallucination=0.05, degradation=0.9
         )
         assert 0 <= trust <= 1
 
@@ -220,9 +219,8 @@ class TestCausalEngine:
 
     def test_root_cause_identification(self):
         """Should identify root causes from impact chain"""
-        def find_root_causes(
-            impact_chain: Dict[str, List[str]]
-        ) -> List[str]:
+
+        def find_root_causes(impact_chain: Dict[str, List[str]]) -> List[str]:
             # Nodes with no incoming edges are root causes
             all_nodes = set(impact_chain.keys())
             affected_nodes = set()
@@ -243,11 +241,12 @@ class TestCausalEngine:
 
     def test_impact_propagation(self):
         """Should calculate impact propagation"""
+
         def propagate_impact(
             source: str,
             graph: Dict[str, List[str]],
             initial_impact: float = 1.0,
-            decay: float = 0.8
+            decay: float = 0.8,
         ) -> Dict[str, float]:
             impacts = {source: initial_impact}
             queue = [source]
@@ -264,12 +263,7 @@ class TestCausalEngine:
 
             return impacts
 
-        graph = {
-            "A": ["B", "C"],
-            "B": ["D"],
-            "C": ["D"],
-            "D": []
-        }
+        graph = {"A": ["B", "C"], "B": ["D"], "C": ["D"], "D": []}
 
         impacts = propagate_impact("A", graph)
         assert impacts["A"] == 1.0
@@ -282,27 +276,25 @@ class TestImpactAnalyzer:
 
     def test_business_impact_calculation(self):
         """Should calculate business impact score"""
+
         def calculate_business_impact(
-            affected_users_pct: float,
-            revenue_impact_pct: float,
-            downtime_minutes: int
+            affected_users_pct: float, revenue_impact_pct: float, downtime_minutes: int
         ) -> float:
             # Weighted combination
             user_score = min(affected_users_pct / 100, 1.0)
             revenue_score = min(revenue_impact_pct / 10, 1.0)
             downtime_score = min(downtime_minutes / 60, 1.0)
 
-            return (user_score * 0.4 + revenue_score * 0.35 + downtime_score * 0.25)
+            return user_score * 0.4 + revenue_score * 0.35 + downtime_score * 0.25
 
         impact = calculate_business_impact(
-            affected_users_pct=25,
-            revenue_impact_pct=5,
-            downtime_minutes=30
+            affected_users_pct=25, revenue_impact_pct=5, downtime_minutes=30
         )
         assert 0 <= impact <= 1
 
     def test_severity_classification(self):
         """Should classify severity based on impact"""
+
         def classify_severity(impact_score: float) -> str:
             if impact_score >= 0.8:
                 return "critical"
@@ -348,7 +340,7 @@ class TestUserProfile:
             "title": "Trust Score",
             "data_source": "/api/metrics/trust/{model_id}",
             "config": {"min": 0, "max": 1},
-            "position": {"x": 0, "y": 0, "w": 3, "h": 2}
+            "position": {"x": 0, "y": 0, "w": 3, "h": 2},
         }
 
         required_fields = ["widget_id", "widget_type", "title", "data_source"]

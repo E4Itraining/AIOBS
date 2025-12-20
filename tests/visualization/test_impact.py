@@ -2,18 +2,20 @@
 AIOBS Business Impact Tests
 Tests for impact analysis, cost estimation, and business metrics
 """
-import pytest
+
 import math
 import random
-from datetime import datetime, timedelta
-from typing import List, Dict, Optional, Any
 from dataclasses import dataclass, field
+from datetime import datetime, timedelta
 from enum import Enum
+from typing import Any, Dict, List, Optional
 
+import pytest
 
 # =============================================================================
 # Business Impact Implementation
 # =============================================================================
+
 
 class ImpactDomain(Enum):
     REVENUE = "revenue"
@@ -36,6 +38,7 @@ class ImpactSeverity(Enum):
 @dataclass
 class BusinessMetric:
     """Business metric affected by an event"""
+
     name: str
     domain: ImpactDomain
     baseline_value: float
@@ -47,6 +50,7 @@ class BusinessMetric:
 @dataclass
 class ImpactVector:
     """Multi-dimensional impact vector"""
+
     revenue_impact: float = 0.0  # $ lost/gained
     cost_impact: float = 0.0  # $ additional cost
     user_impact: float = 0.0  # % users affected
@@ -59,6 +63,7 @@ class ImpactVector:
 @dataclass
 class ImpactReport:
     """Complete impact report"""
+
     event_id: str
     timestamp: datetime
     severity: ImpactSeverity
@@ -98,10 +103,7 @@ class ImpactAnalyzer:
         self.revenue_per_hour = revenue_per_hour
 
     def analyze_event_impact(
-        self,
-        event: Dict[str, Any],
-        duration_hours: float = 1.0,
-        affected_users_pct: float = 0.0
+        self, event: Dict[str, Any], duration_hours: float = 1.0, affected_users_pct: float = 0.0
     ) -> ImpactReport:
         """
         Analyze the business impact of an event.
@@ -143,9 +145,9 @@ class ImpactAnalyzer:
 
         # Calculate total cost
         total_cost = (
-            impact_vector.revenue_impact +
-            impact_vector.cost_impact +
-            (impact_vector.user_impact / 100 * 1000000 * self.COST_PER_USER_HOUR * duration_hours)
+            impact_vector.revenue_impact
+            + impact_vector.cost_impact
+            + (impact_vector.user_impact / 100 * 1000000 * self.COST_PER_USER_HOUR * duration_hours)
         )
 
         return ImpactReport(
@@ -155,19 +157,14 @@ class ImpactAnalyzer:
             impact_vector=impact_vector,
             affected_metrics=[],
             total_cost=total_cost,
-            recommendations=recommendations
+            recommendations=recommendations,
         )
 
     def _estimate_remediation_cost(self, event: Dict) -> float:
         """Estimate cost to remediate the event"""
         base_cost = 500  # Base engineering cost
 
-        severity_multipliers = {
-            "critical": 10,
-            "error": 5,
-            "warning": 2,
-            "info": 1
-        }
+        severity_multipliers = {"critical": 10, "error": 5, "warning": 2, "info": 1}
 
         multiplier = severity_multipliers.get(event.get("severity", "info"), 1)
         return base_cost * multiplier
@@ -203,26 +200,17 @@ class ImpactAnalyzer:
         }
 
         # Weighted average
-        overall = sum(
-            normalized[domain] * weight
-            for domain, weight in self.DOMAIN_WEIGHTS.items()
-        )
+        overall = sum(normalized[domain] * weight for domain, weight in self.DOMAIN_WEIGHTS.items())
 
         # Map to severity
-        for severity, threshold in sorted(
-            self.SEVERITY_THRESHOLDS.items(),
-            key=lambda x: x[1]
-        ):
+        for severity, threshold in sorted(self.SEVERITY_THRESHOLDS.items(), key=lambda x: x[1]):
             if overall <= threshold:
                 return severity
 
         return ImpactSeverity.CRITICAL
 
     def _generate_recommendations(
-        self,
-        event: Dict,
-        impact: ImpactVector,
-        severity: ImpactSeverity
+        self, event: Dict, impact: ImpactVector, severity: ImpactSeverity
     ) -> List[str]:
         """Generate actionable recommendations"""
         recommendations = []
@@ -248,17 +236,10 @@ class ImpactAnalyzer:
         return recommendations
 
     def project_future_impact(
-        self,
-        current_impact: ImpactVector,
-        duration_hours: float,
-        trend: str = "stable"
+        self, current_impact: ImpactVector, duration_hours: float, trend: str = "stable"
     ) -> ImpactVector:
         """Project future impact based on current state and trend"""
-        multipliers = {
-            "improving": 0.5,
-            "stable": 1.0,
-            "degrading": 2.0
-        }
+        multipliers = {"improving": 0.5, "stable": 1.0, "degrading": 2.0}
 
         multiplier = multipliers.get(trend, 1.0) * (duration_hours / 1.0)
 
@@ -269,13 +250,14 @@ class ImpactAnalyzer:
             compliance_impact=min(1.0, current_impact.compliance_impact * multiplier),
             reputation_impact=min(1.0, current_impact.reputation_impact * multiplier),
             operational_impact=min(1.0, current_impact.operational_impact * multiplier),
-            carbon_impact=current_impact.carbon_impact * multiplier
+            carbon_impact=current_impact.carbon_impact * multiplier,
         )
 
 
 # =============================================================================
 # Business Impact Tests
 # =============================================================================
+
 
 class TestImpactCalculation:
     """Tests for impact calculation"""
@@ -314,7 +296,7 @@ class TestImpactCalculation:
             "id": "e1",
             "type": "security",
             "compliance_violation": True,
-            "compliance_severity": 0.8
+            "compliance_severity": 0.8,
         }
 
         report = analyzer.analyze_event_impact(event)
@@ -325,15 +307,13 @@ class TestImpactCalculation:
         """Reputation impact should trigger above threshold"""
         # Below threshold
         report1 = analyzer.analyze_event_impact(
-            {"id": "e1", "type": "error"},
-            affected_users_pct=5.0
+            {"id": "e1", "type": "error"}, affected_users_pct=5.0
         )
         assert report1.impact_vector.reputation_impact == 0.0
 
         # Above threshold
         report2 = analyzer.analyze_event_impact(
-            {"id": "e2", "type": "error"},
-            affected_users_pct=25.0
+            {"id": "e2", "type": "error"}, affected_users_pct=25.0
         )
         assert report2.impact_vector.reputation_impact == 0.5
 
@@ -359,30 +339,41 @@ class TestSeverityClassification:
             "type": "outage",
             "severity": "critical",
             "compliance_violation": True,
-            "compliance_severity": 0.9
+            "compliance_severity": 0.9,
         }
-        report = analyzer.analyze_event_impact(
-            event,
-            duration_hours=5.0,
-            affected_users_pct=80.0
-        )
+        report = analyzer.analyze_event_impact(event, duration_hours=5.0, affected_users_pct=80.0)
 
         assert report.severity in (ImpactSeverity.HIGH, ImpactSeverity.CRITICAL)
 
-    @pytest.mark.parametrize("user_pct,expected_severities", [
-        (0, [ImpactSeverity.NEGLIGIBLE]),  # 0% users -> negligible
-        (10, [ImpactSeverity.NEGLIGIBLE, ImpactSeverity.LOW]),  # 10% users -> negligible or low
-        (50, [ImpactSeverity.NEGLIGIBLE, ImpactSeverity.LOW, ImpactSeverity.MEDIUM]),  # Up to medium
-        (90, [ImpactSeverity.LOW, ImpactSeverity.MEDIUM, ImpactSeverity.HIGH, ImpactSeverity.CRITICAL]),  # Higher severity
-    ])
+    @pytest.mark.parametrize(
+        "user_pct,expected_severities",
+        [
+            (0, [ImpactSeverity.NEGLIGIBLE]),  # 0% users -> negligible
+            (10, [ImpactSeverity.NEGLIGIBLE, ImpactSeverity.LOW]),  # 10% users -> negligible or low
+            (
+                50,
+                [ImpactSeverity.NEGLIGIBLE, ImpactSeverity.LOW, ImpactSeverity.MEDIUM],
+            ),  # Up to medium
+            (
+                90,
+                [
+                    ImpactSeverity.LOW,
+                    ImpactSeverity.MEDIUM,
+                    ImpactSeverity.HIGH,
+                    ImpactSeverity.CRITICAL,
+                ],
+            ),  # Higher severity
+        ],
+    )
     def test_severity_scales_with_users(self, analyzer, user_pct, expected_severities):
         """Severity should scale with affected users"""
         event = {"id": "e1", "type": "degradation"}
         report = analyzer.analyze_event_impact(event, affected_users_pct=user_pct)
 
         # Severity should be in the expected range
-        assert report.severity in expected_severities, \
-            f"For {user_pct}% users, got {report.severity} but expected one of {expected_severities}"
+        assert (
+            report.severity in expected_severities
+        ), f"For {user_pct}% users, got {report.severity} but expected one of {expected_severities}"
 
 
 class TestCostEstimation:
@@ -396,11 +387,7 @@ class TestCostEstimation:
         """Total cost should combine all factors"""
         event = {"id": "e1", "type": "outage", "severity": "critical"}
 
-        report = analyzer.analyze_event_impact(
-            event,
-            duration_hours=1.0,
-            affected_users_pct=10.0
-        )
+        report = analyzer.analyze_event_impact(event, duration_hours=1.0, affected_users_pct=10.0)
 
         # Should include revenue + remediation + user cost
         assert report.total_cost > 50000  # At least revenue impact
@@ -435,11 +422,7 @@ class TestRecommendations:
     def test_escalation_for_critical(self, analyzer):
         """Critical events should recommend escalation"""
         event = {"id": "e1", "type": "outage", "severity": "critical"}
-        report = analyzer.analyze_event_impact(
-            event,
-            duration_hours=10.0,
-            affected_users_pct=90.0
-        )
+        report = analyzer.analyze_event_impact(event, duration_hours=10.0, affected_users_pct=90.0)
 
         assert any("escalation" in r.lower() for r in report.recommendations)
 
@@ -448,8 +431,9 @@ class TestRecommendations:
         event = {"id": "e1", "type": "degradation"}
         report = analyzer.analyze_event_impact(event, affected_users_pct=75.0)
 
-        assert any("customer" in r.lower() or "communication" in r.lower()
-                   for r in report.recommendations)
+        assert any(
+            "customer" in r.lower() or "communication" in r.lower() for r in report.recommendations
+        )
 
     def test_compliance_notification(self, analyzer):
         """Compliance violations should notify compliance team"""
@@ -457,7 +441,7 @@ class TestRecommendations:
             "id": "e1",
             "type": "security",
             "compliance_violation": True,
-            "compliance_severity": 0.8
+            "compliance_severity": 0.8,
         }
         report = analyzer.analyze_event_impact(event)
 
@@ -473,10 +457,7 @@ class TestFutureProjection:
 
     def test_improving_trend_reduces_impact(self, analyzer):
         """Improving trend should reduce projected impact"""
-        current = ImpactVector(
-            revenue_impact=10000,
-            user_impact=50.0
-        )
+        current = ImpactVector(revenue_impact=10000, user_impact=50.0)
 
         projected = analyzer.project_future_impact(current, duration_hours=2.0, trend="improving")
 
@@ -484,10 +465,7 @@ class TestFutureProjection:
 
     def test_degrading_trend_increases_impact(self, analyzer):
         """Degrading trend should increase projected impact"""
-        current = ImpactVector(
-            revenue_impact=10000,
-            user_impact=20.0
-        )
+        current = ImpactVector(revenue_impact=10000, user_impact=20.0)
 
         projected = analyzer.project_future_impact(current, duration_hours=2.0, trend="degrading")
 
@@ -514,16 +492,15 @@ class TestFutureProjection:
 # SLO/SLI Impact Tests
 # =============================================================================
 
+
 class TestSLOImpact:
     """Tests for SLO/SLI impact analysis"""
 
     def test_error_budget_burn(self):
         """Should calculate error budget burn rate"""
+
         def calculate_burn_rate(
-            errors: int,
-            requests: int,
-            slo_target: float,
-            window_hours: float
+            errors: int, requests: int, slo_target: float, window_hours: float
         ) -> float:
             """Calculate error budget burn rate"""
             if requests == 0:
@@ -533,27 +510,23 @@ class TestSLOImpact:
             allowed_error_rate = 1 - slo_target
 
             if allowed_error_rate == 0:
-                return float('inf') if error_rate > 0 else 0.0
+                return float("inf") if error_rate > 0 else 0.0
 
             # Burn rate = actual error rate / allowed error rate
-            return (error_rate / allowed_error_rate)
+            return error_rate / allowed_error_rate
 
         # Example: SLO 99.9%, actual 99.7%
         burn_rate = calculate_burn_rate(
-            errors=300,
-            requests=100000,
-            slo_target=0.999,
-            window_hours=1
+            errors=300, requests=100000, slo_target=0.999, window_hours=1
         )
 
         assert burn_rate == pytest.approx(3.0)  # 3x normal burn rate
 
     def test_slo_compliance_score(self):
         """Should calculate SLO compliance"""
+
         def calculate_compliance(
-            actual_value: float,
-            target_value: float,
-            metric_type: str = "availability"
+            actual_value: float, target_value: float, metric_type: str = "availability"
         ) -> float:
             """Calculate SLO compliance (0-1)"""
             if metric_type in ("availability", "success_rate"):
@@ -577,10 +550,9 @@ class TestSLOImpact:
 
     def test_error_budget_remaining(self):
         """Should calculate remaining error budget"""
+
         def calculate_remaining_budget(
-            slo_target: float,
-            current_success_rate: float,
-            period_elapsed_pct: float
+            slo_target: float, current_success_rate: float, period_elapsed_pct: float
         ) -> float:
             """Calculate remaining error budget percentage"""
             total_budget = 1 - slo_target  # e.g., 0.1% for 99.9%
@@ -600,6 +572,7 @@ class TestSLOImpact:
 # =============================================================================
 # Cost Optimization Tests
 # =============================================================================
+
 
 class TestCostOptimization:
     """Tests for cost optimization recommendations"""

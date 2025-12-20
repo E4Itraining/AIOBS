@@ -3,12 +3,13 @@ AIOBS Real-time WebSocket API
 Game-changer feature: Live updates for dashboards and alerts
 """
 
-from fastapi import APIRouter, WebSocket, WebSocketDisconnect, Query
-from typing import Dict, Set, Optional
 import asyncio
 import json
-from datetime import datetime
 import random
+from datetime import datetime
+from typing import Dict, Optional, Set
+
+from fastapi import APIRouter, Query, WebSocket, WebSocketDisconnect
 
 router = APIRouter(tags=["realtime"])
 
@@ -27,12 +28,12 @@ class ConnectionManager:
     def __init__(self):
         # Channel -> Set of WebSocket connections
         self.channels: Dict[str, Set[WebSocket]] = {
-            'metrics': set(),
-            'alerts': set(),
-            'events': set(),
-            'cognitive': set(),
-            'causal': set(),
-            'all': set()
+            "metrics": set(),
+            "alerts": set(),
+            "events": set(),
+            "cognitive": set(),
+            "causal": set(),
+            "all": set(),
         }
         # WebSocket -> Set of subscribed channels
         self.subscriptions: Dict[WebSocket, Set[str]] = {}
@@ -41,7 +42,7 @@ class ConnectionManager:
         """Accept connection and subscribe to channels"""
         await websocket.accept()
 
-        channels = channels or ['all']
+        channels = channels or ["all"]
         self.subscriptions[websocket] = set(channels)
 
         for channel in channels:
@@ -49,11 +50,9 @@ class ConnectionManager:
                 self.channels[channel].add(websocket)
 
         # Send welcome message
-        await websocket.send_json({
-            'type': 'connected',
-            'channels': channels,
-            'timestamp': datetime.utcnow().isoformat()
-        })
+        await websocket.send_json(
+            {"type": "connected", "channels": channels, "timestamp": datetime.utcnow().isoformat()}
+        )
 
     def disconnect(self, websocket: WebSocket):
         """Remove connection from all channels"""
@@ -83,8 +82,8 @@ class ConnectionManager:
             return
 
         disconnected = set()
-        message['timestamp'] = datetime.utcnow().isoformat()
-        message['channel'] = channel
+        message["timestamp"] = datetime.utcnow().isoformat()
+        message["channel"] = channel
 
         for websocket in self.channels[channel]:
             try:
@@ -98,16 +97,15 @@ class ConnectionManager:
 
     async def broadcast_all(self, message: dict):
         """Broadcast to all connected clients"""
-        await self.broadcast('all', message)
+        await self.broadcast("all", message)
 
     def get_stats(self) -> dict:
         """Get connection statistics"""
         return {
-            'total_connections': len(self.subscriptions),
-            'channels': {
-                channel: len(connections)
-                for channel, connections in self.channels.items()
-            }
+            "total_connections": len(self.subscriptions),
+            "channels": {
+                channel: len(connections) for channel, connections in self.channels.items()
+            },
         }
 
 
@@ -116,10 +114,7 @@ manager = ConnectionManager()
 
 
 @router.websocket("/ws")
-async def websocket_endpoint(
-    websocket: WebSocket,
-    channels: str = Query(default="all")
-):
+async def websocket_endpoint(websocket: WebSocket, channels: str = Query(default="all")):
     """
     WebSocket endpoint for real-time updates
 
@@ -141,35 +136,28 @@ async def websocket_endpoint(
         - causal_update: Causal analysis updates
         - pong: Ping response
     """
-    channel_list = [c.strip() for c in channels.split(',')]
+    channel_list = [c.strip() for c in channels.split(",")]
     await manager.connect(websocket, channel_list)
 
     try:
         while True:
             data = await websocket.receive_json()
-            action = data.get('action')
+            action = data.get("action")
 
-            if action == 'subscribe':
-                channel = data.get('channel')
+            if action == "subscribe":
+                channel = data.get("channel")
                 await manager.subscribe(websocket, channel)
-                await websocket.send_json({
-                    'type': 'subscribed',
-                    'channel': channel
-                })
+                await websocket.send_json({"type": "subscribed", "channel": channel})
 
-            elif action == 'unsubscribe':
-                channel = data.get('channel')
+            elif action == "unsubscribe":
+                channel = data.get("channel")
                 await manager.unsubscribe(websocket, channel)
-                await websocket.send_json({
-                    'type': 'unsubscribed',
-                    'channel': channel
-                })
+                await websocket.send_json({"type": "unsubscribed", "channel": channel})
 
-            elif action == 'ping':
-                await websocket.send_json({
-                    'type': 'pong',
-                    'timestamp': datetime.utcnow().isoformat()
-                })
+            elif action == "ping":
+                await websocket.send_json(
+                    {"type": "pong", "timestamp": datetime.utcnow().isoformat()}
+                )
 
     except WebSocketDisconnect:
         manager.disconnect(websocket)
@@ -178,15 +166,13 @@ async def websocket_endpoint(
 @router.get("/api/realtime/stats")
 async def get_realtime_stats():
     """Get real-time connection statistics"""
-    return {
-        'success': True,
-        'data': manager.get_stats()
-    }
+    return {"success": True, "data": manager.get_stats()}
 
 
 # =============================================================================
 # Background Tasks for Real-time Updates
 # =============================================================================
+
 
 async def metric_broadcaster():
     """
@@ -199,18 +185,18 @@ async def metric_broadcaster():
 
         # Simulated metric update
         update = {
-            'type': 'metric_update',
-            'data': {
-                'trust_score': round(0.75 + random.uniform(-0.05, 0.05), 3),
-                'daily_inferences': random.randint(1000000, 2000000),
-                'daily_cost': round(random.uniform(1000, 2000), 2),
-                'carbon_kg': round(random.uniform(10, 20), 2),
-                'latency_p99': random.randint(50, 150),
-                'error_rate': round(random.uniform(0.001, 0.01), 4)
-            }
+            "type": "metric_update",
+            "data": {
+                "trust_score": round(0.75 + random.uniform(-0.05, 0.05), 3),
+                "daily_inferences": random.randint(1000000, 2000000),
+                "daily_cost": round(random.uniform(1000, 2000), 2),
+                "carbon_kg": round(random.uniform(10, 20), 2),
+                "latency_p99": random.randint(50, 150),
+                "error_rate": round(random.uniform(0.001, 0.01), 4),
+            },
         }
-        await manager.broadcast('metrics', update)
-        await manager.broadcast('all', update)
+        await manager.broadcast("metrics", update)
+        await manager.broadcast("all", update)
 
 
 async def alert_broadcaster():
@@ -219,8 +205,8 @@ async def alert_broadcaster():
 
     In production, this would read from alerting system
     """
-    alert_types = ['drift', 'reliability', 'latency', 'error_rate', 'cost']
-    severities = ['info', 'warning', 'critical']
+    alert_types = ["drift", "reliability", "latency", "error_rate", "cost"]
+    severities = ["info", "warning", "critical"]
 
     while True:
         await asyncio.sleep(random.randint(30, 120))  # Random interval
@@ -228,18 +214,18 @@ async def alert_broadcaster():
         # Simulated alert (only sometimes)
         if random.random() > 0.7:
             alert = {
-                'type': 'alert',
-                'data': {
-                    'id': f'alert-{random.randint(1000, 9999)}',
-                    'alert_type': random.choice(alert_types),
-                    'severity': random.choice(severities),
-                    'message': 'Simulated alert for demonstration',
-                    'service': f'service-{random.randint(1, 5)}',
-                    'timestamp': datetime.utcnow().isoformat()
-                }
+                "type": "alert",
+                "data": {
+                    "id": f"alert-{random.randint(1000, 9999)}",
+                    "alert_type": random.choice(alert_types),
+                    "severity": random.choice(severities),
+                    "message": "Simulated alert for demonstration",
+                    "service": f"service-{random.randint(1, 5)}",
+                    "timestamp": datetime.utcnow().isoformat(),
+                },
             }
-            await manager.broadcast('alerts', alert)
-            await manager.broadcast('all', alert)
+            await manager.broadcast("alerts", alert)
+            await manager.broadcast("all", alert)
 
 
 async def cognitive_broadcaster():
@@ -250,28 +236,28 @@ async def cognitive_broadcaster():
         await asyncio.sleep(10)  # Update every 10 seconds
 
         update = {
-            'type': 'cognitive_update',
-            'data': {
-                'drift': {
-                    'detected': random.random() > 0.8,
-                    'score': round(random.uniform(0, 0.3), 3),
-                    'type': random.choice(['data', 'concept', 'prediction'])
+            "type": "cognitive_update",
+            "data": {
+                "drift": {
+                    "detected": random.random() > 0.8,
+                    "score": round(random.uniform(0, 0.3), 3),
+                    "type": random.choice(["data", "concept", "prediction"]),
                 },
-                'reliability': {
-                    'score': round(random.uniform(0.8, 0.99), 3),
-                    'calibration': round(random.uniform(0.85, 0.98), 3)
+                "reliability": {
+                    "score": round(random.uniform(0.8, 0.99), 3),
+                    "calibration": round(random.uniform(0.85, 0.98), 3),
                 },
-                'hallucination': {
-                    'risk': random.choice(['low', 'medium', 'high']),
-                    'grounding_score': round(random.uniform(0.7, 0.95), 3)
+                "hallucination": {
+                    "risk": random.choice(["low", "medium", "high"]),
+                    "grounding_score": round(random.uniform(0.7, 0.95), 3),
                 },
-                'degradation': {
-                    'trend': random.choice(['improving', 'stable', 'degrading']),
-                    'score': round(random.uniform(0, 0.2), 3)
-                }
-            }
+                "degradation": {
+                    "trend": random.choice(["improving", "stable", "degrading"]),
+                    "score": round(random.uniform(0, 0.2), 3),
+                },
+            },
         }
-        await manager.broadcast('cognitive', update)
+        await manager.broadcast("cognitive", update)
 
 
 # Store background tasks
@@ -284,7 +270,7 @@ def start_background_tasks():
     _background_tasks = [
         asyncio.create_task(metric_broadcaster()),
         asyncio.create_task(alert_broadcaster()),
-        asyncio.create_task(cognitive_broadcaster())
+        asyncio.create_task(cognitive_broadcaster()),
     ]
 
 

@@ -2,16 +2,18 @@
 AIOBS Causal Analysis Engine - Python Implementation
 Root cause analysis linking infrastructure, data, and AI outcomes
 """
+
+import random
 from dataclasses import dataclass, field
 from datetime import datetime
-from typing import Dict, List, Optional, Set, Tuple
 from enum import Enum
-import random
+from typing import Dict, List, Optional, Set, Tuple
 from uuid import uuid4
 
 
 class NodeType(Enum):
     """Types of nodes in causal graph"""
+
     MODEL = "model"
     FEATURE = "feature"
     DATA_SOURCE = "data_source"
@@ -24,6 +26,7 @@ class NodeType(Enum):
 
 class EdgeType(Enum):
     """Types of causal relationships"""
+
     CAUSAL = "causal"  # Direct cause
     CORRELATION = "correlation"  # Statistical correlation
     DEPENDENCY = "dependency"  # System dependency
@@ -33,6 +36,7 @@ class EdgeType(Enum):
 @dataclass
 class CausalNode:
     """Node in the causal graph"""
+
     id: str
     node_type: NodeType
     name: str
@@ -46,6 +50,7 @@ class CausalNode:
 @dataclass
 class CausalEdge:
     """Edge in the causal graph"""
+
     source_id: str
     target_id: str
     edge_type: EdgeType
@@ -57,6 +62,7 @@ class CausalEdge:
 @dataclass
 class CausalGraph:
     """Complete causal graph structure"""
+
     id: str
     nodes: Dict[str, CausalNode]
     edges: List[CausalEdge]
@@ -67,6 +73,7 @@ class CausalGraph:
 @dataclass
 class RootCauseResult:
     """Result of root cause analysis"""
+
     root_causes: List[CausalNode]
     confidence_scores: Dict[str, float]
     causal_chain: List[str]  # Node IDs in causal order
@@ -77,6 +84,7 @@ class RootCauseResult:
 @dataclass
 class CounterfactualResult:
     """Result of counterfactual analysis"""
+
     scenario: str
     original_outcome: float
     counterfactual_outcome: float
@@ -101,18 +109,14 @@ class CausalEngine:
         self,
         max_depth: int = 10,
         min_confidence: float = 0.5,
-        discovery_algorithm: str = "ensemble"
+        discovery_algorithm: str = "ensemble",
     ):
         self.max_depth = max_depth
         self.min_confidence = min_confidence
         self.discovery_algorithm = discovery_algorithm
         self._graphs: Dict[str, CausalGraph] = {}
 
-    def build_graph(
-        self,
-        events: List[Dict],
-        scope: Optional[Dict] = None
-    ) -> CausalGraph:
+    def build_graph(self, events: List[Dict], scope: Optional[Dict] = None) -> CausalGraph:
         """
         Build a causal graph from a list of events.
 
@@ -135,27 +139,19 @@ class CausalEngine:
                 name=event.get("name", event.get("type", "unknown")),
                 description=event.get("description", ""),
                 timestamp=event.get("timestamp"),
-                attributes=event.get("attributes", {})
+                attributes=event.get("attributes", {}),
             )
             nodes[node.id] = node
 
         # Discover causal relationships
         edges = self._discover_edges(nodes, events)
 
-        graph = CausalGraph(
-            id=graph_id,
-            nodes=nodes,
-            edges=edges
-        )
+        graph = CausalGraph(id=graph_id, nodes=nodes, edges=edges)
 
         self._graphs[graph_id] = graph
         return graph
 
-    def analyze_root_cause(
-        self,
-        graph: CausalGraph,
-        incident_node_id: str
-    ) -> RootCauseResult:
+    def analyze_root_cause(self, graph: CausalGraph, incident_node_id: str) -> RootCauseResult:
         """
         Analyze root causes for an incident.
 
@@ -185,10 +181,7 @@ class CausalEngine:
             confidence_scores[current_id] = current_confidence
 
             # Find incoming edges (causes)
-            incoming = [
-                e for e in graph.edges
-                if e.target_id == current_id
-            ]
+            incoming = [e for e in graph.edges if e.target_id == current_id]
 
             if not incoming:
                 # This is a root cause
@@ -211,14 +204,11 @@ class CausalEngine:
             confidence_scores=confidence_scores,
             causal_chain=list(reversed(causal_chain)),
             shapley_values=shapley,
-            explanation=explanation
+            explanation=explanation,
         )
 
     def analyze_impact(
-        self,
-        graph: CausalGraph,
-        source_node_id: str,
-        change_magnitude: float = 1.0
+        self, graph: CausalGraph, source_node_id: str, change_magnitude: float = 1.0
     ) -> Dict[str, float]:
         """
         Analyze downstream impact of a change at source node.
@@ -241,18 +231,12 @@ class CausalEngine:
             current_impact = impacts[current_id]
 
             # Find outgoing edges (effects)
-            outgoing = [
-                e for e in graph.edges
-                if e.source_id == current_id
-            ]
+            outgoing = [e for e in graph.edges if e.source_id == current_id]
 
             for edge in outgoing:
                 propagated_impact = current_impact * edge.weight
                 if edge.target_id in impacts:
-                    impacts[edge.target_id] = max(
-                        impacts[edge.target_id],
-                        propagated_impact
-                    )
+                    impacts[edge.target_id] = max(impacts[edge.target_id], propagated_impact)
                 else:
                     impacts[edge.target_id] = propagated_impact
 
@@ -261,10 +245,7 @@ class CausalEngine:
         return impacts
 
     def counterfactual(
-        self,
-        graph: CausalGraph,
-        intervention: Dict[str, float],
-        target_node_id: str
+        self, graph: CausalGraph, intervention: Dict[str, float], target_node_id: str
     ) -> CounterfactualResult:
         """
         Perform counterfactual analysis: "What if X had been different?"
@@ -289,11 +270,14 @@ class CausalEngine:
                     affected_paths.append(path)
 
         counterfactual_outcome = original_outcome + total_effect
-        confidence = min([
-            graph.edges[i].confidence
-            for i, e in enumerate(graph.edges)
-            if any(e.source_id in p and e.target_id in p for p in affected_paths)
-        ] or [0.5])
+        confidence = min(
+            [
+                graph.edges[i].confidence
+                for i, e in enumerate(graph.edges)
+                if any(e.source_id in p and e.target_id in p for p in affected_paths)
+            ]
+            or [0.5]
+        )
 
         return CounterfactualResult(
             scenario=f"Intervention on {list(intervention.keys())}",
@@ -301,7 +285,7 @@ class CausalEngine:
             counterfactual_outcome=counterfactual_outcome,
             difference=counterfactual_outcome - original_outcome,
             confidence=confidence,
-            affected_paths=affected_paths
+            affected_paths=affected_paths,
         )
 
     def get_demo_graph(self, scenario: str = "drift_incident") -> CausalGraph:
@@ -336,19 +320,12 @@ class CausalEngine:
         else:
             return NodeType.EXTERNAL_EVENT
 
-    def _discover_edges(
-        self,
-        nodes: Dict[str, CausalNode],
-        events: List[Dict]
-    ) -> List[CausalEdge]:
+    def _discover_edges(self, nodes: Dict[str, CausalNode], events: List[Dict]) -> List[CausalEdge]:
         """Discover causal edges between nodes"""
         edges = []
 
         # Simple temporal-based discovery
-        sorted_nodes = sorted(
-            nodes.values(),
-            key=lambda n: n.timestamp or datetime.min
-        )
+        sorted_nodes = sorted(nodes.values(), key=lambda n: n.timestamp or datetime.min)
 
         for i, node in enumerate(sorted_nodes[:-1]):
             next_node = sorted_nodes[i + 1]
@@ -360,7 +337,7 @@ class CausalEngine:
                     target_id=next_node.id,
                     edge_type=EdgeType.CAUSAL,
                     weight=0.7 + random.uniform(-0.2, 0.2),
-                    confidence=0.6 + random.uniform(-0.1, 0.2)
+                    confidence=0.6 + random.uniform(-0.1, 0.2),
                 )
                 edges.append(edge)
 
@@ -381,10 +358,7 @@ class CausalEngine:
         return (source.node_type, target.node_type) in causal_pairs
 
     def _compute_shapley_values(
-        self,
-        graph: CausalGraph,
-        target_id: str,
-        root_causes: List[CausalNode]
+        self, graph: CausalGraph, target_id: str, root_causes: List[CausalNode]
     ) -> Dict[str, float]:
         """Compute Shapley values for root cause attribution"""
         # Simplified Shapley approximation
@@ -406,12 +380,7 @@ class CausalEngine:
 
         return shapley
 
-    def _compute_path_strength(
-        self,
-        graph: CausalGraph,
-        source_id: str,
-        target_id: str
-    ) -> float:
+    def _compute_path_strength(self, graph: CausalGraph, source_id: str, target_id: str) -> float:
         """Compute strength of causal path between nodes"""
         # BFS with strength accumulation
         visited = set()
@@ -432,12 +401,7 @@ class CausalEngine:
 
         return 0.0
 
-    def _trace_path(
-        self,
-        graph: CausalGraph,
-        source_id: str,
-        target_id: str
-    ) -> List[str]:
+    def _trace_path(self, graph: CausalGraph, source_id: str, target_id: str) -> List[str]:
         """Trace causal path between two nodes"""
         visited = set()
         queue = [(source_id, [source_id])]
@@ -457,18 +421,18 @@ class CausalEngine:
         return []
 
     def _generate_explanation(
-        self,
-        root_causes: List[CausalNode],
-        confidence_scores: Dict[str, float]
+        self, root_causes: List[CausalNode], confidence_scores: Dict[str, float]
     ) -> str:
         """Generate natural language explanation of root causes"""
         if not root_causes:
             return "No root causes identified with sufficient confidence."
 
-        causes_str = ", ".join([
-            f"{rc.name} (confidence: {confidence_scores.get(rc.id, 0):.0%})"
-            for rc in root_causes[:3]
-        ])
+        causes_str = ", ".join(
+            [
+                f"{rc.name} (confidence: {confidence_scores.get(rc.id, 0):.0%})"
+                for rc in root_causes[:3]
+            ]
+        )
 
         return f"Identified {len(root_causes)} potential root cause(s): {causes_str}"
 
@@ -480,28 +444,28 @@ class CausalEngine:
                 node_type=NodeType.DATA_SOURCE,
                 name="Data Distribution Shift",
                 description="Upstream data provider changed schema",
-                impact_score=0.8
+                impact_score=0.8,
             ),
             "feature_drift": CausalNode(
                 id="feature_drift",
                 node_type=NodeType.FEATURE,
                 name="Feature Drift Detected",
                 description="Key features showing significant drift",
-                impact_score=0.7
+                impact_score=0.7,
             ),
             "model_degradation": CausalNode(
                 id="model_degradation",
                 node_type=NodeType.MODEL,
                 name="Model Accuracy Drop",
                 description="Model accuracy dropped 15%",
-                impact_score=0.9
+                impact_score=0.9,
             ),
             "business_impact": CausalNode(
                 id="business_impact",
                 node_type=NodeType.BUSINESS_METRIC,
                 name="Conversion Rate Drop",
                 description="Conversion rate dropped 8%",
-                impact_score=0.6
+                impact_score=0.6,
             ),
         }
 
@@ -521,28 +485,28 @@ class CausalEngine:
                 node_type=NodeType.EXTERNAL_EVENT,
                 name="Traffic Spike",
                 description="10x normal traffic",
-                impact_score=0.9
+                impact_score=0.9,
             ),
             "autoscale": CausalNode(
                 id="autoscale",
                 node_type=NodeType.INFRASTRUCTURE,
                 name="Auto-scaling Triggered",
                 description="Scaled to 50 instances",
-                impact_score=0.7
+                impact_score=0.7,
             ),
             "inference_volume": CausalNode(
                 id="inference_volume",
                 node_type=NodeType.MODEL,
                 name="High Inference Volume",
                 description="5M inferences/hour",
-                impact_score=0.8
+                impact_score=0.8,
             ),
             "cost_spike": CausalNode(
                 id="cost_spike",
                 node_type=NodeType.BUSINESS_METRIC,
                 name="Cost Spike",
                 description="300% above budget",
-                impact_score=0.95
+                impact_score=0.95,
             ),
         }
 

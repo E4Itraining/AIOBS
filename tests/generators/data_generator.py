@@ -3,26 +3,26 @@
 AIOBS Continuous Data Generator
 Generates realistic test data for continuous testing and simulation
 """
-import random
-import math
-import json
-import time
 import asyncio
 import hashlib
-from datetime import datetime, timedelta
-from typing import List, Dict, Any, Generator, Optional, Callable
-from dataclasses import dataclass, asdict, field
-from enum import Enum
-import sys
+import json
+import math
 import os
+import random
+import sys
+from dataclasses import asdict, dataclass, field
+from datetime import datetime, timedelta
+from enum import Enum
+from typing import Any, Callable, Dict, Generator, List
 
 # Add project root to path
-sys.path.insert(0, os.path.join(os.path.dirname(__file__), '../..'))
+sys.path.insert(0, os.path.join(os.path.dirname(__file__), "../.."))
 
 
 # =============================================================================
 # Data Models
 # =============================================================================
+
 
 class EventType(Enum):
     DEPLOYMENT = "deployment"
@@ -88,6 +88,7 @@ class GeneratedPrediction:
 # Pattern Generators
 # =============================================================================
 
+
 class PatternGenerator:
     """Generates various data patterns"""
 
@@ -96,48 +97,68 @@ class PatternGenerator:
         amplitude: float = 1.0,
         period: float = 86400,  # 24 hours in seconds
         phase: float = 0,
-        offset: float = 0
+        offset: float = 0,
     ) -> Callable[[float], float]:
         """Generate sinusoidal pattern (e.g., daily traffic)"""
+
         def generate(t: float) -> float:
             return amplitude * math.sin(2 * math.pi * t / period + phase) + offset
+
         return generate
 
     @staticmethod
-    def trend(
-        slope: float = 0.001,
-        intercept: float = 0
-    ) -> Callable[[float], float]:
+    def trend(slope: float = 0.001, intercept: float = 0) -> Callable[[float], float]:
         """Generate linear trend"""
+
         def generate(t: float) -> float:
             return slope * t + intercept
+
         return generate
 
     @staticmethod
     def spike(
-        spike_value: float = 10.0,
-        spike_probability: float = 0.01,
-        base_value: float = 1.0
+        spike_value: float = 10.0, spike_probability: float = 0.01, base_value: float = 1.0
     ) -> Callable[[float], float]:
         """Generate occasional spikes"""
+
         def generate(t: float) -> float:
             if random.random() < spike_probability:
                 return spike_value
             return base_value
+
         return generate
 
     @staticmethod
     def seasonal(
-        weekly_pattern: List[float] = None,
-        hourly_pattern: List[float] = None
+        weekly_pattern: List[float] = None, hourly_pattern: List[float] = None
     ) -> Callable[[datetime], float]:
         """Generate seasonal patterns"""
         weekly = weekly_pattern or [0.8, 1.0, 1.0, 1.0, 1.0, 0.6, 0.5]  # Mon-Sun
         hourly = hourly_pattern or [
-            0.3, 0.2, 0.2, 0.2, 0.3, 0.5,  # 0-5
-            0.7, 0.9, 1.0, 1.0, 1.0, 0.9,  # 6-11
-            0.8, 0.9, 1.0, 1.0, 0.9, 0.8,  # 12-17
-            0.7, 0.6, 0.5, 0.5, 0.4, 0.3   # 18-23
+            0.3,
+            0.2,
+            0.2,
+            0.2,
+            0.3,
+            0.5,  # 0-5
+            0.7,
+            0.9,
+            1.0,
+            1.0,
+            1.0,
+            0.9,  # 6-11
+            0.8,
+            0.9,
+            1.0,
+            1.0,
+            0.9,
+            0.8,  # 12-17
+            0.7,
+            0.6,
+            0.5,
+            0.5,
+            0.4,
+            0.3,  # 18-23
         ]
 
         def generate(dt: datetime) -> float:
@@ -149,28 +170,28 @@ class PatternGenerator:
 
     @staticmethod
     def drift(
-        start_mean: float = 0,
-        drift_rate: float = 0.01,
-        noise_std: float = 0.1
+        start_mean: float = 0, drift_rate: float = 0.01, noise_std: float = 0.1
     ) -> Callable[[int], float]:
         """Generate drifting data"""
+
         def generate(step: int) -> float:
             mean = start_mean + drift_rate * step
             return random.gauss(mean, noise_std)
+
         return generate
 
     @staticmethod
     def anomaly_injection(
-        base_generator: Callable,
-        anomaly_rate: float = 0.02,
-        anomaly_magnitude: float = 5.0
+        base_generator: Callable, anomaly_rate: float = 0.02, anomaly_magnitude: float = 5.0
     ) -> Callable:
         """Wrap a generator to inject anomalies"""
+
         def generate(*args, **kwargs) -> float:
             value = base_generator(*args, **kwargs)
             if random.random() < anomaly_rate:
                 value += random.choice([-1, 1]) * anomaly_magnitude
             return value
+
         return generate
 
 
@@ -178,31 +199,35 @@ class PatternGenerator:
 # Continuous Data Generator
 # =============================================================================
 
+
 class ContinuousDataGenerator:
     """Generates continuous streams of test data"""
 
     def __init__(
-        self,
-        services: List[str] = None,
-        models: List[str] = None,
-        base_timestamp: datetime = None
+        self, services: List[str] = None, models: List[str] = None, base_timestamp: datetime = None
     ):
         self.services = services or [
-            "api-gateway", "recommendation-engine", "fraud-detection",
-            "user-service", "payment-service", "ml-inference"
+            "api-gateway",
+            "recommendation-engine",
+            "fraud-detection",
+            "user-service",
+            "payment-service",
+            "ml-inference",
         ]
         self.models = models or [
-            "recommendation-v2", "fraud-detector-v3", "sentiment-analysis",
-            "churn-prediction", "price-optimization", "demand-forecast"
+            "recommendation-v2",
+            "fraud-detector-v3",
+            "sentiment-analysis",
+            "churn-prediction",
+            "price-optimization",
+            "demand-forecast",
         ]
         self.base_timestamp = base_timestamp or datetime.utcnow()
         self.current_step = 0
         self.pattern = PatternGenerator()
 
     def generate_metrics(
-        self,
-        count: int = 1,
-        time_offset_seconds: int = 0
+        self, count: int = 1, time_offset_seconds: int = 0
     ) -> List[GeneratedMetric]:
         """Generate metrics batch"""
         metrics = []
@@ -210,11 +235,19 @@ class ContinuousDataGenerator:
 
         for _ in range(count):
             service = random.choice(self.services)
-            metric_name = random.choice([
-                "request_count", "request_latency_ms", "error_rate",
-                "cpu_usage_percent", "memory_usage_percent", "inference_latency_ms",
-                "model_accuracy", "trust_score", "drift_score"
-            ])
+            metric_name = random.choice(
+                [
+                    "request_count",
+                    "request_latency_ms",
+                    "error_rate",
+                    "cpu_usage_percent",
+                    "memory_usage_percent",
+                    "inference_latency_ms",
+                    "model_accuracy",
+                    "trust_score",
+                    "drift_score",
+                ]
+            )
 
             # Generate value based on metric type
             if "latency" in metric_name:
@@ -231,25 +264,23 @@ class ContinuousDataGenerator:
             else:
                 value = random.gauss(50, 10)
 
-            metrics.append(GeneratedMetric(
-                name=metric_name,
-                value=value,
-                timestamp=timestamp,
-                labels={
-                    "service": service,
-                    "env": random.choice(["prod", "staging"]),
-                    "region": random.choice(["us-east", "us-west", "eu-west"])
-                },
-                metric_type=random.choice(list(MetricType))
-            ))
+            metrics.append(
+                GeneratedMetric(
+                    name=metric_name,
+                    value=value,
+                    timestamp=timestamp,
+                    labels={
+                        "service": service,
+                        "env": random.choice(["prod", "staging"]),
+                        "region": random.choice(["us-east", "us-west", "eu-west"]),
+                    },
+                    metric_type=random.choice(list(MetricType)),
+                )
+            )
 
         return metrics
 
-    def generate_logs(
-        self,
-        count: int = 1,
-        time_offset_seconds: int = 0
-    ) -> List[GeneratedLog]:
+    def generate_logs(self, count: int = 1, time_offset_seconds: int = 0) -> List[GeneratedLog]:
         """Generate logs batch"""
         logs = []
         timestamp = self.base_timestamp + timedelta(seconds=time_offset_seconds)
@@ -281,13 +312,12 @@ class ContinuousDataGenerator:
                 "Data corruption detected",
                 "Security breach attempt from {ip}",
                 "Complete outage in {region}",
-            ]
+            ],
         }
 
         for _ in range(count):
             level = random.choices(
-                ["info", "warning", "error", "critical"],
-                weights=[0.7, 0.2, 0.08, 0.02]
+                ["info", "warning", "error", "critical"], weights=[0.7, 0.2, 0.08, 0.02]
             )[0]
 
             template = random.choice(log_templates[level])
@@ -308,27 +338,25 @@ class ContinuousDataGenerator:
                 field=random.choice(["user_id", "timestamp", "features"]),
                 status_code=random.choice([500, 502, 503, 504]),
                 ip=f"192.168.{random.randint(0, 255)}.{random.randint(0, 255)}",
-                region=random.choice(["us-east", "us-west", "eu-west"])
+                region=random.choice(["us-east", "us-west", "eu-west"]),
             )
 
-            logs.append(GeneratedLog(
-                message=message,
-                level=level,
-                timestamp=timestamp + timedelta(milliseconds=random.randint(0, 999)),
-                service=random.choice(self.services),
-                context={
-                    "trace_id": hashlib.md5(str(random.random()).encode()).hexdigest(),
-                    "span_id": hashlib.md5(str(random.random()).encode()).hexdigest()[:16]
-                }
-            ))
+            logs.append(
+                GeneratedLog(
+                    message=message,
+                    level=level,
+                    timestamp=timestamp + timedelta(milliseconds=random.randint(0, 999)),
+                    service=random.choice(self.services),
+                    context={
+                        "trace_id": hashlib.md5(str(random.random()).encode()).hexdigest(),
+                        "span_id": hashlib.md5(str(random.random()).encode()).hexdigest()[:16],
+                    },
+                )
+            )
 
         return logs
 
-    def generate_events(
-        self,
-        count: int = 1,
-        time_offset_seconds: int = 0
-    ) -> List[GeneratedEvent]:
+    def generate_events(self, count: int = 1, time_offset_seconds: int = 0) -> List[GeneratedEvent]:
         """Generate events batch"""
         events = []
         timestamp = self.base_timestamp + timedelta(seconds=time_offset_seconds)
@@ -336,53 +364,59 @@ class ContinuousDataGenerator:
         event_configs = {
             EventType.DEPLOYMENT: {
                 "titles": ["Deployment started", "Deployment completed", "Rollback initiated"],
-                "severities": ["info", "info", "warning"]
+                "severities": ["info", "info", "warning"],
             },
             EventType.CONFIG_CHANGE: {
                 "titles": ["Config updated", "Feature flag toggled", "Rate limit changed"],
-                "severities": ["info", "info", "warning"]
+                "severities": ["info", "info", "warning"],
             },
             EventType.ERROR: {
                 "titles": ["Error rate spike", "Failed health check", "Circuit breaker opened"],
-                "severities": ["error", "error", "warning"]
+                "severities": ["error", "error", "warning"],
             },
             EventType.DRIFT_DETECTED: {
-                "titles": ["Data drift detected", "Concept drift detected", "Prediction drift detected"],
-                "severities": ["warning", "warning", "error"]
+                "titles": [
+                    "Data drift detected",
+                    "Concept drift detected",
+                    "Prediction drift detected",
+                ],
+                "severities": ["warning", "warning", "error"],
             },
             EventType.ANOMALY: {
                 "titles": ["Latency anomaly", "Traffic anomaly", "Error rate anomaly"],
-                "severities": ["warning", "warning", "error"]
+                "severities": ["warning", "warning", "error"],
             },
             EventType.SECURITY: {
-                "titles": ["Suspicious activity detected", "Auth failure spike", "Rate limit exceeded"],
-                "severities": ["warning", "error", "warning"]
-            }
+                "titles": [
+                    "Suspicious activity detected",
+                    "Auth failure spike",
+                    "Rate limit exceeded",
+                ],
+                "severities": ["warning", "error", "warning"],
+            },
         }
 
         for _ in range(count):
             event_type = random.choice(list(EventType))
-            config = event_configs.get(event_type, {
-                "titles": [f"{event_type.value} event"],
-                "severities": ["info"]
-            })
+            config = event_configs.get(
+                event_type, {"titles": [f"{event_type.value} event"], "severities": ["info"]}
+            )
 
             title = random.choice(config["titles"])
             severity = random.choice(config["severities"])
 
-            events.append(GeneratedEvent(
-                event_id=hashlib.md5(str(random.random()).encode()).hexdigest()[:12],
-                event_type=event_type,
-                title=title,
-                description=f"{title} on {random.choice(self.services)}",
-                timestamp=timestamp,
-                service=random.choice(self.services),
-                severity=severity,
-                payload={
-                    "source": "data_generator",
-                    "metadata": {"generated": True}
-                }
-            ))
+            events.append(
+                GeneratedEvent(
+                    event_id=hashlib.md5(str(random.random()).encode()).hexdigest()[:12],
+                    event_type=event_type,
+                    title=title,
+                    description=f"{title} on {random.choice(self.services)}",
+                    timestamp=timestamp,
+                    service=random.choice(self.services),
+                    severity=severity,
+                    payload={"source": "data_generator", "metadata": {"generated": True}},
+                )
+            )
 
         return events
 
@@ -391,7 +425,7 @@ class ContinuousDataGenerator:
         count: int = 1,
         time_offset_seconds: int = 0,
         with_drift: bool = False,
-        drift_magnitude: float = 0.0
+        drift_magnitude: float = 0.0,
     ) -> List[GeneratedPrediction]:
         """Generate model predictions"""
         predictions = []
@@ -413,22 +447,21 @@ class ContinuousDataGenerator:
                 output = random.uniform(0, 1)
                 confidence = random.uniform(0.5, 0.9)
 
-            predictions.append(GeneratedPrediction(
-                model_id=model_id,
-                input_hash=hashlib.md5(str(random.random()).encode()).hexdigest()[:16],
-                output=output,
-                confidence=confidence,
-                latency_ms=random.gauss(30, 10),
-                timestamp=timestamp
-            ))
+            predictions.append(
+                GeneratedPrediction(
+                    model_id=model_id,
+                    input_hash=hashlib.md5(str(random.random()).encode()).hexdigest()[:16],
+                    output=output,
+                    confidence=confidence,
+                    latency_ms=random.gauss(30, 10),
+                    timestamp=timestamp,
+                )
+            )
 
         return predictions
 
     def generate_drift_scenario(
-        self,
-        duration_steps: int = 100,
-        drift_start: int = 50,
-        drift_rate: float = 0.1
+        self, duration_steps: int = 100, drift_start: int = 50, drift_rate: float = 0.1
     ) -> Generator[Dict[str, Any], None, None]:
         """Generate a drift scenario over time"""
         for step in range(duration_steps):
@@ -445,12 +478,11 @@ class ContinuousDataGenerator:
                 "timestamp": self.base_timestamp + timedelta(seconds=step * 60),
                 "data": data,
                 "is_drifted": step >= drift_start,
-                "drift_magnitude": (step - drift_start) * drift_rate if step >= drift_start else 0
+                "drift_magnitude": (step - drift_start) * drift_rate if step >= drift_start else 0,
             }
 
     def generate_attack_scenario(
-        self,
-        attack_type: str = "prompt_injection"
+        self, attack_type: str = "prompt_injection"
     ) -> Generator[Dict[str, Any], None, None]:
         """Generate attack scenario data"""
         attack_payloads = {
@@ -469,7 +501,7 @@ class ContinuousDataGenerator:
                 "<script>alert('xss')</script>",
                 "<img src=x onerror=alert(1)>",
                 "javascript:void(0)",
-            ]
+            ],
         }
 
         payloads = attack_payloads.get(attack_type, [])
@@ -480,14 +512,14 @@ class ContinuousDataGenerator:
                 "timestamp": self.base_timestamp + timedelta(seconds=i),
                 "payload": payload,
                 "attack_type": attack_type,
-                "expected_detection": True
+                "expected_detection": True,
             }
 
     async def stream_continuous(
         self,
         duration_seconds: int = 60,
         interval_ms: int = 1000,
-        callback: Callable[[Dict[str, Any]], None] = None
+        callback: Callable[[Dict[str, Any]], None] = None,
     ):
         """Stream continuous data for specified duration"""
         start_time = datetime.utcnow()
@@ -498,9 +530,13 @@ class ContinuousDataGenerator:
                 "timestamp": datetime.utcnow().isoformat(),
                 "step": step,
                 "metrics": [asdict(m) for m in self.generate_metrics(5, step)],
-                "logs": [asdict(l) for l in self.generate_logs(3, step)],
-                "events": [asdict(e) for e in self.generate_events(1, step)] if random.random() < 0.1 else [],
-                "predictions": [asdict(p) for p in self.generate_predictions(10, step)]
+                "logs": [asdict(log_entry) for log_entry in self.generate_logs(3, step)],
+                "events": (
+                    [asdict(e) for e in self.generate_events(1, step)]
+                    if random.random() < 0.1
+                    else []
+                ),
+                "predictions": [asdict(p) for p in self.generate_predictions(10, step)],
             }
 
             if callback:
@@ -516,16 +552,14 @@ class ContinuousDataGenerator:
 # Scenario Generators
 # =============================================================================
 
+
 class ScenarioGenerator:
     """Generates complete test scenarios"""
 
     def __init__(self):
         self.data_gen = ContinuousDataGenerator()
 
-    def incident_scenario(
-        self,
-        incident_type: str = "outage"
-    ) -> List[Dict[str, Any]]:
+    def incident_scenario(self, incident_type: str = "outage") -> List[Dict[str, Any]]:
         """Generate a complete incident scenario"""
         scenario = []
         now = datetime.utcnow()
@@ -533,77 +567,77 @@ class ScenarioGenerator:
         if incident_type == "outage":
             # Pre-incident: normal metrics
             for i in range(10):
-                scenario.append({
-                    "phase": "normal",
-                    "timestamp": now + timedelta(minutes=i),
-                    "metrics": self.data_gen.generate_metrics(5, i * 60),
-                    "logs": self.data_gen.generate_logs(2, i * 60)
-                })
+                scenario.append(
+                    {
+                        "phase": "normal",
+                        "timestamp": now + timedelta(minutes=i),
+                        "metrics": self.data_gen.generate_metrics(5, i * 60),
+                        "logs": self.data_gen.generate_logs(2, i * 60),
+                    }
+                )
 
             # Incident trigger
-            scenario.append({
-                "phase": "trigger",
-                "timestamp": now + timedelta(minutes=10),
-                "event": GeneratedEvent(
-                    event_id="inc_001",
-                    event_type=EventType.OUTAGE,
-                    title="Service outage detected",
-                    description="API gateway is not responding",
-                    timestamp=now + timedelta(minutes=10),
-                    service="api-gateway",
-                    severity="critical"
-                )
-            })
+            scenario.append(
+                {
+                    "phase": "trigger",
+                    "timestamp": now + timedelta(minutes=10),
+                    "event": GeneratedEvent(
+                        event_id="inc_001",
+                        event_type=EventType.OUTAGE,
+                        title="Service outage detected",
+                        description="API gateway is not responding",
+                        timestamp=now + timedelta(minutes=10),
+                        service="api-gateway",
+                        severity="critical",
+                    ),
+                }
+            )
 
             # During incident: degraded metrics
             for i in range(5):
-                scenario.append({
-                    "phase": "incident",
-                    "timestamp": now + timedelta(minutes=10 + i),
-                    "metrics": self.data_gen.generate_metrics(5, (10 + i) * 60),
-                    "logs": [
-                        GeneratedLog(
-                            message="Connection refused",
-                            level="error",
-                            timestamp=now + timedelta(minutes=10 + i),
-                            service="api-gateway"
-                        )
-                    ]
-                })
+                scenario.append(
+                    {
+                        "phase": "incident",
+                        "timestamp": now + timedelta(minutes=10 + i),
+                        "metrics": self.data_gen.generate_metrics(5, (10 + i) * 60),
+                        "logs": [
+                            GeneratedLog(
+                                message="Connection refused",
+                                level="error",
+                                timestamp=now + timedelta(minutes=10 + i),
+                                service="api-gateway",
+                            )
+                        ],
+                    }
+                )
 
             # Recovery
-            scenario.append({
-                "phase": "recovery",
-                "timestamp": now + timedelta(minutes=15),
-                "event": GeneratedEvent(
-                    event_id="inc_002",
-                    event_type=EventType.RECOVERY,
-                    title="Service recovered",
-                    description="API gateway is back online",
-                    timestamp=now + timedelta(minutes=15),
-                    service="api-gateway",
-                    severity="info"
-                )
-            })
+            scenario.append(
+                {
+                    "phase": "recovery",
+                    "timestamp": now + timedelta(minutes=15),
+                    "event": GeneratedEvent(
+                        event_id="inc_002",
+                        event_type=EventType.RECOVERY,
+                        title="Service recovered",
+                        description="API gateway is back online",
+                        timestamp=now + timedelta(minutes=15),
+                        service="api-gateway",
+                        severity="info",
+                    ),
+                }
+            )
 
         return scenario
 
-    def drift_scenario(
-        self,
-        drift_type: str = "data"
-    ) -> List[Dict[str, Any]]:
+    def drift_scenario(self, drift_type: str = "data") -> List[Dict[str, Any]]:
         """Generate a drift scenario"""
         scenario = []
 
         for step_data in self.data_gen.generate_drift_scenario(
-            duration_steps=100,
-            drift_start=50,
-            drift_rate=0.1
+            duration_steps=100, drift_start=50, drift_rate=0.1
         ):
-            scenario.append({
-                "drift_type": drift_type,
-                **step_data
-            })
+            scenario.append({"drift_type": drift_type, **step_data})
 
         return scenario
 
@@ -616,33 +650,41 @@ if __name__ == "__main__":
     import argparse
 
     parser = argparse.ArgumentParser(description="AIOBS Continuous Data Generator")
-    parser.add_argument("--mode", choices=["stream", "batch", "scenario"],
-                        default="batch", help="Generation mode")
+    parser.add_argument(
+        "--mode", choices=["stream", "batch", "scenario"], default="batch", help="Generation mode"
+    )
     parser.add_argument("--count", type=int, default=10, help="Number of items to generate")
     parser.add_argument("--duration", type=int, default=60, help="Stream duration in seconds")
     parser.add_argument("--interval", type=int, default=1000, help="Stream interval in ms")
-    parser.add_argument("--type", choices=["metrics", "logs", "events", "predictions", "all"],
-                        default="all", help="Data type to generate")
-    parser.add_argument("--scenario", choices=["incident", "drift", "attack"],
-                        default=None, help="Scenario to generate")
+    parser.add_argument(
+        "--type",
+        choices=["metrics", "logs", "events", "predictions", "all"],
+        default="all",
+        help="Data type to generate",
+    )
+    parser.add_argument(
+        "--scenario",
+        choices=["incident", "drift", "attack"],
+        default=None,
+        help="Scenario to generate",
+    )
 
     args = parser.parse_args()
 
     generator = ContinuousDataGenerator()
 
     if args.mode == "stream":
-        asyncio.run(generator.stream_continuous(
-            duration_seconds=args.duration,
-            interval_ms=args.interval
-        ))
+        asyncio.run(
+            generator.stream_continuous(duration_seconds=args.duration, interval_ms=args.interval)
+        )
     elif args.mode == "batch":
         if args.type == "metrics" or args.type == "all":
             for m in generator.generate_metrics(args.count):
                 print(json.dumps(asdict(m), default=str))
 
         if args.type == "logs" or args.type == "all":
-            for l in generator.generate_logs(args.count):
-                print(json.dumps(asdict(l), default=str))
+            for log_entry in generator.generate_logs(args.count):
+                print(json.dumps(asdict(log_entry), default=str))
 
         if args.type == "events" or args.type == "all":
             for e in generator.generate_events(args.count):

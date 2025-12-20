@@ -2,15 +2,17 @@
 AIOBS Unified Observability View
 Single pane of glass for monitoring + observability across all AI systems
 """
+
+import random
 from dataclasses import dataclass, field
 from datetime import datetime, timedelta
-from typing import Dict, List, Optional, Any, Tuple
 from enum import Enum
-import random
+from typing import Any, Dict, List, Optional, Tuple
 
 
 class ViewMode(Enum):
     """Available view modes"""
+
     OVERVIEW = "overview"
     MODELS = "models"
     INFRASTRUCTURE = "infrastructure"
@@ -22,6 +24,7 @@ class ViewMode(Enum):
 
 class TimeGranularity(Enum):
     """Time granularity for data"""
+
     REALTIME = "realtime"  # 1s resolution
     MINUTE = "minute"
     HOUR = "hour"
@@ -33,6 +36,7 @@ class TimeGranularity(Enum):
 @dataclass
 class MetricPoint:
     """Single metric data point"""
+
     timestamp: datetime
     value: float
     labels: Dict[str, str] = field(default_factory=dict)
@@ -41,6 +45,7 @@ class MetricPoint:
 @dataclass
 class TimeSeriesData:
     """Time series data for charts"""
+
     metric_name: str
     unit: str
     points: List[MetricPoint]
@@ -50,6 +55,7 @@ class TimeSeriesData:
 @dataclass
 class AlertStatus:
     """Alert status summary"""
+
     total: int
     critical: int
     warning: int
@@ -61,6 +67,7 @@ class AlertStatus:
 @dataclass
 class ServiceHealth:
     """Health status for a service/model"""
+
     service_id: str
     service_name: str
     service_type: str  # model, pipeline, infrastructure
@@ -74,6 +81,7 @@ class ServiceHealth:
 @dataclass
 class UnifiedDashboardData:
     """Complete data for unified dashboard"""
+
     # Overview metrics
     total_models: int
     total_pipelines: int
@@ -121,9 +129,7 @@ class UnifiedObservabilityView:
     """
 
     def __init__(
-        self,
-        victoria_metrics_url: Optional[str] = None,
-        openobserve_url: Optional[str] = None
+        self, victoria_metrics_url: Optional[str] = None, openobserve_url: Optional[str] = None
     ):
         self.vm_url = victoria_metrics_url
         self.oo_url = openobserve_url
@@ -135,7 +141,7 @@ class UnifiedObservabilityView:
         view_mode: ViewMode = ViewMode.OVERVIEW,
         time_range: timedelta = timedelta(hours=24),
         granularity: TimeGranularity = TimeGranularity.HOUR,
-        filters: Optional[Dict[str, Any]] = None
+        filters: Optional[Dict[str, Any]] = None,
     ) -> UnifiedDashboardData:
         """
         Get complete dashboard data for unified view.
@@ -144,10 +150,7 @@ class UnifiedObservabilityView:
         # For now, generate realistic demo data
         return self._generate_demo_dashboard_data(time_range)
 
-    def get_services_health(
-        self,
-        service_type: Optional[str] = None
-    ) -> List[ServiceHealth]:
+    def get_services_health(self, service_type: Optional[str] = None) -> List[ServiceHealth]:
         """
         Get health status for all services.
         """
@@ -163,7 +166,7 @@ class UnifiedObservabilityView:
         metric_names: List[str],
         time_range: timedelta = timedelta(hours=24),
         granularity: TimeGranularity = TimeGranularity.HOUR,
-        filters: Optional[Dict[str, str]] = None
+        filters: Optional[Dict[str, str]] = None,
     ) -> Dict[str, TimeSeriesData]:
         """
         Get time series data for specified metrics.
@@ -178,9 +181,7 @@ class UnifiedObservabilityView:
         return result
 
     def get_correlation_matrix(
-        self,
-        metrics: List[str],
-        time_range: timedelta = timedelta(hours=24)
+        self, metrics: List[str], time_range: timedelta = timedelta(hours=24)
     ) -> Dict[str, Dict[str, float]]:
         """
         Get correlation matrix between metrics.
@@ -200,9 +201,7 @@ class UnifiedObservabilityView:
         return matrix
 
     def get_anomalies(
-        self,
-        time_range: timedelta = timedelta(hours=24),
-        min_severity: str = "low"
+        self, time_range: timedelta = timedelta(hours=24), min_severity: str = "low"
     ) -> List[Dict]:
         """
         Get detected anomalies in the time range.
@@ -218,11 +217,36 @@ class UnifiedObservabilityView:
             "nodes": [
                 {"id": "gateway", "type": "endpoint", "label": "API Gateway", "status": "healthy"},
                 {"id": "router", "type": "router", "label": "Model Router", "status": "healthy"},
-                {"id": "model-rec", "type": "model", "label": "Recommendation Model", "status": "healthy"},
-                {"id": "model-fraud", "type": "model", "label": "Fraud Detection", "status": "degraded"},
-                {"id": "model-churn", "type": "model", "label": "Churn Predictor", "status": "healthy"},
-                {"id": "feature-store", "type": "data", "label": "Feature Store", "status": "healthy"},
-                {"id": "cache", "type": "infrastructure", "label": "Redis Cache", "status": "healthy"},
+                {
+                    "id": "model-rec",
+                    "type": "model",
+                    "label": "Recommendation Model",
+                    "status": "healthy",
+                },
+                {
+                    "id": "model-fraud",
+                    "type": "model",
+                    "label": "Fraud Detection",
+                    "status": "degraded",
+                },
+                {
+                    "id": "model-churn",
+                    "type": "model",
+                    "label": "Churn Predictor",
+                    "status": "healthy",
+                },
+                {
+                    "id": "feature-store",
+                    "type": "data",
+                    "label": "Feature Store",
+                    "status": "healthy",
+                },
+                {
+                    "id": "cache",
+                    "type": "infrastructure",
+                    "label": "Redis Cache",
+                    "status": "healthy",
+                },
                 {"id": "db", "type": "infrastructure", "label": "PostgreSQL", "status": "healthy"},
                 {"id": "vm", "type": "monitoring", "label": "VictoriaMetrics", "status": "healthy"},
                 {"id": "oo", "type": "monitoring", "label": "OpenObserve", "status": "healthy"},
@@ -239,7 +263,7 @@ class UnifiedObservabilityView:
                 {"source": "router", "target": "cache", "type": "cache"},
                 {"source": "gateway", "target": "vm", "type": "metrics"},
                 {"source": "gateway", "target": "oo", "type": "logs"},
-            ]
+            ],
         }
 
     def get_slo_status(self) -> Dict:
@@ -255,7 +279,7 @@ class UnifiedObservabilityView:
                     "unit": "ms",
                     "compliance_pct": 99.2,
                     "error_budget_remaining_pct": 85,
-                    "status": "healthy"
+                    "status": "healthy",
                 },
                 {
                     "name": "Model Availability > 99.9%",
@@ -264,7 +288,7 @@ class UnifiedObservabilityView:
                     "unit": "%",
                     "compliance_pct": 100,
                     "error_budget_remaining_pct": 95,
-                    "status": "healthy"
+                    "status": "healthy",
                 },
                 {
                     "name": "Error Rate < 1%",
@@ -273,7 +297,7 @@ class UnifiedObservabilityView:
                     "unit": "%",
                     "compliance_pct": 98.5,
                     "error_budget_remaining_pct": 60,
-                    "status": "warning"
+                    "status": "warning",
                 },
                 {
                     "name": "Trust Score > 0.8",
@@ -282,18 +306,15 @@ class UnifiedObservabilityView:
                     "unit": "score",
                     "compliance_pct": 97.0,
                     "error_budget_remaining_pct": 45,
-                    "status": "warning"
+                    "status": "warning",
                 },
             ],
             "overall_compliance_pct": 98.7,
             "slos_at_risk": 2,
-            "error_budget_burn_rate": 1.2  # >1 means burning faster than expected
+            "error_budget_burn_rate": 1.2,  # >1 means burning faster than expected
         }
 
-    def get_cost_breakdown(
-        self,
-        time_range: timedelta = timedelta(days=30)
-    ) -> Dict:
+    def get_cost_breakdown(self, time_range: timedelta = timedelta(days=30)) -> Dict:
         """
         Get cost breakdown by category.
         """
@@ -304,28 +325,21 @@ class UnifiedObservabilityView:
                 "training": 8200.00,
                 "storage": 4530.50,
                 "networking": 2500.00,
-                "monitoring": 1500.00
+                "monitoring": 1500.00,
             },
             "by_model": {
                 "recommendation-v2": 18500.00,
                 "fraud-detector-v1": 12000.00,
                 "churn-predictor": 8730.50,
-                "other": 6000.00
+                "other": 6000.00,
             },
-            "by_environment": {
-                "production": 38000.00,
-                "staging": 5230.50,
-                "development": 2000.00
-            },
+            "by_environment": {"production": 38000.00, "staging": 5230.50, "development": 2000.00},
             "trend": "up",
             "trend_pct": 12,
-            "forecast_next_month": 50750.00
+            "forecast_next_month": 50750.00,
         }
 
-    def get_carbon_metrics(
-        self,
-        time_range: timedelta = timedelta(days=30)
-    ) -> Dict:
+    def get_carbon_metrics(self, time_range: timedelta = timedelta(days=30)) -> Dict:
         """
         Get carbon/sustainability metrics.
         """
@@ -338,21 +352,17 @@ class UnifiedObservabilityView:
                 "inference": 750.0,
                 "training": 350.5,
                 "storage": 100.0,
-                "networking": 50.0
+                "networking": 50.0,
             },
-            "by_region": {
-                "us-east-1": 500.0,
-                "eu-west-1": 350.5,
-                "ap-southeast-1": 400.0
-            },
+            "by_region": {"us-east-1": 500.0, "eu-west-1": 350.5, "ap-southeast-1": 400.0},
             "carbon_credits_equivalent": 1.25,
             "trend": "down",
             "trend_pct": -8,
             "recommendations": [
                 "Shift batch jobs to low-carbon hours (2am-6am UTC)",
                 "Consider eu-west-1 for new deployments (lower carbon intensity)",
-                "Enable GPU sleep mode during off-peak hours"
-            ]
+                "Enable GPU sleep mode during off-peak hours",
+            ],
         }
 
     def get_compliance_dashboard(self) -> Dict:
@@ -367,12 +377,12 @@ class UnifiedObservabilityView:
                 "audit_trail": {"score": 100, "status": "compliant"},
                 "access_control": {"score": 90, "status": "compliant"},
                 "bias_fairness": {"score": 85, "status": "warning"},
-                "explainability": {"score": 92, "status": "compliant"}
+                "explainability": {"score": 92, "status": "compliant"},
             },
             "regulations": {
                 "ai_act": {"status": "compliant", "last_audit": "2024-01-15"},
                 "gdpr": {"status": "compliant", "last_audit": "2024-01-10"},
-                "sox": {"status": "compliant", "last_audit": "2024-01-05"}
+                "sox": {"status": "compliant", "last_audit": "2024-01-05"},
             },
             "pending_reviews": 3,
             "overdue_reviews": 1,
@@ -381,19 +391,16 @@ class UnifiedObservabilityView:
                     "id": "AUD-2024-001",
                     "severity": "medium",
                     "finding": "Model documentation incomplete for v2.3",
-                    "status": "in_progress"
+                    "status": "in_progress",
                 }
-            ]
+            ],
         }
 
     # =========================================================================
     # Private Helper Methods
     # =========================================================================
 
-    def _generate_demo_dashboard_data(
-        self,
-        time_range: timedelta
-    ) -> UnifiedDashboardData:
+    def _generate_demo_dashboard_data(self, time_range: timedelta) -> UnifiedDashboardData:
         """Generate realistic demo dashboard data"""
         return UnifiedDashboardData(
             total_models=12,
@@ -409,12 +416,7 @@ class UnifiedObservabilityView:
             slo_compliance_pct=98.7,
             error_budget_remaining_pct=65,
             alerts=AlertStatus(
-                total=15,
-                critical=1,
-                warning=4,
-                info=10,
-                acknowledged=8,
-                silenced=2
+                total=15, critical=1, warning=4, info=10, acknowledged=8, silenced=2
             ),
             top_issues=[
                 {
@@ -422,26 +424,26 @@ class UnifiedObservabilityView:
                     "title": "Fraud model drift detected",
                     "severity": "warning",
                     "affected_service": "fraud-detector-v1",
-                    "duration_minutes": 45
+                    "duration_minutes": 45,
                 },
                 {
                     "id": "ISS-002",
                     "title": "Increased latency on recommendation service",
                     "severity": "warning",
                     "affected_service": "recommendation-v2",
-                    "duration_minutes": 20
+                    "duration_minutes": 20,
                 },
                 {
                     "id": "ISS-003",
                     "title": "Cost spike detected",
                     "severity": "info",
                     "affected_service": "inference-cluster",
-                    "duration_minutes": 120
-                }
+                    "duration_minutes": 120,
+                },
             ],
             trust_trend="stable",
             cost_trend="up",
-            carbon_trend="down"
+            carbon_trend="down",
         )
 
     def _generate_demo_services(self) -> List[ServiceHealth]:
@@ -455,7 +457,7 @@ class UnifiedObservabilityView:
                 uptime_pct=99.95,
                 error_rate_pct=0.1,
                 latency_p99_ms=45,
-                last_check=datetime.utcnow()
+                last_check=datetime.utcnow(),
             ),
             ServiceHealth(
                 service_id="fraud-v1",
@@ -465,7 +467,7 @@ class UnifiedObservabilityView:
                 uptime_pct=99.5,
                 error_rate_pct=0.8,
                 latency_p99_ms=120,
-                last_check=datetime.utcnow()
+                last_check=datetime.utcnow(),
             ),
             ServiceHealth(
                 service_id="churn-v1",
@@ -475,7 +477,7 @@ class UnifiedObservabilityView:
                 uptime_pct=99.99,
                 error_rate_pct=0.05,
                 latency_p99_ms=30,
-                last_check=datetime.utcnow()
+                last_check=datetime.utcnow(),
             ),
             ServiceHealth(
                 service_id="feature-store",
@@ -485,7 +487,7 @@ class UnifiedObservabilityView:
                 uptime_pct=99.99,
                 error_rate_pct=0.01,
                 latency_p99_ms=15,
-                last_check=datetime.utcnow()
+                last_check=datetime.utcnow(),
             ),
             ServiceHealth(
                 service_id="inference-cluster",
@@ -495,15 +497,12 @@ class UnifiedObservabilityView:
                 uptime_pct=99.95,
                 error_rate_pct=0.02,
                 latency_p99_ms=5,
-                last_check=datetime.utcnow()
+                last_check=datetime.utcnow(),
             ),
         ]
 
     def _generate_demo_time_series(
-        self,
-        metric_name: str,
-        time_range: timedelta,
-        granularity: TimeGranularity
+        self, metric_name: str, time_range: timedelta, granularity: TimeGranularity
     ) -> TimeSeriesData:
         """Generate demo time series data"""
         # Determine number of points based on granularity
@@ -525,16 +524,13 @@ class UnifiedObservabilityView:
             "error_rate": 0.5,
             "throughput": 1000,
             "cost": 60,
-            "carbon": 1.5
+            "carbon": 1.5,
         }.get(metric_name, 50)
 
         for i in range(num_points):
             ts = now - timedelta(hours=num_points - i)
             noise = random.uniform(-0.1, 0.1) * base_value
-            points.append(MetricPoint(
-                timestamp=ts,
-                value=round(base_value + noise, 2)
-            ))
+            points.append(MetricPoint(timestamp=ts, value=round(base_value + noise, 2)))
 
         unit = {
             "trust_score": "score",
@@ -542,14 +538,10 @@ class UnifiedObservabilityView:
             "error_rate": "%",
             "throughput": "req/s",
             "cost": "$/h",
-            "carbon": "kgCO2/h"
+            "carbon": "kgCO2/h",
         }.get(metric_name, "")
 
-        return TimeSeriesData(
-            metric_name=metric_name,
-            unit=unit,
-            points=points
-        )
+        return TimeSeriesData(metric_name=metric_name, unit=unit, points=points)
 
     def _generate_correlation(self, m1: str, m2: str) -> float:
         """Generate realistic correlation between metrics"""
@@ -575,7 +567,7 @@ class UnifiedObservabilityView:
                 "expected_value": 80,
                 "actual_value": 150,
                 "severity": "warning",
-                "status": "investigating"
+                "status": "investigating",
             },
             {
                 "id": "ANO-002",
@@ -585,6 +577,6 @@ class UnifiedObservabilityView:
                 "expected_value": 50,
                 "actual_value": 85,
                 "severity": "info",
-                "status": "acknowledged"
-            }
+                "status": "acknowledged",
+            },
         ]

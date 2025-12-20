@@ -3,42 +3,43 @@ AIOBS Data Ingestion Service
 Central service for secure, scalable, and compliant data injection
 """
 
-from datetime import datetime, timedelta
-from typing import Dict, List, Optional, Any, Tuple
-from dataclasses import dataclass, field
 import asyncio
 import hashlib
-import uuid
 import json
 import os
+import uuid
+from dataclasses import dataclass, field
+from datetime import datetime, timedelta
+from typing import Any, Dict, List, Optional, Tuple
 
-from .schemas import (
-    MetricIngestionRequest,
-    LogIngestionRequest,
-    EventIngestionRequest,
-    BatchIngestionRequest,
-    SecurityTestRequest,
-    IngestionResponse,
-    IngestionStatus,
-    DataCategory,
-    MetricValue,
-    LogEntry,
-    Event
-)
-from .validators import DataValidator, DataActCompliance, ValidationResult, ValidationSeverity
-from .rate_limiter import RateLimiter, RateLimitConfig, AdaptiveRateLimiter
 from .backends import (
     BackendManager,
-    VictoriaMetricsClient,
     OpenObserveClient,
     RedisClient,
-    backend_manager
+    VictoriaMetricsClient,
+    backend_manager,
 )
+from .rate_limiter import AdaptiveRateLimiter, RateLimitConfig, RateLimiter
+from .schemas import (
+    BatchIngestionRequest,
+    DataCategory,
+    Event,
+    EventIngestionRequest,
+    IngestionResponse,
+    IngestionStatus,
+    LogEntry,
+    LogIngestionRequest,
+    MetricIngestionRequest,
+    MetricValue,
+    SecurityTestRequest,
+)
+from .validators import DataActCompliance, DataValidator, ValidationResult, ValidationSeverity
 
 
 @dataclass
 class IngestionStats:
     """Statistics for ingestion operations"""
+
     total_requests: int = 0
     successful_requests: int = 0
     failed_requests: int = 0
@@ -62,9 +63,11 @@ class IngestionStats:
             "successful_requests": self.successful_requests,
             "failed_requests": self.failed_requests,
             "rate_limited_requests": self.rate_limited_requests,
-            "success_rate": round(
-                self.successful_requests / self.total_requests * 100, 2
-            ) if self.total_requests > 0 else 0,
+            "success_rate": (
+                round(self.successful_requests / self.total_requests * 100, 2)
+                if self.total_requests > 0
+                else 0
+            ),
             "total_metrics": self.total_metrics,
             "total_logs": self.total_logs,
             "total_events": self.total_events,
@@ -72,7 +75,7 @@ class IngestionStats:
             "validation_failures": self.validation_failures,
             "compliance_failures": self.compliance_failures,
             "last_ingestion": self.last_ingestion.isoformat() if self.last_ingestion else None,
-            "uptime_seconds": (datetime.utcnow() - self.start_time).total_seconds()
+            "uptime_seconds": (datetime.utcnow() - self.start_time).total_seconds(),
         }
 
 
@@ -87,15 +90,15 @@ class DataIngestionService:
         validator: Optional[DataValidator] = None,
         compliance: Optional[DataActCompliance] = None,
         rate_limiter: Optional[RateLimiter] = None,
-        backend: Optional[BackendManager] = None
+        backend: Optional[BackendManager] = None,
     ):
         self.validator = validator or DataValidator(strict_mode=True)
         self.compliance = compliance or DataActCompliance()
-        self.rate_limiter = rate_limiter or AdaptiveRateLimiter(RateLimitConfig(
-            requests_per_second=100,
-            requests_per_minute=3000,
-            bytes_per_second=10 * 1024 * 1024
-        ))
+        self.rate_limiter = rate_limiter or AdaptiveRateLimiter(
+            RateLimitConfig(
+                requests_per_second=100, requests_per_minute=3000, bytes_per_second=10 * 1024 * 1024
+            )
+        )
         self.backend = backend or backend_manager
 
         self.stats = IngestionStats()
@@ -125,10 +128,7 @@ class DataIngestionService:
     # Main Ingestion Methods
     # =========================================================================
 
-    async def ingest_metrics(
-        self,
-        request: MetricIngestionRequest
-    ) -> IngestionResponse:
+    async def ingest_metrics(self, request: MetricIngestionRequest) -> IngestionResponse:
         """
         Ingest metrics into VictoriaMetrics
 
@@ -143,8 +143,7 @@ class DataIngestionService:
 
         # Check rate limit
         rate_result = await self.rate_limiter.check_rate_limit(
-            request.metadata.source_id,
-            self._estimate_request_size(request)
+            request.metadata.source_id, self._estimate_request_size(request)
         )
 
         if not rate_result.allowed:
@@ -156,7 +155,7 @@ class DataIngestionService:
                 metrics_processed=0,
                 errors=[{"code": "RATE_LIMIT", "message": rate_result.reason}],
                 rate_limit_remaining=rate_result.remaining_requests,
-                rate_limit_reset=rate_result.reset_time
+                rate_limit_reset=rate_result.reset_time,
             )
 
         # Validate request
@@ -174,8 +173,12 @@ class DataIngestionService:
                     for i in validation_result.issues
                     if i.severity in (ValidationSeverity.ERROR, ValidationSeverity.CRITICAL)
                 ],
-                warnings=[i.message for i in validation_result.issues if i.severity == ValidationSeverity.WARNING],
-                audit_id=validation_result.audit_trail.get("integrity_hash")
+                warnings=[
+                    i.message
+                    for i in validation_result.issues
+                    if i.severity == ValidationSeverity.WARNING
+                ],
+                audit_id=validation_result.audit_trail.get("integrity_hash"),
             )
 
         # Check compliance
@@ -189,7 +192,7 @@ class DataIngestionService:
                 metrics_received=len(request.metrics),
                 metrics_processed=0,
                 errors=[{"code": "COMPLIANCE", "message": issue} for issue in compliance_issues],
-                audit_id=validation_result.audit_trail.get("integrity_hash")
+                audit_id=validation_result.audit_trail.get("integrity_hash"),
             )
 
         # Write to VictoriaMetrics
@@ -201,7 +204,7 @@ class DataIngestionService:
                 "name": m.name,
                 "value": m.value,
                 "labels": m.labels,
-                "timestamp": m.timestamp or request.metadata.timestamp
+                "timestamp": m.timestamp or request.metadata.timestamp,
             }
             for m in request.metrics
         ]
@@ -218,7 +221,7 @@ class DataIngestionService:
                 "metrics_ingestion",
                 request.metadata.source_id,
                 len(request.metrics),
-                validation_result.audit_trail
+                validation_result.audit_trail,
             )
 
             return IngestionResponse(
@@ -228,7 +231,7 @@ class DataIngestionService:
                 metrics_processed=write_result.get("written", 0),
                 audit_id=validation_result.audit_trail.get("integrity_hash"),
                 integrity_hash=self._compute_integrity_hash(request.metrics),
-                rate_limit_remaining=rate_result.remaining_requests
+                rate_limit_remaining=rate_result.remaining_requests,
             )
         else:
             self.stats.failed_requests += 1
@@ -237,13 +240,12 @@ class DataIngestionService:
                 request_id=request_id,
                 metrics_received=len(request.metrics),
                 metrics_processed=0,
-                errors=[{"code": "WRITE_ERROR", "message": write_result.get("error", "Unknown error")}]
+                errors=[
+                    {"code": "WRITE_ERROR", "message": write_result.get("error", "Unknown error")}
+                ],
             )
 
-    async def ingest_logs(
-        self,
-        request: LogIngestionRequest
-    ) -> IngestionResponse:
+    async def ingest_logs(self, request: LogIngestionRequest) -> IngestionResponse:
         """
         Ingest logs into OpenObserve
 
@@ -258,8 +260,7 @@ class DataIngestionService:
 
         # Check rate limit
         rate_result = await self.rate_limiter.check_rate_limit(
-            request.metadata.source_id,
-            self._estimate_request_size(request)
+            request.metadata.source_id, self._estimate_request_size(request)
         )
 
         if not rate_result.allowed:
@@ -271,7 +272,7 @@ class DataIngestionService:
                 logs_processed=0,
                 errors=[{"code": "RATE_LIMIT", "message": rate_result.reason}],
                 rate_limit_remaining=rate_result.remaining_requests,
-                rate_limit_reset=rate_result.reset_time
+                rate_limit_reset=rate_result.reset_time,
             )
 
         # Validate request
@@ -289,8 +290,12 @@ class DataIngestionService:
                     for i in validation_result.issues
                     if i.severity in (ValidationSeverity.ERROR, ValidationSeverity.CRITICAL)
                 ],
-                warnings=[i.message for i in validation_result.issues if i.severity == ValidationSeverity.WARNING],
-                audit_id=validation_result.audit_trail.get("integrity_hash")
+                warnings=[
+                    i.message
+                    for i in validation_result.issues
+                    if i.severity == ValidationSeverity.WARNING
+                ],
+                audit_id=validation_result.audit_trail.get("integrity_hash"),
             )
 
         # Check compliance
@@ -303,7 +308,7 @@ class DataIngestionService:
                 request_id=request_id,
                 logs_received=len(request.logs),
                 logs_processed=0,
-                errors=[{"code": "COMPLIANCE", "message": issue} for issue in compliance_issues]
+                errors=[{"code": "COMPLIANCE", "message": issue} for issue in compliance_issues],
             )
 
         # Write to OpenObserve
@@ -318,7 +323,7 @@ class DataIngestionService:
                 "logger": log.logger,
                 "context": log.context,
                 "exception": log.exception,
-                "stack_trace": log.stack_trace
+                "stack_trace": log.stack_trace,
             }
             for log in request.logs
         ]
@@ -335,7 +340,7 @@ class DataIngestionService:
                 "logs_ingestion",
                 request.metadata.source_id,
                 len(request.logs),
-                validation_result.audit_trail
+                validation_result.audit_trail,
             )
 
             return IngestionResponse(
@@ -344,7 +349,7 @@ class DataIngestionService:
                 logs_received=len(request.logs),
                 logs_processed=len(request.logs),
                 audit_id=validation_result.audit_trail.get("integrity_hash"),
-                rate_limit_remaining=rate_result.remaining_requests
+                rate_limit_remaining=rate_result.remaining_requests,
             )
         else:
             self.stats.failed_requests += 1
@@ -353,13 +358,10 @@ class DataIngestionService:
                 request_id=request_id,
                 logs_received=len(request.logs),
                 logs_processed=0,
-                errors=[{"code": "WRITE_ERROR", "message": "Failed to write logs to OpenObserve"}]
+                errors=[{"code": "WRITE_ERROR", "message": "Failed to write logs to OpenObserve"}],
             )
 
-    async def ingest_events(
-        self,
-        request: EventIngestionRequest
-    ) -> IngestionResponse:
+    async def ingest_events(self, request: EventIngestionRequest) -> IngestionResponse:
         """
         Ingest events and broadcast via Redis pub/sub
 
@@ -374,8 +376,7 @@ class DataIngestionService:
 
         # Check rate limit
         rate_result = await self.rate_limiter.check_rate_limit(
-            request.metadata.source_id,
-            self._estimate_request_size(request)
+            request.metadata.source_id, self._estimate_request_size(request)
         )
 
         if not rate_result.allowed:
@@ -387,7 +388,7 @@ class DataIngestionService:
                 events_processed=0,
                 errors=[{"code": "RATE_LIMIT", "message": rate_result.reason}],
                 rate_limit_remaining=rate_result.remaining_requests,
-                rate_limit_reset=rate_result.reset_time
+                rate_limit_reset=rate_result.reset_time,
             )
 
         # Validate request
@@ -404,7 +405,7 @@ class DataIngestionService:
                     {"code": i.code, "message": i.message, "field": i.field}
                     for i in validation_result.issues
                     if i.severity in (ValidationSeverity.ERROR, ValidationSeverity.CRITICAL)
-                ]
+                ],
             )
 
         # Write to Redis and broadcast
@@ -421,7 +422,7 @@ class DataIngestionService:
                 "timestamp": event.timestamp.isoformat(),
                 "source_service": event.source_service,
                 "affected_services": event.affected_services,
-                "payload": event.payload
+                "payload": event.payload,
             }
 
             # Store event in Redis list
@@ -444,13 +445,10 @@ class DataIngestionService:
             events_received=len(request.events),
             events_processed=processed,
             audit_id=validation_result.audit_trail.get("integrity_hash"),
-            rate_limit_remaining=rate_result.remaining_requests
+            rate_limit_remaining=rate_result.remaining_requests,
         )
 
-    async def ingest_batch(
-        self,
-        request: BatchIngestionRequest
-    ) -> IngestionResponse:
+    async def ingest_batch(self, request: BatchIngestionRequest) -> IngestionResponse:
         """
         Batch ingestion for metrics, logs, and events
 
@@ -466,8 +464,7 @@ class DataIngestionService:
         # Check rate limit for combined size
         total_size = self._estimate_request_size(request)
         rate_result = await self.rate_limiter.check_rate_limit(
-            request.metadata.source_id,
-            total_size
+            request.metadata.source_id, total_size
         )
 
         if not rate_result.allowed:
@@ -478,7 +475,7 @@ class DataIngestionService:
                 metrics_received=len(request.metrics) if request.metrics else 0,
                 logs_received=len(request.logs) if request.logs else 0,
                 events_received=len(request.events) if request.events else 0,
-                errors=[{"code": "RATE_LIMIT", "message": rate_result.reason}]
+                errors=[{"code": "RATE_LIMIT", "message": rate_result.reason}],
             )
 
         # Validate batch
@@ -493,7 +490,7 @@ class DataIngestionService:
                     {"code": i.code, "message": i.message, "field": i.field}
                     for i in validation_result.issues
                     if i.severity in (ValidationSeverity.ERROR, ValidationSeverity.CRITICAL)
-                ]
+                ],
             )
 
         # Check compliance
@@ -504,7 +501,7 @@ class DataIngestionService:
             return IngestionResponse(
                 status=IngestionStatus.FAILED,
                 request_id=request_id,
-                errors=[{"code": "COMPLIANCE", "message": issue} for issue in compliance_issues]
+                errors=[{"code": "COMPLIANCE", "message": issue} for issue in compliance_issues],
             )
 
         if not self._initialized:
@@ -523,7 +520,7 @@ class DataIngestionService:
                     "name": m.name,
                     "value": m.value,
                     "labels": m.labels,
-                    "timestamp": m.timestamp or request.metadata.timestamp
+                    "timestamp": m.timestamp or request.metadata.timestamp,
                 }
                 for m in request.metrics
             ]
@@ -541,7 +538,7 @@ class DataIngestionService:
                     "message": log.message,
                     "timestamp": log.timestamp,
                     "logger": log.logger,
-                    "context": log.context
+                    "context": log.context,
                 }
                 for log in request.logs
             ]
@@ -557,7 +554,7 @@ class DataIngestionService:
                     "type": event.event_type.value,
                     "severity": event.severity.value,
                     "title": event.title,
-                    "timestamp": event.timestamp.isoformat()
+                    "timestamp": event.timestamp.isoformat(),
                 }
                 await self.backend.redis.lpush("aiobs:events", event_data)
                 events_processed += 1
@@ -587,13 +584,10 @@ class DataIngestionService:
             events_processed=events_processed,
             errors=errors,
             audit_id=validation_result.audit_trail.get("integrity_hash"),
-            rate_limit_remaining=rate_result.remaining_requests
+            rate_limit_remaining=rate_result.remaining_requests,
         )
 
-    async def ingest_security_test(
-        self,
-        request: SecurityTestRequest
-    ) -> IngestionResponse:
+    async def ingest_security_test(self, request: SecurityTestRequest) -> IngestionResponse:
         """
         Ingest security test payloads for authorized testing
 
@@ -612,10 +606,7 @@ class DataIngestionService:
             return IngestionResponse(
                 status=IngestionStatus.FAILED,
                 request_id=request_id,
-                errors=[
-                    {"code": i.code, "message": i.message}
-                    for i in validation_result.issues
-                ]
+                errors=[{"code": i.code, "message": i.message} for i in validation_result.issues],
             )
 
         # Record security test for audit
@@ -626,8 +617,8 @@ class DataIngestionService:
             {
                 "categories": list(set(t.test_category.value for t in request.tests)),
                 "dry_run": request.dry_run,
-                "authorized_by": request.tests[0].authorized_by if request.tests else "unknown"
-            }
+                "authorized_by": request.tests[0].authorized_by if request.tests else "unknown",
+            },
         )
 
         return IngestionResponse(
@@ -635,7 +626,7 @@ class DataIngestionService:
             request_id=request_id,
             events_received=len(request.tests),
             events_processed=len(request.tests),
-            audit_id=validation_result.audit_trail.get("integrity_hash")
+            audit_id=validation_result.audit_trail.get("integrity_hash"),
         )
 
     # =========================================================================
@@ -643,27 +634,19 @@ class DataIngestionService:
     # =========================================================================
 
     async def query_metrics(
-        self,
-        query: str,
-        start: Optional[datetime] = None,
-        end: Optional[datetime] = None
+        self, query: str, start: Optional[datetime] = None, end: Optional[datetime] = None
     ) -> Dict[str, Any]:
         """Query metrics from VictoriaMetrics"""
         if not self._initialized:
             await self.initialize()
 
         if start and end:
-            return await self.backend.victoria_metrics.query_range(
-                query, start, end
-            )
+            return await self.backend.victoria_metrics.query_range(query, start, end)
         else:
             return await self.backend.victoria_metrics.query(query)
 
     async def query_logs(
-        self,
-        query: str,
-        stream: str = "aiobs-logs",
-        limit: int = 100
+        self, query: str, stream: str = "aiobs-logs", limit: int = 100
     ) -> Dict[str, Any]:
         """Query logs from OpenObserve"""
         if not self._initialized:
@@ -698,20 +681,14 @@ class DataIngestionService:
         content = json.dumps(data, default=str, sort_keys=True)
         return hashlib.sha256(content.encode()).hexdigest()[:32]
 
-    async def _record_audit(
-        self,
-        action: str,
-        source_id: str,
-        count: int,
-        details: Dict
-    ):
+    async def _record_audit(self, action: str, source_id: str, count: int, details: Dict):
         """Record audit entry"""
         entry = {
             "timestamp": datetime.utcnow().isoformat(),
             "action": action,
             "source_id": source_id,
             "count": count,
-            "details": details
+            "details": details,
         }
 
         self._audit_buffer.append(entry)
@@ -730,9 +707,9 @@ class DataIngestionService:
                 {
                     "level": "info",
                     "message": f"Audit: {entry['action']}",
-                    "timestamp": datetime.fromisoformat(entry['timestamp']),
+                    "timestamp": datetime.fromisoformat(entry["timestamp"]),
                     "logger": "audit",
-                    "context": entry
+                    "context": entry,
                 }
                 for entry in self._audit_buffer
             ]
@@ -769,10 +746,12 @@ class DataIngestionService:
             "backends": backend_health,
             "stats": {
                 "total_requests": self.stats.total_requests,
-                "success_rate": round(
-                    self.stats.successful_requests / self.stats.total_requests * 100, 2
-                ) if self.stats.total_requests > 0 else 100
-            }
+                "success_rate": (
+                    round(self.stats.successful_requests / self.stats.total_requests * 100, 2)
+                    if self.stats.total_requests > 0
+                    else 100
+                ),
+            },
         }
 
 

@@ -1,6 +1,7 @@
 """AIOBS Core Package - Cognitive, Causal, Impact Analysis"""
-from .cognitive import CognitiveEngine
+
 from .causal import CausalEngine
+from .cognitive import CognitiveEngine
 from .impact import ImpactAnalyzer
 from .unified_view import UnifiedObservabilityView
 

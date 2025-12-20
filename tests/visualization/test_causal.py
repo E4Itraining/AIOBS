@@ -2,22 +2,25 @@
 AIOBS Causal Analysis Tests
 Tests for root cause analysis, impact propagation, and counterfactual reasoning
 """
-import pytest
-import random
-from datetime import datetime, timedelta
-from typing import List, Dict, Set, Tuple, Optional, Any
-from dataclasses import dataclass, field
-from enum import Enum
-from collections import deque
 
+import random
+from collections import deque
+from dataclasses import dataclass, field
+from datetime import datetime, timedelta
+from enum import Enum
+from typing import Any, Dict, List, Optional, Set, Tuple
+
+import pytest
 
 # =============================================================================
 # Causal Graph Implementation
 # =============================================================================
 
+
 @dataclass
 class CausalNode:
     """Node in causal graph"""
+
     id: str
     name: str
     node_type: str  # event, metric, service, component
@@ -29,6 +32,7 @@ class CausalNode:
 @dataclass
 class CausalEdge:
     """Edge in causal graph representing causal relationship"""
+
     source: str
     target: str
     weight: float = 1.0  # Causal strength
@@ -39,6 +43,7 @@ class CausalEdge:
 @dataclass
 class CausalGraph:
     """Directed acyclic graph for causal relationships"""
+
     nodes: Dict[str, CausalNode] = field(default_factory=dict)
     edges: List[CausalEdge] = field(default_factory=list)
 
@@ -65,6 +70,7 @@ class CausalGraph:
 @dataclass
 class RootCauseResult:
     """Result of root cause analysis"""
+
     root_causes: List[str]
     confidence_scores: Dict[str, float]
     causal_paths: List[List[str]]
@@ -74,6 +80,7 @@ class RootCauseResult:
 @dataclass
 class CounterfactualResult:
     """Result of counterfactual analysis"""
+
     scenario: str
     affected_nodes: List[str]
     estimated_impact: float
@@ -102,7 +109,7 @@ class CausalEngine:
                 node_type=event.get("type", "event"),
                 timestamp=event.get("timestamp"),
                 severity=event.get("severity", "info"),
-                attributes=event.get("attributes", {})
+                attributes=event.get("attributes", {}),
             )
             graph.add_node(node)
 
@@ -125,7 +132,7 @@ class CausalEngine:
                         target=event["id"],
                         weight=1.0 / (1 + time_diff / 60),  # Decay with time
                         delay_seconds=int(time_diff),
-                        confidence=self._compute_confidence(prev_event, event)
+                        confidence=self._compute_confidence(prev_event, event),
                     )
                     graph.add_edge(edge)
 
@@ -174,11 +181,7 @@ class CausalEngine:
 
         return min(1.0, confidence)
 
-    def find_root_causes(
-        self,
-        graph: CausalGraph,
-        symptom_id: str
-    ) -> RootCauseResult:
+    def find_root_causes(self, graph: CausalGraph, symptom_id: str) -> RootCauseResult:
         """
         Find root causes for a given symptom using backward traversal.
         """
@@ -211,7 +214,9 @@ class CausalEngine:
             else:
                 for parent in parents:
                     edge = graph.get_edge(parent, current)
-                    new_confidence = confidence * (edge.confidence if edge else 1.0) * self.decay_factor
+                    new_confidence = (
+                        confidence * (edge.confidence if edge else 1.0) * self.decay_factor
+                    )
                     queue.append((parent, path + [parent], new_confidence))
 
         # Build impact chain
@@ -222,14 +227,11 @@ class CausalEngine:
             root_causes=root_causes,
             confidence_scores=confidence_scores,
             causal_paths=all_paths,
-            impact_chain=impact_chain
+            impact_chain=impact_chain,
         )
 
     def propagate_impact(
-        self,
-        graph: CausalGraph,
-        source_id: str,
-        initial_impact: float = 1.0
+        self, graph: CausalGraph, source_id: str, initial_impact: float = 1.0
     ) -> Dict[str, float]:
         """
         Propagate impact forward through the causal graph.
@@ -263,9 +265,7 @@ class CausalEngine:
         return impacts
 
     def counterfactual_analysis(
-        self,
-        graph: CausalGraph,
-        intervention: Dict[str, Any]
+        self, graph: CausalGraph, intervention: Dict[str, Any]
     ) -> CounterfactualResult:
         """
         Analyze: "What if X had not happened?"
@@ -277,7 +277,7 @@ class CausalEngine:
                 affected_nodes=[],
                 estimated_impact=0,
                 probability=0,
-                recommendations=[]
+                recommendations=[],
             )
 
         # Find all nodes that would be affected
@@ -299,30 +299,32 @@ class CausalEngine:
 
         # Estimate impact
         severity_weights = {"info": 0.1, "warning": 0.3, "error": 0.6, "critical": 1.0}
-        total_impact = sum(
-            severity_weights.get(graph.nodes[n].severity, 0.1)
-            for n in affected
-        )
+        total_impact = sum(severity_weights.get(graph.nodes[n].severity, 0.1) for n in affected)
 
         # Generate recommendations
         recommendations = []
         if total_impact > 0.5:
-            recommendations.append(f"Preventing {removed_node} would have significant positive impact")
+            recommendations.append(
+                f"Preventing {removed_node} would have significant positive impact"
+            )
         if len(affected) > 3:
-            recommendations.append(f"This event triggered a cascade of {len(affected)} related issues")
+            recommendations.append(
+                f"This event triggered a cascade of {len(affected)} related issues"
+            )
 
         return CounterfactualResult(
             scenario=f"Intervention: Remove {removed_node}",
             affected_nodes=list(affected),
             estimated_impact=total_impact,
             probability=0.8,  # Placeholder
-            recommendations=recommendations
+            recommendations=recommendations,
         )
 
 
 # =============================================================================
 # Causal Analysis Tests
 # =============================================================================
+
 
 class TestCausalGraphConstruction:
     """Tests for causal graph construction"""
@@ -349,10 +351,20 @@ class TestCausalGraphConstruction:
         """Should create edges based on temporal order"""
         now = datetime.utcnow()
         events = [
-            {"id": "e1", "name": "Config Change", "type": "config_change",
-             "timestamp": now, "service": "api"},
-            {"id": "e2", "name": "Error", "type": "error",
-             "timestamp": now + timedelta(seconds=30), "service": "api"},
+            {
+                "id": "e1",
+                "name": "Config Change",
+                "type": "config_change",
+                "timestamp": now,
+                "service": "api",
+            },
+            {
+                "id": "e2",
+                "name": "Error",
+                "type": "error",
+                "timestamp": now + timedelta(seconds=30),
+                "service": "api",
+            },
         ]
 
         graph = engine.build_graph(events)
@@ -365,10 +377,20 @@ class TestCausalGraphConstruction:
         """Should not create edges for unrelated events"""
         now = datetime.utcnow()
         events = [
-            {"id": "e1", "name": "Info Log", "type": "info",
-             "timestamp": now, "service": "service_a"},
-            {"id": "e2", "name": "Different Info", "type": "info",
-             "timestamp": now + timedelta(hours=1), "service": "service_b"},
+            {
+                "id": "e1",
+                "name": "Info Log",
+                "type": "info",
+                "timestamp": now,
+                "service": "service_a",
+            },
+            {
+                "id": "e2",
+                "name": "Different Info",
+                "type": "info",
+                "timestamp": now + timedelta(hours=1),
+                "service": "service_b",
+            },
         ]
 
         graph = engine.build_graph(events)
@@ -534,10 +556,7 @@ class TestCounterfactualAnalysis:
 
     def test_counterfactual_removes_cascade(self, engine, cascade_graph):
         """Removing root should affect all downstream"""
-        result = engine.counterfactual_analysis(
-            cascade_graph,
-            {"remove_node": "Root"}
-        )
+        result = engine.counterfactual_analysis(cascade_graph, {"remove_node": "Root"})
 
         # Should affect all nodes in cascade
         assert "Root" in result.affected_nodes
@@ -545,10 +564,7 @@ class TestCounterfactualAnalysis:
 
     def test_counterfactual_partial_removal(self, engine, cascade_graph):
         """Removing intermediate node affects only its descendants"""
-        result = engine.counterfactual_analysis(
-            cascade_graph,
-            {"remove_node": "A"}
-        )
+        result = engine.counterfactual_analysis(cascade_graph, {"remove_node": "A"})
 
         assert "A" in result.affected_nodes
         assert "C" in result.affected_nodes
@@ -558,20 +574,14 @@ class TestCounterfactualAnalysis:
 
     def test_counterfactual_impact_estimate(self, engine, cascade_graph):
         """Should estimate impact based on severity"""
-        result = engine.counterfactual_analysis(
-            cascade_graph,
-            {"remove_node": "Root"}
-        )
+        result = engine.counterfactual_analysis(cascade_graph, {"remove_node": "Root"})
 
         # Impact should be positive (removing critical event)
         assert result.estimated_impact > 0
 
     def test_counterfactual_invalid_node(self, engine, cascade_graph):
         """Should handle invalid node"""
-        result = engine.counterfactual_analysis(
-            cascade_graph,
-            {"remove_node": "NonExistent"}
-        )
+        result = engine.counterfactual_analysis(cascade_graph, {"remove_node": "NonExistent"})
 
         assert len(result.affected_nodes) == 0
         assert result.estimated_impact == 0
@@ -630,12 +640,30 @@ class TestComplexScenarios:
         """Deployment should be identified as root cause of errors"""
         now = datetime.utcnow()
         events = [
-            {"id": "deploy", "name": "Deployment", "type": "deployment",
-             "timestamp": now, "service": "api", "severity": "info"},
-            {"id": "error1", "name": "Error 1", "type": "error",
-             "timestamp": now + timedelta(seconds=10), "service": "api", "severity": "error"},
-            {"id": "error2", "name": "Error 2", "type": "error",
-             "timestamp": now + timedelta(seconds=15), "service": "api", "severity": "error"},
+            {
+                "id": "deploy",
+                "name": "Deployment",
+                "type": "deployment",
+                "timestamp": now,
+                "service": "api",
+                "severity": "info",
+            },
+            {
+                "id": "error1",
+                "name": "Error 1",
+                "type": "error",
+                "timestamp": now + timedelta(seconds=10),
+                "service": "api",
+                "severity": "error",
+            },
+            {
+                "id": "error2",
+                "name": "Error 2",
+                "type": "error",
+                "timestamp": now + timedelta(seconds=15),
+                "service": "api",
+                "severity": "error",
+            },
         ]
 
         graph = engine.build_graph(events)
@@ -647,12 +675,27 @@ class TestComplexScenarios:
         """Config change should cascade to multiple errors"""
         now = datetime.utcnow()
         events = [
-            {"id": "config", "name": "Config Change", "type": "config_change",
-             "timestamp": now, "service": "core"},
-            {"id": "err_api", "name": "API Error", "type": "error",
-             "timestamp": now + timedelta(seconds=5), "service": "core"},
-            {"id": "err_db", "name": "DB Error", "type": "error",
-             "timestamp": now + timedelta(seconds=8), "service": "core"},
+            {
+                "id": "config",
+                "name": "Config Change",
+                "type": "config_change",
+                "timestamp": now,
+                "service": "core",
+            },
+            {
+                "id": "err_api",
+                "name": "API Error",
+                "type": "error",
+                "timestamp": now + timedelta(seconds=5),
+                "service": "core",
+            },
+            {
+                "id": "err_db",
+                "name": "DB Error",
+                "type": "error",
+                "timestamp": now + timedelta(seconds=8),
+                "service": "core",
+            },
         ]
 
         graph = engine.build_graph(events)
@@ -665,10 +708,20 @@ class TestComplexScenarios:
         """Data drift should cause accuracy drop"""
         now = datetime.utcnow()
         events = [
-            {"id": "drift", "name": "Data Drift", "type": "data_drift",
-             "timestamp": now, "service": "ml"},
-            {"id": "accuracy", "name": "Accuracy Drop", "type": "accuracy_drop",
-             "timestamp": now + timedelta(minutes=5), "service": "ml"},
+            {
+                "id": "drift",
+                "name": "Data Drift",
+                "type": "data_drift",
+                "timestamp": now,
+                "service": "ml",
+            },
+            {
+                "id": "accuracy",
+                "name": "Accuracy Drop",
+                "type": "accuracy_drop",
+                "timestamp": now + timedelta(minutes=5),
+                "service": "ml",
+            },
         ]
 
         graph = engine.build_graph(events)

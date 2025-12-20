@@ -2,30 +2,34 @@
 AIOBS Stress and Load Tests
 Tests for performance under load, stress conditions, and resource constraints
 """
-import pytest
+
 import asyncio
-import time
+import concurrent.futures
+import os
 import random
 import statistics
-import threading
-import concurrent.futures
-from datetime import datetime, timedelta
-from typing import List, Dict, Any, Callable, Tuple
-from dataclasses import dataclass, field
-from enum import Enum
 import sys
-import os
+import threading
+import time
+from dataclasses import dataclass, field
+from datetime import datetime, timedelta
+from enum import Enum
+from typing import Any, Callable, Dict, List, Tuple
 
-sys.path.insert(0, os.path.join(os.path.dirname(__file__), '../..'))
+import pytest
+
+sys.path.insert(0, os.path.join(os.path.dirname(__file__), "../.."))
 
 
 # =============================================================================
 # Load Test Framework
 # =============================================================================
 
+
 @dataclass
 class LoadTestResult:
     """Result of a load test"""
+
     total_requests: int
     successful_requests: int
     failed_requests: int
@@ -43,10 +47,7 @@ class LoadTestRunner:
     """Runs load tests with configurable parameters"""
 
     def __init__(
-        self,
-        target_rps: int = 100,
-        duration_seconds: int = 10,
-        concurrent_users: int = 10
+        self, target_rps: int = 100, duration_seconds: int = 10, concurrent_users: int = 10
     ):
         self.target_rps = target_rps
         self.duration_seconds = duration_seconds
@@ -68,10 +69,7 @@ class LoadTestRunner:
                 if error:
                     self.errors.append(error)
 
-    async def run_async(
-        self,
-        request_func: Callable[[], Any]
-    ) -> LoadTestResult:
+    async def run_async(self, request_func: Callable[[], Any]) -> LoadTestResult:
         """Run async load test"""
         self.latencies = []
         self.errors = []
@@ -101,10 +99,7 @@ class LoadTestRunner:
 
         return self._compute_results(time.time() - start_time)
 
-    def run_sync(
-        self,
-        request_func: Callable[[], Any]
-    ) -> LoadTestResult:
+    def run_sync(self, request_func: Callable[[], Any]) -> LoadTestResult:
         """Run synchronous load test with thread pool"""
         self.latencies = []
         self.errors = []
@@ -148,7 +143,7 @@ class LoadTestRunner:
                 p95_latency_ms=0,
                 p99_latency_ms=0,
                 max_latency_ms=0,
-                errors=self.errors
+                errors=self.errors,
             )
 
         sorted_latencies = sorted(self.latencies)
@@ -165,13 +160,14 @@ class LoadTestRunner:
             p95_latency_ms=sorted_latencies[int(n * 0.95)],
             p99_latency_ms=sorted_latencies[min(int(n * 0.99), n - 1)],
             max_latency_ms=max(self.latencies),
-            errors=self.errors
+            errors=self.errors,
         )
 
 
 # =============================================================================
 # Mock Services for Stress Testing
 # =============================================================================
+
 
 class MockCognitiveEngine:
     """Mock cognitive engine for stress testing"""
@@ -196,7 +192,7 @@ class MockCognitiveEngine:
 
         return {
             "trust_score": random.uniform(0.7, 0.95),
-            "processed_at": datetime.utcnow().isoformat()
+            "processed_at": datetime.utcnow().isoformat(),
         }
 
     async def process_async(self, data: Dict) -> Dict:
@@ -211,7 +207,7 @@ class MockCognitiveEngine:
 
         return {
             "trust_score": random.uniform(0.7, 0.95),
-            "processed_at": datetime.utcnow().isoformat()
+            "processed_at": datetime.utcnow().isoformat(),
         }
 
 
@@ -234,15 +230,13 @@ class MockIngestionService:
         with self._lock:
             self.total_ingested += len(items)
 
-        return {
-            "accepted": len(items),
-            "total_ingested": self.total_ingested
-        }
+        return {"accepted": len(items), "total_ingested": self.total_ingested}
 
 
 # =============================================================================
 # Stress Tests
 # =============================================================================
+
 
 class TestCognitiveEngineStress:
     """Stress tests for cognitive engine"""
@@ -254,11 +248,7 @@ class TestCognitiveEngineStress:
     @pytest.mark.stress
     def test_sustained_load(self, engine):
         """Should handle sustained load"""
-        runner = LoadTestRunner(
-            target_rps=100,
-            duration_seconds=5,
-            concurrent_users=10
-        )
+        runner = LoadTestRunner(target_rps=100, duration_seconds=5, concurrent_users=10)
 
         result = runner.run_sync(lambda: engine.process({"test": True}))
 
@@ -272,11 +262,7 @@ class TestCognitiveEngineStress:
     @pytest.mark.stress
     def test_burst_traffic(self, engine):
         """Should handle burst traffic"""
-        runner = LoadTestRunner(
-            target_rps=500,
-            duration_seconds=2,
-            concurrent_users=50
-        )
+        runner = LoadTestRunner(target_rps=500, duration_seconds=2, concurrent_users=50)
 
         result = runner.run_sync(lambda: engine.process({"test": True}))
 
@@ -289,11 +275,7 @@ class TestCognitiveEngineStress:
     @pytest.mark.stress
     def test_latency_under_load(self, engine):
         """Latency should remain bounded under load"""
-        runner = LoadTestRunner(
-            target_rps=50,
-            duration_seconds=3,
-            concurrent_users=5
-        )
+        runner = LoadTestRunner(target_rps=50, duration_seconds=3, concurrent_users=5)
 
         result = runner.run_sync(lambda: engine.process({"test": True}))
 
@@ -346,12 +328,14 @@ class TestIngestionStress:
 # Memory Stress Tests
 # =============================================================================
 
+
 class TestMemoryStress:
     """Tests for memory behavior under stress"""
 
     @pytest.mark.stress
     def test_large_payload_processing(self):
         """Should handle large payloads"""
+
         def process_large_payload(size_mb: int) -> float:
             # Create large payload
             payload = "x" * (size_mb * 1024 * 1024)
@@ -391,6 +375,7 @@ class TestMemoryStress:
 # Concurrency Stress Tests
 # =============================================================================
 
+
 class TestConcurrencyStress:
     """Tests for concurrent access patterns"""
 
@@ -426,6 +411,7 @@ class TestConcurrencyStress:
     @pytest.mark.stress
     def test_async_concurrency(self):
         """Should handle async concurrency correctly"""
+
         async def run_test():
             results = []
             lock = asyncio.Lock()
@@ -450,12 +436,14 @@ class TestConcurrencyStress:
 # Degradation Tests
 # =============================================================================
 
+
 class TestGracefulDegradation:
     """Tests for graceful degradation under stress"""
 
     @pytest.mark.stress
     def test_circuit_breaker(self):
         """Circuit breaker should open under failures"""
+
         class CircuitBreaker:
             def __init__(self, failure_threshold: int = 5, reset_timeout: float = 1.0):
                 self.failure_threshold = failure_threshold
@@ -505,6 +493,7 @@ class TestGracefulDegradation:
     @pytest.mark.stress
     def test_rate_limiting_under_load(self):
         """Rate limiting should work under load"""
+
         class RateLimiter:
             def __init__(self, max_requests: int, window_seconds: float):
                 self.max_requests = max_requests
@@ -549,13 +538,14 @@ class TestGracefulDegradation:
 # Resource Exhaustion Tests
 # =============================================================================
 
+
 class TestResourceExhaustion:
     """Tests for resource exhaustion handling"""
 
     @pytest.mark.stress
     def test_queue_overflow_handling(self):
         """Should handle queue overflow gracefully"""
-        from queue import Queue, Full
+        from queue import Full, Queue
 
         q = Queue(maxsize=10)
         overflow_count = 0
@@ -579,6 +569,7 @@ class TestResourceExhaustion:
     @pytest.mark.stress
     def test_timeout_handling(self):
         """Should handle timeouts properly"""
+
         def slow_operation(duration: float):
             time.sleep(duration)
             return "completed"
@@ -605,6 +596,7 @@ class TestResourceExhaustion:
 # =============================================================================
 # Recovery Tests
 # =============================================================================
+
 
 class TestRecovery:
     """Tests for system recovery after stress"""

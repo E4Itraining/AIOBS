@@ -2,19 +2,21 @@
 AIOBS Security Tests
 Comprehensive security testing: prompt injection, SQL injection, XSS, and more
 """
-import pytest
-import re
-import json
-import hashlib
-from datetime import datetime, timedelta
-from typing import List, Dict, Any, Tuple
-from dataclasses import dataclass
-from enum import Enum
 
+import hashlib
+import json
+import re
+from dataclasses import dataclass
+from datetime import datetime, timedelta
+from enum import Enum
+from typing import Any, Dict, List, Tuple
+
+import pytest
 
 # =============================================================================
 # Security Validator Implementation
 # =============================================================================
+
 
 class ThreatType(Enum):
     PROMPT_INJECTION = "prompt_injection"
@@ -50,144 +52,160 @@ class SecurityValidator:
 
     # Prompt injection patterns (expanded)
     PROMPT_INJECTION_PATTERNS = [
-        (r'ignore\s+(previous|all|above)\s+instructions?', ThreatSeverity.CRITICAL),
-        (r'disregard\s+(previous|all|above)', ThreatSeverity.CRITICAL),
-        (r'forget\s+(everything|all|previous)', ThreatSeverity.CRITICAL),
-        (r'system\s*:\s*you\s+are', ThreatSeverity.CRITICAL),
-        (r'assistant\s*:\s*', ThreatSeverity.HIGH),
-        (r'\[system\]', ThreatSeverity.CRITICAL),
-        (r'\[SYSTEM\]', ThreatSeverity.CRITICAL),
-        (r'\[assistant\]', ThreatSeverity.HIGH),
-        (r'<\|im_start\|>', ThreatSeverity.CRITICAL),
-        (r'<\|im_end\|>', ThreatSeverity.CRITICAL),
-        (r'<\|endoftext\|>', ThreatSeverity.CRITICAL),
-        (r'jailbreak', ThreatSeverity.CRITICAL),
-        (r'pretend\s+you\s+are', ThreatSeverity.HIGH),
-        (r'act\s+as\s+if', ThreatSeverity.MEDIUM),
-        (r'roleplay\s+as', ThreatSeverity.MEDIUM),
-        (r'bypass\s+(safety|filter|restriction)', ThreatSeverity.CRITICAL),
-        (r'override\s+(system|instruction)', ThreatSeverity.CRITICAL),
-        (r'###\s*(Human|Assistant|System)\s*:', ThreatSeverity.CRITICAL),
-        (r'new\s+instruction', ThreatSeverity.HIGH),
-        (r'from\s+now\s+on', ThreatSeverity.MEDIUM),
-        (r'do\s+not\s+follow\s+(the|your)\s+(rules|instructions)', ThreatSeverity.CRITICAL),
-        (r'DAN\s+mode', ThreatSeverity.CRITICAL),
-        (r'developer\s+mode', ThreatSeverity.HIGH),
-        (r'evil\s+(mode|AI)', ThreatSeverity.HIGH),
-        (r'unfiltered\s+(mode|response)', ThreatSeverity.HIGH),
-        (r'without\s+(restrictions|limits|filters)', ThreatSeverity.HIGH),
-        (r'reveal\s+(system\s+)?prompt', ThreatSeverity.CRITICAL),
-        (r'reveal\s+your\s+system\s+prompt', ThreatSeverity.CRITICAL),
-        (r'show\s+me\s+(your|the)\s+instructions', ThreatSeverity.HIGH),
-        (r'show\s+me\s+your\s+(initial|original)\s+instructions', ThreatSeverity.HIGH),
-        (r'what\s+are\s+your\s+(initial|original)\s+instructions', ThreatSeverity.HIGH),
-        (r'print\s+your\s+configuration', ThreatSeverity.HIGH),
-        (r'\{\{.*SYSTEM.*\}\}', ThreatSeverity.CRITICAL),
-        (r'<!--.*system.*-->', ThreatSeverity.HIGH),
-        (r'\\n\\n(Human|Assistant):', ThreatSeverity.HIGH),
-        (r'IGNORE\s+.*ABOVE', ThreatSeverity.CRITICAL),
-        (r'IGNORE\s+ALL', ThreatSeverity.CRITICAL),
+        (r"ignore\s+(previous|all|above)\s+instructions?", ThreatSeverity.CRITICAL),
+        (r"disregard\s+(previous|all|above)", ThreatSeverity.CRITICAL),
+        (r"forget\s+(everything|all|previous)", ThreatSeverity.CRITICAL),
+        (r"system\s*:\s*you\s+are", ThreatSeverity.CRITICAL),
+        (r"assistant\s*:\s*", ThreatSeverity.HIGH),
+        (r"\[system\]", ThreatSeverity.CRITICAL),
+        (r"\[SYSTEM\]", ThreatSeverity.CRITICAL),
+        (r"\[assistant\]", ThreatSeverity.HIGH),
+        (r"<\|im_start\|>", ThreatSeverity.CRITICAL),
+        (r"<\|im_end\|>", ThreatSeverity.CRITICAL),
+        (r"<\|endoftext\|>", ThreatSeverity.CRITICAL),
+        (r"jailbreak", ThreatSeverity.CRITICAL),
+        (r"pretend\s+you\s+are", ThreatSeverity.HIGH),
+        (r"act\s+as\s+if", ThreatSeverity.MEDIUM),
+        (r"roleplay\s+as", ThreatSeverity.MEDIUM),
+        (r"bypass\s+(safety|filter|restriction)", ThreatSeverity.CRITICAL),
+        (r"override\s+(system|instruction)", ThreatSeverity.CRITICAL),
+        (r"###\s*(Human|Assistant|System)\s*:", ThreatSeverity.CRITICAL),
+        (r"new\s+instruction", ThreatSeverity.HIGH),
+        (r"from\s+now\s+on", ThreatSeverity.MEDIUM),
+        (r"do\s+not\s+follow\s+(the|your)\s+(rules|instructions)", ThreatSeverity.CRITICAL),
+        (r"DAN\s+mode", ThreatSeverity.CRITICAL),
+        (r"developer\s+mode", ThreatSeverity.HIGH),
+        (r"evil\s+(mode|AI)", ThreatSeverity.HIGH),
+        (r"unfiltered\s+(mode|response)", ThreatSeverity.HIGH),
+        (r"without\s+(restrictions|limits|filters)", ThreatSeverity.HIGH),
+        (r"reveal\s+(system\s+)?prompt", ThreatSeverity.CRITICAL),
+        (r"reveal\s+your\s+system\s+prompt", ThreatSeverity.CRITICAL),
+        (r"show\s+me\s+(your|the)\s+instructions", ThreatSeverity.HIGH),
+        (r"show\s+me\s+your\s+(initial|original)\s+instructions", ThreatSeverity.HIGH),
+        (r"what\s+are\s+your\s+(initial|original)\s+instructions", ThreatSeverity.HIGH),
+        (r"print\s+your\s+configuration", ThreatSeverity.HIGH),
+        (r"\{\{.*SYSTEM.*\}\}", ThreatSeverity.CRITICAL),
+        (r"<!--.*system.*-->", ThreatSeverity.HIGH),
+        (r"\\n\\n(Human|Assistant):", ThreatSeverity.HIGH),
+        (r"IGNORE\s+.*ABOVE", ThreatSeverity.CRITICAL),
+        (r"IGNORE\s+ALL", ThreatSeverity.CRITICAL),
     ]
 
     # SQL injection patterns
     SQL_INJECTION_PATTERNS = [
         (r"('\s*(or|and)\s*'?\d*'?\s*=\s*'?\d*)", ThreatSeverity.CRITICAL),
-        (r'(;\s*(drop|delete|truncate|update|insert)\s+)', ThreatSeverity.CRITICAL),
-        (r'(union\s+(all\s+)?select)', ThreatSeverity.CRITICAL),
-        (r'(--\s*$)', ThreatSeverity.HIGH),
-        (r'(/\*.*\*/)', ThreatSeverity.MEDIUM),
+        (r"(;\s*(drop|delete|truncate|update|insert)\s+)", ThreatSeverity.CRITICAL),
+        (r"(union\s+(all\s+)?select)", ThreatSeverity.CRITICAL),
+        (r"(--\s*$)", ThreatSeverity.HIGH),
+        (r"(/\*.*\*/)", ThreatSeverity.MEDIUM),
         (r"('\s*;\s*--)", ThreatSeverity.CRITICAL),
-        (r'(\bexec\s*\()', ThreatSeverity.CRITICAL),
-        (r'(\bexecute\s+)', ThreatSeverity.HIGH),
-        (r'(xp_cmdshell)', ThreatSeverity.CRITICAL),
-        (r'(sp_executesql)', ThreatSeverity.HIGH),
-        (r'(information_schema)', ThreatSeverity.HIGH),
-        (r'(sys\.objects)', ThreatSeverity.HIGH),
-        (r'(0x[0-9a-fA-F]{8,})', ThreatSeverity.MEDIUM),  # Hex encoding
-        (r'(char\s*\(\s*\d+\s*\))', ThreatSeverity.MEDIUM),  # Char encoding
-        (r'(waitfor\s+delay)', ThreatSeverity.HIGH),  # Time-based
-        (r'(benchmark\s*\()', ThreatSeverity.HIGH),  # MySQL time-based
-        (r'(sleep\s*\(\s*\d+\s*\))', ThreatSeverity.HIGH),  # Sleep injection
-        (r'(load_file\s*\()', ThreatSeverity.CRITICAL),  # File access
-        (r'(into\s+outfile)', ThreatSeverity.CRITICAL),  # File write
-        (r'(into\s+dumpfile)', ThreatSeverity.CRITICAL),  # File write
+        (r"(\bexec\s*\()", ThreatSeverity.CRITICAL),
+        (r"(\bexecute\s+)", ThreatSeverity.HIGH),
+        (r"(xp_cmdshell)", ThreatSeverity.CRITICAL),
+        (r"(sp_executesql)", ThreatSeverity.HIGH),
+        (r"(information_schema)", ThreatSeverity.HIGH),
+        (r"(sys\.objects)", ThreatSeverity.HIGH),
+        (r"(0x[0-9a-fA-F]{8,})", ThreatSeverity.MEDIUM),  # Hex encoding
+        (r"(char\s*\(\s*\d+\s*\))", ThreatSeverity.MEDIUM),  # Char encoding
+        (r"(waitfor\s+delay)", ThreatSeverity.HIGH),  # Time-based
+        (r"(benchmark\s*\()", ThreatSeverity.HIGH),  # MySQL time-based
+        (r"(sleep\s*\(\s*\d+\s*\))", ThreatSeverity.HIGH),  # Sleep injection
+        (r"(load_file\s*\()", ThreatSeverity.CRITICAL),  # File access
+        (r"(into\s+outfile)", ThreatSeverity.CRITICAL),  # File write
+        (r"(into\s+dumpfile)", ThreatSeverity.CRITICAL),  # File write
     ]
 
     # XSS patterns
     XSS_PATTERNS = [
-        (r'<script[^>]*>', ThreatSeverity.CRITICAL),
-        (r'</script>', ThreatSeverity.CRITICAL),
-        (r'javascript\s*:', ThreatSeverity.CRITICAL),
-        (r'on(load|error|click|mouseover|submit|focus|blur)\s*=', ThreatSeverity.HIGH),
-        (r'<iframe[^>]*>', ThreatSeverity.HIGH),
-        (r'<object[^>]*>', ThreatSeverity.HIGH),
-        (r'<embed[^>]*>', ThreatSeverity.HIGH),
-        (r'<svg[^>]*on\w+\s*=', ThreatSeverity.HIGH),
-        (r'<img[^>]*on\w+\s*=', ThreatSeverity.HIGH),
-        (r'expression\s*\(', ThreatSeverity.HIGH),
-        (r'vbscript\s*:', ThreatSeverity.HIGH),
-        (r'data\s*:\s*text/html', ThreatSeverity.HIGH),
-        (r'<base[^>]*href', ThreatSeverity.MEDIUM),
-        (r'<form[^>]*action', ThreatSeverity.MEDIUM),
+        (r"<script[^>]*>", ThreatSeverity.CRITICAL),
+        (r"</script>", ThreatSeverity.CRITICAL),
+        (r"javascript\s*:", ThreatSeverity.CRITICAL),
+        (r"on(load|error|click|mouseover|submit|focus|blur)\s*=", ThreatSeverity.HIGH),
+        (r"<iframe[^>]*>", ThreatSeverity.HIGH),
+        (r"<object[^>]*>", ThreatSeverity.HIGH),
+        (r"<embed[^>]*>", ThreatSeverity.HIGH),
+        (r"<svg[^>]*on\w+\s*=", ThreatSeverity.HIGH),
+        (r"<img[^>]*on\w+\s*=", ThreatSeverity.HIGH),
+        (r"expression\s*\(", ThreatSeverity.HIGH),
+        (r"vbscript\s*:", ThreatSeverity.HIGH),
+        (r"data\s*:\s*text/html", ThreatSeverity.HIGH),
+        (r"<base[^>]*href", ThreatSeverity.MEDIUM),
+        (r"<form[^>]*action", ThreatSeverity.MEDIUM),
         (r'<input[^>]*type\s*=\s*["\']?hidden', ThreatSeverity.LOW),
-        (r'document\.(cookie|location|write)', ThreatSeverity.HIGH),
-        (r'window\.(location|open)', ThreatSeverity.MEDIUM),
-        (r'eval\s*\(', ThreatSeverity.CRITICAL),
+        (r"document\.(cookie|location|write)", ThreatSeverity.HIGH),
+        (r"window\.(location|open)", ThreatSeverity.MEDIUM),
+        (r"eval\s*\(", ThreatSeverity.CRITICAL),
         (r'setTimeout\s*\([^)]*["\']', ThreatSeverity.HIGH),
         (r'setInterval\s*\([^)]*["\']', ThreatSeverity.HIGH),
     ]
 
     # Command injection patterns
     COMMAND_INJECTION_PATTERNS = [
-        (r'[;&|`]', ThreatSeverity.HIGH),
-        (r'\$\([^)]+\)', ThreatSeverity.CRITICAL),
-        (r'`[^`]+`', ThreatSeverity.CRITICAL),
-        (r'\|\|', ThreatSeverity.HIGH),
-        (r'&&', ThreatSeverity.HIGH),
-        (r'>\s*/dev/null', ThreatSeverity.MEDIUM),
-        (r'>\s*/etc/', ThreatSeverity.CRITICAL),
-        (r'<\s*/etc/', ThreatSeverity.HIGH),
-        (r'\brm\s+-rf', ThreatSeverity.CRITICAL),
-        (r'\bsudo\b', ThreatSeverity.HIGH),
-        (r'\bchmod\s+[0-7]{3,4}', ThreatSeverity.HIGH),
-        (r'\bchown\b', ThreatSeverity.HIGH),
-        (r'\bwget\b', ThreatSeverity.MEDIUM),
-        (r'\bcurl\b.*\|.*\bsh\b', ThreatSeverity.CRITICAL),
-        (r'\bnc\s+-[el]', ThreatSeverity.CRITICAL),  # Netcat
-        (r'\bpython\s+-c', ThreatSeverity.HIGH),
-        (r'\bperl\s+-e', ThreatSeverity.HIGH),
-        (r'/bin/(ba)?sh', ThreatSeverity.HIGH),
-        (r'\bdd\s+if=', ThreatSeverity.HIGH),
-        (r'\bmkfifo\b', ThreatSeverity.HIGH),
+        (r"[;&|`]", ThreatSeverity.HIGH),
+        (r"\$\([^)]+\)", ThreatSeverity.CRITICAL),
+        (r"`[^`]+`", ThreatSeverity.CRITICAL),
+        (r"\|\|", ThreatSeverity.HIGH),
+        (r"&&", ThreatSeverity.HIGH),
+        (r">\s*/dev/null", ThreatSeverity.MEDIUM),
+        (r">\s*/etc/", ThreatSeverity.CRITICAL),
+        (r"<\s*/etc/", ThreatSeverity.HIGH),
+        (r"\brm\s+-rf", ThreatSeverity.CRITICAL),
+        (r"\bsudo\b", ThreatSeverity.HIGH),
+        (r"\bchmod\s+[0-7]{3,4}", ThreatSeverity.HIGH),
+        (r"\bchown\b", ThreatSeverity.HIGH),
+        (r"\bwget\b", ThreatSeverity.MEDIUM),
+        (r"\bcurl\b.*\|.*\bsh\b", ThreatSeverity.CRITICAL),
+        (r"\bnc\s+-[el]", ThreatSeverity.CRITICAL),  # Netcat
+        (r"\bpython\s+-c", ThreatSeverity.HIGH),
+        (r"\bperl\s+-e", ThreatSeverity.HIGH),
+        (r"/bin/(ba)?sh", ThreatSeverity.HIGH),
+        (r"\bdd\s+if=", ThreatSeverity.HIGH),
+        (r"\bmkfifo\b", ThreatSeverity.HIGH),
     ]
 
     # Path traversal patterns
     PATH_TRAVERSAL_PATTERNS = [
-        (r'\.\./', ThreatSeverity.HIGH),
-        (r'\.\.\\', ThreatSeverity.HIGH),
-        (r'%2e%2e%2f', ThreatSeverity.HIGH),
-        (r'%2e%2e/', ThreatSeverity.HIGH),
-        (r'\.\.%2f', ThreatSeverity.HIGH),
-        (r'%252e%252e%252f', ThreatSeverity.HIGH),  # Double encoding
-        (r'/etc/passwd', ThreatSeverity.CRITICAL),
-        (r'/etc/shadow', ThreatSeverity.CRITICAL),
-        (r'/proc/self', ThreatSeverity.HIGH),
-        (r'c:\\windows', ThreatSeverity.HIGH),
-        (r'\\windows\\system32', ThreatSeverity.HIGH),
+        (r"\.\./", ThreatSeverity.HIGH),
+        (r"\.\.\\", ThreatSeverity.HIGH),
+        (r"%2e%2e%2f", ThreatSeverity.HIGH),
+        (r"%2e%2e/", ThreatSeverity.HIGH),
+        (r"\.\.%2f", ThreatSeverity.HIGH),
+        (r"%252e%252e%252f", ThreatSeverity.HIGH),  # Double encoding
+        (r"/etc/passwd", ThreatSeverity.CRITICAL),
+        (r"/etc/shadow", ThreatSeverity.CRITICAL),
+        (r"/proc/self", ThreatSeverity.HIGH),
+        (r"c:\\windows", ThreatSeverity.HIGH),
+        (r"\\windows\\system32", ThreatSeverity.HIGH),
     ]
 
     # Sensitive data patterns
     SENSITIVE_DATA_PATTERNS = [
-        (r'\b(?:\d{4}[-\s]?){3}\d{4}\b', ThreatSeverity.HIGH, 'credit_card'),
-        (r'\b\d{3}-\d{2}-\d{4}\b', ThreatSeverity.HIGH, 'ssn'),
-        (r'\b[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[A-Z|a-z]{2,}\b', ThreatSeverity.MEDIUM, 'email'),
-        (r'\b(?:\+\d{1,3}[-.\s]?)?\(?\d{3}\)?[-.\s]?\d{3}[-.\s]?\d{4}\b', ThreatSeverity.MEDIUM, 'phone'),
-        (r'\b(api[_-]?key|apikey)\s*[=:]\s*["\']?[\w\-]+["\']?', ThreatSeverity.CRITICAL, 'api_key'),
-        (r'\b(password|passwd|pwd)\s*[=:]\s*["\']?[^\s"\']+["\']?', ThreatSeverity.CRITICAL, 'password'),
-        (r'\bBearer\s+[A-Za-z0-9\-._~+/]+=*', ThreatSeverity.CRITICAL, 'bearer_token'),
-        (r'\beyJ[A-Za-z0-9\-_]+\.eyJ[A-Za-z0-9\-_]+\.[A-Za-z0-9\-_]+', ThreatSeverity.CRITICAL, 'jwt'),
-        (r'\b(aws_secret_access_key|aws_access_key_id)\s*=', ThreatSeverity.CRITICAL, 'aws_key'),
-        (r'-----BEGIN\s+(RSA\s+)?PRIVATE\s+KEY-----', ThreatSeverity.CRITICAL, 'private_key'),
+        (r"\b(?:\d{4}[-\s]?){3}\d{4}\b", ThreatSeverity.HIGH, "credit_card"),
+        (r"\b\d{3}-\d{2}-\d{4}\b", ThreatSeverity.HIGH, "ssn"),
+        (r"\b[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[A-Z|a-z]{2,}\b", ThreatSeverity.MEDIUM, "email"),
+        (
+            r"\b(?:\+\d{1,3}[-.\s]?)?\(?\d{3}\)?[-.\s]?\d{3}[-.\s]?\d{4}\b",
+            ThreatSeverity.MEDIUM,
+            "phone",
+        ),
+        (
+            r'\b(api[_-]?key|apikey)\s*[=:]\s*["\']?[\w\-]+["\']?',
+            ThreatSeverity.CRITICAL,
+            "api_key",
+        ),
+        (
+            r'\b(password|passwd|pwd)\s*[=:]\s*["\']?[^\s"\']+["\']?',
+            ThreatSeverity.CRITICAL,
+            "password",
+        ),
+        (r"\bBearer\s+[A-Za-z0-9\-._~+/]+=*", ThreatSeverity.CRITICAL, "bearer_token"),
+        (
+            r"\beyJ[A-Za-z0-9\-_]+\.eyJ[A-Za-z0-9\-_]+\.[A-Za-z0-9\-_]+",
+            ThreatSeverity.CRITICAL,
+            "jwt",
+        ),
+        (r"\b(aws_secret_access_key|aws_access_key_id)\s*=", ThreatSeverity.CRITICAL, "aws_key"),
+        (r"-----BEGIN\s+(RSA\s+)?PRIVATE\s+KEY-----", ThreatSeverity.CRITICAL, "private_key"),
     ]
 
     def __init__(self, strict_mode: bool = True):
@@ -202,12 +220,8 @@ class SecurityValidator:
         self._sql_patterns = [
             (re.compile(p, re.IGNORECASE), s) for p, s in self.SQL_INJECTION_PATTERNS
         ]
-        self._xss_patterns = [
-            (re.compile(p, re.IGNORECASE), s) for p, s in self.XSS_PATTERNS
-        ]
-        self._cmd_patterns = [
-            (re.compile(p), s) for p, s in self.COMMAND_INJECTION_PATTERNS
-        ]
+        self._xss_patterns = [(re.compile(p, re.IGNORECASE), s) for p, s in self.XSS_PATTERNS]
+        self._cmd_patterns = [(re.compile(p), s) for p, s in self.COMMAND_INJECTION_PATTERNS]
         self._path_patterns = [
             (re.compile(p, re.IGNORECASE), s) for p, s in self.PATH_TRAVERSAL_PATTERNS
         ]
@@ -225,84 +239,96 @@ class SecurityValidator:
         # Check prompt injection
         for pattern, severity in self._prompt_patterns:
             if match := pattern.search(value):
-                threats.append(ThreatDetection(
-                    threat_type=ThreatType.PROMPT_INJECTION,
-                    severity=severity,
-                    pattern_matched=pattern.pattern[:50],
-                    input_value=value[:100],
-                    field=field,
-                    recommendation="Sanitize AI-related control sequences"
-                ))
+                threats.append(
+                    ThreatDetection(
+                        threat_type=ThreatType.PROMPT_INJECTION,
+                        severity=severity,
+                        pattern_matched=pattern.pattern[:50],
+                        input_value=value[:100],
+                        field=field,
+                        recommendation="Sanitize AI-related control sequences",
+                    )
+                )
                 if self.strict_mode:
                     break
 
         # Check SQL injection
         for pattern, severity in self._sql_patterns:
             if match := pattern.search(value):
-                threats.append(ThreatDetection(
-                    threat_type=ThreatType.SQL_INJECTION,
-                    severity=severity,
-                    pattern_matched=pattern.pattern[:50],
-                    input_value=value[:100],
-                    field=field,
-                    recommendation="Use parameterized queries"
-                ))
+                threats.append(
+                    ThreatDetection(
+                        threat_type=ThreatType.SQL_INJECTION,
+                        severity=severity,
+                        pattern_matched=pattern.pattern[:50],
+                        input_value=value[:100],
+                        field=field,
+                        recommendation="Use parameterized queries",
+                    )
+                )
                 if self.strict_mode:
                     break
 
         # Check XSS
         for pattern, severity in self._xss_patterns:
             if match := pattern.search(value):
-                threats.append(ThreatDetection(
-                    threat_type=ThreatType.XSS,
-                    severity=severity,
-                    pattern_matched=pattern.pattern[:50],
-                    input_value=value[:100],
-                    field=field,
-                    recommendation="Encode output and use Content-Security-Policy"
-                ))
+                threats.append(
+                    ThreatDetection(
+                        threat_type=ThreatType.XSS,
+                        severity=severity,
+                        pattern_matched=pattern.pattern[:50],
+                        input_value=value[:100],
+                        field=field,
+                        recommendation="Encode output and use Content-Security-Policy",
+                    )
+                )
                 if self.strict_mode:
                     break
 
         # Check command injection
         for pattern, severity in self._cmd_patterns:
             if match := pattern.search(value):
-                threats.append(ThreatDetection(
-                    threat_type=ThreatType.COMMAND_INJECTION,
-                    severity=severity,
-                    pattern_matched=pattern.pattern[:50],
-                    input_value=value[:100],
-                    field=field,
-                    recommendation="Never pass user input to shell commands"
-                ))
+                threats.append(
+                    ThreatDetection(
+                        threat_type=ThreatType.COMMAND_INJECTION,
+                        severity=severity,
+                        pattern_matched=pattern.pattern[:50],
+                        input_value=value[:100],
+                        field=field,
+                        recommendation="Never pass user input to shell commands",
+                    )
+                )
                 if self.strict_mode:
                     break
 
         # Check path traversal
         for pattern, severity in self._path_patterns:
             if match := pattern.search(value):
-                threats.append(ThreatDetection(
-                    threat_type=ThreatType.PATH_TRAVERSAL,
-                    severity=severity,
-                    pattern_matched=pattern.pattern[:50],
-                    input_value=value[:100],
-                    field=field,
-                    recommendation="Validate and sanitize file paths"
-                ))
+                threats.append(
+                    ThreatDetection(
+                        threat_type=ThreatType.PATH_TRAVERSAL,
+                        severity=severity,
+                        pattern_matched=pattern.pattern[:50],
+                        input_value=value[:100],
+                        field=field,
+                        recommendation="Validate and sanitize file paths",
+                    )
+                )
                 if self.strict_mode:
                     break
 
         # Check sensitive data
         for pattern, severity, data_type in self._sensitive_patterns:
             if match := pattern.search(value):
-                threats.append(ThreatDetection(
-                    threat_type=ThreatType.SENSITIVE_DATA,
-                    severity=severity,
-                    pattern_matched=data_type,
-                    input_value="[REDACTED]",
-                    field=field,
-                    recommendation=f"Remove or mask {data_type}"
-                ))
+                threats.append(
+                    ThreatDetection(
+                        threat_type=ThreatType.SENSITIVE_DATA,
+                        severity=severity,
+                        pattern_matched=data_type,
+                        input_value="[REDACTED]",
+                        field=field,
+                        recommendation=f"Remove or mask {data_type}",
+                    )
+                )
 
         return threats
 
@@ -322,7 +348,7 @@ class SecurityValidator:
         value = value.replace("\x00", "")
 
         # Remove control characters (except newlines and tabs)
-        value = re.sub(r'[\x00-\x08\x0b\x0c\x0e-\x1f\x7f]', '', value)
+        value = re.sub(r"[\x00-\x08\x0b\x0c\x0e-\x1f\x7f]", "", value)
 
         return value
 
@@ -330,6 +356,7 @@ class SecurityValidator:
 # =============================================================================
 # Security Tests
 # =============================================================================
+
 
 class TestPromptInjection:
     """Tests for prompt injection detection"""
@@ -349,8 +376,9 @@ class TestPromptInjection:
 
         for payload in payloads:
             threats = validator.validate(payload)
-            assert any(t.threat_type == ThreatType.PROMPT_INJECTION for t in threats), \
-                f"Failed to detect: {payload}"
+            assert any(
+                t.threat_type == ThreatType.PROMPT_INJECTION for t in threats
+            ), f"Failed to detect: {payload}"
 
     def test_system_prompt_manipulation(self, validator):
         """Should detect system prompt manipulation"""
@@ -380,8 +408,9 @@ class TestPromptInjection:
 
         for payload in payloads:
             threats = validator.validate(payload)
-            assert any(t.threat_type == ThreatType.PROMPT_INJECTION for t in threats), \
-                f"Failed to detect: {payload}"
+            assert any(
+                t.threat_type == ThreatType.PROMPT_INJECTION for t in threats
+            ), f"Failed to detect: {payload}"
 
     def test_prompt_extraction_attempts(self, validator):
         """Should detect attempts to extract system prompt"""
@@ -394,8 +423,9 @@ class TestPromptInjection:
 
         for payload in payloads:
             threats = validator.validate(payload)
-            assert any(t.threat_type == ThreatType.PROMPT_INJECTION for t in threats), \
-                f"Failed to detect: {payload}"
+            assert any(
+                t.threat_type == ThreatType.PROMPT_INJECTION for t in threats
+            ), f"Failed to detect: {payload}"
 
     def test_benign_text_not_flagged(self, validator):
         """Should not flag benign text"""
@@ -430,8 +460,9 @@ class TestSQLInjection:
 
         for payload in payloads:
             threats = validator.validate(payload)
-            assert any(t.threat_type == ThreatType.SQL_INJECTION for t in threats), \
-                f"Failed to detect: {payload}"
+            assert any(
+                t.threat_type == ThreatType.SQL_INJECTION for t in threats
+            ), f"Failed to detect: {payload}"
 
     def test_union_based_injection(self, validator):
         """Should detect UNION-based injection"""
@@ -443,8 +474,9 @@ class TestSQLInjection:
 
         for payload in payloads:
             threats = validator.validate(payload)
-            assert any(t.threat_type == ThreatType.SQL_INJECTION for t in threats), \
-                f"Failed to detect: {payload}"
+            assert any(
+                t.threat_type == ThreatType.SQL_INJECTION for t in threats
+            ), f"Failed to detect: {payload}"
 
     def test_time_based_injection(self, validator):
         """Should detect time-based blind injection"""
@@ -456,8 +488,9 @@ class TestSQLInjection:
 
         for payload in payloads:
             threats = validator.validate(payload)
-            assert any(t.threat_type == ThreatType.SQL_INJECTION for t in threats), \
-                f"Failed to detect: {payload}"
+            assert any(
+                t.threat_type == ThreatType.SQL_INJECTION for t in threats
+            ), f"Failed to detect: {payload}"
 
     def test_stacked_queries(self, validator):
         """Should detect stacked queries"""
@@ -469,8 +502,9 @@ class TestSQLInjection:
 
         for payload in payloads:
             threats = validator.validate(payload)
-            assert any(t.threat_type == ThreatType.SQL_INJECTION for t in threats), \
-                f"Failed to detect: {payload}"
+            assert any(
+                t.threat_type == ThreatType.SQL_INJECTION for t in threats
+            ), f"Failed to detect: {payload}"
 
     def test_encoded_injection(self, validator):
         """Should detect encoded SQL injection"""
@@ -503,8 +537,9 @@ class TestXSSDetection:
 
         for payload in payloads:
             threats = validator.validate(payload)
-            assert any(t.threat_type == ThreatType.XSS for t in threats), \
-                f"Failed to detect: {payload}"
+            assert any(
+                t.threat_type == ThreatType.XSS for t in threats
+            ), f"Failed to detect: {payload}"
 
     def test_event_handlers(self, validator):
         """Should detect event handler XSS"""
@@ -517,8 +552,9 @@ class TestXSSDetection:
 
         for payload in payloads:
             threats = validator.validate(payload)
-            assert any(t.threat_type == ThreatType.XSS for t in threats), \
-                f"Failed to detect: {payload}"
+            assert any(
+                t.threat_type == ThreatType.XSS for t in threats
+            ), f"Failed to detect: {payload}"
 
     def test_javascript_protocol(self, validator):
         """Should detect javascript: protocol"""
@@ -530,8 +566,9 @@ class TestXSSDetection:
 
         for payload in payloads:
             threats = validator.validate(payload)
-            assert any(t.threat_type == ThreatType.XSS for t in threats), \
-                f"Failed to detect: {payload}"
+            assert any(
+                t.threat_type == ThreatType.XSS for t in threats
+            ), f"Failed to detect: {payload}"
 
     def test_dom_manipulation(self, validator):
         """Should detect DOM manipulation attempts"""
@@ -544,8 +581,9 @@ class TestXSSDetection:
 
         for payload in payloads:
             threats = validator.validate(payload)
-            assert any(t.threat_type == ThreatType.XSS for t in threats), \
-                f"Failed to detect: {payload}"
+            assert any(
+                t.threat_type == ThreatType.XSS for t in threats
+            ), f"Failed to detect: {payload}"
 
 
 class TestCommandInjection:
@@ -566,8 +604,9 @@ class TestCommandInjection:
 
         for payload in payloads:
             threats = validator.validate(payload)
-            assert any(t.threat_type == ThreatType.COMMAND_INJECTION for t in threats), \
-                f"Failed to detect: {payload}"
+            assert any(
+                t.threat_type == ThreatType.COMMAND_INJECTION for t in threats
+            ), f"Failed to detect: {payload}"
 
     def test_command_substitution(self, validator):
         """Should detect command substitution"""
@@ -580,8 +619,9 @@ class TestCommandInjection:
 
         for payload in payloads:
             threats = validator.validate(payload)
-            assert any(t.threat_type == ThreatType.COMMAND_INJECTION for t in threats), \
-                f"Failed to detect: {payload}"
+            assert any(
+                t.threat_type == ThreatType.COMMAND_INJECTION for t in threats
+            ), f"Failed to detect: {payload}"
 
     def test_dangerous_commands(self, validator):
         """Should detect dangerous commands"""
@@ -594,8 +634,9 @@ class TestCommandInjection:
 
         for payload in payloads:
             threats = validator.validate(payload)
-            assert any(t.threat_type == ThreatType.COMMAND_INJECTION for t in threats), \
-                f"Failed to detect: {payload}"
+            assert any(
+                t.threat_type == ThreatType.COMMAND_INJECTION for t in threats
+            ), f"Failed to detect: {payload}"
 
 
 class TestPathTraversal:
@@ -615,8 +656,9 @@ class TestPathTraversal:
 
         for payload in payloads:
             threats = validator.validate(payload)
-            assert any(t.threat_type == ThreatType.PATH_TRAVERSAL for t in threats), \
-                f"Failed to detect: {payload}"
+            assert any(
+                t.threat_type == ThreatType.PATH_TRAVERSAL for t in threats
+            ), f"Failed to detect: {payload}"
 
     def test_encoded_traversal(self, validator):
         """Should detect encoded path traversal"""
@@ -628,8 +670,9 @@ class TestPathTraversal:
 
         for payload in payloads:
             threats = validator.validate(payload)
-            assert any(t.threat_type == ThreatType.PATH_TRAVERSAL for t in threats), \
-                f"Failed to detect: {payload}"
+            assert any(
+                t.threat_type == ThreatType.PATH_TRAVERSAL for t in threats
+            ), f"Failed to detect: {payload}"
 
     def test_sensitive_file_access(self, validator):
         """Should detect attempts to access sensitive files"""
@@ -642,8 +685,9 @@ class TestPathTraversal:
 
         for payload in payloads:
             threats = validator.validate(payload)
-            assert any(t.threat_type == ThreatType.PATH_TRAVERSAL for t in threats), \
-                f"Failed to detect: {payload}"
+            assert any(
+                t.threat_type == ThreatType.PATH_TRAVERSAL for t in threats
+            ), f"Failed to detect: {payload}"
 
 
 class TestSensitiveDataDetection:
@@ -664,8 +708,9 @@ class TestSensitiveDataDetection:
         for payload in payloads:
             threats = validator.validate(payload)
             sensitive = [t for t in threats if t.threat_type == ThreatType.SENSITIVE_DATA]
-            assert any("credit_card" in t.pattern_matched for t in sensitive), \
-                f"Failed to detect credit card: {payload}"
+            assert any(
+                "credit_card" in t.pattern_matched for t in sensitive
+            ), f"Failed to detect credit card: {payload}"
 
     def test_ssn_detection(self, validator):
         """Should detect SSN"""
@@ -685,8 +730,9 @@ class TestSensitiveDataDetection:
         for payload in payloads:
             threats = validator.validate(payload)
             sensitive = [t for t in threats if t.threat_type == ThreatType.SENSITIVE_DATA]
-            assert any("api_key" in t.pattern_matched for t in sensitive), \
-                f"Failed to detect API key: {payload}"
+            assert any(
+                "api_key" in t.pattern_matched for t in sensitive
+            ), f"Failed to detect API key: {payload}"
 
     def test_jwt_detection(self, validator):
         """Should detect JWT tokens"""

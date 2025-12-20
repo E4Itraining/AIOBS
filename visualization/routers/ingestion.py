@@ -3,23 +3,24 @@ AIOBS Data Ingestion API Router
 Secure endpoints for continuous data injection
 """
 
-from datetime import datetime, timedelta
-from typing import Optional, List
-from fastapi import APIRouter, HTTPException, Header, Query, Depends, Request, BackgroundTasks
-from fastapi.responses import JSONResponse
 import hashlib
 import hmac
+from datetime import datetime, timedelta
+from typing import List, Optional
 
-from ..config import get_settings, get_security_settings
+from fastapi import APIRouter, BackgroundTasks, Depends, Header, HTTPException, Query, Request
+from fastapi.responses import JSONResponse
+
+from ..config import get_security_settings, get_settings
 from ..ingestion import (
-    DataIngestionService,
-    MetricIngestionRequest,
-    LogIngestionRequest,
-    EventIngestionRequest,
     BatchIngestionRequest,
-    SecurityTestRequest,
+    DataIngestionService,
+    EventIngestionRequest,
     IngestionResponse,
-    ingestion_service
+    LogIngestionRequest,
+    MetricIngestionRequest,
+    SecurityTestRequest,
+    ingestion_service,
 )
 from ..models.schemas import APIResponse
 
@@ -34,9 +35,10 @@ _security = get_security_settings()
 # Security Dependencies
 # =============================================================================
 
+
 async def verify_api_key(
     x_api_key: Optional[str] = Header(None, alias="X-API-Key"),
-    authorization: Optional[str] = Header(None)
+    authorization: Optional[str] = Header(None),
 ) -> str:
     """
     Verify API key for ingestion requests
@@ -54,8 +56,7 @@ async def verify_api_key(
         if _settings.is_dev:
             return "dev-source"
         raise HTTPException(
-            status_code=401,
-            detail="API key required. Provide X-API-Key header or Bearer token."
+            status_code=401, detail="API key required. Provide X-API-Key header or Bearer token."
         )
 
     # Validate API key against configured keys
@@ -63,16 +64,13 @@ async def verify_api_key(
         # Extract source_id from key hash
         return hashlib.sha256(api_key.encode()).hexdigest()[:16]
 
-    raise HTTPException(
-        status_code=401,
-        detail="Invalid API key"
-    )
+    raise HTTPException(status_code=401, detail="Invalid API key")
 
 
 async def verify_signature(
     request: Request,
     x_signature: Optional[str] = Header(None, alias="X-Signature"),
-    x_timestamp: Optional[str] = Header(None, alias="X-Timestamp")
+    x_timestamp: Optional[str] = Header(None, alias="X-Timestamp"),
 ) -> bool:
     """
     Verify request signature for integrity
@@ -88,31 +86,20 @@ async def verify_signature(
     try:
         ts = datetime.fromisoformat(x_timestamp)
         if abs((datetime.utcnow() - ts).total_seconds()) > 300:
-            raise HTTPException(
-                status_code=401,
-                detail="Request timestamp too old"
-            )
+            raise HTTPException(status_code=401, detail="Request timestamp too old")
     except ValueError:
-        raise HTTPException(
-            status_code=400,
-            detail="Invalid timestamp format"
-        )
+        raise HTTPException(status_code=400, detail="Invalid timestamp format")
 
     # Verify signature using configured secret
     secret = _security.signing_secret.get_secret_value()
     body = await request.body()
 
     expected_sig = hmac.new(
-        secret.encode(),
-        f"{x_timestamp}.{body.decode()}".encode(),
-        hashlib.sha256
+        secret.encode(), f"{x_timestamp}.{body.decode()}".encode(), hashlib.sha256
     ).hexdigest()
 
     if not hmac.compare_digest(expected_sig, x_signature):
-        raise HTTPException(
-            status_code=401,
-            detail="Invalid signature"
-        )
+        raise HTTPException(status_code=401, detail="Invalid signature")
 
     return True
 
@@ -121,11 +108,12 @@ async def verify_signature(
 # Metric Ingestion Endpoints
 # =============================================================================
 
+
 @router.post("/metrics", response_model=IngestionResponse)
 async def ingest_metrics(
     request: MetricIngestionRequest,
     background_tasks: BackgroundTasks,
-    source_id: str = Depends(verify_api_key)
+    source_id: str = Depends(verify_api_key),
 ):
     """
     Ingest metrics into the observability platform.
@@ -173,12 +161,17 @@ async def ingest_metrics(
             status_code=429,
             detail={
                 "error": "Rate limit exceeded",
-                "retry_after": response.rate_limit_reset.isoformat() if response.rate_limit_reset else None
+                "retry_after": (
+                    response.rate_limit_reset.isoformat() if response.rate_limit_reset else None
+                ),
             },
             headers={
-                "Retry-After": str(int((response.rate_limit_reset - datetime.utcnow()).total_seconds()))
-                if response.rate_limit_reset else "60"
-            }
+                "Retry-After": (
+                    str(int((response.rate_limit_reset - datetime.utcnow()).total_seconds()))
+                    if response.rate_limit_reset
+                    else "60"
+                )
+            },
         )
 
     return response
@@ -189,7 +182,7 @@ async def ingest_metrics_batch(
     metrics: List[dict],
     source_id: str = Depends(verify_api_key),
     environment: str = Query(default="production"),
-    data_category: str = Query(default="performance")
+    data_category: str = Query(default="performance"),
 ):
     """
     Simplified batch metric ingestion endpoint.
@@ -197,23 +190,25 @@ async def ingest_metrics_batch(
     For quick integration without full request structure.
     """
     from ..ingestion.schemas import (
-        MetricValue, IngestionMetadata, DataActMetadata,
-        IngestionSource, DataCategory, DataSensitivity
+        DataActMetadata,
+        DataCategory,
+        DataSensitivity,
+        IngestionMetadata,
+        IngestionSource,
+        MetricValue,
     )
 
     # Build full request
     request = MetricIngestionRequest(
         metrics=[MetricValue(**m) for m in metrics],
         metadata=IngestionMetadata(
-            source=IngestionSource.APPLICATION,
-            source_id=source_id,
-            environment=environment
+            source=IngestionSource.APPLICATION, source_id=source_id, environment=environment
         ),
         compliance=DataActMetadata(
             data_category=DataCategory(data_category),
             sensitivity=DataSensitivity.INTERNAL,
-            processing_purpose="Metric ingestion for AI observability monitoring"
-        )
+            processing_purpose="Metric ingestion for AI observability monitoring",
+        ),
     )
 
     return await ingestion_service.ingest_metrics(request)
@@ -223,11 +218,9 @@ async def ingest_metrics_batch(
 # Log Ingestion Endpoints
 # =============================================================================
 
+
 @router.post("/logs", response_model=IngestionResponse)
-async def ingest_logs(
-    request: LogIngestionRequest,
-    source_id: str = Depends(verify_api_key)
-):
+async def ingest_logs(request: LogIngestionRequest, source_id: str = Depends(verify_api_key)):
     """
     Ingest logs into the observability platform.
 
@@ -265,10 +258,7 @@ async def ingest_logs(
     response = await ingestion_service.ingest_logs(request)
 
     if response.status.value == "rate_limited":
-        raise HTTPException(
-            status_code=429,
-            detail="Rate limit exceeded"
-        )
+        raise HTTPException(status_code=429, detail="Rate limit exceeded")
 
     return response
 
@@ -277,14 +267,19 @@ async def ingest_logs(
 async def ingest_logs_simple(
     logs: List[dict],
     source_id: str = Depends(verify_api_key),
-    stream: str = Query(default="aiobs-logs")
+    stream: str = Query(default="aiobs-logs"),
 ):
     """
     Simplified log ingestion for quick integration.
     """
     from ..ingestion.schemas import (
-        LogEntry, LogLevel, IngestionMetadata, DataActMetadata,
-        IngestionSource, DataCategory, DataSensitivity
+        DataActMetadata,
+        DataCategory,
+        DataSensitivity,
+        IngestionMetadata,
+        IngestionSource,
+        LogEntry,
+        LogLevel,
     )
 
     # Build log entries
@@ -293,25 +288,28 @@ async def ingest_logs_simple(
         level = log.get("level", "info")
         if isinstance(level, str):
             level = LogLevel(level.lower())
-        log_entries.append(LogEntry(
-            level=level,
-            message=log.get("message", ""),
-            context=log.get("context", {}),
-            timestamp=datetime.fromisoformat(log["timestamp"]) if "timestamp" in log else datetime.utcnow()
-        ))
+        log_entries.append(
+            LogEntry(
+                level=level,
+                message=log.get("message", ""),
+                context=log.get("context", {}),
+                timestamp=(
+                    datetime.fromisoformat(log["timestamp"])
+                    if "timestamp" in log
+                    else datetime.utcnow()
+                ),
+            )
+        )
 
     request = LogIngestionRequest(
         logs=log_entries,
         stream=stream,
-        metadata=IngestionMetadata(
-            source=IngestionSource.APPLICATION,
-            source_id=source_id
-        ),
+        metadata=IngestionMetadata(source=IngestionSource.APPLICATION, source_id=source_id),
         compliance=DataActMetadata(
             data_category=DataCategory.OPERATIONAL,
             sensitivity=DataSensitivity.INTERNAL,
-            processing_purpose="Log ingestion for AI observability monitoring"
-        )
+            processing_purpose="Log ingestion for AI observability monitoring",
+        ),
     )
 
     return await ingestion_service.ingest_logs(request)
@@ -321,11 +319,9 @@ async def ingest_logs_simple(
 # Event Ingestion Endpoints
 # =============================================================================
 
+
 @router.post("/events", response_model=IngestionResponse)
-async def ingest_events(
-    request: EventIngestionRequest,
-    source_id: str = Depends(verify_api_key)
-):
+async def ingest_events(request: EventIngestionRequest, source_id: str = Depends(verify_api_key)):
     """
     Ingest events for real-time broadcasting.
 
@@ -370,10 +366,7 @@ async def ingest_events(
     response = await ingestion_service.ingest_events(request)
 
     if response.status.value == "rate_limited":
-        raise HTTPException(
-            status_code=429,
-            detail="Rate limit exceeded"
-        )
+        raise HTTPException(status_code=429, detail="Rate limit exceeded")
 
     return response
 
@@ -382,11 +375,9 @@ async def ingest_events(
 # Batch Ingestion Endpoint
 # =============================================================================
 
+
 @router.post("/batch", response_model=IngestionResponse)
-async def ingest_batch(
-    request: BatchIngestionRequest,
-    source_id: str = Depends(verify_api_key)
-):
+async def ingest_batch(request: BatchIngestionRequest, source_id: str = Depends(verify_api_key)):
     """
     Batch ingestion for metrics, logs, and events in a single request.
 
@@ -417,11 +408,12 @@ async def ingest_batch(
 # Security Testing Endpoint
 # =============================================================================
 
+
 @router.post("/security-test", response_model=IngestionResponse)
 async def ingest_security_test(
     request: SecurityTestRequest,
     source_id: str = Depends(verify_api_key),
-    x_security_auth: str = Header(..., alias="X-Security-Authorization")
+    x_security_auth: str = Header(..., alias="X-Security-Authorization"),
 ):
     """
     Ingest security test payloads for authorized testing.
@@ -464,10 +456,7 @@ async def ingest_security_test(
     """
     # Verify security authorization using config
     if x_security_auth not in _security.security_auth_list and not _settings.is_dev:
-        raise HTTPException(
-            status_code=403,
-            detail="Invalid security authorization"
-        )
+        raise HTTPException(status_code=403, detail="Invalid security authorization")
 
     request.metadata.source_id = source_id
     return await ingestion_service.ingest_security_test(request)
@@ -477,12 +466,13 @@ async def ingest_security_test(
 # Query Endpoints
 # =============================================================================
 
+
 @router.get("/metrics/query")
 async def query_metrics(
     query: str = Query(..., description="PromQL query"),
     start: Optional[str] = Query(None, description="Start time (ISO format)"),
     end: Optional[str] = Query(None, description="End time (ISO format)"),
-    source_id: str = Depends(verify_api_key)
+    source_id: str = Depends(verify_api_key),
 ):
     """
     Query metrics using PromQL.
@@ -504,7 +494,7 @@ async def search_logs(
     query: str = Query(..., description="Search query"),
     stream: str = Query(default="aiobs-logs"),
     limit: int = Query(default=100, le=1000),
-    source_id: str = Depends(verify_api_key)
+    source_id: str = Depends(verify_api_key),
 ):
     """
     Search logs in OpenObserve.
@@ -515,8 +505,7 @@ async def search_logs(
 
 @router.get("/events/recent")
 async def get_recent_events(
-    limit: int = Query(default=100, le=1000),
-    source_id: str = Depends(verify_api_key)
+    limit: int = Query(default=100, le=1000), source_id: str = Depends(verify_api_key)
 ):
     """
     Get recent events from the event store.
@@ -529,6 +518,7 @@ async def get_recent_events(
 # Health & Stats Endpoints
 # =============================================================================
 
+
 @router.get("/health")
 async def ingestion_health():
     """
@@ -537,10 +527,7 @@ async def ingestion_health():
     health = await ingestion_service.health_check()
     status_code = 200 if health["status"] == "healthy" else 503
 
-    return JSONResponse(
-        status_code=status_code,
-        content=health
-    )
+    return JSONResponse(status_code=status_code, content=health)
 
 
 @router.get("/stats")
@@ -555,6 +542,7 @@ async def ingestion_stats(source_id: str = Depends(verify_api_key)):
 # =============================================================================
 # Lifecycle Events
 # =============================================================================
+
 
 async def startup():
     """Initialize ingestion service on startup"""
