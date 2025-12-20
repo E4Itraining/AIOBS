@@ -8,18 +8,12 @@ import json
 import os
 from pathlib import Path
 
-# Supported languages with metadata
+# Supported languages with metadata (limited to FR, EN, NL, DE)
 SUPPORTED_LANGUAGES = {
     'en': {'name': 'English', 'native': 'English', 'flag': '🇬🇧', 'rtl': False},
     'fr': {'name': 'French', 'native': 'Français', 'flag': '🇫🇷', 'rtl': False},
-    'es': {'name': 'Spanish', 'native': 'Español', 'flag': '🇪🇸', 'rtl': False},
+    'nl': {'name': 'Dutch', 'native': 'Nederlands', 'flag': '🇳🇱', 'rtl': False},
     'de': {'name': 'German', 'native': 'Deutsch', 'flag': '🇩🇪', 'rtl': False},
-    'pt': {'name': 'Portuguese', 'native': 'Português', 'flag': '🇵🇹', 'rtl': False},
-    'it': {'name': 'Italian', 'native': 'Italiano', 'flag': '🇮🇹', 'rtl': False},
-    'zh': {'name': 'Chinese', 'native': '中文', 'flag': '🇨🇳', 'rtl': False},
-    'ja': {'name': 'Japanese', 'native': '日本語', 'flag': '🇯🇵', 'rtl': False},
-    'ko': {'name': 'Korean', 'native': '한국어', 'flag': '🇰🇷', 'rtl': False},
-    'ar': {'name': 'Arabic', 'native': 'العربية', 'flag': '🇸🇦', 'rtl': True},
 }
 
 DEFAULT_LANGUAGE = 'en'
@@ -460,7 +454,46 @@ TRANSLATIONS = {
             'quick_tips': 'Quick Tips',
             'tip_1': 'Click on any KPI card to see detailed metrics and trends',
             'tip_2': 'Use the sidebar to navigate between different specialized views',
-            'tip_3': 'Click "Investigate" on any issue to see root cause analysis'
+            'tip_3': 'Click "Investigate" on any issue to see root cause analysis',
+            # Dashboard help
+            'kpi_title': 'KPI Overview',
+            'kpi_desc': 'Key performance indicators for your AI systems',
+            'health_title': 'System Health',
+            'health_desc': 'Monitor the health status of all services',
+            'alerts_title': 'Active Alerts',
+            'alerts_desc': 'View and investigate current issues',
+            # Unified view help
+            'unified_title': 'Unified View',
+            'unified_desc': 'Single pane of glass for all metrics',
+            'filter_title': 'Filters',
+            'filter_desc': 'Filter data by service, model, or time range',
+            # Causal analysis help
+            'causal_title': 'Causal Graph',
+            'causal_desc': 'Visualize cause-effect relationships',
+            'rca_title': 'Root Cause Analysis',
+            'rca_desc': 'Identify the source of issues',
+            # Executive view help
+            'exec_title': 'Executive Summary',
+            'exec_desc': 'High-level KPIs and business impact',
+            'trends_title': 'Trends',
+            'trends_desc': 'Track improvements over time',
+            # Compliance help
+            'compliance_title': 'Compliance Status',
+            'compliance_desc': 'View regulatory compliance overview',
+            'audit_title': 'Audit Trail',
+            'audit_desc': 'Track all compliance-related activities',
+            # GreenOps help
+            'carbon_title': 'Carbon Tracking',
+            'carbon_desc': 'Monitor environmental impact',
+            'recommendations_title': 'Recommendations',
+            'recommendations_desc': 'Get tips to reduce carbon footprint',
+            # Security help
+            'security_title': 'Security Posture',
+            'security_desc': 'Overall security health score',
+            'threats_title': 'Threat Detection',
+            'threats_desc': 'Monitor for security incidents',
+            # Other
+            'shortcuts_coming': 'Keyboard shortcuts: ? for help, G+D for dashboard, G+C for causal'
         },
         'narrative': {
             'dashboard_title': 'Welcome to your AI Trust Control Center',
@@ -828,7 +861,46 @@ TRANSLATIONS = {
             'quick_tips': 'Astuces rapides',
             'tip_1': 'Cliquez sur n\'importe quelle carte KPI pour voir les métriques détaillées',
             'tip_2': 'Utilisez la barre latérale pour naviguer entre les différentes vues',
-            'tip_3': 'Cliquez sur "Investiguer" sur un problème pour voir l\'analyse des causes'
+            'tip_3': 'Cliquez sur "Investiguer" sur un problème pour voir l\'analyse des causes',
+            # Aide Dashboard
+            'kpi_title': 'Aperçu des KPI',
+            'kpi_desc': 'Indicateurs clés de performance de vos systèmes IA',
+            'health_title': 'Santé du système',
+            'health_desc': 'Surveillez l\'état de santé de tous les services',
+            'alerts_title': 'Alertes actives',
+            'alerts_desc': 'Consultez et analysez les problèmes en cours',
+            # Aide Vue unifiée
+            'unified_title': 'Vue unifiée',
+            'unified_desc': 'Vue consolidée de toutes les métriques',
+            'filter_title': 'Filtres',
+            'filter_desc': 'Filtrez par service, modèle ou période',
+            # Aide Analyse causale
+            'causal_title': 'Graphe causal',
+            'causal_desc': 'Visualisez les relations cause-effet',
+            'rca_title': 'Analyse des causes racines',
+            'rca_desc': 'Identifiez l\'origine des problèmes',
+            # Aide Vue dirigeant
+            'exec_title': 'Synthèse exécutive',
+            'exec_desc': 'KPI de haut niveau et impact business',
+            'trends_title': 'Tendances',
+            'trends_desc': 'Suivez les améliorations dans le temps',
+            # Aide Conformité
+            'compliance_title': 'État de conformité',
+            'compliance_desc': 'Vue d\'ensemble de la conformité réglementaire',
+            'audit_title': 'Piste d\'audit',
+            'audit_desc': 'Tracez toutes les activités liées à la conformité',
+            # Aide GreenOps
+            'carbon_title': 'Suivi carbone',
+            'carbon_desc': 'Surveillez l\'impact environnemental',
+            'recommendations_title': 'Recommandations',
+            'recommendations_desc': 'Conseils pour réduire l\'empreinte carbone',
+            # Aide Sécurité
+            'security_title': 'Posture de sécurité',
+            'security_desc': 'Score global de santé sécurité',
+            'threats_title': 'Détection des menaces',
+            'threats_desc': 'Surveillez les incidents de sécurité',
+            # Autre
+            'shortcuts_coming': 'Raccourcis clavier : ? pour aide, G+D pour dashboard, G+C pour causal'
         },
         'narrative': {
             'dashboard_title': 'Bienvenue dans votre Centre de Contrôle de Confiance IA',
@@ -1184,9 +1256,360 @@ TRANSLATIONS = {
             'error': 'Ein Fehler ist aufgetreten',
             'success': 'Vorgang erfolgreich',
             'confirm_delete': 'Möchten Sie wirklich löschen?'
+        },
+        'help': {
+            'title': 'Hilfe & Anleitung',
+            'quick_actions': 'Schnellaktionen',
+            'start_tour': 'Geführte Tour starten',
+            'start_tour_desc': 'Lernen Sie die Grundlagen mit einer interaktiven Führung',
+            'change_profile': 'Profil wechseln',
+            'change_profile_desc': 'Zu einem anderen Benutzerprofil wechseln',
+            'this_page': 'Auf dieser Seite',
+            'resources': 'Ressourcen',
+            'keyboard_shortcuts': 'Tastaturkürzel',
+            'keyboard_shortcuts_desc': 'Beschleunigen Sie Ihre Arbeit',
+            'skip': 'Überspringen',
+            'next': 'Weiter',
+            'quick_tips': 'Schnelle Tipps',
+            'tip_1': 'Klicken Sie auf eine KPI-Karte, um detaillierte Metriken zu sehen',
+            'tip_2': 'Verwenden Sie die Seitenleiste zur Navigation zwischen den Ansichten',
+            'tip_3': 'Klicken Sie auf "Untersuchen", um die Ursachenanalyse zu sehen',
+            # Dashboard-Hilfe
+            'kpi_title': 'KPI-Übersicht',
+            'kpi_desc': 'Wichtige Leistungsindikatoren für Ihre KI-Systeme',
+            'health_title': 'Systemzustand',
+            'health_desc': 'Überwachen Sie den Zustand aller Dienste',
+            'alerts_title': 'Aktive Warnungen',
+            'alerts_desc': 'Aktuelle Probleme anzeigen und untersuchen',
+            # Einheitliche Ansicht
+            'unified_title': 'Einheitliche Ansicht',
+            'unified_desc': 'Alle Metriken auf einen Blick',
+            'filter_title': 'Filter',
+            'filter_desc': 'Nach Dienst, Modell oder Zeitraum filtern',
+            # Kausalanalyse-Hilfe
+            'causal_title': 'Kausalgraph',
+            'causal_desc': 'Ursache-Wirkungs-Beziehungen visualisieren',
+            'rca_title': 'Ursachenanalyse',
+            'rca_desc': 'Die Quelle von Problemen identifizieren',
+            # Führungskräfte-Ansicht
+            'exec_title': 'Zusammenfassung für Führungskräfte',
+            'exec_desc': 'Übergeordnete KPIs und Geschäftsauswirkungen',
+            'trends_title': 'Trends',
+            'trends_desc': 'Verbesserungen im Zeitverlauf verfolgen',
+            # Compliance-Hilfe
+            'compliance_title': 'Compliance-Status',
+            'compliance_desc': 'Übersicht zur regulatorischen Compliance',
+            'audit_title': 'Audit-Trail',
+            'audit_desc': 'Alle Compliance-relevanten Aktivitäten verfolgen',
+            # GreenOps-Hilfe
+            'carbon_title': 'CO2-Verfolgung',
+            'carbon_desc': 'Umweltauswirkungen überwachen',
+            'recommendations_title': 'Empfehlungen',
+            'recommendations_desc': 'Tipps zur Reduzierung des CO2-Fußabdrucks',
+            # Sicherheits-Hilfe
+            'security_title': 'Sicherheitslage',
+            'security_desc': 'Gesamtbewertung der Sicherheit',
+            'threats_title': 'Bedrohungserkennung',
+            'threats_desc': 'Sicherheitsvorfälle überwachen',
+            # Sonstiges
+            'shortcuts_coming': 'Tastaturkürzel: ? für Hilfe, G+D für Dashboard, G+C für Kausal'
         }
     },
 
+    'nl': {
+        'app': {
+            'name': 'AIOBS',
+            'title': 'AI Observability Hub',
+            'subtitle': 'Vertrouwenscontrolelaag voor AI-systemen',
+            'version': 'Versie'
+        },
+        'nav': {
+            'overview': 'Overzicht',
+            'dashboard': 'Dashboard',
+            'unified_view': 'Uniforme weergave',
+            'analysis': 'Analyse',
+            'causal_analysis': 'Causale analyse',
+            'impact_analysis': 'Impactanalyse',
+            'configuration': 'Configuratie',
+            'toggle_theme': 'Thema wisselen',
+            'settings': 'Instellingen',
+            'language': 'Taal',
+            'getting_started': 'Aan de slag',
+            'home': 'Home',
+            'personas': 'Persona\'s & Gids',
+            'executive_view': 'Directieweergave',
+            'domains': 'Domeinen',
+            'models': 'Modellen',
+            'drift': 'Drift-detectie',
+            'reliability': 'Betrouwbaarheid',
+            'experiments': 'Experimenten',
+            'services': 'Diensten',
+            'slo': 'SLO/SLI',
+            'topology': 'Topologie',
+            'alerts': 'Waarschuwingen',
+            'logs': 'Logboeken',
+            'impact': 'Bedrijfsimpact',
+            'costs': 'Kosten',
+            'reports': 'Rapporten',
+            'features': 'AI-functies',
+            'performance': 'Prestaties',
+            'user_impact': 'Gebruikersimpact',
+            'security': 'Beveiliging',
+            'incidents': 'Incidenten',
+            'access_logs': 'Toegangslogboeken',
+            'threats': 'Bedreigingsdetectie',
+            'compliance': 'Compliance',
+            'audit_trail': 'Audit-trail',
+            'regulations': 'Regelgeving',
+            'evidence': 'Bewijs',
+            'carbon': 'Koolstof',
+            'energy': 'Energie',
+            'sustainability': 'Duurzaamheid',
+            'esg_reports': 'ESG-rapporten',
+            'my_journey': 'Mijn reis',
+            'my_essentials': 'Mijn essentials',
+            'explore': 'Verkennen',
+            'perspectives': 'Perspectieven',
+            'views': 'Weergaven',
+            'select_persona': 'Selecteren',
+            'change_journey': 'Reis wijzigen'
+        },
+        'dashboard': {
+            'title': 'AI Observability Dashboard',
+            'subtitle': 'AI Observability',
+            'trust_score': 'Vertrouwensscore',
+            'daily_inferences': 'Dagelijkse inferenties',
+            'daily_cost': 'Dagelijkse kosten',
+            'carbon_footprint': 'Koolstof (kgCO2)',
+            'system_health': 'Systeemgezondheid',
+            'active_alerts': 'Actieve waarschuwingen',
+            'healthy': 'Gezond',
+            'degraded': 'Verslechterd',
+            'unhealthy': 'Ongezond',
+            'critical': 'Kritiek',
+            'warning': 'Waarschuwing',
+            'info': 'Info',
+            'trust_score_trend': 'Vertrouwenstrend',
+            'slo_compliance': 'SLO-naleving',
+            'compliant': 'Conform',
+            'at_risk': 'Risico',
+            'violated': 'Geschonden',
+            'services_status': 'Dienststatus',
+            'search_services': 'Diensten zoeken...',
+            'top_issues': 'Belangrijkste problemen',
+            'investigate': 'Onderzoeken'
+        },
+        'table': {
+            'service': 'Dienst',
+            'type': 'Type',
+            'status': 'Status',
+            'uptime': 'Uptime',
+            'error_rate': 'Foutpercentage',
+            'latency_p99': 'Latentie P99'
+        },
+        'time': {
+            'last_24h': 'Laatste 24u',
+            'last_7d': 'Laatste 7d',
+            'last_30d': 'Laatste 30d',
+            'minutes': 'min',
+            'hours': 'uren',
+            'days': 'dagen'
+        },
+        'trends': {
+            'up': 'Stijgend',
+            'down': 'Dalend',
+            'stable': 'Stabiel',
+            'improving': 'Verbeterend',
+            'degrading': 'Verslechterend'
+        },
+        'profiles': {
+            'all': 'Alle',
+            'ml_engineer': 'ML Engineer',
+            'devops': 'DevOps',
+            'data_scientist': 'Data Scientist',
+            'executive': 'Directie',
+            'product_owner': 'Product Owner',
+            'security': 'Beveiligingsanalist',
+            'compliance': 'Compliance Officer',
+            'esg': 'ESG Manager',
+            'dsi': 'CIO / DSI',
+            'rsi': 'IT Manager / RSI',
+            'dpo': 'Functionaris Gegevensbescherming',
+            'legal': 'Juridisch adviseur'
+        },
+        'cognitive': {
+            'title': 'Cognitieve metrieken',
+            'drift': 'Drift-detectie',
+            'reliability': 'Betrouwbaarheid',
+            'hallucination': 'Hallucinatierisico',
+            'degradation': 'Degradatie',
+            'trust': 'Vertrouwensindicator',
+            'confidence': 'Vertrouwen',
+            'severity': 'Ernst',
+            'low': 'Laag',
+            'medium': 'Gemiddeld',
+            'high': 'Hoog'
+        },
+        'causal': {
+            'title': 'Causale analyse',
+            'root_cause': 'Hoofdoorzaak',
+            'root_causes': 'Hoofdoorzaken',
+            'impact': 'Impact',
+            'impact_path': 'Impactpad',
+            'correlation': 'Correlatie',
+            'dependency': 'Afhankelijkheid',
+            'run_analysis': 'Analyse uitvoeren',
+            'graph': 'Causale graaf',
+            'timeline': 'Tijdlijn',
+            'scenarios': 'Scenario\'s',
+            'drift_incident': 'Drift-incident',
+            'cost_spike': 'Kostenpiek'
+        },
+        'unified': {
+            'title': 'Uniforme monitoringweergave',
+            'all_systems': 'Alle systemen',
+            'filter': 'Filteren',
+            'refresh': 'Vernieuwen'
+        },
+        'actions': {
+            'save': 'Opslaan',
+            'cancel': 'Annuleren',
+            'delete': 'Verwijderen',
+            'edit': 'Bewerken',
+            'view': 'Bekijken',
+            'export': 'Exporteren',
+            'refresh': 'Vernieuwen',
+            'filter': 'Filteren',
+            'search': 'Zoeken',
+            'close': 'Sluiten',
+            'confirm': 'Bevestigen'
+        },
+        'messages': {
+            'loading': 'Laden...',
+            'no_data': 'Geen gegevens beschikbaar',
+            'error': 'Er is een fout opgetreden',
+            'success': 'Bewerking geslaagd',
+            'confirm_delete': 'Weet u zeker dat u wilt verwijderen?'
+        },
+        'onboarding': {
+            'title': 'Welkom bij AIOBS',
+            'subtitle': 'Kies uw profiel om te beginnen',
+            'welcome_title': 'Welkom bij AIOBS',
+            'welcome_subtitle': 'AI Vertrouwenscontrolelaag - Uw uniforme observability-platform voor AI-systemen',
+            'feature_observe': 'Observeren',
+            'feature_observe_desc': 'Monitor uw AI-modellen in realtime met uitgebreide metrieken',
+            'feature_understand': 'Begrijpen',
+            'feature_understand_desc': 'Analyseer hoofdoorzaken met causale grafieken en impactanalyse',
+            'feature_trust': 'Vertrouwen',
+            'feature_trust_desc': 'Zorg voor compliance en betrouwbaarheid met cognitieve metrieken',
+            'get_started': 'Aan de slag',
+            'who_are_you': 'Wie bent u?',
+            'profile_desc': 'Selecteer uw rol voor een gepersonaliseerde ervaring.',
+            'category_tech': 'Technisch',
+            'category_tech_desc': 'Voor engineers en data professionals',
+            'category_business': 'Business',
+            'category_business_desc': 'Voor directie en productleiders',
+            'category_specialist': 'Specialist',
+            'category_specialist_desc': 'Voor beveiliging, compliance en duurzaamheid',
+            'continue': 'Doorgaan',
+            'quick_tour': 'Snelle rondleiding',
+            'tour_desc': 'Dit kunt u doen met AIOBS op basis van uw rol.',
+            'skip_tour': 'Rondleiding overslaan',
+            'start_dashboard': 'Naar dashboard'
+        },
+        'help': {
+            'title': 'Help & Gids',
+            'quick_actions': 'Snelle acties',
+            'start_tour': 'Rondleiding starten',
+            'start_tour_desc': 'Leer de basis met een interactieve rondleiding',
+            'change_profile': 'Profiel wijzigen',
+            'change_profile_desc': 'Wissel naar een ander gebruikersprofiel',
+            'this_page': 'Op deze pagina',
+            'resources': 'Bronnen',
+            'keyboard_shortcuts': 'Sneltoetsen',
+            'keyboard_shortcuts_desc': 'Versnel uw werkproces',
+            'skip': 'Overslaan',
+            'next': 'Volgende',
+            'quick_tips': 'Snelle tips',
+            'tip_1': 'Klik op een KPI-kaart voor gedetailleerde metrieken en trends',
+            'tip_2': 'Gebruik de zijbalk om te navigeren tussen verschillende weergaven',
+            'tip_3': 'Klik op "Onderzoeken" bij een probleem voor oorzaakanalyse',
+            # Dashboard hulp
+            'kpi_title': 'KPI-overzicht',
+            'kpi_desc': 'Belangrijke prestatie-indicatoren voor uw AI-systemen',
+            'health_title': 'Systeemgezondheid',
+            'health_desc': 'Monitor de gezondheidsstatus van alle diensten',
+            'alerts_title': 'Actieve waarschuwingen',
+            'alerts_desc': 'Bekijk en onderzoek huidige problemen',
+            # Uniforme weergave hulp
+            'unified_title': 'Uniforme weergave',
+            'unified_desc': 'Eén overzicht voor alle metrieken',
+            'filter_title': 'Filters',
+            'filter_desc': 'Filter op dienst, model of tijdsperiode',
+            # Causale analyse hulp
+            'causal_title': 'Causale graaf',
+            'causal_desc': 'Visualiseer oorzaak-gevolgrelaties',
+            'rca_title': 'Hoofdoorzaakanalyse',
+            'rca_desc': 'Identificeer de bron van problemen',
+            # Directieweergave hulp
+            'exec_title': 'Directiesamenvatting',
+            'exec_desc': 'KPI\'s op hoog niveau en bedrijfsimpact',
+            'trends_title': 'Trends',
+            'trends_desc': 'Volg verbeteringen in de tijd',
+            # Compliance hulp
+            'compliance_title': 'Compliance-status',
+            'compliance_desc': 'Overzicht van regelgevingsnaleving',
+            'audit_title': 'Audit-trail',
+            'audit_desc': 'Volg alle compliance-gerelateerde activiteiten',
+            # GreenOps hulp
+            'carbon_title': 'Koolstoftracking',
+            'carbon_desc': 'Monitor de milieu-impact',
+            'recommendations_title': 'Aanbevelingen',
+            'recommendations_desc': 'Tips om de CO2-voetafdruk te verminderen',
+            # Beveiliging hulp
+            'security_title': 'Beveiligingshouding',
+            'security_desc': 'Algehele beveiligingsscore',
+            'threats_title': 'Bedreigingsdetectie',
+            'threats_desc': 'Monitor beveiligingsincidenten',
+            # Overig
+            'shortcuts_coming': 'Sneltoetsen: ? voor help, G+D voor dashboard, G+C voor causaal'
+        },
+        'tour': {
+            'kpi_title': 'Belangrijke prestatie-indicatoren',
+            'kpi_body': 'Deze kaarten tonen uw belangrijkste AI-metrieken in één oogopslag.',
+            'nav_title': 'Navigatie',
+            'nav_body': 'Gebruik de zijbalk om tussen verschillende weergaven te navigeren.',
+            'profile_title': 'Profielselectie',
+            'profile_body': 'Wissel tussen profielen voor dashboards afgestemd op uw rol.',
+            'finish': 'Voltooien'
+        },
+        'chatbot': {
+            'title': 'AI-assistent',
+            'online': 'Online',
+            'welcome_title': 'Hallo! Hoe kan ik u helpen?',
+            'welcome_desc': 'Stel me vragen over uw AI-systemen, metrieken of het gebruik van AIOBS.',
+            'suggestions': 'Snelle vragen:',
+            'q_trust': 'Vertrouwensscore?',
+            'q_alerts': 'Actieve waarschuwingen?',
+            'q_costs': 'Kosten vandaag?',
+            'q_navigate': 'Hoe navigeren?',
+            'placeholder': 'Typ uw vraag...',
+            'error': 'Sorry, er is een fout opgetreden. Probeer het opnieuw.'
+        },
+        'search': {
+            'placeholder': 'Zoek pagina\'s, metrieken, diensten...',
+            'results': 'Snelle navigatie',
+            'no_results': 'Geen resultaten gevonden'
+        }
+    }
+}
+
+# Keep only supported languages in TRANSLATIONS
+TRANSLATIONS = {k: v for k, v in TRANSLATIONS.items() if k in SUPPORTED_LANGUAGES}
+
+
+# Legacy - kept for reference but not used
+_LEGACY_TRANSLATIONS = {
     'pt': {
         'app': {
             'name': 'AIOBS',
