@@ -5,12 +5,12 @@
     <!-- Gradient Or Sahel vers Terre Cuite -->
     <linearGradient id="iconGradient" x1="0%" y1="0%" x2="100%" y2="100%">
       <stop offset="0%" stop-color="#D4A017"/>
-      <stop offset="100%" stop-color="#8B4513"/>
+      <stop offset="100%" stop-color="#C17A4A"/>
     </linearGradient>
     <linearGradient id="iconGradientVertical" x1="0%" y1="0%" x2="0%" y2="100%">
       <stop offset="0%" stop-color="#D4A017"/>
       <stop offset="50%" stop-color="#C49115"/>
-      <stop offset="100%" stop-color="#8B4513"/>
+      <stop offset="100%" stop-color="#C17A4A"/>
     </linearGradient>
   </defs>
 

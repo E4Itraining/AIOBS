@@ -35,7 +35,7 @@ Cette tagline capture notre mission en trois actions:
 
 | Nom | Hex | Usage |
 |-----|-----|-------|
-| **Terre Cuite** | `#8B4513` | Accent secondaire. Évoque l'Afrique, l'authenticité, l'ancrage. Éléments graphiques, illustrations. |
+| **Cuivre Chaud** | `#C17A4A` | Accent secondaire. Évoque l'Afrique, l'authenticité, l'ancrage. Éléments graphiques, illustrations. |
 
 ### Variables CSS
 
@@ -45,13 +45,13 @@ Cette tagline capture notre mission en trois actions:
     --color-or-sahel: #D4A017;
     --color-bleu-nuit: #1A1A2E;
     --color-blanc-chaud: #F5F5F0;
-    --color-terre-cuite: #8B4513;
+    --color-terre-cuite: #C17A4A;
 
     /* Semantic Colors */
     --color-primary: #D4A017;
     --color-primary-hover: #B8890F;
     --color-primary-light: #FDF6E3;
-    --color-accent: #8B4513;
+    --color-accent: #C17A4A;
 }
 ```
 
