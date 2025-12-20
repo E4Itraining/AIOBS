@@ -220,7 +220,15 @@ TRANSLATIONS = {
             'operations': 'Operations',
             'monitoring': 'Live Monitoring',
             'finops': 'Costs & FinOps',
-            'greenops': 'Carbon Impact'
+            'greenops': 'Carbon Impact',
+            # Navigation sections (menu structure)
+            'my_journey': 'My Journey',
+            'my_essentials': 'My Essentials',
+            'explore': 'Explore',
+            'perspectives': 'Perspectives',
+            'views': 'Views',
+            'select_persona': 'Select',
+            'change_journey': 'Change Journey'
         },
         'dashboard': {
             'title': 'AI Observability Dashboard',
@@ -580,7 +588,15 @@ TRANSLATIONS = {
             'operations': 'Opérations',
             'monitoring': 'Monitoring Live',
             'finops': 'Coûts & FinOps',
-            'greenops': 'Impact Carbone'
+            'greenops': 'Impact Carbone',
+            # Sections de navigation (structure menu)
+            'my_journey': 'Mon Parcours',
+            'my_essentials': 'Mes Essentiels',
+            'explore': 'Explorer',
+            'perspectives': 'Perspectives',
+            'views': 'Vues',
+            'select_persona': 'Sélectionner',
+            'change_journey': 'Changer de parcours'
         },
         'dashboard': {
             'title': 'Tableau de Bord d\'Observabilité IA',
@@ -891,7 +907,15 @@ TRANSLATIONS = {
             'carbon': 'Carbono',
             'energy': 'Energía',
             'sustainability': 'Sostenibilidad',
-            'esg_reports': 'Informes ESG'
+            'esg_reports': 'Informes ESG',
+            # Secciones de navegación (estructura del menú)
+            'my_journey': 'Mi Recorrido',
+            'my_essentials': 'Mis Esenciales',
+            'explore': 'Explorar',
+            'perspectives': 'Perspectivas',
+            'views': 'Vistas',
+            'select_persona': 'Seleccionar',
+            'change_journey': 'Cambiar recorrido'
         },
         'dashboard': {
             'title': 'Panel de Observabilidad IA',
@@ -1045,7 +1069,15 @@ TRANSLATIONS = {
             'carbon': 'Kohlenstoff',
             'energy': 'Energie',
             'sustainability': 'Nachhaltigkeit',
-            'esg_reports': 'ESG-Berichte'
+            'esg_reports': 'ESG-Berichte',
+            # Navigationsabschnitte (Menüstruktur)
+            'my_journey': 'Meine Reise',
+            'my_essentials': 'Meine Grundlagen',
+            'explore': 'Erkunden',
+            'perspectives': 'Perspektiven',
+            'views': 'Ansichten',
+            'select_persona': 'Auswählen',
+            'change_journey': 'Reise ändern'
         },
         'dashboard': {
             'title': 'KI-Observability-Dashboard',
@@ -1199,7 +1231,15 @@ TRANSLATIONS = {
             'carbon': 'Carbono',
             'energy': 'Energia',
             'sustainability': 'Sustentabilidade',
-            'esg_reports': 'Relatórios ESG'
+            'esg_reports': 'Relatórios ESG',
+            # Seções de navegação (estrutura do menu)
+            'my_journey': 'Minha Jornada',
+            'my_essentials': 'Meus Essenciais',
+            'explore': 'Explorar',
+            'perspectives': 'Perspectivas',
+            'views': 'Visualizações',
+            'select_persona': 'Selecionar',
+            'change_journey': 'Mudar jornada'
         },
         'dashboard': {
             'title': 'Painel de Observabilidade IA',
@@ -1353,7 +1393,15 @@ TRANSLATIONS = {
             'carbon': 'Carbonio',
             'energy': 'Energia',
             'sustainability': 'Sostenibilità',
-            'esg_reports': 'Report ESG'
+            'esg_reports': 'Report ESG',
+            # Sezioni di navigazione (struttura menu)
+            'my_journey': 'Il Mio Percorso',
+            'my_essentials': 'I Miei Essenziali',
+            'explore': 'Esplora',
+            'perspectives': 'Prospettive',
+            'views': 'Visualizzazioni',
+            'select_persona': 'Seleziona',
+            'change_journey': 'Cambia percorso'
         },
         'dashboard': {
             'title': 'Dashboard di Osservabilità IA',
@@ -1507,7 +1555,15 @@ TRANSLATIONS = {
             'carbon': '碳排放',
             'energy': '能源',
             'sustainability': '可持续性',
-            'esg_reports': 'ESG报告'
+            'esg_reports': 'ESG报告',
+            # 导航部分（菜单结构）
+            'my_journey': '我的旅程',
+            'my_essentials': '我的要点',
+            'explore': '探索',
+            'perspectives': '视角',
+            'views': '视图',
+            'select_persona': '选择',
+            'change_journey': '更改旅程'
         },
         'dashboard': {
             'title': 'AI可观测性仪表板',
@@ -1661,7 +1717,15 @@ TRANSLATIONS = {
             'carbon': 'カーボン',
             'energy': 'エネルギー',
             'sustainability': 'サステナビリティ',
-            'esg_reports': 'ESGレポート'
+            'esg_reports': 'ESGレポート',
+            # ナビゲーションセクション（メニュー構造）
+            'my_journey': 'マイジャーニー',
+            'my_essentials': 'マイエッセンシャル',
+            'explore': '探索',
+            'perspectives': 'パースペクティブ',
+            'views': 'ビュー',
+            'select_persona': '選択',
+            'change_journey': 'ジャーニーを変更'
         },
         'dashboard': {
             'title': 'AIオブザーバビリティダッシュボード',
@@ -1815,7 +1879,15 @@ TRANSLATIONS = {
             'carbon': '탄소',
             'energy': '에너지',
             'sustainability': '지속가능성',
-            'esg_reports': 'ESG 보고서'
+            'esg_reports': 'ESG 보고서',
+            # 탐색 섹션 (메뉴 구조)
+            'my_journey': '내 여정',
+            'my_essentials': '내 필수 항목',
+            'explore': '탐색',
+            'perspectives': '관점',
+            'views': '뷰',
+            'select_persona': '선택',
+            'change_journey': '여정 변경'
         },
         'dashboard': {
             'title': 'AI 관측성 대시보드',
@@ -1969,7 +2041,15 @@ TRANSLATIONS = {
             'carbon': 'الكربون',
             'energy': 'الطاقة',
             'sustainability': 'الاستدامة',
-            'esg_reports': 'تقارير ESG'
+            'esg_reports': 'تقارير ESG',
+            # أقسام التنقل (هيكل القائمة)
+            'my_journey': 'رحلتي',
+            'my_essentials': 'أساسياتي',
+            'explore': 'استكشاف',
+            'perspectives': 'وجهات نظر',
+            'views': 'العروض',
+            'select_persona': 'اختيار',
+            'change_journey': 'تغيير الرحلة'
         },
         'dashboard': {
             'title': 'لوحة مراقبة الذكاء الاصطناعي',
