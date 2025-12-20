@@ -4,6 +4,12 @@ AIOBS Visualization Platform - Runner
 Launch the FastAPI server for the visualization dashboard
 """
 import sys
+import os
+
+# Add the parent directory to Python path so 'visualization' module can be found
+parent_dir = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+if parent_dir not in sys.path:
+    sys.path.insert(0, parent_dir)
 
 
 def check_dependencies():
@@ -75,6 +81,7 @@ def main():
         host="0.0.0.0",
         port=8000,
         reload=True,
+        reload_dirs=["visualization"],
         log_level="info"
     )
 
