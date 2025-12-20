@@ -169,19 +169,19 @@ export class ComplianceEngine {
       status,
       score,
       findings,
-      gaps: findings.filter(f => f.type === 'fail').map(f => ({
+      gaps: findings.filter(f => f.type === 'fail' && f.severity !== 'info').map(f => ({
         id: uuidv4(),
         requirementId: f.requirementId,
         requirement: f.title,
         currentState: 'Not implemented',
         targetState: 'Fully compliant',
         gapDescription: f.description,
-        severity: f.severity,
+        severity: f.severity as 'critical' | 'high' | 'medium' | 'low',
         effort: 'medium' as const,
         remediation: {
           steps: [{ order: 1, action: f.remediation || 'Implement requirement', description: f.description, estimatedHours: 8 }],
           estimatedEffort: 8,
-          priority: f.severity,
+          priority: f.severity as 'critical' | 'high' | 'medium' | 'low',
         },
       })),
       recommendations: [],
