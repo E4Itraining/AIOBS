@@ -23,6 +23,19 @@ export * from './governance/slo';
 // Storage Backends
 export * from './storage';
 
+// Import engine config types for AIBOSConfig
+import type { CognitiveEngineConfig } from './core/cognitive/cognitive-engine';
+import type { CausalEngineConfig } from './core/causal/causal-engine';
+import type { AuditEngineConfig } from './governance/audit/audit-engine';
+import type { SLOMonitorConfig } from './governance/slo/slo-monitor';
+
+// Import engine classes for AIBOSInstance types
+import type { CognitiveMetricsEngine } from './core/cognitive/cognitive-engine';
+import type { CausalEngine } from './core/causal/causal-engine';
+import type { AuditEngine } from './governance/audit/audit-engine';
+import type { SLOMonitor } from './governance/slo/slo-monitor';
+import type { HybridStorageBackend } from './storage/hybrid-backend';
+
 // Version
 export const VERSION = '1.0.0';
 
@@ -99,40 +112,53 @@ export class AIOBS {
 }
 
 /**
+ * Storage backend configuration
+ */
+export interface AIBOSStorageConfig {
+  /** VictoriaMetrics URL for metrics */
+  victoriaMetricsUrl?: string;
+  /** VictoriaMetrics tenant ID */
+  vmTenantId?: string;
+  /** OpenObserve URL for logs/traces */
+  openObserveUrl?: string;
+  /** OpenObserve organization */
+  openObserveOrg?: string;
+  /** OpenObserve username */
+  openObserveUser?: string;
+  /** OpenObserve password */
+  openObservePassword?: string;
+}
+
+/**
  * AIOBS configuration
  */
 export interface AIBOSConfig {
-  cognitive?: any;
-  causal?: any;
-  audit?: any;
-  slo?: any;
+  /** Cognitive metrics engine configuration */
+  cognitive?: Partial<CognitiveEngineConfig>;
+  /** Causal analysis engine configuration */
+  causal?: Partial<CausalEngineConfig>;
+  /** Audit engine configuration */
+  audit?: Partial<AuditEngineConfig>;
+  /** SLO monitor configuration */
+  slo?: Partial<SLOMonitorConfig>;
   /** Storage backend configuration */
-  storage?: {
-    /** VictoriaMetrics URL for metrics */
-    victoriaMetricsUrl?: string;
-    /** VictoriaMetrics tenant ID */
-    vmTenantId?: string;
-    /** OpenObserve URL for logs/traces */
-    openObserveUrl?: string;
-    /** OpenObserve organization */
-    openObserveOrg?: string;
-    /** OpenObserve username */
-    openObserveUser?: string;
-    /** OpenObserve password */
-    openObservePassword?: string;
-  };
+  storage?: AIBOSStorageConfig;
 }
 
 /**
  * AIOBS instance with all engines
  */
 export interface AIBOSInstance {
-  cognitive: any;
-  causal: any;
-  audit: any;
-  slo: any;
+  /** Cognitive metrics engine for drift, reliability, hallucination detection */
+  cognitive: CognitiveMetricsEngine;
+  /** Causal analysis engine for root cause and impact analysis */
+  causal: CausalEngine;
+  /** Audit engine for compliance and governance tracking */
+  audit: AuditEngine;
+  /** SLO monitor for service level objectives */
+  slo: SLOMonitor;
   /** Storage backend (if configured) */
-  storage?: any;
+  storage?: HybridStorageBackend;
 }
 
 // =============================================================================

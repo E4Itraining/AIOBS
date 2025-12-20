@@ -9,6 +9,7 @@ from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import HTMLResponse, PlainTextResponse
 import os
 import time
+import logging
 import psutil
 
 from .routers import (
@@ -19,6 +20,9 @@ from .i18n import I18nMiddleware, SUPPORTED_LANGUAGES, get_translator
 from .i18n.middleware import create_i18n_context
 from .routers.realtime import start_background_tasks, stop_background_tasks
 from .routers.ingestion import startup as ingestion_startup, shutdown as ingestion_shutdown
+
+# Configure logging
+logger = logging.getLogger("aiobs.app")
 
 # Application metadata
 APP_TITLE = "AIOBS - AI Observability Hub"
@@ -67,13 +71,23 @@ app = FastAPI(
     redoc_url="/api/redoc",
 )
 
-# CORS middleware for development
+# CORS configuration from environment
+# Default allows localhost for development; configure CORS_ORIGINS for production
+_cors_origins_str = os.getenv("CORS_ORIGINS", "http://localhost:8000,http://localhost:3000,http://127.0.0.1:8000")
+CORS_ORIGINS = [origin.strip() for origin in _cors_origins_str.split(",") if origin.strip()]
+
+# Log CORS configuration
+if os.getenv("CORS_ORIGINS"):
+    logger.info(f"CORS configured with origins: {CORS_ORIGINS}")
+else:
+    logger.warning("CORS_ORIGINS not set, using default localhost origins. Set CORS_ORIGINS env var for production.")
+
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["*"],  # Configure appropriately for production
+    allow_origins=CORS_ORIGINS,
     allow_credentials=True,
-    allow_methods=["*"],
-    allow_headers=["*"],
+    allow_methods=["GET", "POST", "PUT", "DELETE", "PATCH", "OPTIONS"],
+    allow_headers=["Authorization", "Content-Type", "X-Request-ID", "Accept-Language"],
 )
 
 # i18n middleware for multilingual support
