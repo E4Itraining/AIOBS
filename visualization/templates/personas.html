@@ -316,24 +316,46 @@
         </div>
 
         <!-- Custom / All Access -->
-        <div class="persona-card card-animate card-custom" data-persona="custom" onclick="window.location.href='/'">
+        <div class="persona-card card-animate" data-persona="custom" onclick="selectPersona('custom')">
             <div class="persona-card-header" style="--persona-color: #8b5cf6;">
                 <div class="persona-icon">
                     <i data-lucide="layout-grid"></i>
                 </div>
-                <div class="persona-badge">Libre</div>
+                <div class="persona-badge">Expert</div>
             </div>
             <div class="persona-card-body">
-                <h3>Accès Complet</h3>
-                <p>Explorez librement toutes les fonctionnalités sans parcours prédéfini. Idéal pour les utilisateurs avancés.</p>
+                <h3>Accès Complet / Expert</h3>
+                <p>Explorez librement toutes les fonctionnalités sans parcours prédéfini. Accès à toutes les vues et analyses avancées.</p>
                 <div class="persona-focus-tags">
-                    <span class="focus-tag">Tout</span>
+                    <span class="focus-tag">Toutes Vues</span>
                     <span class="focus-tag">Flexible</span>
+                    <span class="focus-tag">Multi-rôle</span>
                     <span class="focus-tag">Avancé</span>
                 </div>
             </div>
-            <button class="persona-select-btn btn-outline">
-                <span>Explorer librement</span>
+            <div class="persona-journey-preview">
+                <div class="journey-step-mini active">
+                    <span class="step-num">1</span>
+                    <span>Global</span>
+                </div>
+                <div class="journey-arrow"><i data-lucide="chevron-right"></i></div>
+                <div class="journey-step-mini">
+                    <span class="step-num">2</span>
+                    <span>Dashboard</span>
+                </div>
+                <div class="journey-arrow"><i data-lucide="chevron-right"></i></div>
+                <div class="journey-step-mini">
+                    <span class="step-num">3</span>
+                    <span>Analyse</span>
+                </div>
+                <div class="journey-arrow"><i data-lucide="chevron-right"></i></div>
+                <div class="journey-step-mini">
+                    <span class="step-num">4</span>
+                    <span>Rapports</span>
+                </div>
+            </div>
+            <button class="persona-select-btn">
+                <span>Parcours Expert</span>
                 <i data-lucide="arrow-right"></i>
             </button>
         </div>
@@ -724,16 +746,6 @@
     background: var(--color-primary-hover);
 }
 
-.persona-select-btn.btn-outline {
-    background: transparent;
-    color: var(--color-primary);
-    border-top: 1px solid var(--border-color);
-}
-
-.persona-select-btn.btn-outline:hover {
-    background: var(--color-primary-light);
-}
-
 .persona-select-btn svg {
     width: 18px;
     height: 18px;
@@ -884,7 +896,8 @@ function selectPersona(personaId) {
         'security_rssi': '/tech',
         'compliance_legal': '/juridique',
         'sustainability_esg': '/greenops',
-        'financier': '/financier'
+        'financier': '/financier',
+        'custom': '/global'
     };
 
     // Persona names for display
@@ -895,7 +908,8 @@ function selectPersona(personaId) {
         'security_rssi': 'Tech/Sécurité',
         'compliance_legal': 'Juridique',
         'sustainability_esg': 'ESG',
-        'financier': 'Financier'
+        'financier': 'Financier',
+        'custom': 'Expert'
     };
 
     // Show toast and redirect
