@@ -458,9 +458,14 @@ TRANSLATIONS = {
             'skip': 'Skip',
             'next': 'Next',
             'quick_tips': 'Quick Tips',
+            'tip_1_title': 'Interactive KPIs',
             'tip_1': 'Click on any KPI card to see detailed metrics and trends',
+            'tip_2_title': 'Quick Navigation',
             'tip_2': 'Use the sidebar to navigate between different specialized views',
-            'tip_3': 'Click "Investigate" on any issue to see root cause analysis'
+            'tip_3_title': 'Causal Analysis',
+            'tip_3': 'Click "Investigate" on any issue to see root cause analysis',
+            'tip_4_title': 'AI Assistant',
+            'tip_4': 'Ask your questions to the assistant at the bottom right'
         },
         'narrative': {
             'dashboard_title': 'Welcome to your AI Trust Control Center',
@@ -826,9 +831,14 @@ TRANSLATIONS = {
             'skip': 'Passer',
             'next': 'Suivant',
             'quick_tips': 'Astuces rapides',
+            'tip_1_title': 'KPIs Interactifs',
             'tip_1': 'Cliquez sur n\'importe quelle carte KPI pour voir les métriques détaillées',
+            'tip_2_title': 'Navigation Rapide',
             'tip_2': 'Utilisez la barre latérale pour naviguer entre les différentes vues',
-            'tip_3': 'Cliquez sur "Investiguer" sur un problème pour voir l\'analyse des causes'
+            'tip_3_title': 'Analyse Causale',
+            'tip_3': 'Cliquez sur "Investiguer" sur un problème pour voir l\'analyse des causes',
+            'tip_4_title': 'Assistant IA',
+            'tip_4': 'Posez vos questions à l\'assistant en bas à droite'
         },
         'narrative': {
             'dashboard_title': 'Bienvenue dans votre Centre de Contrôle de Confiance IA',
