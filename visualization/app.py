@@ -71,16 +71,12 @@ app = FastAPI(
     redoc_url="/api/redoc",
 )
 
-# CORS configuration from environment
-# Default allows localhost for development; configure CORS_ORIGINS for production
-_cors_origins_str = os.getenv("CORS_ORIGINS", "http://localhost:8000,http://localhost:3000,http://127.0.0.1:8000")
-CORS_ORIGINS = [origin.strip() for origin in _cors_origins_str.split(",") if origin.strip()]
+# CORS configuration from validated settings
+from .config import get_cors_settings
 
-# Log CORS configuration
-if os.getenv("CORS_ORIGINS"):
-    logger.info(f"CORS configured with origins: {CORS_ORIGINS}")
-else:
-    logger.warning("CORS_ORIGINS not set, using default localhost origins. Set CORS_ORIGINS env var for production.")
+cors_settings = get_cors_settings()
+CORS_ORIGINS = cors_settings.origins_list
+logger.info(f"CORS configured with {len(CORS_ORIGINS)} origins")
 
 app.add_middleware(
     CORSMiddleware,

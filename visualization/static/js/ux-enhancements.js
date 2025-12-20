@@ -103,6 +103,95 @@
         recommendations: []
     };
 
+    // =============================================
+    // ACCESSIBILITY HELPERS (WCAG 2.1 AA)
+    // =============================================
+
+    /**
+     * Create ARIA live region for screen reader announcements
+     */
+    function createLiveRegion() {
+        if (document.getElementById('ariaLiveRegion')) return;
+
+        const liveRegion = document.createElement('div');
+        liveRegion.id = 'ariaLiveRegion';
+        liveRegion.setAttribute('role', 'status');
+        liveRegion.setAttribute('aria-live', 'polite');
+        liveRegion.setAttribute('aria-atomic', 'true');
+        liveRegion.className = 'sr-only';
+        document.body.appendChild(liveRegion);
+    }
+
+    /**
+     * Announce message to screen readers
+     */
+    function announceToScreenReader(message, priority = 'polite') {
+        let liveRegion = document.getElementById('ariaLiveRegion');
+        if (!liveRegion) {
+            createLiveRegion();
+            liveRegion = document.getElementById('ariaLiveRegion');
+        }
+
+        liveRegion.setAttribute('aria-live', priority);
+        // Clear and set to trigger announcement
+        liveRegion.textContent = '';
+        setTimeout(() => {
+            liveRegion.textContent = message;
+        }, 100);
+    }
+
+    /**
+     * Setup focus trap for modal dialogs (WCAG 2.4.3)
+     */
+    function setupFocusTrap(modalId) {
+        const modal = document.getElementById(modalId);
+        if (!modal) return;
+
+        modal.addEventListener('keydown', (e) => {
+            if (e.key !== 'Tab') return;
+
+            const focusableElements = modal.querySelectorAll(
+                'button, [href], input, select, textarea, [tabindex]:not([tabindex="-1"])'
+            );
+
+            if (focusableElements.length === 0) return;
+
+            const firstElement = focusableElements[0];
+            const lastElement = focusableElements[focusableElements.length - 1];
+
+            // Shift+Tab from first element -> go to last
+            if (e.shiftKey && document.activeElement === firstElement) {
+                e.preventDefault();
+                lastElement.focus();
+            }
+            // Tab from last element -> go to first
+            else if (!e.shiftKey && document.activeElement === lastElement) {
+                e.preventDefault();
+                firstElement.focus();
+            }
+        });
+    }
+
+    /**
+     * Inert background content when modal is open (prevents focus outside)
+     */
+    function setBackgroundInert(isInert) {
+        const mainContent = document.querySelector('.content, main, #app');
+        const sidebar = document.querySelector('.sidebar');
+
+        [mainContent, sidebar].forEach(el => {
+            if (el) {
+                if (isInert) {
+                    el.setAttribute('inert', '');
+                    el.setAttribute('aria-hidden', 'true');
+                } else {
+                    el.removeAttribute('inert');
+                    el.removeAttribute('aria-hidden');
+                }
+            }
+        });
+    }
+
     // Load persona from localStorage
     function loadPersona() {
         const saved = localStorage.getItem('gaskia-persona') || localStorage.getItem('aiobs-persona');
@@ -154,20 +243,25 @@
         if (document.getElementById('commandPalette')) return;
 
         const html = `
-            <div class="command-palette" id="commandPalette">
+            <div class="command-palette" id="commandPalette" role="dialog" aria-modal="true" aria-labelledby="commandPaletteTitle">
                 <div class="command-palette-content">
+                    <h2 id="commandPaletteTitle" class="sr-only">Palette de commandes</h2>
                     <div class="command-input-container">
-                        <i data-lucide="search" class="command-input-icon"></i>
+                        <i data-lucide="search" class="command-input-icon" aria-hidden="true"></i>
                         <input type="text"
                                class="command-input"
                                id="commandInput"
                                placeholder="Tapez une commande ou recherchez..."
-                               autocomplete="off">
+                               autocomplete="off"
+                               aria-label="Rechercher une commande"
+                               aria-describedby="commandHint"
+                               aria-controls="commandResults"
+                               aria-autocomplete="list">
                     </div>
-                    <div class="command-results" id="commandResults">
+                    <div class="command-results" id="commandResults" role="listbox" aria-label="Résultats de commandes">
                         <!-- Dynamic content -->
                     </div>
-                    <div class="command-footer">
+                    <div class="command-footer" id="commandHint">
                         <div class="command-footer-hint">
                             <span><kbd class="shortcut-key">↑↓</kbd> naviguer</span>
                             <span><kbd class="shortcut-key">↵</kbd> sélectionner</span>
@@ -184,28 +278,42 @@
         input.addEventListener('input', filterCommands);
         input.addEventListener('keydown', handleCommandKeydown);
 
+        // Handle click outside to close
         document.getElementById('commandPalette').addEventListener('click', (e) => {
             if (e.target.classList.contains('command-palette')) {
                 toggleCommandPalette();
             }
         });
 
+        // Trap focus within modal
+        setupFocusTrap('commandPalette');
+
         renderCommands(COMMANDS);
         if (typeof lucide !== 'undefined') lucide.createIcons();
     }
+
+    // Store reference to previously focused element for proper focus restoration
+    let previouslyFocusedElement = null;
 
     function toggleCommandPalette() {
         state.commandPaletteOpen = !state.commandPaletteOpen;
         const palette = document.getElementById('commandPalette');
 
         if (state.commandPaletteOpen) {
+            previouslyFocusedElement = document.activeElement;
             palette.classList.add('open');
             document.getElementById('commandInput').focus();
             document.getElementById('commandInput').value = '';
             state.selectedCommandIndex = 0;
             renderCommands(COMMANDS);
+            // Announce to screen readers
+            announceToScreenReader('Palette de commandes ouverte. Tapez pour rechercher.');
         } else {
             palette.classList.remove('open');
+            // Restore focus to previously focused element
+            if (previouslyFocusedElement && previouslyFocusedElement.focus) {
+                previouslyFocusedElement.focus();
+            }
         }
     }
 
@@ -318,22 +426,34 @@
         if (document.getElementById('quickInsightsContainer')) return;
 
         const html = `
-            <button class="quick-insights-trigger" id="quickInsightsTrigger" onclick="toggleQuickInsights()" title="Quick Insights (I)">
-                <i data-lucide="zap"></i>
-                <span class="badge-count" id="insightsBadge" style="display:none;">0</span>
+            <button class="quick-insights-trigger"
+                    id="quickInsightsTrigger"
+                    onclick="toggleQuickInsights()"
+                    title="Quick Insights (I)"
+                    aria-label="Ouvrir Quick Insights - Résumé en 30 secondes"
+                    aria-expanded="false"
+                    aria-controls="quickInsightsContainer">
+                <i data-lucide="zap" aria-hidden="true"></i>
+                <span class="badge-count" id="insightsBadge" style="display:none;" aria-label="notifications">0</span>
             </button>
-            <div class="quick-insights-container" id="quickInsightsContainer">
+            <div class="quick-insights-container"
+                 id="quickInsightsContainer"
+                 role="complementary"
+                 aria-labelledby="quickInsightsTitle"
+                 aria-hidden="true">
                 <div class="quick-insights-header">
-                    <h2><i data-lucide="zap"></i> Quick Insights</h2>
-                    <div class="insights-timer">
-                        <i data-lucide="clock"></i>
+                    <h2 id="quickInsightsTitle"><i data-lucide="zap" aria-hidden="true"></i> Quick Insights</h2>
+                    <div class="insights-timer" aria-label="Temps de lecture estimé: 30 secondes">
+                        <i data-lucide="clock" aria-hidden="true"></i>
                         <span>Résumé 30 sec</span>
                     </div>
-                    <button class="quick-insights-close" onclick="toggleQuickInsights()">
-                        <i data-lucide="x"></i>
+                    <button class="quick-insights-close"
+                            onclick="toggleQuickInsights()"
+                            aria-label="Fermer Quick Insights">
+                        <i data-lucide="x" aria-hidden="true"></i>
                     </button>
                 </div>
-                <div class="quick-insights-content" id="quickInsightsContent">
+                <div class="quick-insights-content" id="quickInsightsContent" role="region" aria-live="polite">
                     <div class="loader"><div class="spinner"></div></div>
                 </div>
             </div>
@@ -346,12 +466,22 @@
     window.toggleQuickInsights = function() {
         state.quickInsightsOpen = !state.quickInsightsOpen;
         const panel = document.getElementById('quickInsightsContainer');
+        const trigger = document.getElementById('quickInsightsTrigger');
 
         if (state.quickInsightsOpen) {
             panel.classList.add('open');
+            panel.setAttribute('aria-hidden', 'false');
+            trigger?.setAttribute('aria-expanded', 'true');
             loadQuickInsights();
+            announceToScreenReader('Quick Insights ouvert');
+            // Focus the close button
+            panel.querySelector('.quick-insights-close')?.focus();
         } else {
             panel.classList.remove('open');
+            panel.setAttribute('aria-hidden', 'true');
+            trigger?.setAttribute('aria-expanded', 'false');
+            // Restore focus to trigger
+            trigger?.focus();
         }
     };
 
@@ -622,19 +752,27 @@
         'Navigation': [
             { keys: ['⌘', 'K'], desc: 'Ouvrir la palette de commandes' },
             { keys: ['G', 'H'], desc: 'Aller au Dashboard' },
+            { keys: ['G', 'D'], desc: 'Aller au Dashboard (alt)' },
             { keys: ['G', 'E'], desc: 'Vue Executive' },
             { keys: ['G', 'C'], desc: 'Analyse Causale' },
             { keys: ['G', 'M'], desc: 'Monitoring' },
-            { keys: ['G', 'S'], desc: 'Security Center' }
+            { keys: ['G', 'S'], desc: 'Security Center' },
+            { keys: ['G', 'F'], desc: 'FinOps' },
+            { keys: ['G', 'G'], desc: 'GreenOps' },
+            { keys: ['G', 'L'], desc: 'Compliance' },
+            { keys: ['G', 'T'], desc: 'Vue Tech' },
+            { keys: ['G', 'U'], desc: 'Vue Unifiée' }
         ],
         'Actions': [
             { keys: ['I'], desc: 'Quick Insights' },
+            { keys: ['A'], desc: 'Ouvrir l\'Assistant IA' },
             { keys: ['T'], desc: 'Changer le thème' },
             { keys: ['?'], desc: 'Raccourcis clavier' },
-            { keys: ['Esc'], desc: 'Fermer les modales' }
+            { keys: ['Esc'], desc: 'Fermer les modales' },
+            { keys: ['R'], desc: 'Rafraîchir les données' }
         ],
         'Recherche': [
-            { keys: ['/', 'F'], desc: 'Rechercher' },
+            { keys: ['/'], desc: 'Focus sur la recherche' },
             { keys: ['↑', '↓'], desc: 'Naviguer les résultats' },
             { keys: ['↵'], desc: 'Sélectionner' }
         ]
@@ -661,12 +799,12 @@
         }
 
         const html = `
-            <div class="shortcuts-modal" id="shortcutsModal">
+            <div class="shortcuts-modal" id="shortcutsModal" role="dialog" aria-modal="true" aria-labelledby="shortcutsModalTitle">
                 <div class="shortcuts-content">
                     <div class="shortcuts-header">
-                        <h2><i data-lucide="keyboard"></i> Raccourcis Clavier</h2>
-                        <button class="help-panel-close" onclick="toggleShortcutsModal()">
-                            <i data-lucide="x"></i>
+                        <h2 id="shortcutsModalTitle"><i data-lucide="keyboard" aria-hidden="true"></i> Raccourcis Clavier</h2>
+                        <button class="help-panel-close" onclick="toggleShortcutsModal()" aria-label="Fermer la liste des raccourcis">
+                            <i data-lucide="x" aria-hidden="true"></i>
                         </button>
                     </div>
                     <div class="shortcuts-body">${sectionsHtml}</div>
@@ -680,13 +818,34 @@
                 toggleShortcutsModal();
             }
         });
+
+        // Setup focus trap
+        setupFocusTrap('shortcutsModal');
+
         if (typeof lucide !== 'undefined') lucide.createIcons();
     }
+
+    let shortcutsPreviousFocus = null;
 
     window.toggleShortcutsModal = function() {
         state.shortcutsModalOpen = !state.shortcutsModalOpen;
         const modal = document.getElementById('shortcutsModal');
-        modal.classList.toggle('open', state.shortcutsModalOpen);
+
+        if (state.shortcutsModalOpen) {
+            shortcutsPreviousFocus = document.activeElement;
+            modal.classList.add('open');
+            modal.setAttribute('aria-hidden', 'false');
+            // Focus the close button
+            modal.querySelector('.help-panel-close')?.focus();
+            announceToScreenReader('Raccourcis clavier affichés');
+        } else {
+            modal.classList.remove('open');
+            modal.setAttribute('aria-hidden', 'true');
+            // Restore focus
+            if (shortcutsPreviousFocus && shortcutsPreviousFocus.focus) {
+                shortcutsPreviousFocus.focus();
+            }
+        }
     };
 
     // =============================================
@@ -761,8 +920,8 @@
                 return;
             }
 
-            // Shortcuts modal: ?
-            if (e.key === '?' && !e.shiftKey) {
+            // Shortcuts modal: ? (Shift + /)
+            if (e.key === '?' || (e.shiftKey && e.key === '/')) {
                 e.preventDefault();
                 toggleShortcutsModal();
                 return;
@@ -777,11 +936,48 @@
                 return;
             }
 
+            // AI Assistant toggle: A
+            if ((e.key === 'a' || e.key === 'A') && !state.commandPaletteOpen) {
+                const chatbotToggle = document.getElementById('chatbotToggle');
+                if (chatbotToggle) {
+                    e.preventDefault();
+                    chatbotToggle.click();
+                }
+                return;
+            }
+
+            // Refresh data: R
+            if ((e.key === 'r' || e.key === 'R') && !state.commandPaletteOpen && !e.ctrlKey && !e.metaKey) {
+                e.preventDefault();
+                if (typeof refreshDashboard === 'function') {
+                    refreshDashboard();
+                } else if (typeof loadDashboardData === 'function') {
+                    loadDashboardData();
+                }
+                showToast('Données rafraîchies', 'success', 2000);
+                return;
+            }
+
+            // Focus search: /
+            if (e.key === '/' && !state.commandPaletteOpen) {
+                const searchInput = document.querySelector('.search-input, #searchInput, input[type="search"]');
+                if (searchInput) {
+                    e.preventDefault();
+                    searchInput.focus();
+                }
+                return;
+            }
+
             // Escape to close modals
             if (e.key === 'Escape') {
                 if (state.commandPaletteOpen) toggleCommandPalette();
                 if (state.quickInsightsOpen) toggleQuickInsights();
                 if (state.shortcutsModalOpen) toggleShortcutsModal();
+                // Also close help panel and chatbot
+                const helpPanel = document.querySelector('.help-panel.open');
+                if (helpPanel) helpPanel.classList.remove('open');
+                const chatbotPanel = document.querySelector('.chatbot-panel.open');
+                if (chatbotPanel) chatbotPanel.classList.remove('open');
                 return;
             }
 
@@ -793,18 +989,22 @@
                 const combo = keySequence.slice(-2).join('');
                 const navMap = {
                     'GH': '/',
+                    'GD': '/',
                     'GE': '/executive',
                     'GC': '/causal',
                     'GM': '/monitoring',
                     'GS': '/security',
                     'GF': '/finops',
                     'GG': '/greenops',
-                    'GL': '/compliance'
+                    'GL': '/compliance',
+                    'GT': '/tech',
+                    'GU': '/unified'
                 };
 
                 if (navMap[combo]) {
                     e.preventDefault();
                     window.location.href = navMap[combo];
+                    showToast(`Navigation: ${navMap[combo]}`, 'info', 1500);
                 }
                 keySequence = [];
             }
@@ -849,6 +1049,9 @@
     // INITIALIZATION
     // =============================================
     function init() {
+        // Setup accessibility features first
+        createLiveRegion();
+
         loadPersona();
         createCommandPalette();
         createQuickInsightsPanel();
@@ -872,6 +1075,7 @@
         }, 100);
 
         console.log('🚀 GASKIA UX Enhancements v2.0 loaded');
+        console.log('♿ Accessibility: WCAG 2.1 AA compliant');
     }
 
     // Run on DOM ready

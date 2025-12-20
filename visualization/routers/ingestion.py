@@ -9,8 +9,8 @@ from fastapi import APIRouter, HTTPException, Header, Query, Depends, Request, B
 from fastapi.responses import JSONResponse
 import hashlib
 import hmac
-import os
 
+from ..config import get_settings, get_security_settings
 from ..ingestion import (
     DataIngestionService,
     MetricIngestionRequest,
@@ -24,6 +24,10 @@ from ..ingestion import (
 from ..models.schemas import APIResponse
 
 router = APIRouter(prefix="/api/ingest", tags=["ingestion"])
+
+# Load settings
+_settings = get_settings()
+_security = get_security_settings()
 
 
 # =============================================================================
@@ -47,19 +51,16 @@ async def verify_api_key(
 
     if not api_key:
         # In development mode, allow requests without API key
-        if os.environ.get("AIOBS_DEV_MODE", "false").lower() == "true":
+        if _settings.is_dev:
             return "dev-source"
         raise HTTPException(
             status_code=401,
             detail="API key required. Provide X-API-Key header or Bearer token."
         )
 
-    # Validate API key (in production, check against stored keys)
-    # For now, use a simple hash verification
-    valid_keys = os.environ.get("AIOBS_API_KEYS", "").split(",")
-
-    if api_key in valid_keys or os.environ.get("AIOBS_DEV_MODE", "false").lower() == "true":
-        # Extract source_id from key or use hash
+    # Validate API key against configured keys
+    if api_key in _security.api_keys_list or _settings.is_dev:
+        # Extract source_id from key hash
         return hashlib.sha256(api_key.encode()).hexdigest()[:16]
 
     raise HTTPException(
@@ -77,7 +78,7 @@ async def verify_signature(
     Verify request signature for integrity
     """
     # Skip in dev mode
-    if os.environ.get("AIOBS_DEV_MODE", "false").lower() == "true":
+    if _settings.is_dev:
         return True
 
     if not x_signature or not x_timestamp:
@@ -97,8 +98,8 @@ async def verify_signature(
             detail="Invalid timestamp format"
         )
 
-    # Verify signature
-    secret = os.environ.get("AIOBS_SIGNING_SECRET", "dev-secret")
+    # Verify signature using configured secret
+    secret = _security.signing_secret.get_secret_value()
     body = await request.body()
 
     expected_sig = hmac.new(
@@ -461,9 +462,8 @@ async def ingest_security_test(
     }
     ```
     """
-    # Verify security authorization
-    valid_auth = os.environ.get("AIOBS_SECURITY_AUTH", "").split(",")
-    if x_security_auth not in valid_auth and os.environ.get("AIOBS_DEV_MODE", "false").lower() != "true":
+    # Verify security authorization using config
+    if x_security_auth not in _security.security_auth_list and not _settings.is_dev:
         raise HTTPException(
             status_code=403,
             detail="Invalid security authorization"

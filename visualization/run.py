@@ -64,6 +64,7 @@ def main() -> None:
         sys.exit(1)
 
     import uvicorn
+    from visualization.config import get_settings, validate_production_settings
 
     print("""
     ╔═══════════════════════════════════════════════════════════╗
@@ -81,23 +82,29 @@ def main() -> None:
     ╚═══════════════════════════════════════════════════════════╝
     """)
 
-    logger.info("Starting AIOBS Visualization Server...")
-    logger.info("Dashboard: http://localhost:8000")
-    logger.info("API Docs:  http://localhost:8000/api/docs")
+    # Load and validate configuration
+    settings = get_settings()
+    settings.log_config()
 
-    # Get configuration from environment
-    host = os.getenv("AIOBS_HOST", "0.0.0.0")
-    port = int(os.getenv("AIOBS_PORT", "8000"))
-    reload_enabled = os.getenv("AIOBS_RELOAD", "true").lower() == "true"
-    log_level = os.getenv("AIOBS_LOG_LEVEL", "info")
+    # Check for production issues
+    issues = validate_production_settings()
+    for issue in issues:
+        if issue.startswith("CRITICAL"):
+            logger.error(issue)
+        else:
+            logger.warning(issue)
+
+    logger.info("Starting AIOBS Visualization Server...")
+    logger.info(f"Dashboard: http://localhost:{settings.server.port}")
+    logger.info(f"API Docs:  http://localhost:{settings.server.port}/api/docs")
 
     uvicorn.run(
         "visualization.app:app",
-        host=host,
-        port=port,
-        reload=reload_enabled,
-        reload_dirs=["visualization"] if reload_enabled else None,
-        log_level=log_level
+        host=settings.server.host,
+        port=settings.server.port,
+        reload=settings.server.reload,
+        reload_dirs=["visualization"] if settings.server.reload else None,
+        log_level=settings.server.log_level
     )
 
 
