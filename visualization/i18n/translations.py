@@ -207,10 +207,24 @@ TRANSLATIONS = {
             'regulatory_watch': 'Regulatory Watch',
             'intellectual_property': 'Intellectual Property',
             'liability': 'Liability',
-            'legal_reports': 'Legal Reports'
+            'legal_reports': 'Legal Reports',
+            # Persona Views navigation
+            'personas_views': 'Perspectives',
+            'global_view': 'Global',
+            'dirigeant_view': 'Business',
+            'tech_view': 'Tech',
+            'juridique_view': 'Legal',
+            'financier_view': 'Finance',
+            'technical_views': 'Technical Views',
+            # Operations and Governance
+            'operations': 'Operations',
+            'monitoring': 'Live Monitoring',
+            'finops': 'Costs & FinOps',
+            'greenops': 'Carbon Impact'
         },
         'dashboard': {
             'title': 'AI Observability Dashboard',
+            'subtitle': 'AI Observability',
             'trust_score': 'Trust Score',
             'daily_inferences': 'Daily Inferences',
             'daily_cost': 'Daily Cost',
@@ -553,10 +567,24 @@ TRANSLATIONS = {
             'regulatory_watch': 'Veille Réglementaire',
             'intellectual_property': 'Propriété Intellectuelle',
             'liability': 'Responsabilité',
-            'legal_reports': 'Rapports Juridiques'
+            'legal_reports': 'Rapports Juridiques',
+            # Navigation Vues Persona
+            'personas_views': 'Perspectives',
+            'global_view': 'Global',
+            'dirigeant_view': 'Business',
+            'tech_view': 'Tech',
+            'juridique_view': 'Juridique',
+            'financier_view': 'Finance',
+            'technical_views': 'Vues Techniques',
+            # Opérations et Gouvernance
+            'operations': 'Opérations',
+            'monitoring': 'Monitoring Live',
+            'finops': 'Coûts & FinOps',
+            'greenops': 'Impact Carbone'
         },
         'dashboard': {
             'title': 'Tableau de Bord d\'Observabilité IA',
+            'subtitle': 'Observabilité IA',
             'trust_score': 'Score de Confiance',
             'daily_inferences': 'Inférences Quotidiennes',
             'daily_cost': 'Coût Quotidien',
