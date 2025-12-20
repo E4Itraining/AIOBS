@@ -2952,6 +2952,121 @@ h3 { font-size: 1.5rem; font-weight: 500; }    /* 24px */
     }
 }
 
+/* Streaming Message */
+.chat-message-streaming .chat-message-content {
+    position: relative;
+}
+
+.chat-message-streaming .chat-message-content::after {
+    content: '';
+    display: inline-block;
+    width: 2px;
+    height: 1em;
+    background: var(--color-primary);
+    margin-left: 2px;
+    animation: cursorBlink 1s step-end infinite;
+    vertical-align: text-bottom;
+}
+
+@keyframes cursorBlink {
+    0%, 100% { opacity: 1; }
+    50% { opacity: 0; }
+}
+
+/* Model Info */
+.chat-model-info {
+    display: flex;
+    align-items: center;
+    gap: var(--space-1);
+    margin-top: var(--space-2);
+    padding: var(--space-1) var(--space-2);
+    background: var(--bg-body);
+    border-radius: var(--radius-sm);
+    font-size: 0.625rem;
+    color: var(--text-tertiary);
+    font-family: var(--font-mono);
+}
+
+.chat-model-info svg {
+    width: 10px;
+    height: 10px;
+}
+
+/* Enhanced Message Content */
+.chat-message-content h2,
+.chat-message-content h3,
+.chat-message-content h4 {
+    margin: var(--space-2) 0;
+    font-weight: 600;
+    color: var(--text-primary);
+}
+
+.chat-message-content h2 { font-size: 1rem; }
+.chat-message-content h3 { font-size: 0.9375rem; }
+.chat-message-content h4 { font-size: 0.875rem; }
+
+.chat-message-content p {
+    margin: var(--space-2) 0;
+}
+
+.chat-message-content ul,
+.chat-message-content ol {
+    margin: var(--space-2) 0;
+    padding-left: var(--space-4);
+}
+
+.chat-message-content li {
+    margin: var(--space-1) 0;
+}
+
+.chat-message-content pre {
+    background: rgba(0, 0, 0, 0.1);
+    padding: var(--space-3);
+    border-radius: var(--radius-md);
+    overflow-x: auto;
+    margin: var(--space-2) 0;
+}
+
+.chat-message-content pre code {
+    background: none;
+    padding: 0;
+}
+
+.chat-message-content strong {
+    font-weight: 600;
+    color: var(--text-primary);
+}
+
+.chat-message-content em {
+    font-style: italic;
+}
+
+/* Clear Chat Button */
+.chatbot-header .chat-clear {
+    width: 32px;
+    height: 32px;
+    background: transparent;
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    border-radius: var(--radius-md);
+    color: rgba(255, 255, 255, 0.7);
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin-right: var(--space-2);
+    transition: all var(--transition-fast);
+}
+
+.chatbot-header .chat-clear:hover {
+    background: rgba(255, 255, 255, 0.1);
+    color: white;
+}
+
+.chatbot-header .chat-clear svg {
+    width: 16px;
+    height: 16px;
+}
+
 /* Chat Input */
 .chatbot-input-container {
     padding: var(--space-3) var(--space-4);
