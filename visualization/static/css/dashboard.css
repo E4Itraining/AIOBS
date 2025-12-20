@@ -10,13 +10,13 @@
     --color-or-sahel: #D4A017;        /* Primary - Gold Sahel */
     --color-bleu-nuit: #1A1A2E;       /* Secondary - Night Blue */
     --color-blanc-chaud: #F5F5F0;     /* Background - Warm White */
-    --color-terre-cuite: #8B4513;     /* Accent - Terracotta */
+    --color-terre-cuite: #C17A4A;     /* Accent - Cuivre Chaud */
 
     /* Colors - Light Theme */
     --color-primary: #D4A017;          /* Or Sahel */
     --color-primary-hover: #B8890F;    /* Or Sahel darker */
     --color-primary-light: #FDF6E3;    /* Or Sahel très clair */
-    --color-accent: #8B4513;           /* Terre Cuite */
+    --color-accent: #C17A4A;           /* Cuivre Chaud */
 
     --color-success: #10b981;
     --color-success-light: #d1fae5;

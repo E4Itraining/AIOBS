@@ -447,7 +447,7 @@ if (!onboardingComplete && !hasPersona && !isExcludedPath) {
 | Or Sahel | `#D4A017` | Primary, accents |
 | Bleu Nuit | `#1A1A2E` | Secondary, dark bg |
 | Blanc Chaud | `#F5F5F0` | Light bg |
-| Terre Cuite | `#8B4513` | Accents |
+| Cuivre Chaud | `#C17A4A` | Accents |
 
 #### Typography
 - **Headings:** Space Grotesk (400, 500, 700)
