@@ -599,8 +599,8 @@ TRANSLATIONS = {
             'change_journey': 'Changer de parcours'
         },
         'dashboard': {
-            'title': 'Tableau de Bord d\'Observabilité IA',
-            'subtitle': 'Observabilité IA',
+            'title': 'Dashboard IA',
+            'subtitle': 'Observabilité',
             'trust_score': 'Score de Confiance',
             'daily_inferences': 'Inférences Quotidiennes',
             'daily_cost': 'Coût Quotidien',
