@@ -23,6 +23,7 @@ class LLMProvider(str, Enum):
     """Supported LLM providers"""
     OPENAI = "openai"
     ANTHROPIC = "anthropic"
+    MISTRAL = "mistral"
     MOCK = "mock"  # For development/testing
 
 
@@ -39,6 +40,7 @@ class LLMConfig:
     # Provider-specific endpoints
     openai_base_url: str = "https://api.openai.com/v1"
     anthropic_base_url: str = "https://api.anthropic.com/v1"
+    mistral_base_url: str = "https://api.mistral.ai/v1"
 
 
 @dataclass
@@ -285,6 +287,99 @@ class AnthropicProvider(BaseLLMProvider):
             raise
 
 
+class MistralProvider(BaseLLMProvider):
+    """Mistral AI API provider"""
+
+    async def chat(
+        self,
+        messages: List[ChatMessage],
+        system_prompt: Optional[str] = None,
+    ) -> LLMResponse:
+        """Send chat messages to Mistral AI"""
+
+        formatted_messages = []
+        if system_prompt:
+            formatted_messages.append({"role": "system", "content": system_prompt})
+
+        for msg in messages:
+            formatted_messages.append({"role": msg.role, "content": msg.content})
+
+        try:
+            response = await self.client.post(
+                f"{self.config.mistral_base_url}/chat/completions",
+                headers={
+                    "Authorization": f"Bearer {self.config.api_key}",
+                    "Content-Type": "application/json",
+                },
+                json={
+                    "model": self.config.model,
+                    "messages": formatted_messages,
+                    "max_tokens": self.config.max_tokens,
+                    "temperature": self.config.temperature,
+                },
+            )
+            response.raise_for_status()
+            data = response.json()
+
+            choice = data["choices"][0]
+            return LLMResponse(
+                content=choice["message"]["content"],
+                model=data["model"],
+                provider="mistral",
+                usage=data.get("usage"),
+                finish_reason=choice.get("finish_reason"),
+            )
+        except httpx.HTTPError as e:
+            logger.error(f"Mistral API error: {e}")
+            raise
+
+    async def chat_stream(
+        self,
+        messages: List[ChatMessage],
+        system_prompt: Optional[str] = None,
+    ) -> AsyncIterator[str]:
+        """Stream chat response from Mistral AI"""
+
+        formatted_messages = []
+        if system_prompt:
+            formatted_messages.append({"role": "system", "content": system_prompt})
+
+        for msg in messages:
+            formatted_messages.append({"role": msg.role, "content": msg.content})
+
+        try:
+            async with self.client.stream(
+                "POST",
+                f"{self.config.mistral_base_url}/chat/completions",
+                headers={
+                    "Authorization": f"Bearer {self.config.api_key}",
+                    "Content-Type": "application/json",
+                },
+                json={
+                    "model": self.config.model,
+                    "messages": formatted_messages,
+                    "max_tokens": self.config.max_tokens,
+                    "temperature": self.config.temperature,
+                    "stream": True,
+                },
+            ) as response:
+                async for line in response.aiter_lines():
+                    if line.startswith("data: "):
+                        data_str = line[6:]
+                        if data_str == "[DONE]":
+                            break
+                        try:
+                            data = json.loads(data_str)
+                            delta = data["choices"][0].get("delta", {})
+                            if content := delta.get("content"):
+                                yield content
+                        except json.JSONDecodeError:
+                            continue
+        except httpx.HTTPError as e:
+            logger.error(f"Mistral streaming error: {e}")
+            raise
+
+
 class MockProvider(BaseLLMProvider):
     """Mock provider for development and testing"""
 
@@ -451,14 +546,29 @@ class LLMService:
             provider = LLMProvider.OPENAI
             api_key = os.getenv("OPENAI_API_KEY")
             model = os.getenv("OPENAI_MODEL", "gpt-4o-mini")
+            logger.info(f"LLM Service initialized with OpenAI provider (model: {model})")
         elif provider_name == "anthropic" and os.getenv("ANTHROPIC_API_KEY"):
             provider = LLMProvider.ANTHROPIC
             api_key = os.getenv("ANTHROPIC_API_KEY")
             model = os.getenv("ANTHROPIC_MODEL", "claude-3-haiku-20240307")
+            logger.info(f"LLM Service initialized with Anthropic provider (model: {model})")
+        elif provider_name == "mistral" and os.getenv("MISTRAL_API_KEY"):
+            provider = LLMProvider.MISTRAL
+            api_key = os.getenv("MISTRAL_API_KEY")
+            model = os.getenv("MISTRAL_MODEL", "mistral-large-latest")
+            logger.info(f"LLM Service initialized with Mistral provider (model: {model})")
         else:
             provider = LLMProvider.MOCK
             api_key = None
             model = "mock-model"
+            if provider_name != "mock":
+                logger.warning(
+                    f"LLM provider '{provider_name}' requested but API key not found. "
+                    f"Falling back to Mock provider. Set the appropriate API key "
+                    f"(e.g., {provider_name.upper()}_API_KEY) to use this provider."
+                )
+            else:
+                logger.info("LLM Service initialized with Mock provider (for development/testing)")
 
         return LLMConfig(
             provider=provider,
@@ -476,6 +586,8 @@ class LLMService:
             return OpenAIProvider(self.config)
         elif self.config.provider == LLMProvider.ANTHROPIC:
             return AnthropicProvider(self.config)
+        elif self.config.provider == LLMProvider.MISTRAL:
+            return MistralProvider(self.config)
         else:
             return MockProvider(self.config)
 
