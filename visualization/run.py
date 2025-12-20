@@ -3,12 +3,34 @@
 AIOBS Visualization Platform - Runner
 Launch the FastAPI server for the visualization dashboard
 """
+
+# IMMEDIATE DEBUG - Write to file to prove script is executing
+try:
+    with open("/tmp/aiobs_run_debug.txt", "w") as f:
+        f.write("Script started executing\n")
+except:
+    pass
+
+# Most basic print possible - no flush, no formatting
+print("=== AIOBS run.py STARTING ===")
+
 import sys
 import os
 
+# Write Python version to debug file and stdout
+python_info = f"Python {sys.version}"
+print(f"[DEBUG] {python_info}")
+try:
+    with open("/tmp/aiobs_run_debug.txt", "a") as f:
+        f.write(f"{python_info}\n")
+except:
+    pass
+
 # Ensure stdout/stderr are flushed immediately for debugging
-sys.stdout.reconfigure(line_buffering=True) if hasattr(sys.stdout, 'reconfigure') else None
-sys.stderr.reconfigure(line_buffering=True) if hasattr(sys.stderr, 'reconfigure') else None
+if hasattr(sys.stdout, 'reconfigure'):
+    sys.stdout.reconfigure(line_buffering=True)
+if hasattr(sys.stderr, 'reconfigure'):
+    sys.stderr.reconfigure(line_buffering=True)
 
 print("[DEBUG] run.py starting...", flush=True)
 
