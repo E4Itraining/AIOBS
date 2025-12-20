@@ -7,6 +7,10 @@ import logging
 import os
 import time
 
+# Load .env file for environment variables
+from dotenv import load_dotenv
+load_dotenv()
+
 import psutil
 from fastapi import FastAPI, Request
 from fastapi.middleware.cors import CORSMiddleware
