@@ -113,6 +113,11 @@
             elements.container.classList.toggle('open', state.isOpen);
         }
 
+        // Update aria-expanded for accessibility
+        if (elements.trigger) {
+            elements.trigger.setAttribute('aria-expanded', state.isOpen.toString());
+        }
+
         if (state.isOpen && elements.input) {
             setTimeout(() => elements.input.focus(), 100);
         }

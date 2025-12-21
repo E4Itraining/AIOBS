@@ -6,6 +6,7 @@ FastAPI Application - Lightweight, Modern, Interactive
 import logging
 import os
 import time
+from collections import deque
 
 # Load .env file for environment variables
 from dotenv import load_dotenv
@@ -52,19 +53,16 @@ AIOBS provides unified observability for AI systems with:
 APP_VERSION = "1.0.0"
 
 
-# Metrics state for tracking
+# Metrics state for tracking (optimized with deque)
 class MetricsState:
     def __init__(self):
         self.start_time = time.time()
         self.request_count = 0
-        self.request_durations: list[float] = []
+        self.request_durations: deque = deque(maxlen=1000)  # O(1) append/pop
 
     def record_request(self, duration: float):
         self.request_count += 1
         self.request_durations.append(duration)
-        # Keep only last 1000 samples
-        if len(self.request_durations) > 1000:
-            self.request_durations.pop(0)
 
     def avg_duration(self) -> float:
         if not self.request_durations:

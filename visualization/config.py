@@ -68,7 +68,7 @@ class SecuritySettings(BaseSettings):
 
     api_keys: str = Field(default="", description="Comma-separated list of valid API keys")
     signing_secret: SecretStr = Field(
-        default=SecretStr("dev-secret"), description="HMAC signing secret for request verification"
+        default=SecretStr(""), description="HMAC signing secret for request verification (required in production)"
     )
     security_auth: str = Field(
         default="", description="Comma-separated list of valid security auth tokens"
@@ -108,9 +108,9 @@ class BackendSettings(BaseSettings):
         default="admin@aiobs.local", alias="OPENOBSERVE_USER", description="OpenObserve username"
     )
     openobserve_password: SecretStr = Field(
-        default=SecretStr("Complexpass#123"),
+        default=SecretStr(""),
         alias="OPENOBSERVE_PASSWORD",
-        description="OpenObserve password",
+        description="OpenObserve password (required in production)",
     )
     redis_url: str = Field(
         default="redis://redis:6379", alias="REDIS_URL", description="Redis connection URL"
@@ -213,13 +213,16 @@ def validate_production_settings() -> List[str]:
     if settings.server.dev_mode:
         issues.append("WARNING: Running in dev mode - disable for production")
 
-    if settings.security.signing_secret.get_secret_value() == "dev-secret":
-        issues.append("CRITICAL: Using default signing secret - set AIOBS_SIGNING_SECRET")
+    if not settings.security.signing_secret.get_secret_value():
+        issues.append("CRITICAL: No signing secret configured - set AIOBS_SIGNING_SECRET")
 
     if not settings.security.api_keys_list:
         issues.append("WARNING: No API keys configured - set AIOBS_API_KEYS")
 
     if "*" in settings.cors.cors_origins:
         issues.append("WARNING: CORS allows all origins - restrict for production")
+
+    if not settings.backends.openobserve_password.get_secret_value():
+        issues.append("WARNING: No OpenObserve password configured - set OPENOBSERVE_PASSWORD")
 
     return issues

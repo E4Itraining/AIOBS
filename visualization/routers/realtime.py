@@ -88,7 +88,7 @@ class ConnectionManager:
         for websocket in self.channels[channel]:
             try:
                 await websocket.send_json(message)
-            except:
+            except Exception:
                 disconnected.add(websocket)
 
         # Clean up disconnected clients

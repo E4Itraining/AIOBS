@@ -247,7 +247,7 @@ Important rules:
 
         except Exception as e:
             logger.error(f"LLM chat error: {e}")
-            error_msg = "Je suis desole, une erreur s'est produite." if language == "fr" else "I'm sorry, an error occurred."
+            error_msg = "Je suis désolé, une erreur s'est produite." if language == "fr" else "I'm sorry, an error occurred."
             return LLMResponse(
                 content=f"{error_msg} {str(e)}",
                 model=self.config.model,
