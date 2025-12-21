@@ -168,6 +168,21 @@ export {
   OnboardingStep,
 } from './tenant';
 
+// Re-export AI SBOM types
+export * from './sbom';
+
+// Re-export Business Impact types
+export * from './business-impact';
+
+// Re-export Autonomous Resolution (ARC) types
+export * from './autonomous';
+
+// Re-export Prompt GitOps types
+export * from './prompt-ops';
+
+// Re-export Chain DNA types
+export * from './chain-dna';
+
 // Re-export game-changer types, excluding duplicates (SLOImpact, BusinessImpact, ProjectedImpact)
 export {
   // AI Request Cost Prediction
