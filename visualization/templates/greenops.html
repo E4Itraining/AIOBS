@@ -55,7 +55,7 @@
 
 {% block content %}
 <!-- Sustainability Score Hero -->
-<div class="sustainability-hero">
+<div class="sustainability-hero" style="cursor: pointer;" onclick="openSustainabilityDeepDive()">
     <div class="hero-left">
         <div class="eco-score">
             <div class="eco-circle">
@@ -527,6 +527,208 @@
         </div>
     </div>
 </section>
+
+<!-- Sustainability Deep Dive Modal -->
+<div class="modal-overlay" id="sustainabilityDeepDiveModal">
+    <div class="modal-container modal-xl">
+        <div class="modal-header">
+            <h2>
+                <i data-lucide="leaf"></i>
+                Deep Dive - Score de Durabilité
+            </h2>
+            <button class="modal-close" onclick="closeSustainabilityDeepDive()">
+                <i data-lucide="x"></i>
+            </button>
+        </div>
+        <div class="modal-body">
+            <!-- Overview Header -->
+            <div class="deep-dive-controls">
+                <div class="framework-overview-header">
+                    <div class="eco-score-large">
+                        <div class="eco-circle-lg">
+                            <svg viewBox="0 0 100 100">
+                                <defs>
+                                    <linearGradient id="ecoGradientLg" x1="0%" y1="0%" x2="100%" y2="0%">
+                                        <stop offset="0%" style="stop-color:#10b981"/>
+                                        <stop offset="100%" style="stop-color:#34d399"/>
+                                    </linearGradient>
+                                </defs>
+                                <circle cx="50" cy="50" r="45" fill="none" stroke="var(--border-color)" stroke-width="6"/>
+                                <circle cx="50" cy="50" r="45" fill="none" stroke="url(#ecoGradientLg)" stroke-width="6"
+                                    stroke-dasharray="283" stroke-dashoffset="62" stroke-linecap="round"
+                                    transform="rotate(-90 50 50)"/>
+                            </svg>
+                            <div class="eco-value-lg">
+                                <i data-lucide="leaf"></i>
+                                <span>B+</span>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="framework-meta">
+                        <div class="meta-item">
+                            <i data-lucide="calendar"></i>
+                            <span>Période : <strong>30 derniers jours</strong></span>
+                        </div>
+                        <div class="meta-item">
+                            <i data-lucide="trending-down"></i>
+                            <span>Émissions : <strong class="text-success">-8% vs période précédente</strong></span>
+                        </div>
+                        <div class="meta-item">
+                            <i data-lucide="target"></i>
+                            <span>Objectif 2025 : <strong>Net Zero</strong></span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Sustainability KPIs -->
+            <div class="deep-dive-kpis">
+                <div class="deep-dive-kpi">
+                    <div class="deep-dive-kpi-icon carbon">
+                        <i data-lucide="cloud"></i>
+                    </div>
+                    <div class="deep-dive-kpi-content">
+                        <span class="deep-dive-kpi-value">1 250 kg</span>
+                        <span class="deep-dive-kpi-label">CO2 émis (30j)</span>
+                        <span class="deep-dive-kpi-trend down"><i data-lucide="trending-down"></i> -8%</span>
+                    </div>
+                </div>
+                <div class="deep-dive-kpi">
+                    <div class="deep-dive-kpi-icon energy">
+                        <i data-lucide="zap"></i>
+                    </div>
+                    <div class="deep-dive-kpi-content">
+                        <span class="deep-dive-kpi-value">4 500 kWh</span>
+                        <span class="deep-dive-kpi-label">Énergie consommée</span>
+                        <span class="deep-dive-kpi-trend down"><i data-lucide="trending-down"></i> -5%</span>
+                    </div>
+                </div>
+                <div class="deep-dive-kpi">
+                    <div class="deep-dive-kpi-icon renewable">
+                        <i data-lucide="sun"></i>
+                    </div>
+                    <div class="deep-dive-kpi-content">
+                        <span class="deep-dive-kpi-value">65%</span>
+                        <span class="deep-dive-kpi-label">Énergie renouvelable</span>
+                        <span class="deep-dive-kpi-trend up"><i data-lucide="trending-up"></i> +12%</span>
+                    </div>
+                </div>
+                <div class="deep-dive-kpi">
+                    <div class="deep-dive-kpi-icon pue">
+                        <i data-lucide="gauge"></i>
+                    </div>
+                    <div class="deep-dive-kpi-content">
+                        <span class="deep-dive-kpi-value">1.35</span>
+                        <span class="deep-dive-kpi-label">PUE moyen</span>
+                        <span class="deep-dive-kpi-trend down"><i data-lucide="trending-down"></i> -0.05</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Emissions by Model Table -->
+            <div class="deep-dive-table-section">
+                <h4>Empreinte carbone par modèle</h4>
+                <div class="table-container">
+                    <table class="table">
+                        <thead>
+                            <tr>
+                                <th>Modèle</th>
+                                <th>Inférences/jour</th>
+                                <th>Énergie (kWh)</th>
+                                <th>CO2 (kg)</th>
+                                <th>Score efficacité</th>
+                                <th>Tendance</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td><strong>recommendation-v2</strong></td>
+                                <td>1.2M</td>
+                                <td>85.5</td>
+                                <td>25.8</td>
+                                <td><span class="badge badge-success">85%</span></td>
+                                <td><span class="text-success"><i data-lucide="trending-down"></i> -12%</span></td>
+                            </tr>
+                            <tr>
+                                <td><strong>fraud-detector-v1</strong></td>
+                                <td>850K</td>
+                                <td>62.3</td>
+                                <td>18.7</td>
+                                <td><span class="badge badge-warning">72%</span></td>
+                                <td><span class="text-secondary"><i data-lucide="minus"></i> 0%</span></td>
+                            </tr>
+                            <tr>
+                                <td><strong>churn-predictor</strong></td>
+                                <td>450K</td>
+                                <td>28.1</td>
+                                <td>8.4</td>
+                                <td><span class="badge badge-success">92%</span></td>
+                                <td><span class="text-success"><i data-lucide="trending-down"></i> -8%</span></td>
+                            </tr>
+                            <tr>
+                                <td><strong>llm-assistant</strong></td>
+                                <td>50K</td>
+                                <td>180.2</td>
+                                <td>54.1</td>
+                                <td><span class="badge badge-danger">35%</span></td>
+                                <td><span class="text-danger"><i data-lucide="trending-up"></i> +15%</span></td>
+                            </tr>
+                            <tr>
+                                <td><strong>sentiment-analyzer</strong></td>
+                                <td>200K</td>
+                                <td>12.5</td>
+                                <td>3.8</td>
+                                <td><span class="badge badge-success">94%</span></td>
+                                <td><span class="text-success"><i data-lucide="trending-down"></i> -5%</span></td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
+            <!-- Recommendations -->
+            <div class="deep-dive-recommendations">
+                <h4>Recommandations durabilité</h4>
+                <div class="recommendations-list">
+                    <div class="recommendation-item danger">
+                        <div class="recommendation-icon" style="background: var(--color-danger-light); color: var(--color-danger);">
+                            <i data-lucide="alert-circle"></i>
+                        </div>
+                        <div class="recommendation-content">
+                            <h5>Optimiser le LLM Assistant</h5>
+                            <p>Score d'efficacité de 35% très faible. Implémenter le batching et migrer vers une région à énergie verte pour réduire de 40% les émissions.</p>
+                        </div>
+                    </div>
+                    <div class="recommendation-item success">
+                        <div class="recommendation-icon" style="background: var(--color-success-light); color: var(--color-success);">
+                            <i data-lucide="moon"></i>
+                        </div>
+                        <div class="recommendation-content">
+                            <h5>Activer le mode veille GPU</h5>
+                            <p>Configurer la mise en veille des GPU pendant les heures creuses (2h-6h UTC) pour économiser 125 kg CO2/mois.</p>
+                        </div>
+                    </div>
+                    <div class="recommendation-item">
+                        <div class="recommendation-icon">
+                            <i data-lucide="globe"></i>
+                        </div>
+                        <div class="recommendation-content">
+                            <h5>Migrer les jobs batch vers l'UE</h5>
+                            <p>Les traitements batch non sensibles à la latence peuvent être migrés vers eu-west-1 pour bénéficier d'une intensité carbone plus faible.</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="modal-footer">
+            <button class="btn btn-secondary" onclick="closeSustainabilityDeepDive()">Fermer</button>
+            <button class="btn btn-primary" onclick="exportSustainabilityReport()">
+                <i data-lucide="download"></i>
+                Rapport ESG
+            </button>
+        </div>
+    </div>
+</div>
 
 <style>
 .section-title {
@@ -1096,6 +1298,349 @@
         flex-direction: column;
     }
 }
+
+/* Modal Styles */
+.modal-overlay {
+    position: fixed;
+    inset: 0;
+    background: rgba(0, 0, 0, 0.6);
+    backdrop-filter: blur(4px);
+    z-index: 1000;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: var(--space-4);
+    opacity: 0;
+    visibility: hidden;
+    transition: all var(--transition-base);
+}
+
+.modal-overlay.active {
+    opacity: 1;
+    visibility: visible;
+}
+
+.modal-container {
+    background: var(--bg-card);
+    border-radius: var(--radius-xl);
+    box-shadow: var(--shadow-xl);
+    max-height: 90vh;
+    overflow: hidden;
+    display: flex;
+    flex-direction: column;
+    transform: scale(0.95) translateY(20px);
+    transition: transform var(--transition-base);
+}
+
+.modal-overlay.active .modal-container {
+    transform: scale(1) translateY(0);
+}
+
+.modal-xl {
+    width: 100%;
+    max-width: 1100px;
+}
+
+.modal-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: var(--space-5);
+    border-bottom: 1px solid var(--border-color);
+}
+
+.modal-header h2 {
+    display: flex;
+    align-items: center;
+    gap: var(--space-3);
+    font-size: 1.25rem;
+    font-weight: 600;
+}
+
+.modal-header h2 svg {
+    width: 24px;
+    height: 24px;
+    color: var(--color-success);
+}
+
+.modal-close {
+    width: 40px;
+    height: 40px;
+    border: none;
+    background: var(--bg-hover);
+    border-radius: var(--radius-md);
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: var(--text-secondary);
+    transition: all var(--transition-fast);
+}
+
+.modal-close:hover {
+    background: var(--color-danger-light);
+    color: var(--color-danger);
+}
+
+.modal-close svg {
+    width: 20px;
+    height: 20px;
+}
+
+.modal-body {
+    padding: var(--space-5);
+    overflow-y: auto;
+    flex: 1;
+}
+
+.modal-footer {
+    display: flex;
+    align-items: center;
+    justify-content: flex-end;
+    gap: var(--space-3);
+    padding: var(--space-4) var(--space-5);
+    border-top: 1px solid var(--border-color);
+}
+
+/* Deep Dive Styles */
+.deep-dive-controls {
+    margin-bottom: var(--space-5);
+}
+
+.framework-overview-header {
+    display: flex;
+    align-items: center;
+    gap: var(--space-6);
+    padding: var(--space-4);
+    background: linear-gradient(135deg, var(--color-success-light), transparent);
+    border: 1px solid var(--color-success);
+    border-radius: var(--radius-lg);
+}
+
+.eco-score-large {
+    flex-shrink: 0;
+}
+
+.eco-circle-lg {
+    position: relative;
+    width: 100px;
+    height: 100px;
+}
+
+.eco-circle-lg svg {
+    width: 100%;
+    height: 100%;
+}
+
+.eco-value-lg {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    text-align: center;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+.eco-value-lg svg {
+    width: 20px;
+    height: 20px;
+    color: var(--color-success);
+}
+
+.eco-value-lg span {
+    font-size: 1.5rem;
+    font-weight: 700;
+    color: var(--color-success);
+}
+
+.framework-meta {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-3);
+}
+
+.meta-item {
+    display: flex;
+    align-items: center;
+    gap: var(--space-2);
+    font-size: 0.875rem;
+    color: var(--text-secondary);
+}
+
+.meta-item svg {
+    width: 16px;
+    height: 16px;
+}
+
+.meta-item strong {
+    color: var(--text-primary);
+}
+
+/* Deep Dive KPIs */
+.deep-dive-kpis {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: var(--space-4);
+    margin-bottom: var(--space-5);
+}
+
+.deep-dive-kpi {
+    display: flex;
+    align-items: center;
+    gap: var(--space-3);
+    padding: var(--space-4);
+    background: var(--bg-card);
+    border: 1px solid var(--border-color);
+    border-radius: var(--radius-lg);
+}
+
+.deep-dive-kpi-icon {
+    width: 48px;
+    height: 48px;
+    border-radius: var(--radius-lg);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+}
+
+.deep-dive-kpi-icon svg {
+    width: 24px;
+    height: 24px;
+    color: white;
+}
+
+.deep-dive-kpi-icon.carbon { background: linear-gradient(135deg, #64748b, #94a3b8); }
+.deep-dive-kpi-icon.energy { background: linear-gradient(135deg, #f59e0b, #fbbf24); }
+.deep-dive-kpi-icon.renewable { background: linear-gradient(135deg, #10b981, #34d399); }
+.deep-dive-kpi-icon.pue { background: linear-gradient(135deg, #6366f1, #8b5cf6); }
+
+.deep-dive-kpi-content {
+    display: flex;
+    flex-direction: column;
+}
+
+.deep-dive-kpi-value {
+    font-size: 1.25rem;
+    font-weight: 700;
+    line-height: 1.2;
+}
+
+.deep-dive-kpi-label {
+    font-size: 0.75rem;
+    color: var(--text-secondary);
+}
+
+.deep-dive-kpi-trend {
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+    font-size: 0.6875rem;
+    font-weight: 500;
+    margin-top: 2px;
+}
+
+.deep-dive-kpi-trend svg {
+    width: 12px;
+    height: 12px;
+}
+
+.deep-dive-kpi-trend.down { color: var(--color-success); }
+.deep-dive-kpi-trend.up { color: var(--color-success); }
+
+/* Deep Dive Table Section */
+.deep-dive-table-section {
+    margin-bottom: var(--space-5);
+}
+
+.deep-dive-table-section h4 {
+    font-size: 1rem;
+    font-weight: 600;
+    margin-bottom: var(--space-3);
+}
+
+/* Deep Dive Recommendations */
+.deep-dive-recommendations h4 {
+    font-size: 1rem;
+    font-weight: 600;
+    margin-bottom: var(--space-3);
+}
+
+.recommendations-list {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-3);
+}
+
+.recommendation-item {
+    display: flex;
+    align-items: flex-start;
+    gap: var(--space-3);
+    padding: var(--space-3);
+    background: var(--bg-hover);
+    border-radius: var(--radius-md);
+    border-left: 3px solid var(--color-warning);
+}
+
+.recommendation-item.success {
+    border-left-color: var(--color-success);
+}
+
+.recommendation-item.danger {
+    border-left-color: var(--color-danger);
+}
+
+.recommendation-icon {
+    width: 32px;
+    height: 32px;
+    border-radius: var(--radius-md);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: var(--color-warning-light);
+    color: var(--color-warning);
+    flex-shrink: 0;
+}
+
+.recommendation-icon svg {
+    width: 16px;
+    height: 16px;
+}
+
+.recommendation-content {
+    flex: 1;
+}
+
+.recommendation-content h5 {
+    font-size: 0.875rem;
+    font-weight: 600;
+    margin-bottom: var(--space-1);
+}
+
+.recommendation-content p {
+    font-size: 0.8125rem;
+    color: var(--text-secondary);
+    margin: 0;
+}
+
+@media (max-width: 900px) {
+    .deep-dive-kpis {
+        grid-template-columns: repeat(2, 1fr);
+    }
+}
+
+@media (max-width: 600px) {
+    .framework-overview-header {
+        flex-direction: column;
+        text-align: center;
+    }
+
+    .deep-dive-kpis {
+        grid-template-columns: 1fr;
+    }
+}
 </style>
 {% endblock %}
 
@@ -1207,5 +1752,35 @@ function generateSustainabilityReport() {
         showToast('ESG report ready for download!', 'success');
     }, 2000);
 }
+
+function openSustainabilityDeepDive() {
+    document.getElementById('sustainabilityDeepDiveModal').classList.add('active');
+    lucide.createIcons();
+}
+
+function closeSustainabilityDeepDive() {
+    document.getElementById('sustainabilityDeepDiveModal').classList.remove('active');
+}
+
+function exportSustainabilityReport() {
+    showToast('Génération du rapport ESG...', 'info');
+    setTimeout(() => {
+        showToast('Rapport ESG prêt au téléchargement !', 'success');
+    }, 1500);
+}
+
+// Close modal on overlay click
+document.addEventListener('click', (e) => {
+    if (e.target.classList.contains('modal-overlay')) {
+        closeSustainabilityDeepDive();
+    }
+});
+
+// Close modal on Escape key
+document.addEventListener('keydown', (e) => {
+    if (e.key === 'Escape') {
+        closeSustainabilityDeepDive();
+    }
+});
 </script>
 {% endblock %}
