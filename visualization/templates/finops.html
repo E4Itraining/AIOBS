@@ -35,25 +35,25 @@
 </div>
 {% endblock %}
 
-{% block page_title %}FinOps - Cost Management{% endblock %}
-{% block page_subtitle %}<p class="text-muted">AI infrastructure costs, budget tracking and optimization</p>{% endblock %}
+{% block page_title %}FinOps{% endblock %}
+{% block page_subtitle %}<p class="text-muted">Gestion des coûts & optimisation</p>{% endblock %}
 
 {% block topbar_actions %}
 <div class="time-range-selector">
     <select class="form-select" id="timeRange" onchange="updateTimeRange()">
-        <option value="7d">Last 7 Days</option>
-        <option value="30d" selected>Last 30 Days</option>
-        <option value="90d">Last Quarter</option>
-        <option value="ytd">Year to Date</option>
+        <option value="7d">7 derniers jours</option>
+        <option value="30d" selected>30 derniers jours</option>
+        <option value="90d">Dernier trimestre</option>
+        <option value="ytd">Depuis le début de l'année</option>
     </select>
 </div>
 <button class="btn btn-secondary" onclick="exportCostReport()">
     <i data-lucide="download"></i>
-    Export
+    Exporter
 </button>
 <button class="btn btn-primary" onclick="openBudgetSettings()">
     <i data-lucide="settings"></i>
-    Budget Settings
+    Paramètres budget
 </button>
 {% endblock %}
 
@@ -62,13 +62,13 @@
 <div class="budget-hero">
     <div class="budget-card main">
         <div class="budget-header">
-            <span class="budget-label">Monthly Budget</span>
-            <span class="badge badge-warning">75% Used</span>
+            <span class="budget-label">Budget mensuel</span>
+            <span class="badge badge-warning">75% utilisé</span>
         </div>
         <div class="budget-amount">
-            <span class="amount-spent">$45,230</span>
+            <span class="amount-spent">42 500 €</span>
             <span class="amount-separator">/</span>
-            <span class="amount-total">$60,000</span>
+            <span class="amount-total">55 000 €</span>
         </div>
         <div class="budget-bar">
             <div class="budget-fill warning" style="width: 75%">
@@ -76,8 +76,8 @@
             </div>
         </div>
         <div class="budget-meta">
-            <span>Forecast: $51,000 (85%)</span>
-            <span>15 days remaining</span>
+            <span>Prévision : 47 000 € (85%)</span>
+            <span>15 jours restants</span>
         </div>
     </div>
 
@@ -88,7 +88,7 @@
             </div>
             <div class="stat-content">
                 <span class="stat-value">-12%</span>
-                <span class="stat-label">vs Last Month</span>
+                <span class="stat-label">vs mois dernier</span>
             </div>
         </div>
         <div class="budget-stat">
@@ -96,8 +96,8 @@
                 <i data-lucide="cpu"></i>
             </div>
             <div class="stat-content">
-                <span class="stat-value">$0.0023</span>
-                <span class="stat-label">Cost per Inference</span>
+                <span class="stat-value">0,0021 €</span>
+                <span class="stat-label">Coût par inférence</span>
             </div>
         </div>
         <div class="budget-stat">
@@ -106,7 +106,7 @@
             </div>
             <div class="stat-content">
                 <span class="stat-value">3</span>
-                <span class="stat-label">Cost Anomalies</span>
+                <span class="stat-label">Anomalies de coûts</span>
             </div>
         </div>
         <div class="budget-stat">
@@ -114,12 +114,78 @@
                 <i data-lucide="piggy-bank"></i>
             </div>
             <div class="stat-content">
-                <span class="stat-value">$8,200</span>
-                <span class="stat-label">Saved This Month</span>
+                <span class="stat-value">7 500 €</span>
+                <span class="stat-label">Économisé ce mois</span>
             </div>
         </div>
     </div>
 </div>
+
+<!-- Efficiency KPIs -->
+<section class="mb-6">
+    <div class="efficiency-kpis">
+        <div class="kpi-card">
+            <div class="kpi-icon efficiency">
+                <i data-lucide="gauge"></i>
+            </div>
+            <div class="kpi-content">
+                <span class="kpi-value">94.2%</span>
+                <span class="kpi-label">Efficacité GPU</span>
+                <span class="kpi-trend up"><i data-lucide="trending-up"></i> +3.1%</span>
+            </div>
+        </div>
+        <div class="kpi-card">
+            <div class="kpi-icon performance">
+                <i data-lucide="zap"></i>
+            </div>
+            <div class="kpi-content">
+                <span class="kpi-value">0.032 €</span>
+                <span class="kpi-label">Coût par requête</span>
+                <span class="kpi-trend down"><i data-lucide="trending-down"></i> -8.5%</span>
+            </div>
+        </div>
+        <div class="kpi-card">
+            <div class="kpi-icon utilization">
+                <i data-lucide="server"></i>
+            </div>
+            <div class="kpi-content">
+                <span class="kpi-value">78%</span>
+                <span class="kpi-label">Utilisation ressources</span>
+                <span class="kpi-trend up"><i data-lucide="trending-up"></i> +5.2%</span>
+            </div>
+        </div>
+        <div class="kpi-card">
+            <div class="kpi-icon savings">
+                <i data-lucide="badge-euro"></i>
+            </div>
+            <div class="kpi-content">
+                <span class="kpi-value">18.5%</span>
+                <span class="kpi-label">Réduction vs budget</span>
+                <span class="kpi-trend down"><i data-lucide="trending-down"></i> -2 340 €</span>
+            </div>
+        </div>
+        <div class="kpi-card">
+            <div class="kpi-icon cache">
+                <i data-lucide="database"></i>
+            </div>
+            <div class="kpi-content">
+                <span class="kpi-value">67%</span>
+                <span class="kpi-label">Cache hit ratio</span>
+                <span class="kpi-trend up"><i data-lucide="trending-up"></i> +12.3%</span>
+            </div>
+        </div>
+        <div class="kpi-card">
+            <div class="kpi-icon carbon">
+                <i data-lucide="leaf"></i>
+            </div>
+            <div class="kpi-content">
+                <span class="kpi-value">142 kg</span>
+                <span class="kpi-label">CO₂ économisé</span>
+                <span class="kpi-trend down"><i data-lucide="trending-down"></i> Green</span>
+            </div>
+        </div>
+    </div>
+</section>
 
 <!-- Cost Breakdown -->
 <section class="mb-6">
@@ -127,7 +193,7 @@
         <!-- By Category -->
         <div class="card">
             <div class="card-header">
-                <h3 class="card-title">Cost by Category</h3>
+                <h3 class="card-title">Coûts par catégorie</h3>
             </div>
             <div class="chart-container" style="height: 250px;">
                 <canvas id="costByCategory"></canvas>
@@ -135,32 +201,32 @@
             <div class="cost-breakdown-list">
                 <div class="breakdown-item">
                     <span class="breakdown-color" style="background: #6366f1"></span>
-                    <span class="breakdown-name">Inference</span>
-                    <span class="breakdown-value">$28,500</span>
+                    <span class="breakdown-name">Inférence</span>
+                    <span class="breakdown-value">26 100 €</span>
                     <span class="breakdown-pct">63%</span>
                 </div>
                 <div class="breakdown-item">
                     <span class="breakdown-color" style="background: #8b5cf6"></span>
-                    <span class="breakdown-name">Training</span>
-                    <span class="breakdown-value">$8,200</span>
+                    <span class="breakdown-name">Entraînement</span>
+                    <span class="breakdown-value">7 500 €</span>
                     <span class="breakdown-pct">18%</span>
                 </div>
                 <div class="breakdown-item">
                     <span class="breakdown-color" style="background: #a78bfa"></span>
-                    <span class="breakdown-name">Storage</span>
-                    <span class="breakdown-value">$4,530</span>
+                    <span class="breakdown-name">Stockage</span>
+                    <span class="breakdown-value">4 150 €</span>
                     <span class="breakdown-pct">10%</span>
                 </div>
                 <div class="breakdown-item">
                     <span class="breakdown-color" style="background: #c4b5fd"></span>
-                    <span class="breakdown-name">Networking</span>
-                    <span class="breakdown-value">$2,500</span>
+                    <span class="breakdown-name">Réseau</span>
+                    <span class="breakdown-value">2 300 €</span>
                     <span class="breakdown-pct">6%</span>
                 </div>
                 <div class="breakdown-item">
                     <span class="breakdown-color" style="background: #ddd6fe"></span>
                     <span class="breakdown-name">Monitoring</span>
-                    <span class="breakdown-value">$1,500</span>
+                    <span class="breakdown-value">1 400 €</span>
                     <span class="breakdown-pct">3%</span>
                 </div>
             </div>
@@ -169,11 +235,11 @@
         <!-- Cost Trend -->
         <div class="card">
             <div class="card-header">
-                <h3 class="card-title">Daily Cost Trend</h3>
+                <h3 class="card-title">Tendance journalière</h3>
                 <div class="trend-summary">
                     <span class="trend-badge down">
                         <i data-lucide="trending-down"></i>
-                        -8% trend
+                        -8% tendance
                     </span>
                 </div>
             </div>
@@ -188,14 +254,14 @@
 <section class="mb-6">
     <div class="card">
         <div class="card-header">
-            <h3 class="card-title">Cost by Model</h3>
+            <h3 class="card-title">Coûts par modèle</h3>
             <div class="header-actions">
-                <input type="text" class="form-input" placeholder="Search models..." style="width: 200px;">
+                <input type="text" class="form-input" placeholder="Rechercher un modèle..." style="width: 200px;">
                 <select class="form-select" style="width: 150px;">
-                    <option>All Environments</option>
+                    <option>Tous les environnements</option>
                     <option>Production</option>
                     <option>Staging</option>
-                    <option>Development</option>
+                    <option>Développement</option>
                 </select>
             </div>
         </div>
@@ -203,13 +269,13 @@
             <table class="table">
                 <thead>
                     <tr>
-                        <th>Model</th>
-                        <th>Environment</th>
-                        <th>Daily Inferences</th>
-                        <th>Cost/1K Inferences</th>
-                        <th>Daily Cost</th>
-                        <th>Monthly Cost</th>
-                        <th>Trend</th>
+                        <th>Modèle</th>
+                        <th>Environnement</th>
+                        <th>Inférences/jour</th>
+                        <th>Coût/1K inf.</th>
+                        <th>Coût journalier</th>
+                        <th>Coût mensuel</th>
+                        <th>Tendance</th>
                         <th>Actions</th>
                     </tr>
                 </thead>
@@ -222,10 +288,10 @@
                             </div>
                         </td>
                         <td><span class="badge badge-success">Production</span></td>
-                        <td>1.2M</td>
-                        <td>$2.85</td>
-                        <td>$3,420</td>
-                        <td>$18,500</td>
+                        <td>1,2M</td>
+                        <td>2,62 €</td>
+                        <td>3 140 €</td>
+                        <td>16 900 €</td>
                         <td><span class="trend down"><i data-lucide="trending-down"></i> -5%</span></td>
                         <td>
                             <button class="btn btn-ghost btn-sm" onclick="viewModelDetails('recommendation-v2')">
@@ -242,9 +308,9 @@
                         </td>
                         <td><span class="badge badge-success">Production</span></td>
                         <td>850K</td>
-                        <td>$3.12</td>
-                        <td>$2,652</td>
-                        <td>$12,000</td>
+                        <td>2,87 €</td>
+                        <td>2 440 €</td>
+                        <td>11 000 €</td>
                         <td><span class="trend up"><i data-lucide="trending-up"></i> +8%</span></td>
                         <td>
                             <button class="btn btn-ghost btn-sm" onclick="viewModelDetails('fraud-detector-v1')">
@@ -261,9 +327,9 @@
                         </td>
                         <td><span class="badge badge-success">Production</span></td>
                         <td>450K</td>
-                        <td>$2.15</td>
-                        <td>$968</td>
-                        <td>$8,730</td>
+                        <td>1,98 €</td>
+                        <td>890 €</td>
+                        <td>8 010 €</td>
                         <td><span class="trend stable"><i data-lucide="minus"></i> 0%</span></td>
                         <td>
                             <button class="btn btn-ghost btn-sm" onclick="viewModelDetails('churn-predictor')">
@@ -280,13 +346,13 @@
                         </td>
                         <td><span class="badge badge-success">Production</span></td>
                         <td>50K</td>
-                        <td>$45.00</td>
-                        <td>$2,250</td>
-                        <td>$15,000</td>
+                        <td>41,40 €</td>
+                        <td>2 070 €</td>
+                        <td>13 800 €</td>
                         <td><span class="trend up"><i data-lucide="trending-up"></i> +25%</span></td>
                         <td>
                             <button class="btn btn-warning btn-sm" onclick="optimizeModel('llm-assistant')">
-                                Optimize
+                                Optimiser
                             </button>
                         </td>
                     </tr>
@@ -299,9 +365,9 @@
                         </td>
                         <td><span class="badge badge-info">Staging</span></td>
                         <td>15K</td>
-                        <td>$1.80</td>
-                        <td>$27</td>
-                        <td>$580</td>
+                        <td>1,65 €</td>
+                        <td>25 €</td>
+                        <td>530 €</td>
                         <td><span class="trend down"><i data-lucide="trending-down"></i> -12%</span></td>
                         <td>
                             <button class="btn btn-ghost btn-sm" onclick="viewModelDetails('sentiment-analyzer')">
@@ -319,8 +385,8 @@
 <section class="mb-6">
     <div class="card">
         <div class="card-header">
-            <h3 class="card-title">Cost Anomalies</h3>
-            <span class="badge badge-warning">3 Active</span>
+            <h3 class="card-title">Anomalies de coûts</h3>
+            <span class="badge badge-warning">3 Actives</span>
         </div>
         <div class="anomalies-list">
             <div class="anomaly-item critical">
@@ -329,18 +395,18 @@
                 </div>
                 <div class="anomaly-content">
                     <div class="anomaly-header">
-                        <span class="anomaly-title">LLM Assistant Cost Spike</span>
-                        <span class="anomaly-time">2 hours ago</span>
+                        <span class="anomaly-title">Pic de coûts LLM Assistant</span>
+                        <span class="anomaly-time">Il y a 2 heures</span>
                     </div>
-                    <p class="anomaly-desc">Cost increased by 45% compared to baseline. Potential cause: increased token usage per request.</p>
+                    <p class="anomaly-desc">Augmentation de 45% par rapport à la baseline. Cause probable : utilisation accrue de tokens par requête.</p>
                     <div class="anomaly-impact">
-                        <span><i data-lucide="dollar-sign"></i> +$850/day impact</span>
+                        <span><i data-lucide="euro"></i> +780 €/jour impact</span>
                         <span><i data-lucide="target"></i> llm-assistant</span>
                     </div>
                 </div>
                 <div class="anomaly-actions">
-                    <button class="btn btn-secondary btn-sm">Investigate</button>
-                    <button class="btn btn-ghost btn-sm">Dismiss</button>
+                    <button class="btn btn-secondary btn-sm">Analyser</button>
+                    <button class="btn btn-ghost btn-sm">Ignorer</button>
                 </div>
             </div>
 
@@ -350,18 +416,18 @@
                 </div>
                 <div class="anomaly-content">
                     <div class="anomaly-header">
-                        <span class="anomaly-title">Unusual Storage Growth</span>
-                        <span class="anomaly-time">1 day ago</span>
+                        <span class="anomaly-title">Croissance stockage anormale</span>
+                        <span class="anomaly-time">Il y a 1 jour</span>
                     </div>
-                    <p class="anomaly-desc">Storage costs growing 2x faster than expected. Review checkpoint retention policies.</p>
+                    <p class="anomaly-desc">Coûts de stockage en hausse 2x plus vite que prévu. Vérifier les politiques de rétention des checkpoints.</p>
                     <div class="anomaly-impact">
-                        <span><i data-lucide="dollar-sign"></i> +$120/day impact</span>
+                        <span><i data-lucide="euro"></i> +110 €/jour impact</span>
                         <span><i data-lucide="target"></i> model-checkpoints</span>
                     </div>
                 </div>
                 <div class="anomaly-actions">
-                    <button class="btn btn-secondary btn-sm">Review</button>
-                    <button class="btn btn-ghost btn-sm">Dismiss</button>
+                    <button class="btn btn-secondary btn-sm">Examiner</button>
+                    <button class="btn btn-ghost btn-sm">Ignorer</button>
                 </div>
             </div>
 
@@ -371,18 +437,18 @@
                 </div>
                 <div class="anomaly-content">
                     <div class="anomaly-header">
-                        <span class="anomaly-title">Network Egress Increase</span>
-                        <span class="anomaly-time">3 days ago</span>
+                        <span class="anomaly-title">Augmentation du trafic réseau</span>
+                        <span class="anomaly-time">Il y a 3 jours</span>
                     </div>
-                    <p class="anomaly-desc">Cross-region data transfer increased by 15%. May be related to new EU deployment.</p>
+                    <p class="anomaly-desc">Transfert de données inter-régions en hausse de 15%. Probablement lié au déploiement EU.</p>
                     <div class="anomaly-impact">
-                        <span><i data-lucide="dollar-sign"></i> +$45/day impact</span>
+                        <span><i data-lucide="euro"></i> +41 €/jour impact</span>
                         <span><i data-lucide="target"></i> eu-west-1</span>
                     </div>
                 </div>
                 <div class="anomaly-actions">
-                    <button class="btn btn-secondary btn-sm">Review</button>
-                    <button class="btn btn-ghost btn-sm">Expected</button>
+                    <button class="btn btn-secondary btn-sm">Examiner</button>
+                    <button class="btn btn-ghost btn-sm">Attendu</button>
                 </div>
             </div>
         </div>
@@ -391,7 +457,7 @@
 
 <!-- Optimization Opportunities -->
 <section class="mb-6">
-    <h2 class="section-title">Cost Optimization Opportunities</h2>
+    <h2 class="section-title">Opportunités d'optimisation</h2>
     <div class="optimization-grid">
         <div class="optimization-card high-savings">
             <div class="opt-header">
@@ -399,19 +465,19 @@
                     <i data-lucide="server"></i>
                 </div>
                 <div class="opt-savings">
-                    <span class="savings-value">$3,200</span>
-                    <span class="savings-label">/month</span>
+                    <span class="savings-value">2 940 €</span>
+                    <span class="savings-label">/mois</span>
                 </div>
             </div>
-            <h4>Right-size GPU Instances</h4>
-            <p>3 inference clusters are underutilized (avg. 35% GPU usage). Downgrade to smaller instance types.</p>
+            <h4>Redimensionner les instances GPU</h4>
+            <p>3 clusters d'inférence sous-utilisés (moy. 35% GPU). Passer à des instances plus petites.</p>
             <div class="opt-details">
-                <span><i data-lucide="cpu"></i> 3 instances affected</span>
-                <span><i data-lucide="clock"></i> ~2 hours to implement</span>
+                <span><i data-lucide="cpu"></i> 3 instances concernées</span>
+                <span><i data-lucide="clock"></i> ~2h de mise en œuvre</span>
             </div>
             <div class="opt-actions">
-                <button class="btn btn-primary btn-sm">Apply Now</button>
-                <button class="btn btn-ghost btn-sm">Learn More</button>
+                <button class="btn btn-primary btn-sm">Appliquer</button>
+                <button class="btn btn-ghost btn-sm">En savoir plus</button>
             </div>
         </div>
 
@@ -421,19 +487,19 @@
                     <i data-lucide="clock"></i>
                 </div>
                 <div class="opt-savings">
-                    <span class="savings-value">$1,800</span>
-                    <span class="savings-label">/month</span>
+                    <span class="savings-value">1 650 €</span>
+                    <span class="savings-label">/mois</span>
                 </div>
             </div>
-            <h4>Schedule Off-Peak Training</h4>
-            <p>Move training jobs to off-peak hours (2am-6am) to benefit from spot pricing.</p>
+            <h4>Planifier les entraînements hors-pic</h4>
+            <p>Déplacer les jobs d'entraînement en heures creuses (2h-6h) pour bénéficier des tarifs spot.</p>
             <div class="opt-details">
-                <span><i data-lucide="calendar"></i> 12 training jobs</span>
-                <span><i data-lucide="percent"></i> 40% cost reduction</span>
+                <span><i data-lucide="calendar"></i> 12 jobs d'entraînement</span>
+                <span><i data-lucide="percent"></i> -40% de coûts</span>
             </div>
             <div class="opt-actions">
-                <button class="btn btn-secondary btn-sm">Configure</button>
-                <button class="btn btn-ghost btn-sm">Learn More</button>
+                <button class="btn btn-secondary btn-sm">Configurer</button>
+                <button class="btn btn-ghost btn-sm">En savoir plus</button>
             </div>
         </div>
 
@@ -443,19 +509,19 @@
                     <i data-lucide="layers"></i>
                 </div>
                 <div class="opt-savings">
-                    <span class="savings-value">$1,500</span>
-                    <span class="savings-label">/month</span>
+                    <span class="savings-value">1 380 €</span>
+                    <span class="savings-label">/mois</span>
                 </div>
             </div>
-            <h4>Enable Request Batching</h4>
-            <p>Batch inference requests for LLM models to improve GPU utilization efficiency.</p>
+            <h4>Activer le batching des requêtes</h4>
+            <p>Regrouper les requêtes d'inférence LLM pour améliorer l'efficacité GPU.</p>
             <div class="opt-details">
-                <span><i data-lucide="zap"></i> +45% throughput</span>
-                <span><i data-lucide="clock"></i> ~4 hours to implement</span>
+                <span><i data-lucide="zap"></i> +45% débit</span>
+                <span><i data-lucide="clock"></i> ~4h de mise en œuvre</span>
             </div>
             <div class="opt-actions">
-                <button class="btn btn-secondary btn-sm">Review</button>
-                <button class="btn btn-ghost btn-sm">Learn More</button>
+                <button class="btn btn-secondary btn-sm">Examiner</button>
+                <button class="btn btn-ghost btn-sm">En savoir plus</button>
             </div>
         </div>
 
@@ -465,27 +531,136 @@
                     <i data-lucide="trash-2"></i>
                 </div>
                 <div class="opt-savings">
-                    <span class="savings-value">$450</span>
-                    <span class="savings-label">/month</span>
+                    <span class="savings-value">410 €</span>
+                    <span class="savings-label">/mois</span>
                 </div>
             </div>
-            <h4>Clean Up Unused Resources</h4>
-            <p>Delete 45 unused model checkpoints and 8 orphaned storage volumes.</p>
+            <h4>Nettoyer les ressources inutilisées</h4>
+            <p>Supprimer 45 checkpoints inutilisés et 8 volumes de stockage orphelins.</p>
             <div class="opt-details">
-                <span><i data-lucide="hard-drive"></i> 850 GB storage</span>
-                <span><i data-lucide="clock"></i> ~30 mins to implement</span>
+                <span><i data-lucide="hard-drive"></i> 850 Go de stockage</span>
+                <span><i data-lucide="clock"></i> ~30 min de mise en œuvre</span>
             </div>
             <div class="opt-actions">
-                <button class="btn btn-secondary btn-sm">Clean Up</button>
-                <button class="btn btn-ghost btn-sm">Review List</button>
+                <button class="btn btn-secondary btn-sm">Nettoyer</button>
+                <button class="btn btn-ghost btn-sm">Voir la liste</button>
             </div>
         </div>
     </div>
 
     <div class="total-savings-banner">
         <i data-lucide="piggy-bank"></i>
-        <span>Total potential savings: <strong>$6,950/month</strong> ($83,400/year)</span>
-        <button class="btn btn-primary" onclick="viewAllOptimizations()">View All Recommendations</button>
+        <span>Économies potentielles totales : <strong>6 380 €/mois</strong> (76 560 €/an)</span>
+        <button class="btn btn-primary" onclick="viewAllOptimizations()">Voir toutes les recommandations</button>
+    </div>
+</section>
+
+<!-- Cloud Provider Comparison & ROI -->
+<section class="mb-6">
+    <div class="grid grid-2">
+        <!-- Cloud Provider Costs -->
+        <div class="card">
+            <div class="card-header">
+                <h3 class="card-title">Coûts par fournisseur cloud</h3>
+                <span class="badge badge-info">Multi-cloud</span>
+            </div>
+            <div class="provider-breakdown">
+                <div class="provider-item">
+                    <div class="provider-info">
+                        <div class="provider-icon aws">
+                            <i data-lucide="cloud"></i>
+                        </div>
+                        <div class="provider-details">
+                            <span class="provider-name">AWS</span>
+                            <span class="provider-services">EC2, S3, SageMaker</span>
+                        </div>
+                    </div>
+                    <div class="provider-cost">
+                        <span class="cost-value">18 200 €</span>
+                        <span class="cost-pct">43%</span>
+                    </div>
+                    <div class="provider-bar">
+                        <div class="bar-fill aws" style="width: 43%"></div>
+                    </div>
+                </div>
+                <div class="provider-item">
+                    <div class="provider-info">
+                        <div class="provider-icon gcp">
+                            <i data-lucide="cloud"></i>
+                        </div>
+                        <div class="provider-details">
+                            <span class="provider-name">Google Cloud</span>
+                            <span class="provider-services">Vertex AI, GCS, GKE</span>
+                        </div>
+                    </div>
+                    <div class="provider-cost">
+                        <span class="cost-value">14 850 €</span>
+                        <span class="cost-pct">35%</span>
+                    </div>
+                    <div class="provider-bar">
+                        <div class="bar-fill gcp" style="width: 35%"></div>
+                    </div>
+                </div>
+                <div class="provider-item">
+                    <div class="provider-info">
+                        <div class="provider-icon azure">
+                            <i data-lucide="cloud"></i>
+                        </div>
+                        <div class="provider-details">
+                            <span class="provider-name">Azure</span>
+                            <span class="provider-services">Azure ML, Blob Storage</span>
+                        </div>
+                    </div>
+                    <div class="provider-cost">
+                        <span class="cost-value">9 450 €</span>
+                        <span class="cost-pct">22%</span>
+                    </div>
+                    <div class="provider-bar">
+                        <div class="bar-fill azure" style="width: 22%"></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- ROI Tracker -->
+        <div class="card">
+            <div class="card-header">
+                <h3 class="card-title">Retour sur investissement IA</h3>
+            </div>
+            <div class="roi-metrics">
+                <div class="roi-main">
+                    <div class="roi-circle">
+                        <svg viewBox="0 0 100 100">
+                            <circle cx="50" cy="50" r="45" fill="none" stroke="var(--border-color)" stroke-width="8"/>
+                            <circle cx="50" cy="50" r="45" fill="none" stroke="var(--color-success)" stroke-width="8"
+                                    stroke-dasharray="212" stroke-dashoffset="42" transform="rotate(-90 50 50)"/>
+                        </svg>
+                        <div class="roi-value">
+                            <span class="roi-number">285%</span>
+                            <span class="roi-label">ROI</span>
+                        </div>
+                    </div>
+                </div>
+                <div class="roi-details">
+                    <div class="roi-detail-item">
+                        <span class="roi-detail-label">Investissement total</span>
+                        <span class="roi-detail-value">42 500 €</span>
+                    </div>
+                    <div class="roi-detail-item">
+                        <span class="roi-detail-label">Valeur générée</span>
+                        <span class="roi-detail-value success">163 600 €</span>
+                    </div>
+                    <div class="roi-detail-item">
+                        <span class="roi-detail-label">Économies opérationnelles</span>
+                        <span class="roi-detail-value">89 400 €</span>
+                    </div>
+                    <div class="roi-detail-item">
+                        <span class="roi-detail-label">Revenu additionnel</span>
+                        <span class="roi-detail-value">74 200 €</span>
+                    </div>
+                </div>
+            </div>
+        </div>
     </div>
 </section>
 
@@ -495,23 +670,23 @@
         <!-- Cost Forecast -->
         <div class="card">
             <div class="card-header">
-                <h3 class="card-title">Cost Forecast</h3>
+                <h3 class="card-title">Prévisions de coûts</h3>
             </div>
             <div class="chart-container">
                 <canvas id="costForecast"></canvas>
             </div>
             <div class="forecast-details">
                 <div class="forecast-row">
-                    <span>Current Month Projection</span>
-                    <span class="forecast-value">$51,000</span>
+                    <span>Projection mois en cours</span>
+                    <span class="forecast-value">47 000 €</span>
                 </div>
                 <div class="forecast-row">
-                    <span>Next Month Forecast</span>
-                    <span class="forecast-value">$48,500</span>
+                    <span>Prévision mois prochain</span>
+                    <span class="forecast-value">44 500 €</span>
                 </div>
                 <div class="forecast-row">
-                    <span>Q1 Total Forecast</span>
-                    <span class="forecast-value">$152,000</span>
+                    <span>Prévision T1 total</span>
+                    <span class="forecast-value">140 000 €</span>
                 </div>
             </div>
         </div>
@@ -519,58 +694,58 @@
         <!-- Budget Allocation -->
         <div class="card">
             <div class="card-header">
-                <h3 class="card-title">Budget Allocation</h3>
+                <h3 class="card-title">Allocation budgétaire</h3>
             </div>
             <div class="budget-allocation">
                 <div class="allocation-item">
                     <div class="allocation-header">
-                        <span class="allocation-name">Production Inference</span>
-                        <span class="allocation-status on-track">On Track</span>
+                        <span class="allocation-name">Inférence Production</span>
+                        <span class="allocation-status on-track">Dans les temps</span>
                     </div>
                     <div class="allocation-bar">
                         <div class="allocation-fill" style="width: 72%"></div>
                     </div>
                     <div class="allocation-meta">
-                        <span>$28,800 / $40,000</span>
+                        <span>26 450 € / 36 800 €</span>
                         <span>72%</span>
                     </div>
                 </div>
                 <div class="allocation-item">
                     <div class="allocation-header">
-                        <span class="allocation-name">Model Training</span>
-                        <span class="allocation-status on-track">On Track</span>
+                        <span class="allocation-name">Entraînement modèles</span>
+                        <span class="allocation-status on-track">Dans les temps</span>
                     </div>
                     <div class="allocation-bar">
                         <div class="allocation-fill" style="width: 65%"></div>
                     </div>
                     <div class="allocation-meta">
-                        <span>$6,500 / $10,000</span>
+                        <span>5 980 € / 9 200 €</span>
                         <span>65%</span>
                     </div>
                 </div>
                 <div class="allocation-item">
                     <div class="allocation-header">
-                        <span class="allocation-name">Storage & Data</span>
-                        <span class="allocation-status warning">At Risk</span>
+                        <span class="allocation-name">Stockage & Données</span>
+                        <span class="allocation-status warning">À risque</span>
                     </div>
                     <div class="allocation-bar warning">
                         <div class="allocation-fill warning" style="width: 91%"></div>
                     </div>
                     <div class="allocation-meta">
-                        <span>$4,550 / $5,000</span>
+                        <span>4 180 € / 4 600 €</span>
                         <span>91%</span>
                     </div>
                 </div>
                 <div class="allocation-item">
                     <div class="allocation-header">
-                        <span class="allocation-name">Development</span>
-                        <span class="allocation-status under">Under Budget</span>
+                        <span class="allocation-name">Développement</span>
+                        <span class="allocation-status under">Sous budget</span>
                     </div>
                     <div class="allocation-bar">
                         <div class="allocation-fill" style="width: 40%"></div>
                     </div>
                     <div class="allocation-meta">
-                        <span>$2,000 / $5,000</span>
+                        <span>1 840 € / 4 600 €</span>
                         <span>40%</span>
                     </div>
                 </div>
@@ -585,6 +760,89 @@
     font-weight: 600;
     margin-bottom: var(--space-4);
 }
+
+/* Efficiency KPIs */
+.efficiency-kpis {
+    display: grid;
+    grid-template-columns: repeat(6, 1fr);
+    gap: var(--space-4);
+}
+
+.kpi-card {
+    display: flex;
+    align-items: center;
+    gap: var(--space-3);
+    padding: var(--space-4);
+    background: var(--bg-card);
+    border: 1px solid var(--border-color);
+    border-radius: var(--radius-xl);
+    transition: all 0.2s ease;
+}
+
+.kpi-card:hover {
+    border-color: var(--color-primary);
+    box-shadow: 0 4px 12px rgba(99, 102, 241, 0.1);
+}
+
+.kpi-icon {
+    width: 48px;
+    height: 48px;
+    border-radius: var(--radius-lg);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+}
+
+.kpi-icon svg {
+    width: 24px;
+    height: 24px;
+    color: white;
+}
+
+.kpi-icon.efficiency { background: linear-gradient(135deg, #6366f1, #8b5cf6); }
+.kpi-icon.performance { background: linear-gradient(135deg, #f59e0b, #fbbf24); }
+.kpi-icon.utilization { background: linear-gradient(135deg, #3b82f6, #60a5fa); }
+.kpi-icon.savings { background: linear-gradient(135deg, #10b981, #34d399); }
+.kpi-icon.cache { background: linear-gradient(135deg, #8b5cf6, #a78bfa); }
+.kpi-icon.carbon { background: linear-gradient(135deg, #22c55e, #4ade80); }
+
+.kpi-content {
+    display: flex;
+    flex-direction: column;
+    min-width: 0;
+}
+
+.kpi-value {
+    font-size: 1.25rem;
+    font-weight: 700;
+    line-height: 1.2;
+}
+
+.kpi-label {
+    font-size: 0.75rem;
+    color: var(--text-secondary);
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.kpi-trend {
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+    font-size: 0.6875rem;
+    font-weight: 500;
+    margin-top: 2px;
+}
+
+.kpi-trend svg {
+    width: 12px;
+    height: 12px;
+}
+
+.kpi-trend.up { color: var(--color-success); }
+.kpi-trend.down { color: var(--color-success); }
 
 /* Budget Hero */
 .budget-hero {
@@ -1141,9 +1399,190 @@
     gap: var(--space-3);
 }
 
+/* Provider Breakdown Styles */
+.provider-breakdown {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-4);
+}
+
+.provider-item {
+    padding: var(--space-3);
+    background: var(--bg-hover);
+    border-radius: var(--radius-lg);
+}
+
+.provider-info {
+    display: flex;
+    align-items: center;
+    gap: var(--space-3);
+    margin-bottom: var(--space-2);
+}
+
+.provider-icon {
+    width: 36px;
+    height: 36px;
+    border-radius: var(--radius-md);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.provider-icon svg {
+    width: 18px;
+    height: 18px;
+    color: white;
+}
+
+.provider-icon.aws { background: linear-gradient(135deg, #ff9900, #ffb84d); }
+.provider-icon.gcp { background: linear-gradient(135deg, #4285f4, #669df6); }
+.provider-icon.azure { background: linear-gradient(135deg, #0078d4, #3399ff); }
+
+.provider-details {
+    display: flex;
+    flex-direction: column;
+}
+
+.provider-name {
+    font-weight: 600;
+    font-size: 0.875rem;
+}
+
+.provider-services {
+    font-size: 0.75rem;
+    color: var(--text-secondary);
+}
+
+.provider-cost {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: var(--space-2);
+}
+
+.provider-cost .cost-value {
+    font-weight: 700;
+    font-size: 1rem;
+}
+
+.provider-cost .cost-pct {
+    font-size: 0.75rem;
+    color: var(--text-secondary);
+    background: var(--bg-card);
+    padding: 2px 8px;
+    border-radius: var(--radius-full);
+}
+
+.provider-bar {
+    height: 6px;
+    background: var(--border-color);
+    border-radius: var(--radius-full);
+    overflow: hidden;
+}
+
+.bar-fill {
+    height: 100%;
+    border-radius: var(--radius-full);
+}
+
+.bar-fill.aws { background: linear-gradient(90deg, #ff9900, #ffb84d); }
+.bar-fill.gcp { background: linear-gradient(90deg, #4285f4, #669df6); }
+.bar-fill.azure { background: linear-gradient(90deg, #0078d4, #3399ff); }
+
+/* ROI Metrics Styles */
+.roi-metrics {
+    display: flex;
+    gap: var(--space-6);
+    align-items: center;
+}
+
+.roi-main {
+    flex-shrink: 0;
+}
+
+.roi-circle {
+    position: relative;
+    width: 140px;
+    height: 140px;
+}
+
+.roi-circle svg {
+    width: 100%;
+    height: 100%;
+}
+
+.roi-value {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    text-align: center;
+}
+
+.roi-number {
+    display: block;
+    font-size: 1.75rem;
+    font-weight: 700;
+    color: var(--color-success);
+}
+
+.roi-label {
+    font-size: 0.75rem;
+    color: var(--text-secondary);
+    text-transform: uppercase;
+    letter-spacing: 1px;
+}
+
+.roi-details {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-3);
+}
+
+.roi-detail-item {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: var(--space-2) 0;
+    border-bottom: 1px solid var(--border-color);
+}
+
+.roi-detail-item:last-child {
+    border-bottom: none;
+}
+
+.roi-detail-label {
+    font-size: 0.8125rem;
+    color: var(--text-secondary);
+}
+
+.roi-detail-value {
+    font-weight: 600;
+    font-size: 0.9375rem;
+}
+
+.roi-detail-value.success {
+    color: var(--color-success);
+}
+
+@media (max-width: 1400px) {
+    .efficiency-kpis {
+        grid-template-columns: repeat(3, 1fr);
+    }
+}
+
 @media (max-width: 1200px) {
     .optimization-grid {
         grid-template-columns: repeat(2, 1fr);
+    }
+
+    .efficiency-kpis {
+        grid-template-columns: repeat(2, 1fr);
+    }
+
+    .roi-metrics {
+        flex-direction: column;
     }
 }
 
@@ -1160,6 +1599,10 @@
         grid-template-columns: 1fr;
     }
 
+    .efficiency-kpis {
+        grid-template-columns: 1fr;
+    }
+
     .anomaly-item {
         flex-direction: column;
     }
@@ -1171,6 +1614,10 @@
     .total-savings-banner {
         flex-direction: column;
         text-align: center;
+    }
+
+    .provider-breakdown {
+        gap: var(--space-3);
     }
 }
 </style>
@@ -1204,9 +1651,9 @@ function initCharts() {
         new Chart(categoryCtx, {
             type: 'doughnut',
             data: {
-                labels: ['Inference', 'Training', 'Storage', 'Networking', 'Monitoring'],
+                labels: ['Inférence', 'Entraînement', 'Stockage', 'Réseau', 'Monitoring'],
                 datasets: [{
-                    data: [28500, 8200, 4530, 2500, 1500],
+                    data: [26100, 7500, 4150, 2300, 1400],
                     backgroundColor: ['#6366f1', '#8b5cf6', '#a78bfa', '#c4b5fd', '#ddd6fe'],
                     borderWidth: 0
                 }]
@@ -1216,7 +1663,14 @@ function initCharts() {
                 maintainAspectRatio: false,
                 cutout: '65%',
                 plugins: {
-                    legend: { display: false }
+                    legend: { display: false },
+                    tooltip: {
+                        callbacks: {
+                            label: function(context) {
+                                return context.label + ': ' + context.raw.toLocaleString('fr-FR') + ' €';
+                            }
+                        }
+                    }
                 }
             }
         });
@@ -1228,13 +1682,13 @@ function initCharts() {
         const labels = Array.from({length: 30}, (_, i) => {
             const d = new Date();
             d.setDate(d.getDate() - (29 - i));
-            return d.toLocaleDateString('en', {month: 'short', day: 'numeric'});
+            return d.toLocaleDateString('fr-FR', {day: 'numeric', month: 'short'});
         });
 
-        // Generate realistic cost data with slight downward trend
+        // Generate realistic cost data with slight downward trend (in euros)
         const data = labels.map((_, i) => {
-            const base = 1600 - (i * 3);
-            return Math.max(1300, base + (Math.random() - 0.5) * 200);
+            const base = 1470 - (i * 2.8);
+            return Math.max(1200, base + (Math.random() - 0.5) * 180);
         });
 
         new Chart(trendCtx, {
@@ -1242,7 +1696,7 @@ function initCharts() {
             data: {
                 labels: labels,
                 datasets: [{
-                    label: 'Daily Cost ($)',
+                    label: 'Coût journalier (€)',
                     data: data,
                     borderColor: '#6366f1',
                     backgroundColor: 'rgba(99, 102, 241, 0.1)',
@@ -1254,11 +1708,25 @@ function initCharts() {
                 responsive: true,
                 maintainAspectRatio: false,
                 plugins: {
-                    legend: { display: false }
+                    legend: { display: false },
+                    tooltip: {
+                        callbacks: {
+                            label: function(context) {
+                                return context.raw.toLocaleString('fr-FR', {maximumFractionDigits: 0}) + ' €';
+                            }
+                        }
+                    }
                 },
                 scales: {
                     x: {
                         ticks: { maxTicksLimit: 7 }
+                    },
+                    y: {
+                        ticks: {
+                            callback: function(value) {
+                                return value.toLocaleString('fr-FR') + ' €';
+                            }
+                        }
                     }
                 }
             }
@@ -1268,23 +1736,23 @@ function initCharts() {
     // Cost Forecast
     const forecastCtx = document.getElementById('costForecast');
     if (forecastCtx) {
-        const labels = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun'];
-        const actual = [48000, 52000, 49000, 51000, null, null];
-        const forecast = [null, null, null, 51000, 48500, 47000];
+        const labels = ['Janv', 'Fév', 'Mars', 'Avr', 'Mai', 'Juin'];
+        const actual = [44200, 47800, 45000, 47000, null, null];
+        const forecast = [null, null, null, 47000, 44500, 43200];
 
         new Chart(forecastCtx, {
             type: 'line',
             data: {
                 labels: labels,
                 datasets: [{
-                    label: 'Actual',
+                    label: 'Réalisé',
                     data: actual,
                     borderColor: '#6366f1',
                     backgroundColor: 'rgba(99, 102, 241, 0.1)',
                     fill: true,
                     tension: 0.4
                 }, {
-                    label: 'Forecast',
+                    label: 'Prévision',
                     data: forecast,
                     borderColor: '#6366f1',
                     borderDash: [5, 5],
@@ -1296,7 +1764,24 @@ function initCharts() {
                 responsive: true,
                 maintainAspectRatio: false,
                 plugins: {
-                    legend: { display: false }
+                    legend: { display: false },
+                    tooltip: {
+                        callbacks: {
+                            label: function(context) {
+                                if (context.raw === null) return '';
+                                return context.dataset.label + ': ' + context.raw.toLocaleString('fr-FR') + ' €';
+                            }
+                        }
+                    }
+                },
+                scales: {
+                    y: {
+                        ticks: {
+                            callback: function(value) {
+                                return value.toLocaleString('fr-FR') + ' €';
+                            }
+                        }
+                    }
                 }
             }
         });
@@ -1304,31 +1789,31 @@ function initCharts() {
 }
 
 function updateTimeRange() {
-    showToast('Updating data...', 'info');
+    showToast('Mise à jour des données...', 'info');
     loadFinOpsData();
 }
 
 function exportCostReport() {
-    showToast('Generating cost report...', 'info');
+    showToast('Génération du rapport de coûts...', 'info');
     setTimeout(() => {
-        showToast('Report ready for download!', 'success');
+        showToast('Rapport prêt au téléchargement !', 'success');
     }, 1500);
 }
 
 function openBudgetSettings() {
-    showToast('Opening budget settings...', 'info');
+    showToast('Ouverture des paramètres budget...', 'info');
 }
 
 function viewModelDetails(modelId) {
-    showToast(`Loading ${modelId} details...`, 'info');
+    showToast(`Chargement des détails de ${modelId}...`, 'info');
 }
 
 function optimizeModel(modelId) {
-    showToast(`Opening optimization wizard for ${modelId}...`, 'info');
+    showToast(`Ouverture de l'assistant d'optimisation pour ${modelId}...`, 'info');
 }
 
 function viewAllOptimizations() {
-    showToast('Loading all optimization opportunities...', 'info');
+    showToast('Chargement de toutes les recommandations...', 'info');
 }
 </script>
 {% endblock %}
