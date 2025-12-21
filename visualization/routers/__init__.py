@@ -9,6 +9,10 @@ from .monitoring import router as monitoring_router
 from .profiles import router as profiles_router
 from .realtime import router as realtime_router
 
+# New routers
+from .cognitive import router as cognitive_router
+from .causal import router as causal_router
+
 __all__ = [
     "dashboard_router",
     "metrics_router",
@@ -18,4 +22,7 @@ __all__ = [
     "assistant_router",
     "ingestion_router",
     "monitoring_router",
+    # New routers
+    "cognitive_router",
+    "causal_router",
 ]

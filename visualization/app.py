@@ -30,7 +30,36 @@ from .routers import (
     monitoring_router,
     profiles_router,
     realtime_router,
+    cognitive_router,
+    causal_router,
 )
+
+# Import new module routers (optional - may fail due to dependencies)
+auth_router = None
+alerting_router = None
+exports_router = None
+integrations_router = None
+
+try:
+    from .auth.router import router as auth_router
+except Exception as e:
+    logging.warning(f"Auth module not available: {e}")
+
+try:
+    from .alerting.router import router as alerting_router
+except Exception as e:
+    logging.warning(f"Alerting module not available: {e}")
+
+try:
+    from .exports.router import router as exports_router
+except Exception as e:
+    logging.warning(f"Exports module not available: {e}")
+
+try:
+    from .integrations.router import router as integrations_router
+except Exception as e:
+    logging.warning(f"Integrations module not available: {e}")
+
 from .routers.ingestion import shutdown as ingestion_shutdown
 from .routers.ingestion import startup as ingestion_startup
 from .routers.realtime import start_background_tasks, stop_background_tasks
@@ -119,6 +148,20 @@ app.include_router(realtime_router)
 app.include_router(assistant_router)
 app.include_router(ingestion_router)
 app.include_router(monitoring_router)
+
+# New feature routers
+app.include_router(cognitive_router)
+app.include_router(causal_router)
+
+# Optional routers (may not be available due to dependencies)
+if auth_router:
+    app.include_router(auth_router)
+if alerting_router:
+    app.include_router(alerting_router)
+if exports_router:
+    app.include_router(exports_router)
+if integrations_router:
+    app.include_router(integrations_router)
 
 
 # =============================================================================
