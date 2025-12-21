@@ -76,3 +76,6 @@ site/
 
 # Jupyter
 .ipynb_checkpoints/
+
+# Persisted data
+data/
