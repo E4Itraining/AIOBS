@@ -309,7 +309,7 @@ router.get('/compliance/report', (req: Request, res: Response) => {
  */
 router.post('/', (req: Request, res: Response) => {
   try {
-    const { name, serviceId, target, period = 'monthly', type = 'availability' } = req.body;
+    const { name, serviceId, target, period = 'monthly' } = req.body;
 
     if (!name || !serviceId || target === undefined) {
       return res.status(400).json({
@@ -328,9 +328,8 @@ router.post('/', (req: Request, res: Response) => {
       });
     }
 
-    // Note: In a real implementation, this would persist to a database
-    const newSLO = {
-      id: `slo-${Date.now()}`,
+    const consumed = Math.random() * 30;
+    const newSLO = dataStore.createSLO({
       name,
       serviceId,
       target,
@@ -338,13 +337,11 @@ router.post('/', (req: Request, res: Response) => {
       status: 'met' as const,
       errorBudget: {
         total: 100,
-        consumed: Math.random() * 30,
-        remaining: 70 + Math.random() * 30,
+        consumed,
+        remaining: 100 - consumed,
       },
       period,
-      type,
-      createdAt: new Date().toISOString(),
-    };
+    });
 
     res.status(201).json({
       success: true,
@@ -356,6 +353,78 @@ router.post('/', (req: Request, res: Response) => {
     res.status(500).json({
       success: false,
       error: 'Failed to create SLO',
+      timestamp: new Date().toISOString(),
+    });
+  }
+});
+
+/**
+ * PUT /api/slo/:id
+ * Update an existing SLO
+ */
+router.put('/:id', (req: Request, res: Response) => {
+  try {
+    const { id } = req.params;
+    const { name, target, status, current, errorBudget, period } = req.body;
+
+    const updatedSLO = dataStore.updateSLO(id, {
+      ...(name && { name }),
+      ...(target !== undefined && { target }),
+      ...(status && { status }),
+      ...(current !== undefined && { current }),
+      ...(errorBudget && { errorBudget }),
+      ...(period && { period }),
+    });
+
+    if (!updatedSLO) {
+      return res.status(404).json({
+        success: false,
+        error: 'SLO not found',
+        timestamp: new Date().toISOString(),
+      });
+    }
+
+    res.json({
+      success: true,
+      data: updatedSLO,
+      message: 'SLO updated successfully',
+      timestamp: new Date().toISOString(),
+    });
+  } catch (error) {
+    res.status(500).json({
+      success: false,
+      error: 'Failed to update SLO',
+      timestamp: new Date().toISOString(),
+    });
+  }
+});
+
+/**
+ * DELETE /api/slo/:id
+ * Delete an SLO
+ */
+router.delete('/:id', (req: Request, res: Response) => {
+  try {
+    const { id } = req.params;
+    const deleted = dataStore.deleteSLO(id);
+
+    if (!deleted) {
+      return res.status(404).json({
+        success: false,
+        error: 'SLO not found',
+        timestamp: new Date().toISOString(),
+      });
+    }
+
+    res.json({
+      success: true,
+      message: 'SLO deleted successfully',
+      timestamp: new Date().toISOString(),
+    });
+  } catch (error) {
+    res.status(500).json({
+      success: false,
+      error: 'Failed to delete SLO',
       timestamp: new Date().toISOString(),
     });
   }

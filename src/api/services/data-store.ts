@@ -1,10 +1,16 @@
 /**
  * AIOBS Data Store Service
  * Manages in-memory data and provides a unified interface for all services
+ * Now with file-based persistence to preserve changes across restarts
  */
 
 import { v4 as uuidv4 } from 'uuid';
+import * as fs from 'fs';
+import * as path from 'path';
 import { logger } from '../../utils/logger';
+
+// Path to the persistence file
+const DATA_FILE_PATH = path.join(process.cwd(), 'data', 'datastore.json');
 
 export interface Service {
   id: string;
@@ -83,6 +89,14 @@ export interface MetricSeries {
   data: TimeSeriesPoint[];
 }
 
+interface PersistedData {
+  services: Array<[string, Service]>;
+  alerts: Array<[string, Alert]>;
+  cognitiveMetrics: Array<[string, CognitiveMetrics]>;
+  slos: Array<[string, SLO]>;
+  lastSaved: string;
+}
+
 class DataStoreImpl {
   private static instance: DataStoreImpl;
   private services: Map<string, Service> = new Map();
@@ -91,6 +105,7 @@ class DataStoreImpl {
   private slos: Map<string, SLO> = new Map();
   private metricsSeries: Map<string, MetricSeries> = new Map();
   private initialized = false;
+  private saveTimeout: NodeJS.Timeout | null = null;
 
   private constructor() {}
 
@@ -105,17 +120,91 @@ class DataStoreImpl {
     return this.initialized;
   }
 
+  /**
+   * Save data to file for persistence
+   */
+  private saveToFile(): void {
+    try {
+      // Ensure data directory exists
+      const dataDir = path.dirname(DATA_FILE_PATH);
+      if (!fs.existsSync(dataDir)) {
+        fs.mkdirSync(dataDir, { recursive: true });
+      }
+
+      const data: PersistedData = {
+        services: Array.from(this.services.entries()),
+        alerts: Array.from(this.alerts.entries()),
+        cognitiveMetrics: Array.from(this.cognitiveMetrics.entries()),
+        slos: Array.from(this.slos.entries()),
+        lastSaved: new Date().toISOString(),
+      };
+
+      fs.writeFileSync(DATA_FILE_PATH, JSON.stringify(data, null, 2), 'utf-8');
+      logger.debug('Data saved to file successfully');
+    } catch (error) {
+      logger.error('Failed to save data to file:', { error: String(error) });
+    }
+  }
+
+  /**
+   * Debounced save to avoid too many writes
+   */
+  private scheduleSave(): void {
+    if (this.saveTimeout) {
+      clearTimeout(this.saveTimeout);
+    }
+    this.saveTimeout = setTimeout(() => {
+      this.saveToFile();
+      this.saveTimeout = null;
+    }, 500); // Save after 500ms of no changes
+  }
+
+  /**
+   * Load data from file if it exists
+   */
+  private loadFromFile(): boolean {
+    try {
+      if (fs.existsSync(DATA_FILE_PATH)) {
+        const fileContent = fs.readFileSync(DATA_FILE_PATH, 'utf-8');
+        const data: PersistedData = JSON.parse(fileContent);
+
+        this.services = new Map(data.services);
+        this.alerts = new Map(data.alerts);
+        this.cognitiveMetrics = new Map(data.cognitiveMetrics);
+        this.slos = new Map(data.slos);
+
+        logger.info(`Data loaded from file (last saved: ${data.lastSaved})`);
+        return true;
+      }
+    } catch (error) {
+      logger.error('Failed to load data from file:', { error: String(error) });
+    }
+    return false;
+  }
+
   initialize(): void {
     if (this.initialized) return;
 
     logger.info('Initializing AIOBS Data Store...');
-    this.seedServices();
-    this.seedAlerts();
-    this.seedCognitiveMetrics();
-    this.seedSLOs();
-    this.seedMetricsSeries();
+
+    // Try to load existing data first
+    const dataLoaded = this.loadFromFile();
+
+    if (!dataLoaded) {
+      // No existing data, seed with demo data
+      logger.info('No existing data found, seeding with demo data...');
+      this.seedServices();
+      this.seedAlerts();
+      this.seedCognitiveMetrics();
+      this.seedSLOs();
+      this.saveToFile(); // Save initial data
+      logger.info('Data Store initialized with demo data');
+    } else {
+      logger.info('Data Store initialized with persisted data');
+    }
+
+    this.seedMetricsSeries(); // Always regenerate time series
     this.initialized = true;
-    logger.info('Data Store initialized with demo data');
 
     // Start real-time data simulation
     this.startSimulation();
@@ -475,6 +564,7 @@ class DataStoreImpl {
   createAlert(alert: Omit<Alert, 'id'>): Alert {
     const newAlert: Alert = { ...alert, id: uuidv4() };
     this.alerts.set(newAlert.id, newAlert);
+    this.scheduleSave(); // Persist changes
     return newAlert;
   }
 
@@ -483,8 +573,91 @@ class DataStoreImpl {
     if (alert) {
       alert.status = status;
       this.alerts.set(id, alert);
+      this.scheduleSave(); // Persist changes
     }
     return alert;
+  }
+
+  /**
+   * Create a new SLO
+   */
+  createSLO(slo: Omit<SLO, 'id'>): SLO {
+    const newSLO: SLO = { ...slo, id: uuidv4() };
+    this.slos.set(newSLO.id, newSLO);
+    this.scheduleSave(); // Persist changes
+    return newSLO;
+  }
+
+  /**
+   * Update an existing SLO
+   */
+  updateSLO(id: string, updates: Partial<Omit<SLO, 'id'>>): SLO | undefined {
+    const slo = this.slos.get(id);
+    if (slo) {
+      Object.assign(slo, updates);
+      this.slos.set(id, slo);
+      this.scheduleSave(); // Persist changes
+    }
+    return slo;
+  }
+
+  /**
+   * Delete an SLO
+   */
+  deleteSLO(id: string): boolean {
+    const deleted = this.slos.delete(id);
+    if (deleted) {
+      this.scheduleSave(); // Persist changes
+    }
+    return deleted;
+  }
+
+  /**
+   * Update a service
+   */
+  updateService(id: string, updates: Partial<Omit<Service, 'id'>>): Service | undefined {
+    const service = this.services.get(id);
+    if (service) {
+      Object.assign(service, updates, { lastUpdated: new Date().toISOString() });
+      this.services.set(id, service);
+      this.scheduleSave(); // Persist changes
+    }
+    return service;
+  }
+
+  /**
+   * Update cognitive metrics for a model
+   */
+  updateCognitiveMetrics(modelId: string, updates: Partial<Omit<CognitiveMetrics, 'modelId'>>): CognitiveMetrics | undefined {
+    const metrics = this.cognitiveMetrics.get(modelId);
+    if (metrics) {
+      Object.assign(metrics, updates, { timestamp: new Date().toISOString() });
+      this.cognitiveMetrics.set(modelId, metrics);
+      this.scheduleSave(); // Persist changes
+    }
+    return metrics;
+  }
+
+  /**
+   * Delete an alert
+   */
+  deleteAlert(id: string): boolean {
+    const deleted = this.alerts.delete(id);
+    if (deleted) {
+      this.scheduleSave(); // Persist changes
+    }
+    return deleted;
+  }
+
+  /**
+   * Force save data immediately (for shutdown scenarios)
+   */
+  forceSave(): void {
+    if (this.saveTimeout) {
+      clearTimeout(this.saveTimeout);
+      this.saveTimeout = null;
+    }
+    this.saveToFile();
   }
 
   // Cognitive metrics methods
