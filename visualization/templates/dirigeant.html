@@ -98,28 +98,36 @@
                     <i data-lucide="bar-chart-3"></i>
                     Valeur Business Générée
                 </h3>
-                <div class="time-selector">
-                    <button class="time-btn active" data-range="month">Mois</button>
-                    <button class="time-btn" data-range="quarter">Trimestre</button>
-                    <button class="time-btn" data-range="year">Année</button>
+                <div class="card-header-actions">
+                    <div class="time-selector">
+                        <button class="time-btn active" data-range="month">Mois</button>
+                        <button class="time-btn" data-range="quarter">Trimestre</button>
+                        <button class="time-btn" data-range="year">Année</button>
+                    </div>
+                    <button class="btn btn-ghost btn-sm" onclick="openBusinessValueDeepDive()">
+                        <i data-lucide="maximize-2"></i>
+                        Deep Dive
+                    </button>
                 </div>
             </div>
             <div class="card-body">
-                <div class="value-summary">
+                <div class="value-summary" id="valueSummary">
                     <div class="value-item">
-                        <span class="value-number">€2.4M</span>
+                        <span class="value-number" id="savingsValue">€2.4M</span>
                         <span class="value-label">Économies réalisées</span>
                     </div>
                     <div class="value-item">
-                        <span class="value-number">€5.7M</span>
+                        <span class="value-number" id="revenueValue">€5.7M</span>
                         <span class="value-label">Revenus additionnels</span>
                     </div>
                     <div class="value-item">
-                        <span class="value-number">34%</span>
+                        <span class="value-number" id="productivityValue">34%</span>
                         <span class="value-label">Gain de productivité</span>
                     </div>
                 </div>
-                <canvas id="businessValueChart" height="250"></canvas>
+                <div class="chart-container" style="position: relative; height: 250px;">
+                    <canvas id="businessValueChart"></canvas>
+                </div>
             </div>
         </div>
 
@@ -353,6 +361,197 @@
     </div>
 </div>
 
+<!-- Business Value Deep Dive Modal -->
+<div class="modal-overlay" id="businessValueModal">
+    <div class="modal-container modal-xl">
+        <div class="modal-header">
+            <h2>
+                <i data-lucide="bar-chart-3"></i>
+                Deep Dive - Valeur Business Générée
+            </h2>
+            <button class="modal-close" onclick="closeBusinessValueDeepDive()">
+                <i data-lucide="x"></i>
+            </button>
+        </div>
+        <div class="modal-body">
+            <!-- Time Range Selector -->
+            <div class="deep-dive-controls">
+                <div class="time-selector-large">
+                    <button class="time-btn-lg active" data-range="month">Ce mois</button>
+                    <button class="time-btn-lg" data-range="quarter">Ce trimestre</button>
+                    <button class="time-btn-lg" data-range="year">Cette année</button>
+                    <button class="time-btn-lg" data-range="all">Historique complet</button>
+                </div>
+            </div>
+
+            <!-- KPI Cards -->
+            <div class="deep-dive-kpis">
+                <div class="deep-dive-kpi">
+                    <div class="deep-dive-kpi-icon savings">
+                        <i data-lucide="piggy-bank"></i>
+                    </div>
+                    <div class="deep-dive-kpi-content">
+                        <span class="deep-dive-kpi-value" id="modalSavings">€2.4M</span>
+                        <span class="deep-dive-kpi-label">Économies réalisées</span>
+                        <span class="deep-dive-kpi-trend up">
+                            <i data-lucide="trending-up"></i>
+                            +12% vs période précédente
+                        </span>
+                    </div>
+                </div>
+                <div class="deep-dive-kpi">
+                    <div class="deep-dive-kpi-icon revenue">
+                        <i data-lucide="banknote"></i>
+                    </div>
+                    <div class="deep-dive-kpi-content">
+                        <span class="deep-dive-kpi-value" id="modalRevenue">€5.7M</span>
+                        <span class="deep-dive-kpi-label">Revenus additionnels</span>
+                        <span class="deep-dive-kpi-trend up">
+                            <i data-lucide="trending-up"></i>
+                            +18% vs période précédente
+                        </span>
+                    </div>
+                </div>
+                <div class="deep-dive-kpi">
+                    <div class="deep-dive-kpi-icon productivity">
+                        <i data-lucide="zap"></i>
+                    </div>
+                    <div class="deep-dive-kpi-content">
+                        <span class="deep-dive-kpi-value" id="modalProductivity">34%</span>
+                        <span class="deep-dive-kpi-label">Gain de productivité</span>
+                        <span class="deep-dive-kpi-trend up">
+                            <i data-lucide="trending-up"></i>
+                            +5pts vs période précédente
+                        </span>
+                    </div>
+                </div>
+                <div class="deep-dive-kpi">
+                    <div class="deep-dive-kpi-icon roi">
+                        <i data-lucide="target"></i>
+                    </div>
+                    <div class="deep-dive-kpi-content">
+                        <span class="deep-dive-kpi-value">247%</span>
+                        <span class="deep-dive-kpi-label">ROI Global</span>
+                        <span class="deep-dive-kpi-trend up">
+                            <i data-lucide="trending-up"></i>
+                            Objectif : 200%
+                        </span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Charts Grid -->
+            <div class="deep-dive-charts">
+                <div class="deep-dive-chart-card">
+                    <h4>Évolution mensuelle</h4>
+                    <div class="chart-container" style="height: 280px;">
+                        <canvas id="deepDiveEvolutionChart"></canvas>
+                    </div>
+                </div>
+                <div class="deep-dive-chart-card">
+                    <h4>Répartition par système IA</h4>
+                    <div class="chart-container" style="height: 280px;">
+                        <canvas id="deepDiveDistributionChart"></canvas>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Breakdown Table -->
+            <div class="deep-dive-table-section">
+                <h4>Détail par système IA</h4>
+                <div class="table-container">
+                    <table class="table">
+                        <thead>
+                            <tr>
+                                <th>Système IA</th>
+                                <th>Économies</th>
+                                <th>Revenus</th>
+                                <th>Productivité</th>
+                                <th>ROI</th>
+                                <th>Statut</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td>
+                                    <div class="system-name">
+                                        <i data-lucide="message-square"></i>
+                                        Chatbot Client
+                                    </div>
+                                </td>
+                                <td>€420K</td>
+                                <td>€1.2M</td>
+                                <td>+45%</td>
+                                <td>312%</td>
+                                <td><span class="badge badge-success">Excellent</span></td>
+                            </tr>
+                            <tr>
+                                <td>
+                                    <div class="system-name">
+                                        <i data-lucide="credit-card"></i>
+                                        Scoring Crédit
+                                    </div>
+                                </td>
+                                <td>€850K</td>
+                                <td>€2.1M</td>
+                                <td>+38%</td>
+                                <td>285%</td>
+                                <td><span class="badge badge-success">Excellent</span></td>
+                            </tr>
+                            <tr>
+                                <td>
+                                    <div class="system-name">
+                                        <i data-lucide="shield"></i>
+                                        Détection Fraude
+                                    </div>
+                                </td>
+                                <td>€680K</td>
+                                <td>€1.5M</td>
+                                <td>+28%</td>
+                                <td>245%</td>
+                                <td><span class="badge badge-success">Bon</span></td>
+                            </tr>
+                            <tr>
+                                <td>
+                                    <div class="system-name">
+                                        <i data-lucide="shopping-cart"></i>
+                                        Recommandation
+                                    </div>
+                                </td>
+                                <td>€280K</td>
+                                <td>€650K</td>
+                                <td>+22%</td>
+                                <td>178%</td>
+                                <td><span class="badge badge-warning">À surveiller</span></td>
+                            </tr>
+                            <tr>
+                                <td>
+                                    <div class="system-name">
+                                        <i data-lucide="file-search"></i>
+                                        Doc Analyzer
+                                    </div>
+                                </td>
+                                <td>€170K</td>
+                                <td>€250K</td>
+                                <td>+52%</td>
+                                <td>195%</td>
+                                <td><span class="badge badge-success">Bon</span></td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+        <div class="modal-footer">
+            <button class="btn btn-secondary" onclick="closeBusinessValueDeepDive()">Fermer</button>
+            <button class="btn btn-primary" onclick="exportBusinessValueReport()">
+                <i data-lucide="download"></i>
+                Exporter le rapport
+            </button>
+        </div>
+    </div>
+</div>
+
 <style>
 /* Dirigeant Dashboard Styles */
 .dirigeant-dashboard {
@@ -477,6 +676,43 @@
 .card { grid-column: span 4; }
 .card-lg { grid-column: span 6; }
 .card-full { grid-column: span 12; }
+
+/* Card Header Actions */
+.card-header-actions {
+    display: flex;
+    align-items: center;
+    gap: var(--space-3);
+}
+
+/* Time Selector */
+.time-selector {
+    display: flex;
+    background: var(--bg-body);
+    border-radius: var(--radius-md);
+    padding: 2px;
+}
+
+.time-btn {
+    padding: var(--space-2) var(--space-3);
+    border: none;
+    background: transparent;
+    color: var(--text-secondary);
+    font-size: 0.75rem;
+    font-weight: 500;
+    cursor: pointer;
+    border-radius: var(--radius-sm);
+    transition: all var(--transition-fast);
+}
+
+.time-btn:hover {
+    color: var(--text-primary);
+}
+
+.time-btn.active {
+    background: var(--bg-card);
+    color: var(--color-primary);
+    box-shadow: var(--shadow-sm);
+}
 
 /* Value Summary */
 .value-summary {
@@ -784,6 +1020,298 @@
     .exec-kpi-grid { grid-template-columns: 1fr; }
     .card { grid-column: span 12; }
     .portfolio-grid { grid-template-columns: 1fr; }
+    .card-header-actions { flex-direction: column; align-items: flex-end; gap: var(--space-2); }
+}
+
+/* Modal Styles */
+.modal-overlay {
+    position: fixed;
+    inset: 0;
+    background: rgba(0, 0, 0, 0.6);
+    backdrop-filter: blur(4px);
+    z-index: 1000;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: var(--space-4);
+    opacity: 0;
+    visibility: hidden;
+    transition: all var(--transition-base);
+}
+
+.modal-overlay.active {
+    opacity: 1;
+    visibility: visible;
+}
+
+.modal-container {
+    background: var(--bg-card);
+    border-radius: var(--radius-xl);
+    box-shadow: var(--shadow-xl);
+    max-height: 90vh;
+    overflow: hidden;
+    display: flex;
+    flex-direction: column;
+    transform: scale(0.95) translateY(20px);
+    transition: transform var(--transition-base);
+}
+
+.modal-overlay.active .modal-container {
+    transform: scale(1) translateY(0);
+}
+
+.modal-xl {
+    width: 100%;
+    max-width: 1200px;
+}
+
+.modal-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: var(--space-5);
+    border-bottom: 1px solid var(--border-color);
+}
+
+.modal-header h2 {
+    display: flex;
+    align-items: center;
+    gap: var(--space-3);
+    font-size: 1.25rem;
+    font-weight: 600;
+}
+
+.modal-header h2 svg {
+    width: 24px;
+    height: 24px;
+    color: var(--color-primary);
+}
+
+.modal-close {
+    width: 40px;
+    height: 40px;
+    border: none;
+    background: var(--bg-hover);
+    border-radius: var(--radius-md);
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: var(--text-secondary);
+    transition: all var(--transition-fast);
+}
+
+.modal-close:hover {
+    background: var(--color-danger-light);
+    color: var(--color-danger);
+}
+
+.modal-close svg {
+    width: 20px;
+    height: 20px;
+}
+
+.modal-body {
+    padding: var(--space-5);
+    overflow-y: auto;
+    flex: 1;
+}
+
+.modal-footer {
+    display: flex;
+    align-items: center;
+    justify-content: flex-end;
+    gap: var(--space-3);
+    padding: var(--space-4) var(--space-5);
+    border-top: 1px solid var(--border-color);
+}
+
+/* Deep Dive Controls */
+.deep-dive-controls {
+    margin-bottom: var(--space-5);
+}
+
+.time-selector-large {
+    display: flex;
+    background: var(--bg-body);
+    border-radius: var(--radius-lg);
+    padding: 4px;
+    gap: 4px;
+}
+
+.time-btn-lg {
+    flex: 1;
+    padding: var(--space-3) var(--space-4);
+    border: none;
+    background: transparent;
+    color: var(--text-secondary);
+    font-size: 0.875rem;
+    font-weight: 500;
+    cursor: pointer;
+    border-radius: var(--radius-md);
+    transition: all var(--transition-fast);
+}
+
+.time-btn-lg:hover {
+    color: var(--text-primary);
+    background: var(--bg-hover);
+}
+
+.time-btn-lg.active {
+    background: var(--color-primary);
+    color: white;
+    box-shadow: var(--shadow-md);
+}
+
+/* Deep Dive KPIs */
+.deep-dive-kpis {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: var(--space-4);
+    margin-bottom: var(--space-5);
+}
+
+.deep-dive-kpi {
+    display: flex;
+    align-items: center;
+    gap: var(--space-4);
+    padding: var(--space-4);
+    background: var(--bg-body);
+    border-radius: var(--radius-lg);
+    border: 1px solid var(--border-color);
+}
+
+.deep-dive-kpi-icon {
+    width: 56px;
+    height: 56px;
+    border-radius: var(--radius-lg);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+}
+
+.deep-dive-kpi-icon svg {
+    width: 28px;
+    height: 28px;
+    color: white;
+}
+
+.deep-dive-kpi-icon.savings {
+    background: linear-gradient(135deg, #10b981, #059669);
+}
+
+.deep-dive-kpi-icon.revenue {
+    background: linear-gradient(135deg, #D4A017, #C17A4A);
+}
+
+.deep-dive-kpi-icon.productivity {
+    background: linear-gradient(135deg, #6366f1, #8b5cf6);
+}
+
+.deep-dive-kpi-icon.roi {
+    background: linear-gradient(135deg, #f59e0b, #d97706);
+}
+
+.deep-dive-kpi-content {
+    display: flex;
+    flex-direction: column;
+}
+
+.deep-dive-kpi-value {
+    font-size: 1.5rem;
+    font-weight: 700;
+    color: var(--text-primary);
+}
+
+.deep-dive-kpi-label {
+    font-size: 0.8125rem;
+    color: var(--text-secondary);
+    margin-bottom: var(--space-1);
+}
+
+.deep-dive-kpi-trend {
+    display: flex;
+    align-items: center;
+    gap: var(--space-1);
+    font-size: 0.75rem;
+    font-weight: 500;
+}
+
+.deep-dive-kpi-trend.up {
+    color: #10b981;
+}
+
+.deep-dive-kpi-trend.down {
+    color: #ef4444;
+}
+
+.deep-dive-kpi-trend svg {
+    width: 14px;
+    height: 14px;
+}
+
+/* Deep Dive Charts */
+.deep-dive-charts {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: var(--space-4);
+    margin-bottom: var(--space-5);
+}
+
+.deep-dive-chart-card {
+    background: var(--bg-body);
+    border: 1px solid var(--border-color);
+    border-radius: var(--radius-lg);
+    padding: var(--space-4);
+}
+
+.deep-dive-chart-card h4 {
+    font-size: 0.9375rem;
+    font-weight: 600;
+    margin-bottom: var(--space-3);
+    color: var(--text-primary);
+}
+
+/* Deep Dive Table */
+.deep-dive-table-section {
+    background: var(--bg-body);
+    border: 1px solid var(--border-color);
+    border-radius: var(--radius-lg);
+    padding: var(--space-4);
+}
+
+.deep-dive-table-section h4 {
+    font-size: 0.9375rem;
+    font-weight: 600;
+    margin-bottom: var(--space-4);
+    color: var(--text-primary);
+}
+
+.system-name {
+    display: flex;
+    align-items: center;
+    gap: var(--space-2);
+    font-weight: 500;
+}
+
+.system-name svg {
+    width: 18px;
+    height: 18px;
+    color: var(--color-primary);
+}
+
+/* Responsive Modal */
+@media (max-width: 1024px) {
+    .deep-dive-kpis { grid-template-columns: repeat(2, 1fr); }
+    .deep-dive-charts { grid-template-columns: 1fr; }
+}
+
+@media (max-width: 768px) {
+    .modal-container { margin: var(--space-2); max-height: 95vh; }
+    .deep-dive-kpis { grid-template-columns: 1fr; }
+    .time-selector-large { flex-wrap: wrap; }
+    .time-btn-lg { flex: 1 1 45%; }
 }
 </style>
 
@@ -973,5 +1501,266 @@ function generateExecutiveReport() {
 function investigateDrift() {
     window.location.href = '/causal';
 }
+
+// Business Value Data by Time Range
+const businessValueData = {
+    month: {
+        labels: ['Sem 1', 'Sem 2', 'Sem 3', 'Sem 4'],
+        savings: [580, 620, 590, 610],
+        revenue: [1350, 1420, 1380, 1550],
+        summaryValues: { savings: '€2.4M', revenue: '€5.7M', productivity: '34%' }
+    },
+    quarter: {
+        labels: ['Jan', 'Fév', 'Mar'],
+        savings: [2100, 2300, 2400],
+        revenue: [5200, 5500, 5700],
+        summaryValues: { savings: '€6.8M', revenue: '€16.4M', productivity: '32%' }
+    },
+    year: {
+        labels: ['T1', 'T2', 'T3', 'T4'],
+        savings: [6200, 6800, 7200, 7800],
+        revenue: [15800, 16400, 17200, 18500],
+        summaryValues: { savings: '€28M', revenue: '€67.9M', productivity: '38%' }
+    }
+};
+
+let businessValueChart = null;
+
+// Initialize Time Selector
+document.querySelectorAll('.time-selector .time-btn').forEach(btn => {
+    btn.addEventListener('click', function() {
+        // Update active state
+        document.querySelectorAll('.time-selector .time-btn').forEach(b => b.classList.remove('active'));
+        this.classList.add('active');
+
+        // Update chart and values
+        const range = this.dataset.range;
+        updateBusinessValueChart(range);
+    });
+});
+
+function updateBusinessValueChart(range) {
+    const data = businessValueData[range];
+    if (!data) return;
+
+    // Update summary values
+    document.getElementById('savingsValue').textContent = data.summaryValues.savings;
+    document.getElementById('revenueValue').textContent = data.summaryValues.revenue;
+    document.getElementById('productivityValue').textContent = data.summaryValues.productivity;
+
+    // Update chart
+    const ctx = document.getElementById('businessValueChart');
+    if (!ctx) return;
+
+    if (businessValueChart) {
+        businessValueChart.destroy();
+    }
+
+    businessValueChart = new Chart(ctx, {
+        type: 'bar',
+        data: {
+            labels: data.labels,
+            datasets: [
+                {
+                    label: 'Économies',
+                    data: data.savings,
+                    backgroundColor: '#10b981',
+                    borderRadius: 4
+                },
+                {
+                    label: 'Revenus additionnels',
+                    data: data.revenue,
+                    backgroundColor: '#D4A017',
+                    borderRadius: 4
+                }
+            ]
+        },
+        options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            plugins: {
+                legend: {
+                    position: 'bottom',
+                    labels: { usePointStyle: true }
+                }
+            },
+            scales: {
+                y: {
+                    beginAtZero: true,
+                    ticks: { callback: v => '€' + v + 'K' }
+                }
+            }
+        }
+    });
+}
+
+// Deep Dive Modal Functions
+let deepDiveEvolutionChart = null;
+let deepDiveDistributionChart = null;
+
+function openBusinessValueDeepDive() {
+    const modal = document.getElementById('businessValueModal');
+    modal.classList.add('active');
+    document.body.style.overflow = 'hidden';
+
+    // Initialize charts after modal is visible
+    setTimeout(() => {
+        lucide.createIcons();
+        initDeepDiveCharts();
+    }, 100);
+
+    // Initialize time selector in modal
+    document.querySelectorAll('.time-selector-large .time-btn-lg').forEach(btn => {
+        btn.addEventListener('click', function() {
+            document.querySelectorAll('.time-selector-large .time-btn-lg').forEach(b => b.classList.remove('active'));
+            this.classList.add('active');
+            updateDeepDiveData(this.dataset.range);
+        });
+    });
+}
+
+function closeBusinessValueDeepDive() {
+    const modal = document.getElementById('businessValueModal');
+    modal.classList.remove('active');
+    document.body.style.overflow = '';
+
+    // Destroy charts to prevent memory leaks
+    if (deepDiveEvolutionChart) {
+        deepDiveEvolutionChart.destroy();
+        deepDiveEvolutionChart = null;
+    }
+    if (deepDiveDistributionChart) {
+        deepDiveDistributionChart.destroy();
+        deepDiveDistributionChart = null;
+    }
+}
+
+function initDeepDiveCharts() {
+    // Evolution Chart
+    const evolutionCtx = document.getElementById('deepDiveEvolutionChart');
+    if (evolutionCtx) {
+        if (deepDiveEvolutionChart) deepDiveEvolutionChart.destroy();
+
+        deepDiveEvolutionChart = new Chart(evolutionCtx, {
+            type: 'line',
+            data: {
+                labels: ['Jan', 'Fév', 'Mar', 'Avr', 'Mai', 'Juin', 'Juil', 'Août', 'Sep', 'Oct', 'Nov', 'Déc'],
+                datasets: [
+                    {
+                        label: 'Économies (€K)',
+                        data: [180, 220, 280, 320, 380, 420, 450, 480, 520, 560, 590, 620],
+                        borderColor: '#10b981',
+                        backgroundColor: 'rgba(16, 185, 129, 0.1)',
+                        fill: true,
+                        tension: 0.4
+                    },
+                    {
+                        label: 'Revenus (€K)',
+                        data: [450, 520, 580, 650, 720, 850, 920, 980, 1050, 1100, 1150, 1180],
+                        borderColor: '#D4A017',
+                        backgroundColor: 'rgba(212, 160, 23, 0.1)',
+                        fill: true,
+                        tension: 0.4
+                    }
+                ]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                plugins: {
+                    legend: {
+                        position: 'bottom',
+                        labels: { usePointStyle: true }
+                    }
+                },
+                scales: {
+                    y: {
+                        beginAtZero: true,
+                        ticks: { callback: v => '€' + v + 'K' }
+                    }
+                }
+            }
+        });
+    }
+
+    // Distribution Chart
+    const distributionCtx = document.getElementById('deepDiveDistributionChart');
+    if (distributionCtx) {
+        if (deepDiveDistributionChart) deepDiveDistributionChart.destroy();
+
+        deepDiveDistributionChart = new Chart(distributionCtx, {
+            type: 'doughnut',
+            data: {
+                labels: ['Chatbot Client', 'Scoring Crédit', 'Détection Fraude', 'Recommandation', 'Doc Analyzer'],
+                datasets: [{
+                    data: [1620, 2950, 2180, 930, 420],
+                    backgroundColor: [
+                        '#10b981',
+                        '#D4A017',
+                        '#6366f1',
+                        '#f59e0b',
+                        '#8b5cf6'
+                    ],
+                    borderWidth: 0
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                plugins: {
+                    legend: {
+                        position: 'bottom',
+                        labels: {
+                            usePointStyle: true,
+                            padding: 15
+                        }
+                    },
+                    tooltip: {
+                        callbacks: {
+                            label: function(context) {
+                                return context.label + ': €' + context.raw + 'K';
+                            }
+                        }
+                    }
+                }
+            }
+        });
+    }
+}
+
+function updateDeepDiveData(range) {
+    // Update KPI values based on range
+    const dataByRange = {
+        month: { savings: '€2.4M', revenue: '€5.7M', productivity: '34%' },
+        quarter: { savings: '€6.8M', revenue: '€16.4M', productivity: '32%' },
+        year: { savings: '€28M', revenue: '€67.9M', productivity: '38%' },
+        all: { savings: '€85M', revenue: '€198M', productivity: '35%' }
+    };
+
+    const data = dataByRange[range];
+    if (data) {
+        document.getElementById('modalSavings').textContent = data.savings;
+        document.getElementById('modalRevenue').textContent = data.revenue;
+        document.getElementById('modalProductivity').textContent = data.productivity;
+    }
+}
+
+function exportBusinessValueReport() {
+    showToast('Export du rapport en cours... Le téléchargement démarrera dans quelques secondes.', 'info', 3000);
+}
+
+// Close modal on escape key
+document.addEventListener('keydown', function(e) {
+    if (e.key === 'Escape') {
+        closeBusinessValueDeepDive();
+    }
+});
+
+// Close modal on overlay click
+document.getElementById('businessValueModal')?.addEventListener('click', function(e) {
+    if (e.target === this) {
+        closeBusinessValueDeepDive();
+    }
+});
 </script>
 {% endblock %}
