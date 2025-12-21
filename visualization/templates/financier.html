@@ -263,6 +263,10 @@
                     <i data-lucide="bar-chart-3"></i>
                     Analyse ROI
                 </h3>
+                <button class="btn btn-ghost btn-sm" onclick="openROIDeepDive()">
+                    <i data-lucide="maximize-2"></i>
+                    Deep Dive
+                </button>
             </div>
             <div class="card-body">
                 <div class="roi-summary">
@@ -476,6 +480,199 @@
                     </div>
                 </div>
             </div>
+        </div>
+    </div>
+</div>
+
+<!-- ROI Deep Dive Modal -->
+<div class="modal-overlay" id="roiDeepDiveModal">
+    <div class="modal-container modal-xl">
+        <div class="modal-header">
+            <h2>
+                <i data-lucide="trending-up"></i>
+                Deep Dive - Analyse ROI
+            </h2>
+            <button class="modal-close" onclick="closeROIDeepDive()">
+                <i data-lucide="x"></i>
+            </button>
+        </div>
+        <div class="modal-body">
+            <!-- Overview Header -->
+            <div class="deep-dive-controls">
+                <div class="framework-overview-header">
+                    <div class="roi-score-large">
+                        <div class="score-circle-lg">
+                            <svg viewBox="0 0 100 100">
+                                <defs>
+                                    <linearGradient id="roiGradientLg" x1="0%" y1="0%" x2="100%" y2="0%">
+                                        <stop offset="0%" style="stop-color:#10b981"/>
+                                        <stop offset="100%" style="stop-color:#34d399"/>
+                                    </linearGradient>
+                                </defs>
+                                <circle cx="50" cy="50" r="45" fill="none" stroke="var(--border-color)" stroke-width="6"/>
+                                <circle cx="50" cy="50" r="45" fill="none" stroke="url(#roiGradientLg)" stroke-width="6"
+                                    stroke-dasharray="283" stroke-dashoffset="0" stroke-linecap="round"
+                                    transform="rotate(-90 50 50)"/>
+                            </svg>
+                            <div class="score-value-lg">
+                                <span class="grade">+247%</span>
+                                <span class="score">ROI Net</span>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="framework-meta">
+                        <div class="meta-item">
+                            <i data-lucide="wallet"></i>
+                            <span>Investissement total : <strong>€850K</strong></span>
+                        </div>
+                        <div class="meta-item">
+                            <i data-lucide="coins"></i>
+                            <span>Valeur générée : <strong class="text-success">€2.9M</strong></span>
+                        </div>
+                        <div class="meta-item">
+                            <i data-lucide="trending-up"></i>
+                            <span>Tendance : <strong class="text-success">+18% vs Q3</strong></span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- ROI by Category -->
+            <div class="deep-dive-kpis">
+                <div class="deep-dive-kpi">
+                    <div class="deep-dive-kpi-icon" style="background: linear-gradient(135deg, #10b981, #34d399);">
+                        <i data-lucide="cog"></i>
+                    </div>
+                    <div class="deep-dive-kpi-content">
+                        <span class="deep-dive-kpi-value">€1.2M</span>
+                        <span class="deep-dive-kpi-label">Automatisation</span>
+                        <span class="deep-dive-kpi-trend up"><i data-lucide="trending-up"></i> +15%</span>
+                    </div>
+                </div>
+                <div class="deep-dive-kpi">
+                    <div class="deep-dive-kpi-icon" style="background: linear-gradient(135deg, #6366f1, #818cf8);">
+                        <i data-lucide="shopping-cart"></i>
+                    </div>
+                    <div class="deep-dive-kpi-content">
+                        <span class="deep-dive-kpi-value">€980K</span>
+                        <span class="deep-dive-kpi-label">Revenus additionnels</span>
+                        <span class="deep-dive-kpi-trend up"><i data-lucide="trending-up"></i> +22%</span>
+                    </div>
+                </div>
+                <div class="deep-dive-kpi">
+                    <div class="deep-dive-kpi-icon" style="background: linear-gradient(135deg, #ef4444, #f87171);">
+                        <i data-lucide="shield"></i>
+                    </div>
+                    <div class="deep-dive-kpi-content">
+                        <span class="deep-dive-kpi-value">€520K</span>
+                        <span class="deep-dive-kpi-label">Réduction fraude</span>
+                        <span class="deep-dive-kpi-trend up"><i data-lucide="trending-up"></i> +8%</span>
+                    </div>
+                </div>
+                <div class="deep-dive-kpi">
+                    <div class="deep-dive-kpi-icon" style="background: linear-gradient(135deg, #f59e0b, #fbbf24);">
+                        <i data-lucide="smile"></i>
+                    </div>
+                    <div class="deep-dive-kpi-content">
+                        <span class="deep-dive-kpi-value">€200K</span>
+                        <span class="deep-dive-kpi-label">Satisfaction client</span>
+                        <span class="deep-dive-kpi-trend up"><i data-lucide="trending-up"></i> +12%</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- ROI Table by Model -->
+            <div class="deep-dive-table-section">
+                <h4>ROI par modèle IA</h4>
+                <div class="table-container">
+                    <table class="table">
+                        <thead>
+                            <tr>
+                                <th>Modèle IA</th>
+                                <th>Investissement</th>
+                                <th>Valeur générée</th>
+                                <th>ROI</th>
+                                <th>Tendance</th>
+                                <th>Statut</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td><strong>Fraud Detection</strong></td>
+                                <td>€180K</td>
+                                <td>€720K</td>
+                                <td><strong class="text-success">+300%</strong></td>
+                                <td><span class="trend-up"><i data-lucide="trending-up"></i> +15%</span></td>
+                                <td><span class="badge badge-success">Excellent</span></td>
+                            </tr>
+                            <tr>
+                                <td><strong>Recommandation</strong></td>
+                                <td>€120K</td>
+                                <td>€480K</td>
+                                <td><strong class="text-success">+300%</strong></td>
+                                <td><span class="trend-up"><i data-lucide="trending-up"></i> +22%</span></td>
+                                <td><span class="badge badge-success">Excellent</span></td>
+                            </tr>
+                            <tr>
+                                <td><strong>Chatbot Client</strong></td>
+                                <td>€200K</td>
+                                <td>€560K</td>
+                                <td><strong class="text-success">+180%</strong></td>
+                                <td><span class="trend-up"><i data-lucide="trending-up"></i> +8%</span></td>
+                                <td><span class="badge badge-success">Bon</span></td>
+                            </tr>
+                            <tr>
+                                <td><strong>Scoring Crédit</strong></td>
+                                <td>€150K</td>
+                                <td>€390K</td>
+                                <td><strong class="text-success">+160%</strong></td>
+                                <td><span class="trend-neutral"><i data-lucide="minus"></i> Stable</span></td>
+                                <td><span class="badge badge-success">Bon</span></td>
+                            </tr>
+                            <tr>
+                                <td><strong>Doc Analyzer</strong></td>
+                                <td>€100K</td>
+                                <td>€250K</td>
+                                <td><strong class="text-success">+150%</strong></td>
+                                <td><span class="trend-up"><i data-lucide="trending-up"></i> +12%</span></td>
+                                <td><span class="badge badge-success">Bon</span></td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
+            <!-- Optimization Recommendations -->
+            <div class="deep-dive-recommendations">
+                <h4>Opportunités d'optimisation</h4>
+                <div class="recommendations-list">
+                    <div class="recommendation-item">
+                        <div class="recommendation-icon">
+                            <i data-lucide="zap"></i>
+                        </div>
+                        <div class="recommendation-content">
+                            <h5>Passage au batch processing pour Doc Analyzer</h5>
+                            <p>Économie potentielle de €12K/mois avec un effort minimal. Migration recommandée.</p>
+                        </div>
+                    </div>
+                    <div class="recommendation-item">
+                        <div class="recommendation-icon">
+                            <i data-lucide="database"></i>
+                        </div>
+                        <div class="recommendation-content">
+                            <h5>Optimisation cache embeddings</h5>
+                            <p>Réduction des coûts d'inférence de €8K/mois pour le chatbot.</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="modal-footer">
+            <button class="btn btn-secondary" onclick="closeROIDeepDive()">Fermer</button>
+            <button class="btn btn-primary" onclick="exportROIReport()">
+                <i data-lucide="download"></i>
+                Exporter le rapport
+            </button>
         </div>
     </div>
 </div>
@@ -942,6 +1139,258 @@
 
 .time-btn.active { background: var(--color-primary); color: white; border-color: var(--color-primary); }
 
+/* Modal Styles */
+.modal-overlay {
+    position: fixed;
+    inset: 0;
+    background: rgba(0, 0, 0, 0.6);
+    backdrop-filter: blur(4px);
+    z-index: 1000;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: var(--space-4);
+    opacity: 0;
+    visibility: hidden;
+    transition: all var(--transition-base);
+}
+
+.modal-overlay.active {
+    opacity: 1;
+    visibility: visible;
+}
+
+.modal-container {
+    background: var(--bg-card);
+    border-radius: var(--radius-xl);
+    box-shadow: var(--shadow-xl);
+    max-height: 90vh;
+    overflow: hidden;
+    display: flex;
+    flex-direction: column;
+    transform: scale(0.95) translateY(20px);
+    transition: transform var(--transition-base);
+}
+
+.modal-overlay.active .modal-container {
+    transform: scale(1) translateY(0);
+}
+
+.modal-xl {
+    width: 100%;
+    max-width: 1100px;
+}
+
+.modal-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: var(--space-5);
+    border-bottom: 1px solid var(--border-color);
+}
+
+.modal-header h2 {
+    display: flex;
+    align-items: center;
+    gap: var(--space-3);
+    font-size: 1.25rem;
+    font-weight: 600;
+}
+
+.modal-header h2 svg {
+    width: 24px;
+    height: 24px;
+    color: var(--color-primary);
+}
+
+.modal-close {
+    width: 40px;
+    height: 40px;
+    border: none;
+    background: var(--bg-hover);
+    border-radius: var(--radius-md);
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: var(--text-secondary);
+    transition: all var(--transition-fast);
+}
+
+.modal-close:hover {
+    background: var(--color-danger-light);
+    color: var(--color-danger);
+}
+
+.modal-close svg { width: 20px; height: 20px; }
+
+.modal-body {
+    padding: var(--space-5);
+    overflow-y: auto;
+    flex: 1;
+}
+
+.modal-footer {
+    display: flex;
+    align-items: center;
+    justify-content: flex-end;
+    gap: var(--space-3);
+    padding: var(--space-4) var(--space-5);
+    border-top: 1px solid var(--border-color);
+}
+
+/* Deep Dive Styles */
+.deep-dive-controls { margin-bottom: var(--space-5); }
+
+.framework-overview-header {
+    display: flex;
+    align-items: center;
+    gap: var(--space-6);
+    padding: var(--space-4);
+    background: var(--bg-hover);
+    border-radius: var(--radius-lg);
+}
+
+.roi-score-large { flex-shrink: 0; }
+
+.score-circle-lg {
+    position: relative;
+    width: 100px;
+    height: 100px;
+}
+
+.score-circle-lg svg { width: 100%; height: 100%; }
+
+.score-value-lg {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    text-align: center;
+}
+
+.score-value-lg .grade {
+    display: block;
+    font-size: 1.25rem;
+    font-weight: 700;
+    color: #10b981;
+    line-height: 1;
+}
+
+.score-value-lg .score {
+    font-size: 0.75rem;
+    color: var(--text-secondary);
+}
+
+.framework-meta {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-3);
+}
+
+.meta-item {
+    display: flex;
+    align-items: center;
+    gap: var(--space-2);
+    font-size: 0.875rem;
+    color: var(--text-secondary);
+}
+
+.meta-item svg { width: 16px; height: 16px; }
+.meta-item strong { color: var(--text-primary); }
+
+.deep-dive-kpis {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: var(--space-4);
+    margin-bottom: var(--space-5);
+}
+
+.deep-dive-kpi {
+    display: flex;
+    align-items: center;
+    gap: var(--space-3);
+    padding: var(--space-4);
+    background: var(--bg-card);
+    border: 1px solid var(--border-color);
+    border-radius: var(--radius-lg);
+}
+
+.deep-dive-kpi-icon {
+    width: 48px;
+    height: 48px;
+    border-radius: var(--radius-lg);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+}
+
+.deep-dive-kpi-icon svg { width: 24px; height: 24px; color: white; }
+.deep-dive-kpi-content { display: flex; flex-direction: column; }
+.deep-dive-kpi-value { font-size: 1.5rem; font-weight: 700; line-height: 1.2; }
+.deep-dive-kpi-label { font-size: 0.75rem; color: var(--text-secondary); }
+
+.deep-dive-kpi-trend {
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+    font-size: 0.6875rem;
+    font-weight: 500;
+    margin-top: 2px;
+}
+
+.deep-dive-kpi-trend svg { width: 12px; height: 12px; }
+.deep-dive-kpi-trend.up { color: var(--color-success); }
+.deep-dive-kpi-trend.warning { color: var(--color-warning); }
+
+.deep-dive-table-section { margin-bottom: var(--space-5); }
+.deep-dive-table-section h4 { font-size: 1rem; font-weight: 600; margin-bottom: var(--space-3); }
+
+.deep-dive-recommendations h4 { font-size: 1rem; font-weight: 600; margin-bottom: var(--space-3); }
+
+.recommendations-list {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-3);
+}
+
+.recommendation-item {
+    display: flex;
+    align-items: flex-start;
+    gap: var(--space-3);
+    padding: var(--space-3);
+    background: var(--bg-hover);
+    border-radius: var(--radius-md);
+    border-left: 3px solid var(--color-info);
+}
+
+.recommendation-icon {
+    width: 32px;
+    height: 32px;
+    border-radius: var(--radius-md);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: var(--color-info-light);
+    color: var(--color-info);
+    flex-shrink: 0;
+}
+
+.recommendation-icon svg { width: 16px; height: 16px; }
+.recommendation-content { flex: 1; }
+.recommendation-content h5 { font-size: 0.875rem; font-weight: 600; margin-bottom: var(--space-1); }
+.recommendation-content p { font-size: 0.8125rem; color: var(--text-secondary); margin: 0; }
+
+@media (max-width: 900px) {
+    .deep-dive-kpis { grid-template-columns: repeat(2, 1fr); }
+}
+
+@media (max-width: 600px) {
+    .framework-overview-header { flex-direction: column; text-align: center; }
+    .deep-dive-kpis { grid-template-columns: 1fr; }
+}
+
 /* Responsive */
 @media (max-width: 1400px) {
     .fin-kpi-grid { grid-template-columns: repeat(2, 1fr); }
@@ -1052,5 +1501,44 @@ function initDepartmentCostChart() {
 function generateFinancialReport() {
     showToast('Génération du rapport financier en cours...', 'info', 3000);
 }
+
+// ROI Deep Dive Modal
+function openROIDeepDive() {
+    const modal = document.getElementById('roiDeepDiveModal');
+    if (modal) {
+        modal.classList.add('active');
+        document.body.style.overflow = 'hidden';
+        lucide.createIcons();
+    }
+}
+
+function closeROIDeepDive() {
+    const modal = document.getElementById('roiDeepDiveModal');
+    if (modal) {
+        modal.classList.remove('active');
+        document.body.style.overflow = '';
+    }
+}
+
+function exportROIReport() {
+    showToast('Export du rapport ROI en cours...', 'info', 3000);
+    setTimeout(() => {
+        showToast('Rapport exporté avec succès', 'success', 3000);
+    }, 1500);
+}
+
+// Close modal on escape key
+document.addEventListener('keydown', (e) => {
+    if (e.key === 'Escape') {
+        closeROIDeepDive();
+    }
+});
+
+// Close modal on overlay click
+document.addEventListener('click', (e) => {
+    if (e.target.classList.contains('modal-overlay')) {
+        closeROIDeepDive();
+    }
+});
 </script>
 {% endblock %}
