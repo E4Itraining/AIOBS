@@ -24,12 +24,39 @@
   "liveNow": false,
   "panels": [
     {
+      "datasource": {
+        "type": "datasource",
+        "uid": "-- Dashboard --"
+      },
+      "description": "Sélectionnez rapidement une plage de temps prédéfinie",
+      "gridPos": {
+        "h": 2,
+        "w": 24,
+        "x": 0,
+        "y": 0
+      },
+      "id": 100,
+      "options": {
+        "code": {
+          "language": "plaintext",
+          "showLineNumbers": false,
+          "showMiniMap": false
+        },
+        "content": "<div style=\"display: flex; gap: 15px; justify-content: flex-end; align-items: center; height: 100%; padding-right: 20px;\">\n  <span style=\"color: #999; font-size: 12px;\">Plage de temps :</span>\n  <a href=\"/d/aiobs-main?orgId=1&from=now-1d&to=now&refresh=30s\" style=\"padding: 8px 16px; background: #3274d9; color: white; border-radius: 4px; text-decoration: none; font-weight: 500; font-size: 13px;\">1 jour</a>\n  <a href=\"/d/aiobs-main?orgId=1&from=now-7d&to=now&refresh=1m\" style=\"padding: 8px 16px; background: #ff9830; color: white; border-radius: 4px; text-decoration: none; font-weight: 500; font-size: 13px;\">7 jours</a>\n  <a href=\"/d/aiobs-main?orgId=1&from=now-30d&to=now&refresh=5m\" style=\"padding: 8px 16px; background: #73bf69; color: white; border-radius: 4px; text-decoration: none; font-weight: 500; font-size: 13px;\">1 mois</a>\n  <span style=\"color: #666; font-size: 11px; margin-left: 10px;\">Fuseau: Auto (local)</span>\n</div>",
+        "mode": "html"
+      },
+      "pluginVersion": "10.2.0",
+      "title": "",
+      "transparent": true,
+      "type": "text"
+    },
+    {
       "collapsed": false,
       "gridPos": {
         "h": 1,
         "w": 24,
         "x": 0,
-        "y": 0
+        "y": 2
       },
       "id": 1,
       "panels": [],
@@ -101,7 +128,7 @@
         "h": 8,
         "w": 12,
         "x": 0,
-        "y": 1
+        "y": 3
       },
       "id": 2,
       "options": {
@@ -202,7 +229,7 @@
         "h": 8,
         "w": 12,
         "x": 12,
-        "y": 1
+        "y": 3
       },
       "id": 3,
       "options": {
@@ -251,7 +278,7 @@
         "h": 1,
         "w": 24,
         "x": 0,
-        "y": 9
+        "y": 11
       },
       "id": 4,
       "panels": [],
@@ -319,7 +346,7 @@
         "h": 8,
         "w": 12,
         "x": 0,
-        "y": 10
+        "y": 12
       },
       "id": 5,
       "options": {
@@ -420,7 +447,7 @@
         "h": 8,
         "w": 12,
         "x": 12,
-        "y": 10
+        "y": 12
       },
       "id": 6,
       "options": {
@@ -469,7 +496,7 @@
         "h": 1,
         "w": 24,
         "x": 0,
-        "y": 18
+        "y": 20
       },
       "id": 7,
       "panels": [],
@@ -547,7 +574,7 @@
         "h": 8,
         "w": 8,
         "x": 0,
-        "y": 19
+        "y": 21
       },
       "id": 8,
       "options": {
@@ -648,7 +675,7 @@
         "h": 8,
         "w": 8,
         "x": 8,
-        "y": 19
+        "y": 21
       },
       "id": 9,
       "options": {
@@ -751,7 +778,7 @@
         "h": 8,
         "w": 8,
         "x": 16,
-        "y": 19
+        "y": 21
       },
       "id": 10,
       "options": {
@@ -789,7 +816,7 @@
         "h": 1,
         "w": 24,
         "x": 0,
-        "y": 27
+        "y": 29
       },
       "id": 11,
       "panels": [],
@@ -825,7 +852,7 @@
         "h": 4,
         "w": 6,
         "x": 0,
-        "y": 28
+        "y": 30
       },
       "id": 12,
       "options": {
@@ -886,7 +913,7 @@
         "h": 4,
         "w": 6,
         "x": 6,
-        "y": 28
+        "y": 30
       },
       "id": 13,
       "options": {
@@ -955,7 +982,7 @@
         "h": 4,
         "w": 6,
         "x": 12,
-        "y": 28
+        "y": 30
       },
       "id": 14,
       "options": {
@@ -1026,7 +1053,7 @@
         "h": 4,
         "w": 6,
         "x": 18,
-        "y": 28
+        "y": 30
       },
       "id": 15,
       "options": {
