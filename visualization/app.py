@@ -8,9 +8,12 @@ import os
 import time
 from collections import deque
 
-# Load .env file for environment variables
-from dotenv import load_dotenv
-load_dotenv()
+# Load .env file for environment variables (optional dependency)
+try:
+    from dotenv import load_dotenv
+    load_dotenv()
+except ImportError:
+    pass  # python-dotenv not installed, env vars must be set directly
 
 import psutil
 from fastapi import FastAPI, Request
