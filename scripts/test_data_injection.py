@@ -752,46 +752,53 @@ class DataInjectionClient:
 
 async def run_injection(args: argparse.Namespace) -> int:
     """Run the data injection process"""
-    print("=" * 60)
-    print("AIOBS Test Data Injection")
-    print("=" * 60)
-    print()
+    print("=" * 60, flush=True)
+    print("AIOBS Test Data Injection", flush=True)
+    print("=" * 60, flush=True)
+    print(flush=True)
 
     # Configuration
     models = SAMPLE_MODELS[: args.models]
     end_time = datetime.utcnow()
     start_time = end_time - timedelta(days=args.days)
 
-    print(f"Configuration:")
-    print(f"  Base URL: {args.base_url}")
-    print(f"  Models: {len(models)}")
-    print(f"  Time range: {start_time.date()} to {end_time.date()} ({args.days} days)")
-    print(f"  Dry run: {args.dry_run}")
-    print()
+    print(f"Configuration:", flush=True)
+    print(f"  Base URL: {args.base_url}", flush=True)
+    print(f"  Models: {len(models)}", flush=True)
+    for m in models:
+        print(f"    - {m.model_id} ({m.model_type})", flush=True)
+    print(f"  Time range: {start_time.date()} to {end_time.date()} ({args.days} days)", flush=True)
+    print(f"  Dry run: {args.dry_run}", flush=True)
+    print(flush=True)
 
     if args.dry_run:
-        print("[DRY RUN] No data will be injected")
-        print()
+        print("[DRY RUN] No data will be injected - generating preview only", flush=True)
+        print(flush=True)
 
     # Initialize client
     client = DataInjectionClient(args.base_url, args.api_key)
 
     # Check API health (skip in dry run or if explicitly disabled)
     if not args.dry_run and not args.skip_health_check:
-        print("Checking AIOBS API health...")
+        print("Checking AIOBS API health...", flush=True)
         health = await client.check_health()
         if health.get("status") == "error":
-            print(f"  Warning: {health.get('message')}")
+            print(f"  Warning: {health.get('message')}", flush=True)
             if not args.force:
-                print("  Use --force to continue anyway, or --dry-run to preview data")
+                print("  Use --force to continue anyway, or --dry-run to preview data", flush=True)
                 return 1
         else:
-            print("  API is healthy")
-        print()
+            print("  API is healthy", flush=True)
+        print(flush=True)
+
+    # Track totals for summary
+    total_metrics = 0
+    total_events = 0
+    total_logs = 0
 
     # Generate and inject metrics
     if not args.events_only and not args.logs_only:
-        print("Generating metrics...")
+        print("Generating metrics...", flush=True)
         all_metrics = []
 
         for model in models:
@@ -806,57 +813,100 @@ async def run_injection(args: argparse.Namespace) -> int:
                 # Generate hourly data points
                 current += timedelta(hours=1)
 
-            print(f"  {model.model_id}: {len([m for m in all_metrics if m.get('labels', {}).get('model_id') == model.model_id])} metrics")
+            model_metric_count = len([m for m in all_metrics if m.get('labels', {}).get('model_id') == model.model_id])
+            print(f"  {model.model_id}: {model_metric_count} metrics", flush=True)
 
-        print(f"  Total metrics: {len(all_metrics)}")
+        total_metrics = len(all_metrics)
+        print(f"  Total metrics: {total_metrics}", flush=True)
 
         # Inject in batches
-        batch_size = 1000
-        for i in range(0, len(all_metrics), batch_size):
-            batch = all_metrics[i : i + batch_size]
-            result = await client.inject_metrics(batch, dry_run=args.dry_run)
-            if not args.dry_run:
+        if args.dry_run:
+            print(f"  [DRY RUN] Would inject {total_metrics} metrics in {(total_metrics + 999) // 1000} batches", flush=True)
+        else:
+            batch_size = 1000
+            for i in range(0, len(all_metrics), batch_size):
+                batch = all_metrics[i : i + batch_size]
+                result = await client.inject_metrics(batch, dry_run=args.dry_run)
                 status = result.get("status", "unknown")
-                print(f"  Batch {i // batch_size + 1}: {status}")
-        print()
+                print(f"  Batch {i // batch_size + 1}: {status}", flush=True)
+        print(flush=True)
 
     # Generate and inject events
     if not args.metrics_only and not args.logs_only:
-        print("Generating events...")
+        print("Generating events...", flush=True)
         event_generator = EventGenerator(models)
         events = event_generator.generate_events(
             start_time, end_time, events_per_day=args.events_per_day
         )
-        print(f"  Total events: {len(events)}")
+        total_events = len(events)
+        print(f"  Total events: {total_events}", flush=True)
 
-        result = await client.inject_events(events, dry_run=args.dry_run)
-        if not args.dry_run:
-            print(f"  Status: {result.get('status', 'unknown')}")
-        print()
+        if args.dry_run:
+            print(f"  [DRY RUN] Would inject {total_events} events", flush=True)
+            # Show sample events
+            if events:
+                print(f"  Sample events:", flush=True)
+                for event in events[:3]:
+                    print(f"    - [{event['severity']}] {event['title']}", flush=True)
+        else:
+            result = await client.inject_events(events, dry_run=args.dry_run)
+            print(f"  Status: {result.get('status', 'unknown')}", flush=True)
+        print(flush=True)
 
     # Generate and inject logs
     if not args.metrics_only and not args.events_only:
-        print("Generating logs...")
+        print("Generating logs...", flush=True)
         log_generator = LogGenerator(models)
         logs = log_generator.generate_logs(
             start_time, end_time, logs_per_hour=args.logs_per_hour
         )
-        print(f"  Total logs: {len(logs)}")
+        total_logs = len(logs)
+        print(f"  Total logs: {total_logs}", flush=True)
 
-        # Inject in batches
-        batch_size = 500
-        for i in range(0, len(logs), batch_size):
-            batch = logs[i : i + batch_size]
-            result = await client.inject_logs(batch, dry_run=args.dry_run)
-            if not args.dry_run:
+        if args.dry_run:
+            print(f"  [DRY RUN] Would inject {total_logs} logs in {(total_logs + 499) // 500} batches", flush=True)
+            # Show sample logs
+            if logs:
+                print(f"  Sample logs:", flush=True)
+                for log in logs[:3]:
+                    print(f"    - [{log['level']}] {log['message'][:60]}...", flush=True)
+        else:
+            # Inject in batches
+            batch_size = 500
+            for i in range(0, len(logs), batch_size):
+                batch = logs[i : i + batch_size]
+                result = await client.inject_logs(batch, dry_run=args.dry_run)
                 status = result.get("status", "unknown")
                 if i == 0 or (i + batch_size) >= len(logs):
-                    print(f"  Batch {i // batch_size + 1}: {status}")
-        print()
+                    print(f"  Batch {i // batch_size + 1}: {status}", flush=True)
+        print(flush=True)
 
-    print("=" * 60)
-    print("Injection complete!")
-    print("=" * 60)
+    # Print summary
+    print("=" * 60, flush=True)
+    if args.dry_run:
+        print("DRY RUN SUMMARY", flush=True)
+        print("=" * 60, flush=True)
+        print(f"  Would generate and inject:", flush=True)
+        if total_metrics > 0:
+            print(f"    - {total_metrics:,} metrics", flush=True)
+        if total_events > 0:
+            print(f"    - {total_events:,} events", flush=True)
+        if total_logs > 0:
+            print(f"    - {total_logs:,} logs", flush=True)
+        print(flush=True)
+        print("To actually inject the data, run without --dry-run:", flush=True)
+        print(f"  python scripts/test_data_injection.py --base-url {args.base_url}", flush=True)
+    else:
+        print("INJECTION COMPLETE", flush=True)
+        print("=" * 60, flush=True)
+        print(f"  Successfully injected:", flush=True)
+        if total_metrics > 0:
+            print(f"    - {total_metrics:,} metrics", flush=True)
+        if total_events > 0:
+            print(f"    - {total_events:,} events", flush=True)
+        if total_logs > 0:
+            print(f"    - {total_logs:,} logs", flush=True)
+    print("=" * 60, flush=True)
 
     return 0
 
@@ -937,20 +987,31 @@ def main():
         action="store_true",
         help="Only inject logs",
     )
+    parser.add_argument(
+        "-v", "--verbose",
+        action="store_true",
+        help="Enable verbose output",
+    )
 
     args = parser.parse_args()
 
     # Validate models count
     if args.models > len(SAMPLE_MODELS):
         args.models = len(SAMPLE_MODELS)
-        print(f"Note: Limited to {len(SAMPLE_MODELS)} available model configurations")
+        print(f"Note: Limited to {len(SAMPLE_MODELS)} available model configurations", flush=True)
 
     # Run injection
     try:
         exit_code = asyncio.run(run_injection(args))
         sys.exit(exit_code)
     except KeyboardInterrupt:
-        print("\nInterrupted by user")
+        print("\nInterrupted by user", flush=True)
+        sys.exit(1)
+    except Exception as e:
+        print(f"\nError: {e}", flush=True)
+        if args.verbose:
+            import traceback
+            traceback.print_exc()
         sys.exit(1)
 
 
