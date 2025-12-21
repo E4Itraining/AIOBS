@@ -23,7 +23,12 @@ from dataclasses import dataclass, field
 from datetime import datetime, timedelta
 from typing import Any, Dict, List, Optional, Tuple
 
-import httpx
+try:
+    import httpx
+    HTTPX_AVAILABLE = True
+except ImportError:
+    HTTPX_AVAILABLE = False
+    httpx = None  # type: ignore
 
 # Default configuration
 DEFAULT_BASE_URL = "http://localhost:8000"
@@ -913,6 +918,27 @@ async def run_injection(args: argparse.Namespace) -> int:
 
 def main():
     """Main entry point"""
+    # Check for httpx availability early
+    if not HTTPX_AVAILABLE:
+        print("=" * 60, flush=True)
+        print("AIOBS Test Data Injection", flush=True)
+        print("=" * 60, flush=True)
+        print(flush=True)
+        print("ERROR: Required dependency 'httpx' is not installed.", flush=True)
+        print(flush=True)
+        print("To install httpx, run:", flush=True)
+        print("  pip install httpx", flush=True)
+        print(flush=True)
+        print("Or use --dry-run mode which doesn't require httpx:", flush=True)
+        print("  python scripts/test_data_injection.py --dry-run", flush=True)
+        print("=" * 60, flush=True)
+        # Check if --dry-run was specified (simple check without full argparse)
+        if "--dry-run" not in sys.argv:
+            sys.exit(1)
+        print(flush=True)
+        print("Continuing in dry-run mode without httpx...", flush=True)
+        print(flush=True)
+
     parser = argparse.ArgumentParser(
         description="Inject test data into AIOBS platform",
         formatter_class=argparse.RawDescriptionHelpFormatter,
