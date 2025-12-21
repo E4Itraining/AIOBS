@@ -435,19 +435,19 @@
     </div>
 
     <!-- AI Chatbot Assistant -->
-    <div class="chatbot-container" id="chatbotContainer">
-        <button class="chatbot-trigger" onclick="toggleChatbot()" title="{{ t('chatbot.title') or 'AI Assistant' }}">
-            <i data-lucide="message-circle" class="chatbot-icon-default"></i>
-            <i data-lucide="x" class="chatbot-icon-close"></i>
+    <div class="chatbot-container" id="chatbotContainer" role="complementary" aria-label="{{ t('chatbot.title') or 'AI Assistant' }}">
+        <button class="chatbot-trigger" onclick="toggleChatbot()" title="{{ t('chatbot.title') or 'AI Assistant' }}" aria-expanded="false" aria-controls="chatbotPanel" aria-label="{{ t('chatbot.title') or 'Open AI Assistant' }}">
+            <i data-lucide="message-circle" class="chatbot-icon-default" aria-hidden="true"></i>
+            <i data-lucide="x" class="chatbot-icon-close" aria-hidden="true"></i>
         </button>
-        <div class="chatbot-panel">
+        <div class="chatbot-panel" id="chatbotPanel" role="dialog" aria-labelledby="chatbotTitle">
             <div class="chatbot-header">
                 <div class="chatbot-header-info">
                     <div class="chatbot-avatar">
                         <i data-lucide="bot"></i>
                     </div>
                     <div>
-                        <h3>{{ t('chatbot.title') or 'AI Assistant' }}</h3>
+                        <h3 id="chatbotTitle">{{ t('chatbot.title') or 'AI Assistant' }}</h3>
                         <span class="chatbot-status">
                             <span class="status-dot"></span>
                             {{ t('chatbot.online') or 'Online' }}
@@ -498,9 +498,10 @@
                        id="chatbotInput"
                        class="chatbot-input"
                        placeholder="{{ t('chatbot.placeholder') or 'Type your question...' }}"
-                       onkeypress="handleChatKeypress(event)">
-                <button class="chatbot-send" onclick="sendChatMessage()" id="chatbotSend">
-                    <i data-lucide="send"></i>
+                       onkeypress="handleChatKeypress(event)"
+                       aria-label="{{ t('chatbot.placeholder') or 'Type your question...' }}">
+                <button class="chatbot-send" onclick="sendChatMessage()" id="chatbotSend" aria-label="{{ t('actions.send') or 'Send message' }}">
+                    <i data-lucide="send" aria-hidden="true"></i>
                 </button>
             </div>
         </div>
