@@ -229,6 +229,13 @@ TRANSLATIONS = {
             "views": "Views",
             "select_persona": "Select",
             "change_journey": "Change Journey",
+            # Intelligence section
+            "intelligence": "AI Intelligence",
+            "multi_agent": "Multi-Agent Orchestration",
+            "healing": "System Auto-Repair",
+            "business_intelligence": "BI Dashboards",
+            "guardrails": "GenAI Guardrails",
+            "supply_chain": "AI Supply Chain",
         },
         "dashboard": {
             "title": "AI Observability Dashboard",
@@ -612,6 +619,13 @@ TRANSLATIONS = {
             "views": "Vues",
             "select_persona": "Sélectionner",
             "change_journey": "Changer de parcours",
+            # Intelligence section
+            "intelligence": "Intelligence IA",
+            "multi_agent": "Orchestration Multi-Agents",
+            "healing": "Auto-Réparation Système",
+            "business_intelligence": "Tableaux de Bord BI",
+            "guardrails": "Garde-fous GenAI",
+            "supply_chain": "Chaîne d'Approvisionnement IA",
         },
         "dashboard": {
             "title": "Dashboard IA",
@@ -949,6 +963,13 @@ TRANSLATIONS = {
             "views": "Vistas",
             "select_persona": "Seleccionar",
             "change_journey": "Cambiar recorrido",
+            # Intelligence section
+            "intelligence": "Inteligencia IA",
+            "multi_agent": "Orquestación Multi-Agente",
+            "healing": "Auto-Reparación del Sistema",
+            "business_intelligence": "Paneles de BI",
+            "guardrails": "Guardarraíles GenAI",
+            "supply_chain": "Cadena de Suministro IA",
         },
         "dashboard": {
             "title": "Panel de Observabilidad IA",
@@ -1110,6 +1131,13 @@ TRANSLATIONS = {
             "views": "Ansichten",
             "select_persona": "Auswählen",
             "change_journey": "Reise ändern",
+            # Intelligence section
+            "intelligence": "KI-Intelligenz",
+            "multi_agent": "Multi-Agenten-Orchestrierung",
+            "healing": "System-Selbstreparatur",
+            "business_intelligence": "BI-Dashboards",
+            "guardrails": "GenAI-Leitplanken",
+            "supply_chain": "KI-Lieferkette",
         },
         "dashboard": {
             "title": "KI-Observability-Dashboard",
@@ -1271,6 +1299,13 @@ TRANSLATIONS = {
             "views": "Visualizações",
             "select_persona": "Selecionar",
             "change_journey": "Mudar jornada",
+            # Intelligence section
+            "intelligence": "Inteligência IA",
+            "multi_agent": "Orquestração Multi-Agente",
+            "healing": "Auto-Reparo do Sistema",
+            "business_intelligence": "Painéis de BI",
+            "guardrails": "Guardrails GenAI",
+            "supply_chain": "Cadeia de Suprimentos IA",
         },
         "dashboard": {
             "title": "Painel de Observabilidade IA",
@@ -1432,6 +1467,13 @@ TRANSLATIONS = {
             "views": "Visualizzazioni",
             "select_persona": "Seleziona",
             "change_journey": "Cambia percorso",
+            # Intelligence section
+            "intelligence": "Intelligenza IA",
+            "multi_agent": "Orchestrazione Multi-Agente",
+            "healing": "Auto-Riparazione Sistema",
+            "business_intelligence": "Dashboard BI",
+            "guardrails": "Guardrail GenAI",
+            "supply_chain": "Supply Chain IA",
         },
         "dashboard": {
             "title": "Dashboard di Osservabilità IA",
@@ -1593,6 +1635,13 @@ TRANSLATIONS = {
             "views": "视图",
             "select_persona": "选择",
             "change_journey": "更改旅程",
+            # Intelligence section
+            "intelligence": "AI智能",
+            "multi_agent": "多智能体编排",
+            "healing": "系统自修复",
+            "business_intelligence": "BI仪表板",
+            "guardrails": "GenAI护栏",
+            "supply_chain": "AI供应链",
         },
         "dashboard": {
             "title": "AI可观测性仪表板",
@@ -1754,6 +1803,13 @@ TRANSLATIONS = {
             "views": "ビュー",
             "select_persona": "選択",
             "change_journey": "ジャーニーを変更",
+            # Intelligence section
+            "intelligence": "AIインテリジェンス",
+            "multi_agent": "マルチエージェントオーケストレーション",
+            "healing": "システム自動修復",
+            "business_intelligence": "BIダッシュボード",
+            "guardrails": "GenAIガードレール",
+            "supply_chain": "AIサプライチェーン",
         },
         "dashboard": {
             "title": "AIオブザーバビリティダッシュボード",
@@ -1915,6 +1971,13 @@ TRANSLATIONS = {
             "views": "뷰",
             "select_persona": "선택",
             "change_journey": "여정 변경",
+            # Intelligence section
+            "intelligence": "AI 인텔리전스",
+            "multi_agent": "멀티 에이전트 오케스트레이션",
+            "healing": "시스템 자동 복구",
+            "business_intelligence": "BI 대시보드",
+            "guardrails": "GenAI 가드레일",
+            "supply_chain": "AI 공급망",
         },
         "dashboard": {
             "title": "AI 관측성 대시보드",
@@ -2076,6 +2139,13 @@ TRANSLATIONS = {
             "views": "العروض",
             "select_persona": "اختيار",
             "change_journey": "تغيير الرحلة",
+            # Intelligence section
+            "intelligence": "ذكاء الذكاء الاصطناعي",
+            "multi_agent": "تنسيق متعدد الوكلاء",
+            "healing": "الإصلاح التلقائي للنظام",
+            "business_intelligence": "لوحات معلومات BI",
+            "guardrails": "حواجز حماية GenAI",
+            "supply_chain": "سلسلة توريد الذكاء الاصطناعي",
         },
         "dashboard": {
             "title": "لوحة مراقبة الذكاء الاصطناعي",
