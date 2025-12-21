@@ -31,6 +31,7 @@ from .routers import (
     profiles_router,
     realtime_router,
 )
+from .routers.data_injection_monitoring import router as data_injection_router
 from .routers.ingestion import shutdown as ingestion_shutdown
 from .routers.ingestion import startup as ingestion_startup
 from .routers.realtime import start_background_tasks, stop_background_tasks
@@ -119,6 +120,7 @@ app.include_router(realtime_router)
 app.include_router(assistant_router)
 app.include_router(ingestion_router)
 app.include_router(monitoring_router)
+app.include_router(data_injection_router)
 
 
 # =============================================================================
@@ -400,6 +402,13 @@ async def security_view(request: Request):
             **i18n,
         },
     )
+
+
+@app.get("/data-injection", response_class=HTMLResponse)
+async def data_injection_view(request: Request):
+    """Data injection monitoring dashboard - redirect to API dashboard"""
+    from fastapi.responses import RedirectResponse
+    return RedirectResponse(url="/api/monitoring/injection/dashboard")
 
 
 @app.get("/onboarding", response_class=HTMLResponse)
