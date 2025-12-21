@@ -157,7 +157,10 @@
 let charts = {};
 
 document.addEventListener('DOMContentLoaded', async () => {
-    await Promise.all([
+    console.log('[Unified] Starting to load dashboard panels...');
+
+    // Load all panels with individual error handling
+    const results = await Promise.allSettled([
         loadTopology(),
         loadMetrics(),
         loadCosts(),
@@ -165,6 +168,17 @@ document.addEventListener('DOMContentLoaded', async () => {
         loadSLO(),
         loadCompliance()
     ]);
+
+    // Log any failures
+    const panelNames = ['Topology', 'Metrics', 'Costs', 'Carbon', 'SLO', 'Compliance'];
+    results.forEach((result, index) => {
+        if (result.status === 'rejected') {
+            console.error(`[Unified] Failed to load ${panelNames[index]}:`, result.reason);
+        } else {
+            console.log(`[Unified] Successfully loaded ${panelNames[index]}`);
+        }
+    });
+
     lucide.createIcons();
 });
 
@@ -180,9 +194,25 @@ async function refreshData() {
 async function loadTopology() {
     const container = document.getElementById('topologyGraph');
 
+    // Check if D3.js is available
+    if (typeof d3 === 'undefined') {
+        console.error('[Unified] D3.js is not loaded');
+        container.innerHTML = `
+            <div class="empty-state" style="display: flex; align-items: center; justify-content: center; flex-direction: column; height: 100%;">
+                <i data-lucide="alert-circle" style="width: 48px; height: 48px; color: var(--color-warning);"></i>
+                <h3>D3.js library not loaded</h3>
+                <p class="text-muted">Unable to render topology graph</p>
+            </div>
+        `;
+        lucide.createIcons();
+        return;
+    }
+
     try {
+        console.log('[Unified] Fetching topology data...');
         const response = await fetch('/api/dashboard/topology');
         const result = await response.json();
+        console.log('[Unified] Topology API response:', result);
 
         if (result.success && result.data?.nodes?.length > 0) {
             renderTopology(result.data);
@@ -191,10 +221,12 @@ async function loadTopology() {
             const degraded = result.data.nodes.filter(n => n.status !== 'healthy').length;
             document.getElementById('healthyNodes').textContent = healthy;
             document.getElementById('degradedNodes').textContent = degraded;
+            console.log('[Unified] Topology rendered with', result.data.nodes.length, 'nodes');
         } else {
+            console.warn('[Unified] No topology data returned:', result);
             container.innerHTML = `
-                <div class="empty-state">
-                    <i data-lucide="network"></i>
+                <div class="empty-state" style="display: flex; align-items: center; justify-content: center; flex-direction: column; height: 100%;">
+                    <i data-lucide="network" style="width: 48px; height: 48px; color: var(--text-muted);"></i>
                     <h3>No topology data</h3>
                     <p class="text-muted">Connect services to view the topology</p>
                 </div>
@@ -202,11 +234,12 @@ async function loadTopology() {
             lucide.createIcons();
         }
     } catch (error) {
-        console.error('Error loading topology:', error);
+        console.error('[Unified] Error loading topology:', error);
         container.innerHTML = `
-            <div class="empty-state">
-                <i data-lucide="alert-circle"></i>
+            <div class="empty-state" style="display: flex; align-items: center; justify-content: center; flex-direction: column; height: 100%;">
+                <i data-lucide="alert-circle" style="width: 48px; height: 48px; color: var(--color-warning);"></i>
                 <h3>Error loading topology</h3>
+                <p class="text-muted">${error.message || 'Unknown error'}</p>
             </div>
         `;
         lucide.createIcons();
@@ -321,83 +354,129 @@ function renderTopology(data) {
 }
 
 async function loadMetrics() {
-    const chartOptions = (unit) => ({
-        responsive: true,
-        maintainAspectRatio: false,
-        plugins: { legend: { display: false } },
-        scales: {
-            x: { grid: { display: false }, ticks: { color: '#64748b', font: { size: 10 } } },
-            y: { grid: { color: '#e2e8f0' }, ticks: { color: '#64748b', callback: v => v + unit } }
-        }
-    });
+    const latencyContainer = document.getElementById('latencyChart')?.parentElement;
+    const throughputContainer = document.getElementById('throughputChart')?.parentElement;
+    const errorContainer = document.getElementById('errorChart')?.parentElement;
 
-    const labels = generateLabels(24);
+    // Check if Chart.js is available
+    if (typeof Chart === 'undefined') {
+        console.error('[Unified] Chart.js is not loaded');
+        const errorHtml = `
+            <div class="empty-state" style="height: 200px; display: flex; align-items: center; justify-content: center; flex-direction: column;">
+                <i data-lucide="alert-circle" style="width: 32px; height: 32px; color: var(--color-warning);"></i>
+                <p class="text-muted text-sm mt-2">Chart library not loaded</p>
+            </div>
+        `;
+        if (latencyContainer) latencyContainer.innerHTML = errorHtml;
+        if (throughputContainer) throughputContainer.innerHTML = errorHtml;
+        if (errorContainer) errorContainer.innerHTML = errorHtml;
+        lucide.createIcons();
+        return;
+    }
 
-    // Latency
-    if (charts.latency) charts.latency.destroy();
-    charts.latency = new Chart(document.getElementById('latencyChart').getContext('2d'), {
-        type: 'line',
-        data: {
-            labels,
-            datasets: [{
-                data: generateData(24, 80, 150),
-                borderColor: '#6366f1',
-                backgroundColor: 'rgba(99, 102, 241, 0.1)',
-                fill: true,
-                tension: 0.4,
-                borderWidth: 2,
-                pointRadius: 0
-            }]
-        },
-        options: chartOptions('ms')
-    });
+    try {
+        const chartOptions = (unit) => ({
+            responsive: true,
+            maintainAspectRatio: false,
+            plugins: { legend: { display: false } },
+            scales: {
+                x: { grid: { display: false }, ticks: { color: '#64748b', font: { size: 10 } } },
+                y: { grid: { color: '#e2e8f0' }, ticks: { color: '#64748b', callback: v => v + unit } }
+            }
+        });
 
-    // Throughput
-    if (charts.throughput) charts.throughput.destroy();
-    charts.throughput = new Chart(document.getElementById('throughputChart').getContext('2d'), {
-        type: 'line',
-        data: {
-            labels,
-            datasets: [{
-                data: generateData(24, 800, 1500),
-                borderColor: '#10b981',
-                backgroundColor: 'rgba(16, 185, 129, 0.1)',
-                fill: true,
-                tension: 0.4,
-                borderWidth: 2,
-                pointRadius: 0
-            }]
-        },
-        options: chartOptions('/s')
-    });
+        const labels = generateLabels(24);
 
-    // Error Rate
-    if (charts.error) charts.error.destroy();
-    charts.error = new Chart(document.getElementById('errorChart').getContext('2d'), {
-        type: 'line',
-        data: {
-            labels,
-            datasets: [{
-                data: generateData(24, 0.1, 1.5),
-                borderColor: '#ef4444',
-                backgroundColor: 'rgba(239, 68, 68, 0.1)',
-                fill: true,
-                tension: 0.4,
-                borderWidth: 2,
-                pointRadius: 0
-            }]
-        },
-        options: chartOptions('%')
-    });
+        // Latency
+        if (charts.latency) charts.latency.destroy();
+        charts.latency = new Chart(document.getElementById('latencyChart').getContext('2d'), {
+            type: 'line',
+            data: {
+                labels,
+                datasets: [{
+                    data: generateData(24, 80, 150),
+                    borderColor: '#6366f1',
+                    backgroundColor: 'rgba(99, 102, 241, 0.1)',
+                    fill: true,
+                    tension: 0.4,
+                    borderWidth: 2,
+                    pointRadius: 0
+                }]
+            },
+            options: chartOptions('ms')
+        });
+
+        // Throughput
+        if (charts.throughput) charts.throughput.destroy();
+        charts.throughput = new Chart(document.getElementById('throughputChart').getContext('2d'), {
+            type: 'line',
+            data: {
+                labels,
+                datasets: [{
+                    data: generateData(24, 800, 1500),
+                    borderColor: '#10b981',
+                    backgroundColor: 'rgba(16, 185, 129, 0.1)',
+                    fill: true,
+                    tension: 0.4,
+                    borderWidth: 2,
+                    pointRadius: 0
+                }]
+            },
+            options: chartOptions('/s')
+        });
+
+        // Error Rate
+        if (charts.error) charts.error.destroy();
+        charts.error = new Chart(document.getElementById('errorChart').getContext('2d'), {
+            type: 'line',
+            data: {
+                labels,
+                datasets: [{
+                    data: generateData(24, 0.1, 1.5),
+                    borderColor: '#ef4444',
+                    backgroundColor: 'rgba(239, 68, 68, 0.1)',
+                    fill: true,
+                    tension: 0.4,
+                    borderWidth: 2,
+                    pointRadius: 0
+                }]
+            },
+            options: chartOptions('%')
+        });
+
+        console.log('[Unified] Metrics charts rendered successfully');
+    } catch (error) {
+        console.error('[Unified] Error rendering metrics charts:', error);
+        const errorHtml = `
+            <div class="empty-state" style="height: 200px; display: flex; align-items: center; justify-content: center; flex-direction: column;">
+                <i data-lucide="alert-circle" style="width: 32px; height: 32px; color: var(--color-warning);"></i>
+                <p class="text-muted text-sm mt-2">Error loading chart</p>
+            </div>
+        `;
+        if (latencyContainer) latencyContainer.innerHTML = errorHtml;
+        if (throughputContainer) throughputContainer.innerHTML = errorHtml;
+        if (errorContainer) errorContainer.innerHTML = errorHtml;
+        lucide.createIcons();
+    }
 }
 
 async function loadCosts() {
-    const chartContainer = document.getElementById('costChart').parentElement;
+    const chartContainer = document.getElementById('costChart')?.parentElement;
     const detailsContainer = document.getElementById('costDetails');
 
+    // Check if Chart.js is available
+    if (typeof Chart === 'undefined') {
+        console.error('[Unified] Chart.js is not loaded for costs');
+        if (chartContainer) chartContainer.innerHTML = `<div class="empty-state" style="height: 200px; display: flex; align-items: center; justify-content: center;"><p class="text-muted">Chart library not loaded</p></div>`;
+        if (detailsContainer) detailsContainer.innerHTML = '';
+        return;
+    }
+
     try {
+        console.log('[Unified] Fetching costs data...');
         const response = await fetch('/api/dashboard/costs');
         const result = await response.json();
+        console.log('[Unified] Costs API response:', result);
 
         if (result.success && result.data && result.data.by_category && Object.keys(result.data.by_category).length > 0) {
             const data = result.data;
@@ -462,12 +541,22 @@ async function loadCosts() {
 }
 
 async function loadCarbon() {
-    const chartContainer = document.getElementById('carbonChart').parentElement;
+    const chartContainer = document.getElementById('carbonChart')?.parentElement;
     const detailsContainer = document.getElementById('carbonDetails');
 
+    // Check if Chart.js is available
+    if (typeof Chart === 'undefined') {
+        console.error('[Unified] Chart.js is not loaded for carbon');
+        if (chartContainer) chartContainer.innerHTML = `<div class="empty-state" style="height: 200px; display: flex; align-items: center; justify-content: center;"><p class="text-muted">Chart library not loaded</p></div>`;
+        if (detailsContainer) detailsContainer.innerHTML = '';
+        return;
+    }
+
     try {
+        console.log('[Unified] Fetching carbon data...');
         const response = await fetch('/api/dashboard/carbon');
         const result = await response.json();
+        console.log('[Unified] Carbon API response:', result);
 
         if (result.success && result.data && result.data.by_activity && Object.keys(result.data.by_activity).length > 0) {
             const data = result.data;
@@ -536,8 +625,10 @@ async function loadSLO() {
     const gridContainer = document.getElementById('sloGrid');
 
     try {
+        console.log('[Unified] Fetching SLO data...');
         const response = await fetch('/api/dashboard/slo');
         const result = await response.json();
+        console.log('[Unified] SLO API response:', result);
 
         if (result.success && result.data && result.data.slos && result.data.slos.length > 0) {
             const data = result.data;
@@ -597,8 +688,10 @@ async function loadCompliance() {
     const gridContainer = document.getElementById('complianceGrid');
 
     try {
+        console.log('[Unified] Fetching compliance data...');
         const response = await fetch('/api/dashboard/compliance');
         const result = await response.json();
+        console.log('[Unified] Compliance API response:', result);
 
         if (result.success && result.data && result.data.categories && Object.keys(result.data.categories).length > 0) {
             const data = result.data;
