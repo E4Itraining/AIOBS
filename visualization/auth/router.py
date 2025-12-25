@@ -220,7 +220,7 @@ async def oauth2_callback(
 ):
     """
     OAuth2 callback handler.
-    Exchanges authorization code for tokens.
+    Exchanges authorization code for tokens and creates user session.
     """
     if error:
         raise HTTPException(
@@ -228,26 +228,76 @@ async def oauth2_callback(
             detail=f"OAuth2 error: {error}",
         )
 
-    # In a full implementation, we would:
-    # 1. Exchange code for tokens with the provider
-    # 2. Validate the ID token
-    # 3. Create or update user in our database
-    # 4. Generate our own JWT tokens
+    settings = get_auth_settings()
 
-    # For now, return a placeholder response
-    logger.info(f"OAuth2 callback received for {provider} with code: {code[:10]}...")
+    # Validate provider
+    valid_providers = []
+    if settings.has_google:
+        valid_providers.append("google")
+    if settings.has_azure:
+        valid_providers.append("azure")
+    if settings.has_keycloak:
+        valid_providers.append("keycloak")
 
-    return {
-        "message": f"OAuth2 callback for {provider} - implementation pending",
-        "code_received": True,
-        "state": state,
-        "next_steps": [
-            "Exchange code for tokens",
-            "Validate ID token",
-            "Create/update user",
-            "Generate JWT",
-        ],
-    }
+    if provider not in valid_providers:
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail=f"Provider '{provider}' is not enabled",
+        )
+
+    try:
+        # Import OAuth2 client
+        from .oauth2_client import get_oauth2_client
+
+        oauth2_client = get_oauth2_client()
+
+        # Determine redirect URI
+        redirect_uri = f"http://localhost:8000/api/auth/callback/{provider}"
+
+        # Exchange code for tokens
+        logger.info(f"Exchanging code for tokens with {provider}...")
+        token_response = await oauth2_client.exchange_code(provider, code, redirect_uri)
+
+        # Get user info from provider
+        logger.info(f"Fetching user info from {provider}...")
+        user_info = await oauth2_client.get_user_info(provider, token_response.access_token)
+
+        logger.info(f"OAuth2 login successful for {user_info.email} via {provider}")
+
+        # Create local user object
+        user = User(
+            id=f"{provider}:{user_info.sub}",
+            email=user_info.email,
+            name=user_info.name,
+            roles=["user"],  # Default role
+            provider=provider,
+            picture=user_info.picture,
+        )
+
+        # Generate our JWT tokens
+        access_token = create_access_token(user)
+        refresh_token = create_refresh_token(user)
+
+        # Return tokens (in production, would redirect with token in URL fragment)
+        return Token(
+            access_token=access_token,
+            refresh_token=refresh_token,
+            token_type="bearer",
+            expires_in=settings.access_token_expire_minutes * 60,
+            user=user.model_dump() if hasattr(user, 'model_dump') else {
+                "id": user.id,
+                "email": user.email,
+                "name": user.name,
+                "provider": user.provider,
+            },
+        )
+
+    except Exception as e:
+        logger.error(f"OAuth2 callback error for {provider}: {str(e)}")
+        raise HTTPException(
+            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+            detail=f"Authentication failed: {str(e)}",
+        )
 
 
 @router.get("/status")

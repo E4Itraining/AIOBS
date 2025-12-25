@@ -51,7 +51,7 @@ except Exception as e:
     logging.warning(f"Alerting module not available: {e}")
 
 try:
-    from .exports.router import router as exports_router
+    from .routers.exports import router as exports_router
 except Exception as e:
     logging.warning(f"Exports module not available: {e}")
 
