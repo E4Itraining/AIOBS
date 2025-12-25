@@ -413,14 +413,53 @@ POST /api/cognitive/baseline
 | `visualization/core/cognitive.py` | **REFACTORISÉ** - CognitiveEngine production |
 | `visualization/routers/cognitive.py` | **REFACTORISÉ** - API avec vrais calculs |
 
-### 6.3 Prochaines Priorités
+### 6.3 OAuth2 Authentication - Enterprise Ready ✅
 
-1. **Authentification OAuth2** - Callback fonctionnel
-2. **Causal Engine** - Même traitement que Cognitive
-3. **Export PDF/CSV** - Compliance reports
-4. **Persistence PostgreSQL** - Remplacer JSON
+| Provider | Implémentation |
+|----------|----------------|
+| **Google** | ✅ Token exchange + User info |
+| **Azure AD** | ✅ Token exchange + Microsoft Graph |
+| **Keycloak** | ✅ Token exchange + User info |
+
+**Fichiers:**
+- `visualization/auth/oauth2_client.py` - Client OAuth2 async
+- `visualization/auth/router.py` - Callback complet
+
+### 6.4 Causal Engine - Connected ✅
+
+Le CausalEngine est maintenant connecté au router avec:
+- Root cause analysis avec attribution Shapley
+- Impact propagation analysis
+- Counterfactual "what-if" scenarios
+- Evidence et recommendations automatiques
+
+**Fichier:** `visualization/routers/causal.py` - Refactorisé
+
+### 6.5 Export PDF/CSV - Compliance Reports ✅
+
+| Report Type | Formats | Description |
+|-------------|---------|-------------|
+| Trust Score | CSV/JSON/PDF | Analyse complète des scores |
+| Drift Analysis | CSV/JSON/PDF | Résultats de drift detection |
+| AI Act Compliance | CSV/JSON/PDF | Évaluation EU AI Act |
+| Audit Trail | CSV/JSON/PDF | Historique de gouvernance |
+
+**Fichier:** `visualization/routers/exports.py` - Nouveau
+
+### 6.6 Score Global Mis à Jour
+
+| Dimension | Note /10 | Mise à jour |
+|-----------|----------|-------------|
+| Fonctionnalités | **9/10** | +1 (OAuth2, Causal, Exports) |
+| Production-Readiness | **7/10** | +1 (Auth enterprise) |
+| **Score Global** | **7.5/10** | +0.5 |
+
+### 6.7 Prochaine Priorité
+
+1. **Persistence PostgreSQL** - Remplacer JSON par vraie DB
 
 ---
 
 *Audit initial: 21/12/2025*
-*Mise à jour: 25/12/2025 - Cognitive Engine Production*
+*Mise à jour 1: 25/12/2025 - Cognitive Engine Production*
+*Mise à jour 2: 25/12/2025 - OAuth2, Causal, Exports*
