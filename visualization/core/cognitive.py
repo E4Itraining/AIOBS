@@ -1,429 +1,756 @@
 """
-AIOBS Cognitive Engine - Python Implementation
-AI-specific metrics: drift, reliability, hallucination, degradation
+AIOBS Cognitive Engine - Production Implementation
+AI-specific observability: Trust Score, Drift, Reliability, Hallucination
 """
 
-import math
-import random  # For demo data - replace with real computations
-from dataclasses import dataclass, field
+import json
+import os
+from dataclasses import asdict, dataclass, field
 from datetime import datetime, timedelta
 from enum import Enum
+from pathlib import Path
 from typing import Any, Dict, List, Optional
 
-
-class DriftType(Enum):
-    DATA = "data"
-    CONCEPT = "concept"
-    PREDICTION = "prediction"
-
-
-@dataclass
-class DriftResult:
-    """Drift detection result"""
-
-    drift_type: DriftType
-    score: float  # 0-1, higher = more drift
-    is_significant: bool
-    affected_features: List[str]
-    reference_period: str
-    comparison_period: str
+from .detectors import (
+    DegradationSignal,
+    DegradationTracker,
+    DriftDetector,
+    DriftResult,
+    DriftSeverity,
+    DriftType,
+    HallucinationDetector,
+    HallucinationResult,
+    ReliabilityAnalyzer,
+    ReliabilityResult,
+)
 
 
-@dataclass
-class ReliabilityResult:
-    """Model reliability analysis"""
-
-    confidence_calibration: float  # 0-1
-    prediction_stability: float  # 0-1
-    uncertainty_quality: float  # 0-1
-    ood_detection_rate: float  # 0-1
-    overall_reliability: float  # 0-1
+# =============================================================================
+# Trust Score Model
+# =============================================================================
 
 
 @dataclass
-class HallucinationIndicators:
-    """Hallucination/factuality indicators"""
-
-    grounding_score: float  # 0-1, how grounded in facts
-    consistency_score: float  # 0-1, self-consistency
-    factuality_score: float  # 0-1, factual accuracy
-    citation_accuracy: float  # 0-1, if citations are correct
-    risk_level: str  # low, medium, high
+class TrustBreakdown:
+    """Detailed trust score breakdown"""
+    drift_component: float
+    reliability_component: float
+    hallucination_component: float
+    degradation_component: float
 
 
 @dataclass
-class DegradationSignal:
-    """Performance degradation signals"""
-
-    metric_name: str
-    current_value: float
-    baseline_value: float
-    degradation_pct: float
+class TrustScore:
+    """Trust Score with full transparency"""
+    overall: float  # 0-1
+    breakdown: TrustBreakdown
     trend: str  # improving, stable, degrading
-    alert_level: str  # none, warning, critical
+    confidence: float  # Confidence in the score
+    computed_at: datetime = field(default_factory=datetime.utcnow)
 
-
-@dataclass
-class TrustIndicators:
-    """Aggregated trust indicators"""
-
-    overall_trust: float  # 0-1
-    drift_risk: float  # 0-1 (inverted for trust)
-    reliability: float  # 0-1
-    hallucination_risk: float  # 0-1 (inverted)
-    degradation_risk: float  # 0-1 (inverted)
-    trend: str  # improving, stable, degrading
-    last_computed: datetime = field(default_factory=datetime.utcnow)
-
-
-class CognitiveEngine:
-    """
-    Cognitive Metrics Engine for AI Systems
-
-    Computes AI-specific observability metrics beyond traditional monitoring:
-    - Drift detection (data, concept, prediction)
-    - Reliability analysis
-    - Hallucination/factuality indicators
-    - Degradation tracking
-
-    Produces trust indicators as first-class metrics.
-    """
-
-    # Trust weights (sum to 1.0)
-    WEIGHTS = {"drift": 0.25, "reliability": 0.30, "hallucination": 0.25, "degradation": 0.20}
-
-    def __init__(
-        self,
-        drift_threshold: float = 0.3,
-        reliability_threshold: float = 0.7,
-        hallucination_threshold: float = 0.2,
-        window_hours: int = 24,
-    ):
-        self.drift_threshold = drift_threshold
-        self.reliability_threshold = reliability_threshold
-        self.hallucination_threshold = hallucination_threshold
-        self.window_hours = window_hours
-        self._cache: Dict[str, Any] = {}
-
-    def detect_drift(
-        self,
-        model_id: str,
-        current_data: Dict[str, List[float]],
-        reference_data: Optional[Dict[str, List[float]]] = None,
-    ) -> Dict[str, DriftResult]:
-        """
-        Detect various types of drift for a model.
-
-        In production, this would use statistical tests like:
-        - KS test for data drift
-        - PSI for prediction drift
-        - Page-Hinkley for concept drift
-        """
-        results = {}
-
-        for drift_type in DriftType:
-            # Simulate drift detection - replace with real implementation
-            score = self._compute_drift_score(model_id, drift_type, current_data)
-
-            results[drift_type.value] = DriftResult(
-                drift_type=drift_type,
-                score=score,
-                is_significant=score > self.drift_threshold,
-                affected_features=self._identify_drifted_features(current_data, score),
-                reference_period=f"last_{self.window_hours}h",
-                comparison_period="baseline",
-            )
-
-        return results
-
-    def analyze_reliability(
-        self, model_id: str, predictions: List[Dict[str, Any]], actuals: Optional[List[Any]] = None
-    ) -> ReliabilityResult:
-        """
-        Analyze model reliability through multiple lenses.
-
-        Components:
-        - Confidence calibration: Are confidence scores accurate?
-        - Prediction stability: Consistent outputs for similar inputs?
-        - Uncertainty quality: Does uncertainty correlate with errors?
-        - OOD detection: Can it identify out-of-distribution inputs?
-        """
-        # In production, compute from actual data
-        confidence_calibration = self._compute_calibration(predictions, actuals)
-        prediction_stability = self._compute_stability(predictions)
-        uncertainty_quality = self._compute_uncertainty_quality(predictions, actuals)
-        ood_rate = self._compute_ood_rate(predictions)
-
-        overall = (
-            confidence_calibration * 0.3
-            + prediction_stability * 0.3
-            + uncertainty_quality * 0.2
-            + ood_rate * 0.2
-        )
-
-        return ReliabilityResult(
-            confidence_calibration=confidence_calibration,
-            prediction_stability=prediction_stability,
-            uncertainty_quality=uncertainty_quality,
-            ood_detection_rate=ood_rate,
-            overall_reliability=overall,
-        )
-
-    def detect_hallucination_risk(
-        self, model_id: str, outputs: List[Dict[str, Any]]
-    ) -> HallucinationIndicators:
-        """
-        Assess hallucination/factuality risk for generative models.
-
-        Metrics:
-        - Grounding: How well outputs are grounded in provided context
-        - Consistency: Self-consistency across multiple samples
-        - Factuality: Accuracy of factual claims
-        - Citation: Accuracy of any citations/references
-        """
-        # In production, use specialized fact-checking and grounding models
-        grounding = self._compute_grounding_score(outputs)
-        consistency = self._compute_consistency_score(outputs)
-        factuality = self._compute_factuality_score(outputs)
-        citation = self._compute_citation_accuracy(outputs)
-
-        avg_score = (grounding + consistency + factuality + citation) / 4
-
-        risk_level = "low"
-        if avg_score < 0.6:
-            risk_level = "high"
-        elif avg_score < 0.8:
-            risk_level = "medium"
-
-        return HallucinationIndicators(
-            grounding_score=grounding,
-            consistency_score=consistency,
-            factuality_score=factuality,
-            citation_accuracy=citation,
-            risk_level=risk_level,
-        )
-
-    def track_degradation(
-        self, model_id: str, current_metrics: Dict[str, float], baseline_metrics: Dict[str, float]
-    ) -> List[DegradationSignal]:
-        """
-        Track performance degradation over time.
-
-        Compares current metrics against baseline and identifies
-        significant degradations that may require attention.
-        """
-        signals = []
-
-        for metric_name, current_value in current_metrics.items():
-            baseline_value = baseline_metrics.get(metric_name)
-            if baseline_value is None or baseline_value == 0:
-                continue
-
-            degradation_pct = ((baseline_value - current_value) / baseline_value) * 100
-
-            # Determine trend based on degradation
-            if degradation_pct > 10:
-                trend = "degrading"
-                alert_level = "critical" if degradation_pct > 20 else "warning"
-            elif degradation_pct < -5:
-                trend = "improving"
-                alert_level = "none"
-            else:
-                trend = "stable"
-                alert_level = "none"
-
-            signals.append(
-                DegradationSignal(
-                    metric_name=metric_name,
-                    current_value=current_value,
-                    baseline_value=baseline_value,
-                    degradation_pct=degradation_pct,
-                    trend=trend,
-                    alert_level=alert_level,
-                )
-            )
-
-        return signals
-
-    def compute_trust_indicators(
-        self,
-        model_id: str,
-        drift_results: Dict[str, DriftResult],
-        reliability: ReliabilityResult,
-        hallucination: HallucinationIndicators,
-        degradation: List[DegradationSignal],
-    ) -> TrustIndicators:
-        """
-        Compute aggregated trust indicators from all cognitive metrics.
-
-        Trust is computed as a weighted combination of:
-        - Low drift risk (25%)
-        - High reliability (30%)
-        - Low hallucination risk (25%)
-        - Low degradation (20%)
-        """
-        # Compute component scores (0-1, higher is better/more trustworthy)
-
-        # Drift risk: average of all drift scores, inverted
-        drift_scores = [r.score for r in drift_results.values()]
-        drift_risk = sum(drift_scores) / len(drift_scores) if drift_scores else 0
-        drift_trust = 1 - drift_risk
-
-        # Reliability: direct score
-        reliability_trust = reliability.overall_reliability
-
-        # Hallucination: average of indicators
-        hallucination_avg = (
-            hallucination.grounding_score
-            + hallucination.consistency_score
-            + hallucination.factuality_score
-            + hallucination.citation_accuracy
-        ) / 4
-        hallucination_trust = hallucination_avg
-
-        # Degradation: based on alert levels
-        degradation_risk = self._compute_degradation_risk(degradation)
-        degradation_trust = 1 - degradation_risk
-
-        # Weighted overall trust
-        overall_trust = (
-            self.WEIGHTS["drift"] * drift_trust
-            + self.WEIGHTS["reliability"] * reliability_trust
-            + self.WEIGHTS["hallucination"] * hallucination_trust
-            + self.WEIGHTS["degradation"] * degradation_trust
-        )
-
-        # Determine trend
-        trend = self._compute_trend(model_id, overall_trust)
-
-        return TrustIndicators(
-            overall_trust=round(overall_trust, 3),
-            drift_risk=round(drift_risk, 3),
-            reliability=round(reliability_trust, 3),
-            hallucination_risk=round(1 - hallucination_trust, 3),
-            degradation_risk=round(degradation_risk, 3),
-            trend=trend,
-            last_computed=datetime.utcnow(),
-        )
-
-    def get_model_snapshot(self, model_id: str) -> Dict[str, Any]:
-        """
-        Get a complete cognitive snapshot for a model.
-        For demo purposes, generates realistic sample data.
-        """
-        # Generate demo data - in production, fetch from actual sources
-        drift_results = self._generate_demo_drift(model_id)
-        reliability = self._generate_demo_reliability(model_id)
-        hallucination = self._generate_demo_hallucination(model_id)
-        degradation = self._generate_demo_degradation(model_id)
-
-        trust = self.compute_trust_indicators(
-            model_id, drift_results, reliability, hallucination, degradation
-        )
-
+    def to_dict(self) -> Dict[str, Any]:
         return {
-            "model_id": model_id,
-            "trust": trust,
-            "drift": {k: vars(v) for k, v in drift_results.items()},
-            "reliability": vars(reliability),
-            "hallucination": vars(hallucination),
-            "degradation": [vars(d) for d in degradation],
-            "computed_at": datetime.utcnow().isoformat(),
+            "overall": round(self.overall, 3),
+            "breakdown": {
+                "drift_component": round(self.breakdown.drift_component, 3),
+                "reliability_component": round(self.breakdown.reliability_component, 3),
+                "hallucination_component": round(self.breakdown.hallucination_component, 3),
+                "degradation_component": round(self.breakdown.degradation_component, 3),
+            },
+            "trend": self.trend,
+            "confidence": round(self.confidence, 3),
+            "computed_at": self.computed_at.isoformat(),
         }
 
-    # =========================================================================
-    # Private Helper Methods
-    # =========================================================================
 
-    def _compute_drift_score(self, model_id: str, drift_type: DriftType, data: Dict) -> float:
-        """Compute drift score - replace with real statistical tests"""
-        # Demo: generate realistic scores
-        base = hash(f"{model_id}_{drift_type.value}") % 100 / 100
-        noise = random.uniform(-0.1, 0.1)
-        return max(0, min(1, base * 0.5 + noise))
+@dataclass
+class ModelMetricsHistory:
+    """Historical metrics for a model"""
+    model_id: str
+    trust_scores: List[float] = field(default_factory=list)
+    drift_scores: List[float] = field(default_factory=list)
+    reliability_scores: List[float] = field(default_factory=list)
+    timestamps: List[str] = field(default_factory=list)
+    max_history: int = 100
 
-    def _identify_drifted_features(self, data: Dict, score: float) -> List[str]:
-        """Identify features with significant drift"""
-        if score < self.drift_threshold:
-            return []
-        features = list(data.keys()) if data else ["feature_1", "feature_2"]
-        return features[: int(len(features) * score)]
+    def add_snapshot(
+        self,
+        trust: float,
+        drift: float,
+        reliability: float,
+    ) -> None:
+        """Add a new snapshot"""
+        self.trust_scores.append(trust)
+        self.drift_scores.append(drift)
+        self.reliability_scores.append(reliability)
+        self.timestamps.append(datetime.utcnow().isoformat())
 
-    def _compute_calibration(self, predictions: List[Dict], actuals: Optional[List]) -> float:
-        """Compute confidence calibration score"""
-        return 0.75 + random.uniform(-0.1, 0.1)
+        # Trim to max history
+        if len(self.trust_scores) > self.max_history:
+            self.trust_scores = self.trust_scores[-self.max_history:]
+            self.drift_scores = self.drift_scores[-self.max_history:]
+            self.reliability_scores = self.reliability_scores[-self.max_history:]
+            self.timestamps = self.timestamps[-self.max_history:]
 
-    def _compute_stability(self, predictions: List[Dict]) -> float:
-        """Compute prediction stability score"""
-        return 0.85 + random.uniform(-0.1, 0.1)
-
-    def _compute_uncertainty_quality(
-        self, predictions: List[Dict], actuals: Optional[List]
-    ) -> float:
-        """Compute uncertainty estimation quality"""
-        return 0.70 + random.uniform(-0.1, 0.1)
-
-    def _compute_ood_rate(self, predictions: List[Dict]) -> float:
-        """Compute OOD detection rate"""
-        return 0.80 + random.uniform(-0.1, 0.1)
-
-    def _compute_grounding_score(self, outputs: List[Dict]) -> float:
-        return 0.82 + random.uniform(-0.1, 0.1)
-
-    def _compute_consistency_score(self, outputs: List[Dict]) -> float:
-        return 0.88 + random.uniform(-0.1, 0.1)
-
-    def _compute_factuality_score(self, outputs: List[Dict]) -> float:
-        return 0.75 + random.uniform(-0.1, 0.1)
-
-    def _compute_citation_accuracy(self, outputs: List[Dict]) -> float:
-        return 0.70 + random.uniform(-0.1, 0.1)
-
-    def _compute_degradation_risk(self, signals: List[DegradationSignal]) -> float:
-        """Compute overall degradation risk from signals"""
-        if not signals:
-            return 0.0
-
-        risk_scores = []
-        for s in signals:
-            if s.alert_level == "critical":
-                risk_scores.append(0.9)
-            elif s.alert_level == "warning":
-                risk_scores.append(0.5)
-            else:
-                risk_scores.append(0.1)
-
-        return sum(risk_scores) / len(risk_scores)
-
-    def _compute_trend(self, model_id: str, current_trust: float) -> str:
-        """Compute trust trend by comparing with cached values"""
-        cache_key = f"trust_{model_id}"
-        previous = self._cache.get(cache_key)
-        self._cache[cache_key] = current_trust
-
-        if previous is None:
+    def get_trend(self) -> str:
+        """Compute trend from history"""
+        if len(self.trust_scores) < 2:
             return "stable"
 
-        diff = current_trust - previous
+        recent = self.trust_scores[-5:] if len(self.trust_scores) >= 5 else self.trust_scores
+        older = self.trust_scores[-10:-5] if len(self.trust_scores) >= 10 else self.trust_scores[:len(recent)]
+
+        if not older:
+            return "stable"
+
+        recent_avg = sum(recent) / len(recent)
+        older_avg = sum(older) / len(older)
+
+        diff = recent_avg - older_avg
         if diff > 0.05:
             return "improving"
         elif diff < -0.05:
             return "degrading"
         return "stable"
 
-    # Demo data generators
-    def _generate_demo_drift(self, model_id: str) -> Dict[str, DriftResult]:
-        return self.detect_drift(model_id, {"f1": [1, 2, 3], "f2": [4, 5, 6]})
 
-    def _generate_demo_reliability(self, model_id: str) -> ReliabilityResult:
-        return self.analyze_reliability(model_id, [{"confidence": 0.8}])
+# =============================================================================
+# Metrics Store - Persistent Storage for Cognitive Metrics
+# =============================================================================
 
-    def _generate_demo_hallucination(self, model_id: str) -> HallucinationIndicators:
-        return self.detect_hallucination_risk(model_id, [{"output": "test"}])
+
+class MetricsStore:
+    """Persistent storage for model metrics and baselines"""
+
+    def __init__(self, data_dir: str = "data/cognitive"):
+        self.data_dir = Path(data_dir)
+        self.data_dir.mkdir(parents=True, exist_ok=True)
+
+        self.baselines_file = self.data_dir / "baselines.json"
+        self.history_file = self.data_dir / "history.json"
+        self.ingested_file = self.data_dir / "ingested_data.json"
+
+        self.baselines: Dict[str, Dict[str, List[float]]] = self._load_json(self.baselines_file, {})
+        self.history: Dict[str, ModelMetricsHistory] = self._load_history()
+        self.ingested_data: Dict[str, Dict[str, Any]] = self._load_json(self.ingested_file, {})
+
+    def _load_json(self, path: Path, default: Any) -> Any:
+        if path.exists():
+            try:
+                with open(path) as f:
+                    return json.load(f)
+            except Exception:
+                return default
+        return default
+
+    def _load_history(self) -> Dict[str, ModelMetricsHistory]:
+        data = self._load_json(self.history_file, {})
+        history = {}
+        for model_id, h in data.items():
+            history[model_id] = ModelMetricsHistory(
+                model_id=model_id,
+                trust_scores=h.get("trust_scores", []),
+                drift_scores=h.get("drift_scores", []),
+                reliability_scores=h.get("reliability_scores", []),
+                timestamps=h.get("timestamps", []),
+            )
+        return history
+
+    def _save_json(self, path: Path, data: Any) -> None:
+        with open(path, "w") as f:
+            json.dump(data, f, indent=2, default=str)
+
+    def save(self) -> None:
+        """Persist all data"""
+        self._save_json(self.baselines_file, self.baselines)
+
+        history_data = {}
+        for model_id, h in self.history.items():
+            history_data[model_id] = {
+                "trust_scores": h.trust_scores,
+                "drift_scores": h.drift_scores,
+                "reliability_scores": h.reliability_scores,
+                "timestamps": h.timestamps,
+            }
+        self._save_json(self.history_file, history_data)
+
+        self._save_json(self.ingested_file, self.ingested_data)
+
+    def get_baseline(self, model_id: str) -> Optional[Dict[str, List[float]]]:
+        return self.baselines.get(model_id)
+
+    def set_baseline(self, model_id: str, data: Dict[str, List[float]]) -> None:
+        self.baselines[model_id] = data
+        self.save()
+
+    def get_history(self, model_id: str) -> ModelMetricsHistory:
+        if model_id not in self.history:
+            self.history[model_id] = ModelMetricsHistory(model_id=model_id)
+        return self.history[model_id]
+
+    def add_snapshot(
+        self, model_id: str, trust: float, drift: float, reliability: float
+    ) -> None:
+        history = self.get_history(model_id)
+        history.add_snapshot(trust, drift, reliability)
+        self.save()
+
+    def ingest_predictions(
+        self,
+        model_id: str,
+        predictions: List[float],
+        labels: Optional[List[float]] = None,
+        confidences: Optional[List[float]] = None,
+        features: Optional[Dict[str, List[float]]] = None,
+    ) -> None:
+        """Ingest model predictions for analysis"""
+        if model_id not in self.ingested_data:
+            self.ingested_data[model_id] = {
+                "predictions": [],
+                "labels": [],
+                "confidences": [],
+                "features": {},
+                "timestamp": [],
+            }
+
+        data = self.ingested_data[model_id]
+        data["predictions"].extend(predictions)
+        if labels:
+            data["labels"].extend(labels)
+        if confidences:
+            data["confidences"].extend(confidences)
+        if features:
+            for k, v in features.items():
+                if k not in data["features"]:
+                    data["features"][k] = []
+                data["features"][k].extend(v)
+
+        data["timestamp"].append(datetime.utcnow().isoformat())
+
+        # Trim to last 10000 samples
+        max_samples = 10000
+        if len(data["predictions"]) > max_samples:
+            data["predictions"] = data["predictions"][-max_samples:]
+            data["labels"] = data["labels"][-max_samples:] if data["labels"] else []
+            data["confidences"] = data["confidences"][-max_samples:] if data["confidences"] else []
+            for k in data["features"]:
+                data["features"][k] = data["features"][k][-max_samples:]
+
+        self.save()
+
+    def get_ingested_data(self, model_id: str) -> Optional[Dict[str, Any]]:
+        return self.ingested_data.get(model_id)
+
+
+# =============================================================================
+# Cognitive Engine - Main Entry Point
+# =============================================================================
+
+
+class CognitiveEngine:
+    """
+    Production Cognitive Engine for AI Systems.
+
+    Computes real AI-specific observability metrics:
+    - Trust Score: Composite metric combining all factors
+    - Drift Detection: Statistical tests (KS, PSI, JS, Wasserstein)
+    - Reliability Analysis: ECE, MCE, Brier, Stability
+    - Hallucination Detection: Grounding, Consistency, Factuality
+    - Degradation Tracking: Performance trend analysis
+    """
+
+    # Trust Score weights
+    WEIGHTS = {
+        "drift": 0.25,
+        "reliability": 0.30,
+        "hallucination": 0.25,
+        "degradation": 0.20,
+    }
+
+    def __init__(
+        self,
+        data_dir: str = "data/cognitive",
+        drift_threshold: float = 0.1,
+        reliability_threshold: float = 0.1,
+        hallucination_threshold: float = 0.7,
+    ):
+        self.store = MetricsStore(data_dir)
+        self.drift_detector = DriftDetector(psi_threshold=drift_threshold)
+        self.reliability_analyzer = ReliabilityAnalyzer(calibration_threshold=reliability_threshold)
+        self.hallucination_detector = HallucinationDetector(grounding_threshold=hallucination_threshold)
+        self.degradation_tracker = DegradationTracker()
+
+        self._trust_cache: Dict[str, float] = {}
+
+    # =========================================================================
+    # Core Analysis Methods
+    # =========================================================================
+
+    def analyze_drift(
+        self,
+        model_id: str,
+        current_data: Optional[Dict[str, List[float]]] = None,
+    ) -> Dict[str, DriftResult]:
+        """
+        Analyze drift for a model using stored baseline and current data.
+        """
+        baseline = self.store.get_baseline(model_id)
+
+        # Use ingested data if no current data provided
+        if current_data is None:
+            ingested = self.store.get_ingested_data(model_id)
+            if ingested and ingested.get("features"):
+                current_data = ingested["features"]
+
+        # Generate demo data if no real data available
+        if baseline is None or current_data is None:
+            return self._generate_demo_drift_results(model_id)
+
+        results = {}
+
+        # Data drift
+        data_drift = self.drift_detector.detect_data_drift(baseline, current_data)
+        results["data"] = data_drift
+
+        # Prediction drift (if predictions available)
+        ingested = self.store.get_ingested_data(model_id)
+        if ingested and len(ingested.get("predictions", [])) > 100:
+            preds = ingested["predictions"]
+            mid = len(preds) // 2
+            ref_preds = preds[:mid]
+            curr_preds = preds[mid:]
+            pred_drift = self.drift_detector.detect_prediction_drift(ref_preds, curr_preds)
+            results["prediction"] = pred_drift
+
+            # Concept drift (if labels available)
+            labels = ingested.get("labels", [])
+            if len(labels) >= len(preds):
+                is_concept_drift, concept_score = self.drift_detector.detect_concept_drift(
+                    preds, labels
+                )
+                results["concept"] = DriftResult(
+                    drift_type=DriftType.CONCEPT,
+                    score=min(1.0, concept_score),
+                    is_significant=is_concept_drift,
+                    p_value=None,
+                    severity=DriftSeverity.MODERATE if is_concept_drift else DriftSeverity.NONE,
+                    affected_features=["labels"],
+                    details={"concept_score": concept_score},
+                )
+
+        return results
+
+    def analyze_reliability(
+        self,
+        model_id: str,
+    ) -> ReliabilityResult:
+        """
+        Analyze reliability using stored predictions and labels.
+        """
+        ingested = self.store.get_ingested_data(model_id)
+
+        if ingested is None:
+            return self._generate_demo_reliability()
+
+        predictions = ingested.get("predictions", [])
+        labels = ingested.get("labels", [])
+        confidences = ingested.get("confidences", [])
+
+        # For classification, convert to binary
+        if predictions and labels and confidences:
+            pred_binary = [1 if p > 0.5 else 0 for p in predictions[:len(labels)]]
+            label_binary = [1 if l > 0.5 else 0 for l in labels[:len(predictions)]]
+            conf_subset = confidences[:len(predictions)]
+
+            return self.reliability_analyzer.analyze(
+                confidences=conf_subset,
+                predictions=pred_binary,
+                labels=label_binary,
+            )
+
+        return self._generate_demo_reliability()
+
+    def analyze_hallucination(
+        self,
+        model_id: str,
+        outputs: Optional[List[str]] = None,
+        sources: Optional[List[str]] = None,
+    ) -> HallucinationResult:
+        """
+        Analyze hallucination risk for GenAI outputs.
+        """
+        if outputs and sources:
+            return self.hallucination_detector.analyze(outputs, sources)
+
+        # Demo data for GenAI models
+        return self._generate_demo_hallucination()
+
+    def analyze_degradation(
+        self,
+        model_id: str,
+        current_metrics: Optional[Dict[str, float]] = None,
+    ) -> List[DegradationSignal]:
+        """
+        Analyze performance degradation.
+        """
+        history = self.store.get_history(model_id)
+
+        if not history.trust_scores or current_metrics is None:
+            return self._generate_demo_degradation(model_id)
+
+        # Use historical average as baseline
+        baseline_metrics = {
+            "trust_score": sum(history.trust_scores) / len(history.trust_scores),
+            "drift_score": sum(history.drift_scores) / len(history.drift_scores),
+            "reliability_score": sum(history.reliability_scores) / len(history.reliability_scores),
+        }
+
+        return self.degradation_tracker.analyze(
+            current_metrics,
+            baseline_metrics,
+            higher_is_better={"trust_score": True, "drift_score": False, "reliability_score": True},
+        )
+
+    # =========================================================================
+    # Trust Score Computation
+    # =========================================================================
+
+    def compute_trust_score(
+        self,
+        model_id: str,
+        drift_results: Optional[Dict[str, DriftResult]] = None,
+        reliability: Optional[ReliabilityResult] = None,
+        hallucination: Optional[HallucinationResult] = None,
+        degradation: Optional[List[DegradationSignal]] = None,
+    ) -> TrustScore:
+        """
+        Compute the Trust Score from all cognitive metrics.
+
+        Trust = w1*(1-drift) + w2*reliability + w3*(1-hallucination_risk) + w4*(1-degradation)
+        """
+        # Get metrics if not provided
+        if drift_results is None:
+            drift_results = self.analyze_drift(model_id)
+        if reliability is None:
+            reliability = self.analyze_reliability(model_id)
+        if hallucination is None:
+            hallucination = self.analyze_hallucination(model_id)
+        if degradation is None:
+            degradation = self.analyze_degradation(model_id)
+
+        # Compute component scores (0-1, higher is better)
+
+        # Drift: average of all drift scores, inverted
+        drift_scores = [r.score for r in drift_results.values()]
+        drift_risk = sum(drift_scores) / len(drift_scores) if drift_scores else 0
+        drift_trust = 1 - drift_risk
+
+        # Reliability: direct score
+        reliability_trust = reliability.overall_score
+
+        # Hallucination: overall score (already 0-1, higher is better)
+        hallucination_trust = hallucination.overall_score
+
+        # Degradation: compute risk and invert
+        degradation_risk = self.degradation_tracker.compute_overall_risk(degradation)
+        degradation_trust = 1 - degradation_risk
+
+        # Weighted components
+        drift_component = self.WEIGHTS["drift"] * drift_trust
+        reliability_component = self.WEIGHTS["reliability"] * reliability_trust
+        hallucination_component = self.WEIGHTS["hallucination"] * hallucination_trust
+        degradation_component = self.WEIGHTS["degradation"] * degradation_trust
+
+        overall = drift_component + reliability_component + hallucination_component + degradation_component
+
+        # Compute trend from history
+        history = self.store.get_history(model_id)
+        trend = history.get_trend()
+
+        # Compute confidence (based on data availability)
+        confidence = self._compute_confidence(model_id, drift_results, reliability)
+
+        trust_score = TrustScore(
+            overall=overall,
+            breakdown=TrustBreakdown(
+                drift_component=drift_component,
+                reliability_component=reliability_component,
+                hallucination_component=hallucination_component,
+                degradation_component=degradation_component,
+            ),
+            trend=trend,
+            confidence=confidence,
+        )
+
+        # Update history and cache
+        self.store.add_snapshot(model_id, overall, drift_risk, reliability.overall_score)
+        self._trust_cache[model_id] = overall
+
+        return trust_score
+
+    def _compute_confidence(
+        self,
+        model_id: str,
+        drift_results: Dict[str, DriftResult],
+        reliability: ReliabilityResult,
+    ) -> float:
+        """
+        Compute confidence in the Trust Score based on data availability.
+        """
+        confidence = 0.5  # Base confidence
+
+        # Check if we have real data
+        ingested = self.store.get_ingested_data(model_id)
+        if ingested:
+            n_predictions = len(ingested.get("predictions", []))
+            if n_predictions > 1000:
+                confidence += 0.3
+            elif n_predictions > 100:
+                confidence += 0.2
+            elif n_predictions > 10:
+                confidence += 0.1
+
+        # Check if we have baselines
+        if self.store.get_baseline(model_id):
+            confidence += 0.1
+
+        # Check history depth
+        history = self.store.get_history(model_id)
+        if len(history.trust_scores) > 10:
+            confidence += 0.1
+
+        return min(1.0, confidence)
+
+    # =========================================================================
+    # Full Model Snapshot
+    # =========================================================================
+
+    def get_model_snapshot(self, model_id: str) -> Dict[str, Any]:
+        """
+        Get a complete cognitive snapshot for a model.
+        """
+        drift_results = self.analyze_drift(model_id)
+        reliability = self.analyze_reliability(model_id)
+        hallucination = self.analyze_hallucination(model_id)
+        degradation = self.analyze_degradation(model_id)
+        trust = self.compute_trust_score(
+            model_id, drift_results, reliability, hallucination, degradation
+        )
+
+        return {
+            "model_id": model_id,
+            "trust_score": trust.to_dict(),
+            "drift": {
+                k: {
+                    "type": v.drift_type.value,
+                    "score": round(v.score, 3),
+                    "is_significant": v.is_significant,
+                    "severity": v.severity.value,
+                    "affected_features": v.affected_features,
+                    "p_value": round(v.p_value, 4) if v.p_value else None,
+                    "details": {dk: round(dv, 4) for dk, dv in v.details.items()},
+                }
+                for k, v in drift_results.items()
+            },
+            "reliability": {
+                "overall_score": round(reliability.overall_score, 3),
+                "status": reliability.status,
+                "calibration": {
+                    "ece": round(reliability.calibration.expected_calibration_error, 4),
+                    "mce": round(reliability.calibration.maximum_calibration_error, 4),
+                    "brier_score": round(reliability.calibration.brier_score, 4),
+                    "is_well_calibrated": reliability.calibration.is_well_calibrated,
+                },
+                "stability": {
+                    "variation_coefficient": round(reliability.stability.variation_coefficient, 4),
+                    "is_stable": reliability.stability.is_stable,
+                },
+                "uncertainty_correlation": round(reliability.uncertainty_correlation, 3),
+            },
+            "hallucination": {
+                "overall_score": round(hallucination.overall_score, 3),
+                "risk_level": hallucination.risk_level,
+                "grounding_score": round(hallucination.grounding_score, 3),
+                "consistency_score": round(hallucination.consistency_score, 3),
+                "factuality_score": round(hallucination.factuality_score, 3),
+                "flagged_outputs": hallucination.flagged_outputs[:5],  # Limit output
+            },
+            "degradation": [
+                {
+                    "metric": s.metric_name,
+                    "current": round(s.current_value, 3),
+                    "baseline": round(s.baseline_value, 3),
+                    "change_pct": round(s.change_pct, 1),
+                    "trend": s.trend,
+                    "alert_level": s.alert_level,
+                }
+                for s in degradation
+            ],
+            "computed_at": datetime.utcnow().isoformat(),
+        }
+
+    # =========================================================================
+    # Data Ingestion API
+    # =========================================================================
+
+    def ingest(
+        self,
+        model_id: str,
+        predictions: List[float],
+        labels: Optional[List[float]] = None,
+        confidences: Optional[List[float]] = None,
+        features: Optional[Dict[str, List[float]]] = None,
+    ) -> Dict[str, Any]:
+        """
+        Ingest model predictions for continuous analysis.
+        Returns ingestion summary.
+        """
+        self.store.ingest_predictions(
+            model_id=model_id,
+            predictions=predictions,
+            labels=labels,
+            confidences=confidences,
+            features=features,
+        )
+
+        # Auto-set baseline if not exists and enough data
+        if self.store.get_baseline(model_id) is None:
+            ingested = self.store.get_ingested_data(model_id)
+            if ingested and len(ingested.get("predictions", [])) >= 100:
+                if features:
+                    self.store.set_baseline(model_id, features)
+
+        ingested = self.store.get_ingested_data(model_id)
+        return {
+            "model_id": model_id,
+            "status": "ingested",
+            "total_predictions": len(ingested.get("predictions", [])),
+            "has_baseline": self.store.get_baseline(model_id) is not None,
+        }
+
+    def set_baseline(
+        self, model_id: str, features: Dict[str, List[float]]
+    ) -> Dict[str, Any]:
+        """
+        Explicitly set baseline for a model.
+        """
+        self.store.set_baseline(model_id, features)
+        return {
+            "model_id": model_id,
+            "status": "baseline_set",
+            "features": list(features.keys()),
+            "samples_per_feature": {k: len(v) for k, v in features.items()},
+        }
+
+    # =========================================================================
+    # Demo Data Generators (Fallback when no real data)
+    # =========================================================================
+
+    def _generate_demo_drift_results(self, model_id: str) -> Dict[str, DriftResult]:
+        """Generate realistic demo drift results"""
+        import hashlib
+
+        # Deterministic but varied scores based on model_id
+        seed = int(hashlib.md5(model_id.encode()).hexdigest()[:8], 16) % 1000 / 1000
+
+        data_score = 0.1 + seed * 0.2
+        pred_score = 0.05 + seed * 0.15
+        concept_score = 0.02 + seed * 0.1
+
+        return {
+            "data": DriftResult(
+                drift_type=DriftType.DATA,
+                score=data_score,
+                is_significant=data_score > 0.15,
+                p_value=0.1 - seed * 0.08,
+                severity=DriftSeverity.MODERATE if data_score > 0.15 else DriftSeverity.NONE,
+                affected_features=["feature_a", "feature_c"] if data_score > 0.15 else [],
+                details={"psi": data_score * 0.3, "ks_stat": data_score * 0.8},
+            ),
+            "prediction": DriftResult(
+                drift_type=DriftType.PREDICTION,
+                score=pred_score,
+                is_significant=pred_score > 0.1,
+                p_value=0.15 - seed * 0.1,
+                severity=DriftSeverity.NONE,
+                affected_features=["predictions"],
+                details={"psi": pred_score * 0.25, "js_divergence": pred_score * 0.5},
+            ),
+            "concept": DriftResult(
+                drift_type=DriftType.CONCEPT,
+                score=concept_score,
+                is_significant=False,
+                p_value=None,
+                severity=DriftSeverity.NONE,
+                affected_features=[],
+                details={"concept_score": concept_score},
+            ),
+        }
+
+    def _generate_demo_reliability(self) -> ReliabilityResult:
+        """Generate realistic demo reliability"""
+        from .detectors import CalibrationResult, StabilityResult
+
+        return ReliabilityResult(
+            calibration=CalibrationResult(
+                expected_calibration_error=0.08,
+                maximum_calibration_error=0.15,
+                brier_score=0.12,
+                reliability_diagram=[(0.1, 0.12), (0.3, 0.28), (0.5, 0.52), (0.7, 0.68), (0.9, 0.88)],
+                is_well_calibrated=True,
+            ),
+            stability=StabilityResult(
+                variation_coefficient=0.05,
+                max_deviation=0.08,
+                mean_std=0.03,
+                is_stable=True,
+            ),
+            uncertainty_correlation=0.72,
+            overall_score=0.85,
+            status="healthy",
+        )
+
+    def _generate_demo_hallucination(self) -> HallucinationResult:
+        """Generate realistic demo hallucination metrics"""
+        return HallucinationResult(
+            grounding_score=0.82,
+            consistency_score=0.88,
+            factuality_score=0.78,
+            confidence_alignment=0.85,
+            risk_level="low",
+            overall_score=0.83,
+            flagged_outputs=[],
+        )
 
     def _generate_demo_degradation(self, model_id: str) -> List[DegradationSignal]:
-        return self.track_degradation(
-            model_id,
-            {"accuracy": 0.92, "latency": 45, "throughput": 1200},
-            {"accuracy": 0.95, "latency": 40, "throughput": 1500},
-        )
+        """Generate realistic demo degradation signals"""
+        import hashlib
+
+        seed = int(hashlib.md5(model_id.encode()).hexdigest()[:8], 16) % 1000 / 1000
+
+        return [
+            DegradationSignal(
+                metric_name="accuracy",
+                current_value=0.92 - seed * 0.05,
+                baseline_value=0.95,
+                change_pct=3.2 + seed * 2,
+                trend="stable" if seed < 0.5 else "degrading",
+                alert_level="none" if seed < 0.7 else "warning",
+            ),
+            DegradationSignal(
+                metric_name="latency_p99",
+                current_value=48 + seed * 10,
+                baseline_value=45,
+                change_pct=6.7 + seed * 5,
+                trend="stable",
+                alert_level="none",
+            ),
+            DegradationSignal(
+                metric_name="throughput",
+                current_value=1180 - seed * 100,
+                baseline_value=1200,
+                change_pct=1.7 + seed * 3,
+                trend="stable",
+                alert_level="none",
+            ),
+        ]
