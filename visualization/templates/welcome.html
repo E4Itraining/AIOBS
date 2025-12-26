@@ -1,5 +1,7 @@
 {% extends "base.html" %}
 
+{% block page_title %}Choisir mon Parcours{% endblock %}
+
 {% block content %}
 <div class="welcome-hub page-transition-enter">
     <!-- Hero Section - Simplified -->
@@ -8,11 +10,10 @@
             <div class="hero-logo">
                 <i data-lucide="eye"></i>
             </div>
-            <h1>Bienvenue sur GASKIA</h1>
+            <h1>Quel est votre rôle ?</h1>
             <p class="hero-subtitle">
-                Choisissez votre profil pour une expérience personnalisée.
-                <br>
-                <span class="hero-hint">Vous pourrez changer de parcours à tout moment.</span>
+                GASKIA adapte son interface à vos besoins.
+                <span class="hero-hint">Modifiable à tout moment.</span>
             </p>
         </div>
     </div>
@@ -22,11 +23,14 @@
         <!-- Strategic / Business -->
         <div class="persona-category">
             <div class="category-header">
-                <span class="category-badge business">Business</span>
+                <span class="category-badge business">
+                    <i data-lucide="briefcase"></i>
+                    Stratégie & Finance
+                </span>
             </div>
             <div class="persona-row">
                 <div class="persona-tile" data-persona="business_executive" onclick="selectPersona('business_executive')">
-                    <div class="tile-icon" style="--tile-color: #10b981;">
+                    <div class="tile-icon tile-icon-business">
                         <i data-lucide="building-2"></i>
                     </div>
                     <div class="tile-content">
@@ -36,12 +40,12 @@
                     <i data-lucide="chevron-right" class="tile-arrow"></i>
                 </div>
                 <div class="persona-tile" data-persona="financier" onclick="selectPersona('financier')">
-                    <div class="tile-icon" style="--tile-color: #f59e0b;">
+                    <div class="tile-icon tile-icon-finance">
                         <i data-lucide="wallet"></i>
                     </div>
                     <div class="tile-content">
                         <h3>DAF / FinOps</h3>
-                        <p>Coûts, budgets, ROI</p>
+                        <p>Coûts, budgets, optimisation</p>
                     </div>
                     <i data-lucide="chevron-right" class="tile-arrow"></i>
                 </div>
@@ -51,21 +55,24 @@
         <!-- Tech -->
         <div class="persona-category">
             <div class="category-header">
-                <span class="category-badge tech">Tech</span>
+                <span class="category-badge tech">
+                    <i data-lucide="cpu"></i>
+                    Tech & Sécurité
+                </span>
             </div>
             <div class="persona-row">
                 <div class="persona-tile" data-persona="tech_ml_engineer" onclick="selectPersona('tech_ml_engineer')">
-                    <div class="tile-icon" style="--tile-color: #6366f1;">
+                    <div class="tile-icon tile-icon-ml">
                         <i data-lucide="brain"></i>
                     </div>
                     <div class="tile-content">
-                        <h3>ML Engineer</h3>
+                        <h3>ML Engineer / Data</h3>
                         <p>Drift, modèles, features</p>
                     </div>
                     <i data-lucide="chevron-right" class="tile-arrow"></i>
                 </div>
                 <div class="persona-tile" data-persona="tech_devops" onclick="selectPersona('tech_devops')">
-                    <div class="tile-icon" style="--tile-color: #3b82f6;">
+                    <div class="tile-icon tile-icon-devops">
                         <i data-lucide="server"></i>
                     </div>
                     <div class="tile-content">
@@ -75,7 +82,7 @@
                     <i data-lucide="chevron-right" class="tile-arrow"></i>
                 </div>
                 <div class="persona-tile" data-persona="security_rssi" onclick="selectPersona('security_rssi')">
-                    <div class="tile-icon" style="--tile-color: #ef4444;">
+                    <div class="tile-icon tile-icon-security">
                         <i data-lucide="shield-alert"></i>
                     </div>
                     <div class="tile-content">
@@ -90,11 +97,14 @@
         <!-- Compliance & ESG -->
         <div class="persona-category">
             <div class="category-header">
-                <span class="category-badge compliance">Compliance & RSE</span>
+                <span class="category-badge compliance">
+                    <i data-lucide="scale"></i>
+                    Conformité & RSE
+                </span>
             </div>
             <div class="persona-row">
                 <div class="persona-tile" data-persona="compliance_legal" onclick="selectPersona('compliance_legal')">
-                    <div class="tile-icon" style="--tile-color: #f59e0b;">
+                    <div class="tile-icon tile-icon-legal">
                         <i data-lucide="gavel"></i>
                     </div>
                     <div class="tile-content">
@@ -104,8 +114,8 @@
                     <i data-lucide="chevron-right" class="tile-arrow"></i>
                 </div>
                 <div class="persona-tile" data-persona="sustainability_esg" onclick="selectPersona('sustainability_esg')">
-                    <div class="tile-icon" style="--tile-color: #059669;">
-                        <i data-lucide="trees"></i>
+                    <div class="tile-icon tile-icon-esg">
+                        <i data-lucide="leaf"></i>
                     </div>
                     <div class="tile-content">
                         <h3>RSE / ESG</h3>
@@ -120,7 +130,7 @@
     <!-- Expert Access -->
     <div class="expert-access">
         <div class="persona-tile expert" data-persona="custom" onclick="selectPersona('custom')">
-            <div class="tile-icon" style="--tile-color: #8b5cf6;">
+            <div class="tile-icon tile-icon-expert">
                 <i data-lucide="layout-grid"></i>
             </div>
             <div class="tile-content">
@@ -137,13 +147,13 @@
             <i data-lucide="arrow-right"></i>
             Passer cette étape
         </button>
-        <p class="skip-hint">Vous pourrez choisir votre parcours depuis le menu <kbd>?</kbd></p>
+        <p class="skip-hint">Accessible depuis <kbd>?</kbd> ou le menu latéral</p>
     </div>
 
     <!-- Keyboard Shortcuts Hint -->
     <div class="shortcuts-hint">
         <div class="shortcut-item">
-            <kbd>1-7</kbd>
+            <kbd>1</kbd>-<kbd>7</kbd>
             <span>Sélection rapide</span>
         </div>
         <div class="shortcut-item">
@@ -167,43 +177,46 @@
 /* Hero - Minimal */
 .welcome-hero {
     text-align: center;
-    padding: var(--space-6) 0;
-    margin-bottom: var(--space-6);
+    padding: var(--space-4) 0;
+    margin-bottom: var(--space-4);
 }
 
 .hero-logo {
-    width: 64px;
-    height: 64px;
-    margin: 0 auto var(--space-4);
+    width: 56px;
+    height: 56px;
+    margin: 0 auto var(--space-3);
     background: linear-gradient(135deg, var(--color-or-sahel), var(--color-terre-cuite));
     border-radius: 50%;
     display: flex;
     align-items: center;
     justify-content: center;
     color: white;
-    box-shadow: 0 0 30px rgba(212, 160, 23, 0.3);
+    box-shadow: 0 0 24px rgba(212, 160, 23, 0.25);
 }
 
 .hero-logo svg {
-    width: 32px;
-    height: 32px;
+    width: 28px;
+    height: 28px;
 }
 
 .welcome-hero h1 {
-    font-size: 2rem;
+    font-size: 1.75rem;
     font-weight: 700;
-    margin-bottom: var(--space-3);
+    margin-bottom: var(--space-2);
     color: var(--text-primary);
+    font-family: var(--font-heading);
 }
 
 .hero-subtitle {
-    font-size: 1rem;
+    font-size: 0.9375rem;
     color: var(--text-secondary);
-    line-height: 1.6;
+    line-height: 1.5;
 }
 
 .hero-hint {
-    font-size: 0.875rem;
+    display: block;
+    margin-top: var(--space-1);
+    font-size: 0.8125rem;
     color: var(--text-tertiary);
 }
 
@@ -212,7 +225,7 @@
     flex: 1;
     display: flex;
     flex-direction: column;
-    gap: var(--space-5);
+    gap: var(--space-4);
 }
 
 .persona-category {
@@ -223,12 +236,15 @@
 }
 
 .category-header {
-    padding: var(--space-3) var(--space-4);
+    padding: var(--space-2) var(--space-4);
     border-bottom: 1px solid var(--border-color);
     background: var(--bg-body);
 }
 
 .category-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: var(--space-2);
     font-size: 0.75rem;
     font-weight: 600;
     text-transform: uppercase;
@@ -237,19 +253,25 @@
     border-radius: var(--radius-sm);
 }
 
+.category-badge svg {
+    width: 14px;
+    height: 14px;
+}
+
+/* GASKIA Color Palette for Categories */
 .category-badge.business {
-    background: rgba(16, 185, 129, 0.1);
-    color: #10b981;
+    background: var(--color-primary-light);
+    color: var(--color-or-sahel);
 }
 
 .category-badge.tech {
-    background: rgba(99, 102, 241, 0.1);
-    color: #6366f1;
+    background: rgba(26, 26, 46, 0.08);
+    color: var(--color-bleu-nuit);
 }
 
 .category-badge.compliance {
-    background: rgba(245, 158, 11, 0.1);
-    color: #f59e0b;
+    background: rgba(193, 122, 74, 0.1);
+    color: var(--color-terre-cuite);
 }
 
 /* Persona Tiles - Compact */
@@ -290,7 +312,6 @@
 .tile-icon {
     width: 44px;
     height: 44px;
-    background: var(--tile-color, var(--color-primary));
     border-radius: var(--radius-md);
     display: flex;
     align-items: center;
@@ -302,6 +323,39 @@
 .tile-icon svg {
     width: 22px;
     height: 22px;
+}
+
+/* GASKIA Persona Icon Colors */
+.tile-icon-business {
+    background: linear-gradient(135deg, var(--color-or-sahel), #B8890F);
+}
+
+.tile-icon-finance {
+    background: linear-gradient(135deg, var(--color-terre-cuite), #A66339);
+}
+
+.tile-icon-ml {
+    background: linear-gradient(135deg, var(--color-bleu-nuit), #2D2D4A);
+}
+
+.tile-icon-devops {
+    background: linear-gradient(135deg, #3b5998, #2D4373);
+}
+
+.tile-icon-security {
+    background: linear-gradient(135deg, #dc3545, #b02a37);
+}
+
+.tile-icon-legal {
+    background: linear-gradient(135deg, var(--color-terre-cuite), #9A5D3A);
+}
+
+.tile-icon-esg {
+    background: linear-gradient(135deg, #198754, #146c43);
+}
+
+.tile-icon-expert {
+    background: linear-gradient(135deg, var(--color-bleu-nuit), var(--color-or-sahel));
 }
 
 .tile-content {
@@ -345,52 +399,54 @@
 }
 
 .expert-access .persona-tile.expert {
-    border-left: 3px solid #8b5cf6;
+    border-left: 3px solid var(--color-or-sahel);
 }
 
 /* Skip Action */
 .welcome-actions {
     text-align: center;
-    padding: var(--space-6) 0 var(--space-4);
+    padding: var(--space-5) 0 var(--space-3);
 }
 
 .skip-btn {
     display: inline-flex;
     align-items: center;
     gap: var(--space-2);
-    padding: var(--space-3) var(--space-5);
+    padding: var(--space-2) var(--space-4);
     background: transparent;
-    border: 1px solid var(--border-color);
+    border: 1px dashed var(--border-color);
     border-radius: var(--radius-md);
-    font-size: 0.9375rem;
-    color: var(--text-secondary);
+    font-size: 0.875rem;
+    color: var(--text-tertiary);
     cursor: pointer;
     transition: all 0.2s ease;
 }
 
 .skip-btn:hover {
     background: var(--bg-card);
-    color: var(--text-primary);
-    border-color: var(--color-primary);
+    color: var(--color-or-sahel);
+    border-color: var(--color-or-sahel);
+    border-style: solid;
 }
 
 .skip-btn svg {
-    width: 18px;
-    height: 18px;
+    width: 16px;
+    height: 16px;
 }
 
 .skip-hint {
     margin-top: var(--space-2);
-    font-size: 0.8125rem;
+    font-size: 0.75rem;
     color: var(--text-tertiary);
 }
 
 .skip-hint kbd {
-    padding: 2px 6px;
+    padding: 1px 5px;
     background: var(--bg-card);
     border: 1px solid var(--border-color);
     border-radius: var(--radius-sm);
-    font-size: 0.75rem;
+    font-size: 0.6875rem;
+    font-family: var(--font-body);
 }
 
 /* Shortcuts Hint */

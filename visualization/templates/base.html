@@ -264,7 +264,7 @@
 
                 <!-- Change Journey Link -->
                 <div class="nav-group nav-group-change">
-                    <a href="/personas" class="nav-link nav-link-change {% if active_page == 'personas' %}active{% endif %}">
+                    <a href="/" class="nav-link nav-link-change {% if active_page == 'welcome' %}active{% endif %}">
                         <i data-lucide="refresh-cw"></i>
                         <span>{{ t('nav.change_journey') or 'Changer de parcours' }}</span>
                     </a>
@@ -309,7 +309,7 @@
 
                 <!-- Breadcrumbs -->
                 <nav class="breadcrumbs" aria-label="Breadcrumb">
-                    <a href="/" class="breadcrumb-item breadcrumb-home">
+                    <a href="/dashboard" class="breadcrumb-item breadcrumb-home">
                         <i data-lucide="home"></i>
                     </a>
                     {% if breadcrumbs %}
@@ -324,7 +324,7 @@
                         {% endif %}
                         {% endfor %}
                     {% else %}
-                        {% if active_page and active_page != 'dashboard' %}
+                        {% if active_page and active_page != 'dashboard' and active_page != 'welcome' %}
                         <span class="breadcrumb-separator">
                             <i data-lucide="chevron-right"></i>
                         </span>
