@@ -191,7 +191,22 @@ async def shutdown_event():
 
 
 @app.get("/", response_class=HTMLResponse)
-async def index(request: Request):
+async def welcome(request: Request):
+    """Welcome page - Persona selection as entry point"""
+    i18n = create_i18n_context(request)
+    return templates.TemplateResponse(
+        "welcome.html",
+        {
+            "request": request,
+            "title": f"{APP_TITLE} - Bienvenue",
+            "active_page": "welcome",
+            **i18n,
+        },
+    )
+
+
+@app.get("/dashboard", response_class=HTMLResponse)
+async def dashboard(request: Request):
     """Main dashboard page"""
     i18n = create_i18n_context(request)
     return templates.TemplateResponse(
