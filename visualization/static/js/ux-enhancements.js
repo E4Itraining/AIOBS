@@ -1,6 +1,6 @@
 /**
  * GASKIA UX Enhancements v2.0
- * Game Changer Features for Enterprise AI Observability
+ * Advanced Features for Enterprise AI Observability
  *
  * Features:
  * - Quick Insights Panel (30-second executive summary)
@@ -211,7 +211,7 @@
     }
 
     // =============================================
-    // COMMAND PALETTE (GAME CHANGER)
+    // COMMAND PALETTE
     // =============================================
     const COMMANDS = [
         // Navigation

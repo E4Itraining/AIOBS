@@ -2,15 +2,15 @@
 <svg width="200" height="50" viewBox="0 0 200 50" fill="none" xmlns="http://www.w3.org/2000/svg">
   <title>GASKIA Logo</title>
   <defs>
-    <!-- Gradient Or Sahel vers Terre Cuite -->
+    <!-- Gradient Blue to Cyan -->
     <linearGradient id="eyeGradient" x1="0%" y1="0%" x2="100%" y2="100%">
-      <stop offset="0%" stop-color="#D4A017"/>
-      <stop offset="100%" stop-color="#C17A4A"/>
+      <stop offset="0%" stop-color="#2563EB"/>
+      <stop offset="100%" stop-color="#0891B2"/>
     </linearGradient>
     <linearGradient id="eyeGradientVertical" x1="0%" y1="0%" x2="0%" y2="100%">
-      <stop offset="0%" stop-color="#D4A017"/>
-      <stop offset="50%" stop-color="#C49115"/>
-      <stop offset="100%" stop-color="#C17A4A"/>
+      <stop offset="0%" stop-color="#2563EB"/>
+      <stop offset="50%" stop-color="#0EA5E9"/>
+      <stop offset="100%" stop-color="#0891B2"/>
     </linearGradient>
   </defs>
 

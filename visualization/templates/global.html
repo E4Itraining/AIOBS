@@ -630,7 +630,7 @@
     align-items: center;
     gap: var(--space-2);
     padding: var(--space-2) var(--space-4);
-    background: linear-gradient(135deg, var(--color-or-sahel), var(--color-terre-cuite));
+    background: linear-gradient(135deg, var(--color-primary), var(--color-accent));
     color: white;
     border-radius: var(--radius-full);
     font-size: 0.875rem;
@@ -644,7 +644,7 @@
     font-size: 2.5rem;
     font-weight: 700;
     margin-bottom: var(--space-2);
-    background: linear-gradient(135deg, var(--text-primary), var(--color-or-sahel));
+    background: linear-gradient(135deg, var(--text-primary), var(--color-primary));
     -webkit-background-clip: text;
     -webkit-text-fill-color: transparent;
 }
@@ -972,7 +972,7 @@
 
 .compliance-progress {
     height: 100%;
-    background: linear-gradient(90deg, var(--color-or-sahel), #10b981);
+    background: linear-gradient(90deg, var(--color-primary), #059669);
     border-radius: var(--radius-full);
     transition: width 0.5s ease;
 }
@@ -1347,12 +1347,12 @@ function initTrustTrendChart() {
             datasets: [{
                 label: 'Score de Confiance',
                 data: [85, 84, 86, 87, 85, 88, 87],
-                borderColor: '#D4A017',
-                backgroundColor: 'rgba(212, 160, 23, 0.1)',
+                borderColor: '#2563EB',
+                backgroundColor: 'rgba(37, 99, 235, 0.1)',
                 fill: true,
                 tension: 0.4,
                 pointRadius: 4,
-                pointBackgroundColor: '#D4A017'
+                pointBackgroundColor: '#2563EB'
             }]
         },
         options: {
@@ -1382,7 +1382,7 @@ function initCostBreakdownChart() {
             labels: ['Inférence', 'Training', 'Stockage', 'Infrastructure'],
             datasets: [{
                 data: [45, 25, 15, 15],
-                backgroundColor: ['#D4A017', '#6366f1', '#10b981', '#f59e0b'],
+                backgroundColor: ['#2563EB', '#6366f1', '#059669', '#0891B2'],
                 borderWidth: 0
             }]
         },

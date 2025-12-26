@@ -2,15 +2,15 @@
 <svg width="200" height="50" viewBox="0 0 200 50" fill="none" xmlns="http://www.w3.org/2000/svg">
   <title>GASKIA Logo - Light Background</title>
   <defs>
-    <!-- Gradient Or Sahel vers Terre Cuite -->
+    <!-- Gradient Blue to Cyan -->
     <linearGradient id="eyeGradientLight" x1="0%" y1="0%" x2="100%" y2="100%">
-      <stop offset="0%" stop-color="#D4A017"/>
-      <stop offset="100%" stop-color="#C17A4A"/>
+      <stop offset="0%" stop-color="#2563EB"/>
+      <stop offset="100%" stop-color="#0891B2"/>
     </linearGradient>
     <linearGradient id="eyeGradientVerticalLight" x1="0%" y1="0%" x2="0%" y2="100%">
-      <stop offset="0%" stop-color="#D4A017"/>
-      <stop offset="50%" stop-color="#C49115"/>
-      <stop offset="100%" stop-color="#C17A4A"/>
+      <stop offset="0%" stop-color="#2563EB"/>
+      <stop offset="50%" stop-color="#0EA5E9"/>
+      <stop offset="100%" stop-color="#0891B2"/>
     </linearGradient>
   </defs>
 
@@ -28,11 +28,11 @@
     <circle cx="21" cy="23" r="2" fill="#FFFFFF" opacity="0.6"/>
   </g>
 
-  <!-- Texte GASKIA - Bleu Nuit pour fond clair -->
+  <!-- Texte GASKIA - Slate Dark pour fond clair -->
   <text x="52" y="33"
         font-family="'Space Grotesk', sans-serif"
         font-weight="700"
         font-size="26"
         letter-spacing="1.5"
-        fill="#1A1A2E">GASKIA</text>
+        fill="#1E293B">GASKIA</text>
 </svg>

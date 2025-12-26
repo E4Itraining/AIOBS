@@ -1,6 +1,6 @@
 """
 AIOBS AI Assistant API
-Game-changer feature: Real AI-powered intelligent insights and natural language queries
+Advanced feature: Real AI-powered intelligent insights and natural language queries
 """
 
 import logging
