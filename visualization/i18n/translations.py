@@ -230,6 +230,8 @@ TRANSLATIONS = {
             "business_intelligence": "BI Dashboards",
             "guardrails": "GenAI Guardrails",
             "supply_chain": "AI Supply Chain",
+            # Merged section
+            "analysis_ia": "Analysis & AI",
         },
         "dashboard": {
             "title": "AI Observability Dashboard",
@@ -620,6 +622,8 @@ TRANSLATIONS = {
             "business_intelligence": "Tableaux de Bord BI",
             "guardrails": "Garde-fous GenAI",
             "supply_chain": "Chaîne d'Approvisionnement IA",
+            # Merged section
+            "analysis_ia": "Analyse & IA",
         },
         "dashboard": {
             "title": "Dashboard IA",
@@ -1003,6 +1007,8 @@ TRANSLATIONS = {
             "business_intelligence": "BI Dashboards",
             "guardrails": "GenAI Guardrails",
             "supply_chain": "AI Supply Chain",
+            # Merged section
+            "analysis_ia": "Analyse & AI",
         },
         "dashboard": {
             "title": "AI Observability Dashboard",
@@ -1186,6 +1192,8 @@ TRANSLATIONS = {
             "business_intelligence": "BI-Dashboards",
             "guardrails": "GenAI-Leitplanken",
             "supply_chain": "KI-Lieferkette",
+            # Merged section
+            "analysis_ia": "Analyse & KI",
         },
         "dashboard": {
             "title": "KI-Observability-Dashboard",
