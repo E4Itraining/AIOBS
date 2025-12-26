@@ -1,0 +1,567 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="welcome-hub page-transition-enter">
+    <!-- Hero Section - Simplified -->
+    <div class="welcome-hero">
+        <div class="hero-content">
+            <div class="hero-logo">
+                <i data-lucide="eye"></i>
+            </div>
+            <h1>Bienvenue sur GASKIA</h1>
+            <p class="hero-subtitle">
+                Choisissez votre profil pour une expérience personnalisée.
+                <br>
+                <span class="hero-hint">Vous pourrez changer de parcours à tout moment.</span>
+            </p>
+        </div>
+    </div>
+
+    <!-- Persona Categories -->
+    <div class="persona-categories">
+        <!-- Strategic / Business -->
+        <div class="persona-category">
+            <div class="category-header">
+                <span class="category-badge business">Business</span>
+            </div>
+            <div class="persona-row">
+                <div class="persona-tile" data-persona="business_executive" onclick="selectPersona('business_executive')">
+                    <div class="tile-icon" style="--tile-color: #10b981;">
+                        <i data-lucide="building-2"></i>
+                    </div>
+                    <div class="tile-content">
+                        <h3>Dirigeant / CDO</h3>
+                        <p>ROI, risques, conformité</p>
+                    </div>
+                    <i data-lucide="chevron-right" class="tile-arrow"></i>
+                </div>
+                <div class="persona-tile" data-persona="financier" onclick="selectPersona('financier')">
+                    <div class="tile-icon" style="--tile-color: #f59e0b;">
+                        <i data-lucide="wallet"></i>
+                    </div>
+                    <div class="tile-content">
+                        <h3>DAF / FinOps</h3>
+                        <p>Coûts, budgets, ROI</p>
+                    </div>
+                    <i data-lucide="chevron-right" class="tile-arrow"></i>
+                </div>
+            </div>
+        </div>
+
+        <!-- Tech -->
+        <div class="persona-category">
+            <div class="category-header">
+                <span class="category-badge tech">Tech</span>
+            </div>
+            <div class="persona-row">
+                <div class="persona-tile" data-persona="tech_ml_engineer" onclick="selectPersona('tech_ml_engineer')">
+                    <div class="tile-icon" style="--tile-color: #6366f1;">
+                        <i data-lucide="brain"></i>
+                    </div>
+                    <div class="tile-content">
+                        <h3>ML Engineer</h3>
+                        <p>Drift, modèles, features</p>
+                    </div>
+                    <i data-lucide="chevron-right" class="tile-arrow"></i>
+                </div>
+                <div class="persona-tile" data-persona="tech_devops" onclick="selectPersona('tech_devops')">
+                    <div class="tile-icon" style="--tile-color: #3b82f6;">
+                        <i data-lucide="server"></i>
+                    </div>
+                    <div class="tile-content">
+                        <h3>DevOps / Platform</h3>
+                        <p>SLOs, latences, uptime</p>
+                    </div>
+                    <i data-lucide="chevron-right" class="tile-arrow"></i>
+                </div>
+                <div class="persona-tile" data-persona="security_rssi" onclick="selectPersona('security_rssi')">
+                    <div class="tile-icon" style="--tile-color: #ef4444;">
+                        <i data-lucide="shield-alert"></i>
+                    </div>
+                    <div class="tile-content">
+                        <h3>RSSI / Security</h3>
+                        <p>Menaces, adversarial</p>
+                    </div>
+                    <i data-lucide="chevron-right" class="tile-arrow"></i>
+                </div>
+            </div>
+        </div>
+
+        <!-- Compliance & ESG -->
+        <div class="persona-category">
+            <div class="category-header">
+                <span class="category-badge compliance">Compliance & RSE</span>
+            </div>
+            <div class="persona-row">
+                <div class="persona-tile" data-persona="compliance_legal" onclick="selectPersona('compliance_legal')">
+                    <div class="tile-icon" style="--tile-color: #f59e0b;">
+                        <i data-lucide="gavel"></i>
+                    </div>
+                    <div class="tile-content">
+                        <h3>DPO / Juriste</h3>
+                        <p>EU AI Act, RGPD, audits</p>
+                    </div>
+                    <i data-lucide="chevron-right" class="tile-arrow"></i>
+                </div>
+                <div class="persona-tile" data-persona="sustainability_esg" onclick="selectPersona('sustainability_esg')">
+                    <div class="tile-icon" style="--tile-color: #059669;">
+                        <i data-lucide="trees"></i>
+                    </div>
+                    <div class="tile-content">
+                        <h3>RSE / ESG</h3>
+                        <p>Carbone, green AI</p>
+                    </div>
+                    <i data-lucide="chevron-right" class="tile-arrow"></i>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Expert Access -->
+    <div class="expert-access">
+        <div class="persona-tile expert" data-persona="custom" onclick="selectPersona('custom')">
+            <div class="tile-icon" style="--tile-color: #8b5cf6;">
+                <i data-lucide="layout-grid"></i>
+            </div>
+            <div class="tile-content">
+                <h3>Accès Expert</h3>
+                <p>Toutes les fonctionnalités, navigation libre</p>
+            </div>
+            <i data-lucide="chevron-right" class="tile-arrow"></i>
+        </div>
+    </div>
+
+    <!-- Skip Action -->
+    <div class="welcome-actions">
+        <button class="skip-btn" onclick="skipPersonaSelection()">
+            <i data-lucide="arrow-right"></i>
+            Passer cette étape
+        </button>
+        <p class="skip-hint">Vous pourrez choisir votre parcours depuis le menu <kbd>?</kbd></p>
+    </div>
+
+    <!-- Keyboard Shortcuts Hint -->
+    <div class="shortcuts-hint">
+        <div class="shortcut-item">
+            <kbd>1-7</kbd>
+            <span>Sélection rapide</span>
+        </div>
+        <div class="shortcut-item">
+            <kbd>Esc</kbd>
+            <span>Passer</span>
+        </div>
+    </div>
+</div>
+
+<style>
+/* Welcome Hub - Clean & Focused */
+.welcome-hub {
+    padding: var(--space-6);
+    max-width: 900px;
+    margin: 0 auto;
+    min-height: calc(100vh - 120px);
+    display: flex;
+    flex-direction: column;
+}
+
+/* Hero - Minimal */
+.welcome-hero {
+    text-align: center;
+    padding: var(--space-6) 0;
+    margin-bottom: var(--space-6);
+}
+
+.hero-logo {
+    width: 64px;
+    height: 64px;
+    margin: 0 auto var(--space-4);
+    background: linear-gradient(135deg, var(--color-or-sahel), var(--color-terre-cuite));
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: white;
+    box-shadow: 0 0 30px rgba(212, 160, 23, 0.3);
+}
+
+.hero-logo svg {
+    width: 32px;
+    height: 32px;
+}
+
+.welcome-hero h1 {
+    font-size: 2rem;
+    font-weight: 700;
+    margin-bottom: var(--space-3);
+    color: var(--text-primary);
+}
+
+.hero-subtitle {
+    font-size: 1rem;
+    color: var(--text-secondary);
+    line-height: 1.6;
+}
+
+.hero-hint {
+    font-size: 0.875rem;
+    color: var(--text-tertiary);
+}
+
+/* Categories */
+.persona-categories {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-5);
+}
+
+.persona-category {
+    background: var(--bg-card);
+    border: 1px solid var(--border-color);
+    border-radius: var(--radius-lg);
+    overflow: hidden;
+}
+
+.category-header {
+    padding: var(--space-3) var(--space-4);
+    border-bottom: 1px solid var(--border-color);
+    background: var(--bg-body);
+}
+
+.category-badge {
+    font-size: 0.75rem;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    padding: var(--space-1) var(--space-2);
+    border-radius: var(--radius-sm);
+}
+
+.category-badge.business {
+    background: rgba(16, 185, 129, 0.1);
+    color: #10b981;
+}
+
+.category-badge.tech {
+    background: rgba(99, 102, 241, 0.1);
+    color: #6366f1;
+}
+
+.category-badge.compliance {
+    background: rgba(245, 158, 11, 0.1);
+    color: #f59e0b;
+}
+
+/* Persona Tiles - Compact */
+.persona-row {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+}
+
+.persona-tile {
+    display: flex;
+    align-items: center;
+    gap: var(--space-3);
+    padding: var(--space-4);
+    cursor: pointer;
+    transition: all 0.2s ease;
+    border-bottom: 1px solid var(--border-color);
+    border-right: 1px solid var(--border-color);
+}
+
+.persona-tile:last-child {
+    border-right: none;
+}
+
+.persona-row .persona-tile:nth-last-child(-n+3):nth-child(3n+1),
+.persona-row .persona-tile:nth-last-child(-n+3):nth-child(3n+1) ~ .persona-tile {
+    border-bottom: none;
+}
+
+.persona-tile:hover {
+    background: var(--bg-body);
+}
+
+.persona-tile:hover .tile-arrow {
+    transform: translateX(4px);
+    opacity: 1;
+}
+
+.tile-icon {
+    width: 44px;
+    height: 44px;
+    background: var(--tile-color, var(--color-primary));
+    border-radius: var(--radius-md);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: white;
+    flex-shrink: 0;
+}
+
+.tile-icon svg {
+    width: 22px;
+    height: 22px;
+}
+
+.tile-content {
+    flex: 1;
+    min-width: 0;
+}
+
+.tile-content h3 {
+    font-size: 0.9375rem;
+    font-weight: 600;
+    margin-bottom: 2px;
+    color: var(--text-primary);
+}
+
+.tile-content p {
+    font-size: 0.8125rem;
+    color: var(--text-secondary);
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.tile-arrow {
+    width: 18px;
+    height: 18px;
+    color: var(--text-tertiary);
+    opacity: 0.5;
+    transition: all 0.2s ease;
+    flex-shrink: 0;
+}
+
+/* Expert Access */
+.expert-access {
+    margin-top: var(--space-4);
+}
+
+.expert-access .persona-tile {
+    background: var(--bg-card);
+    border: 1px solid var(--border-color);
+    border-radius: var(--radius-lg);
+}
+
+.expert-access .persona-tile.expert {
+    border-left: 3px solid #8b5cf6;
+}
+
+/* Skip Action */
+.welcome-actions {
+    text-align: center;
+    padding: var(--space-6) 0 var(--space-4);
+}
+
+.skip-btn {
+    display: inline-flex;
+    align-items: center;
+    gap: var(--space-2);
+    padding: var(--space-3) var(--space-5);
+    background: transparent;
+    border: 1px solid var(--border-color);
+    border-radius: var(--radius-md);
+    font-size: 0.9375rem;
+    color: var(--text-secondary);
+    cursor: pointer;
+    transition: all 0.2s ease;
+}
+
+.skip-btn:hover {
+    background: var(--bg-card);
+    color: var(--text-primary);
+    border-color: var(--color-primary);
+}
+
+.skip-btn svg {
+    width: 18px;
+    height: 18px;
+}
+
+.skip-hint {
+    margin-top: var(--space-2);
+    font-size: 0.8125rem;
+    color: var(--text-tertiary);
+}
+
+.skip-hint kbd {
+    padding: 2px 6px;
+    background: var(--bg-card);
+    border: 1px solid var(--border-color);
+    border-radius: var(--radius-sm);
+    font-size: 0.75rem;
+}
+
+/* Shortcuts Hint */
+.shortcuts-hint {
+    display: flex;
+    justify-content: center;
+    gap: var(--space-6);
+    padding: var(--space-4);
+    border-top: 1px solid var(--border-color);
+    margin-top: auto;
+}
+
+.shortcut-item {
+    display: flex;
+    align-items: center;
+    gap: var(--space-2);
+    font-size: 0.8125rem;
+    color: var(--text-tertiary);
+}
+
+.shortcut-item kbd {
+    padding: 2px 8px;
+    background: var(--bg-card);
+    border: 1px solid var(--border-color);
+    border-radius: var(--radius-sm);
+    font-size: 0.75rem;
+    font-weight: 500;
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+    .welcome-hub {
+        padding: var(--space-4);
+    }
+
+    .welcome-hero h1 {
+        font-size: 1.5rem;
+    }
+
+    .persona-row {
+        grid-template-columns: 1fr;
+    }
+
+    .persona-tile {
+        border-right: none;
+    }
+
+    .shortcuts-hint {
+        flex-direction: column;
+        align-items: center;
+        gap: var(--space-2);
+    }
+}
+
+/* Animation on load */
+.persona-category {
+    animation: fadeInUp 0.4s ease forwards;
+    opacity: 0;
+}
+
+.persona-category:nth-child(1) { animation-delay: 0.1s; }
+.persona-category:nth-child(2) { animation-delay: 0.2s; }
+.persona-category:nth-child(3) { animation-delay: 0.3s; }
+
+.expert-access {
+    animation: fadeInUp 0.4s ease forwards;
+    animation-delay: 0.4s;
+    opacity: 0;
+}
+
+@keyframes fadeInUp {
+    from {
+        opacity: 0;
+        transform: translateY(10px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+</style>
+
+<script>
+// Persona routes mapping
+const personaRoutes = {
+    'business_executive': '/dirigeant',
+    'tech_ml_engineer': '/tech',
+    'tech_devops': '/tech',
+    'security_rssi': '/tech',
+    'compliance_legal': '/juridique',
+    'sustainability_esg': '/greenops',
+    'financier': '/financier',
+    'custom': '/global'
+};
+
+// Persona names for display
+const personaNames = {
+    'business_executive': 'Dirigeant',
+    'tech_ml_engineer': 'ML Engineer',
+    'tech_devops': 'DevOps',
+    'security_rssi': 'Security',
+    'compliance_legal': 'Juridique',
+    'sustainability_esg': 'ESG',
+    'financier': 'Financier',
+    'custom': 'Expert'
+};
+
+// Select a persona and navigate
+function selectPersona(personaId) {
+    // Save to localStorage
+    localStorage.setItem('gaskia-persona', personaId);
+    localStorage.setItem('gaskia-persona-selected', 'true');
+
+    // Show feedback
+    if (typeof showToast === 'function') {
+        const name = personaNames[personaId] || 'Personnalisé';
+        showToast(`Parcours ${name} activé`, 'success', 1500);
+    }
+
+    // Navigate after brief delay
+    setTimeout(() => {
+        window.location.href = personaRoutes[personaId] || '/global';
+    }, 300);
+}
+
+// Skip persona selection
+function skipPersonaSelection() {
+    localStorage.setItem('gaskia-persona-skipped', 'true');
+    window.location.href = '/dashboard';
+}
+
+// Keyboard shortcuts
+document.addEventListener('keydown', (e) => {
+    // Escape to skip
+    if (e.key === 'Escape') {
+        skipPersonaSelection();
+        return;
+    }
+
+    // Number keys for quick selection
+    const personas = [
+        'business_executive',  // 1
+        'financier',           // 2
+        'tech_ml_engineer',    // 3
+        'tech_devops',         // 4
+        'security_rssi',       // 5
+        'compliance_legal',    // 6
+        'sustainability_esg',  // 7
+        'custom'               // 8
+    ];
+
+    const num = parseInt(e.key);
+    if (num >= 1 && num <= personas.length) {
+        selectPersona(personas[num - 1]);
+    }
+});
+
+// Initialize
+document.addEventListener('DOMContentLoaded', () => {
+    lucide.createIcons();
+
+    // Check if user already has a persona selected
+    const existingPersona = localStorage.getItem('gaskia-persona');
+    if (existingPersona && localStorage.getItem('gaskia-persona-selected')) {
+        // Show subtle indicator that they can continue or change
+        const currentName = personaNames[existingPersona] || 'Personnalisé';
+        const hint = document.querySelector('.hero-hint');
+        if (hint) {
+            hint.innerHTML = `Parcours actuel : <strong>${currentName}</strong>. Cliquez pour changer ou <a href="${personaRoutes[existingPersona]}" style="color: var(--color-primary);">continuer</a>.`;
+        }
+    }
+});
+</script>
+{% endblock %}

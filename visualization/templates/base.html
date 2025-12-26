@@ -101,9 +101,13 @@
                     </span>
                     <div class="nav-essentials-list" id="essentialsList">
                         <!-- Dynamically populated based on persona -->
-                        <a href="/" class="nav-link {% if active_page == 'dashboard' %}active{% endif %}">
+                        <a href="/dashboard" class="nav-link {% if active_page == 'dashboard' %}active{% endif %}">
                             <i data-lucide="home"></i>
                             <span>{{ t('nav.home') or 'Tableau de Bord' }}</span>
+                        </a>
+                        <a href="/" class="nav-link {% if active_page == 'welcome' %}active{% endif %}">
+                            <i data-lucide="compass"></i>
+                            <span>{{ t('nav.persona_selection') or 'Choix Parcours' }}</span>
                         </a>
                     </div>
                 </div>
