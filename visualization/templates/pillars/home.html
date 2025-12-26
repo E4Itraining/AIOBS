@@ -1,0 +1,508 @@
+{% extends "pillars/base_pillars.html" %}
+
+{% set active_pillar = 'home' %}
+
+{% block page_title %}{{ t('pillars.overview') or 'Les 5 Piliers de la Confiance IA' }}{% endblock %}
+
+{% block content %}
+<!-- Hero Section -->
+<div class="pillars-hero">
+    <h1>{{ t('pillars.hero_title') or 'Les 5 Piliers de la Confiance IA' }}</h1>
+    <p>{{ t('pillars.hero_desc') or 'Une vision complète pour maîtriser vos systèmes IA : Fiabilité, Sécurité, Conformité, Explicabilité et Performance.' }}</p>
+</div>
+
+<!-- Global Trust Score -->
+<div class="card mb-6">
+    <div class="card-header">
+        <h3 class="card-title">
+            <i data-lucide="pentagon"></i>
+            {{ t('pillars.global_trust') or 'Score de Confiance Global' }}
+        </h3>
+        <div class="global-score-badge" id="globalTrustScore">
+            <span class="score">--</span>
+            <span class="label">{{ t('pillars.trust_score') or 'Trust Score' }}</span>
+        </div>
+    </div>
+    <div class="trust-pentagon-container">
+        <div class="trust-pentagon" id="trustPentagon">
+            <svg viewBox="0 0 400 400" id="pentagonSvg">
+                <!-- Pentagon will be drawn by JavaScript -->
+            </svg>
+        </div>
+    </div>
+</div>
+
+<!-- 5 Pillar Cards -->
+<div class="pillars-grid">
+    <!-- 1. FIABILITÉ -->
+    <a href="/pillars/reliability" class="pillar-card reliability">
+        <div class="pillar-card-header">
+            <div class="pillar-card-icon reliability">
+                <i data-lucide="check-circle"></i>
+            </div>
+            <div class="pillar-card-title">
+                <h3>{{ t('pillars.reliability.name') or 'Fiabilité' }}</h3>
+                <span class="question">{{ t('pillars.reliability.question') or 'Le modèle produit-il des résultats corrects ?' }}</span>
+            </div>
+            <div class="pillar-card-score">
+                <div class="score-value" id="reliabilityScoreCard">--</div>
+                <div class="score-label">Score</div>
+            </div>
+        </div>
+        <div class="pillar-card-body">
+            <p>{{ t('pillars.reliability.desc') or 'Surveillez la précision, le rappel, le F1-score. Détectez les dérives de modèles et suivez la qualité dans le temps.' }}</p>
+            <div class="pillar-metrics">
+                <span class="pillar-metric"><i data-lucide="target"></i> Précision</span>
+                <span class="pillar-metric"><i data-lucide="git-merge"></i> Drift</span>
+                <span class="pillar-metric"><i data-lucide="bar-chart-2"></i> F1-Score</span>
+            </div>
+        </div>
+        <div class="pillar-card-footer">
+            <span class="pillar-card-link">
+                {{ t('actions.explore') or 'Explorer' }}
+                <i data-lucide="arrow-right"></i>
+            </span>
+        </div>
+    </a>
+
+    <!-- 2. SÉCURITÉ -->
+    <a href="/pillars/security" class="pillar-card security">
+        <div class="pillar-card-header">
+            <div class="pillar-card-icon security">
+                <i data-lucide="shield"></i>
+            </div>
+            <div class="pillar-card-title">
+                <h3>{{ t('pillars.security.name') or 'Sécurité' }}</h3>
+                <span class="question">{{ t('pillars.security.question') or 'Le modèle est-il protégé ?' }}</span>
+            </div>
+            <div class="pillar-card-score">
+                <div class="score-value" id="securityScoreCard">--</div>
+                <div class="score-label">Score</div>
+            </div>
+        </div>
+        <div class="pillar-card-body">
+            <p>{{ t('pillars.security.desc') or 'Protégez contre les injections de prompts, les attaques adversariales, l\'extraction de données et les comportements anormaux.' }}</p>
+            <div class="pillar-metrics">
+                <span class="pillar-metric"><i data-lucide="syringe"></i> Injection</span>
+                <span class="pillar-metric"><i data-lucide="alert-triangle"></i> Adversarial</span>
+                <span class="pillar-metric"><i data-lucide="activity"></i> Anomalies</span>
+            </div>
+        </div>
+        <div class="pillar-card-footer">
+            <span class="pillar-card-link">
+                {{ t('actions.explore') or 'Explorer' }}
+                <i data-lucide="arrow-right"></i>
+            </span>
+        </div>
+    </a>
+
+    <!-- 3. CONFORMITÉ -->
+    <a href="/pillars/compliance" class="pillar-card compliance">
+        <div class="pillar-card-header">
+            <div class="pillar-card-icon compliance">
+                <i data-lucide="scale"></i>
+            </div>
+            <div class="pillar-card-title">
+                <h3>{{ t('pillars.compliance.name') or 'Conformité' }}</h3>
+                <span class="question">{{ t('pillars.compliance.question') or 'Peut-il prouver ce qu\'il fait ?' }}</span>
+            </div>
+            <div class="pillar-card-score">
+                <div class="score-value" id="complianceScoreCard">--</div>
+                <div class="score-label">Score</div>
+            </div>
+        </div>
+        <div class="pillar-card-body">
+            <p>{{ t('pillars.compliance.desc') or 'Traçabilité des inférences, versioning des modèles, lignage des données et preuves pour l\'AI Act européen.' }}</p>
+            <div class="pillar-metrics">
+                <span class="pillar-metric"><i data-lucide="git-branch"></i> Traçabilité</span>
+                <span class="pillar-metric"><i data-lucide="history"></i> Versions</span>
+                <span class="pillar-metric"><i data-lucide="file-check"></i> AI Act</span>
+            </div>
+        </div>
+        <div class="pillar-card-footer">
+            <span class="pillar-card-link">
+                {{ t('actions.explore') or 'Explorer' }}
+                <i data-lucide="arrow-right"></i>
+            </span>
+        </div>
+    </a>
+
+    <!-- 4. EXPLICABILITÉ -->
+    <a href="/pillars/explainability" class="pillar-card explainability">
+        <div class="pillar-card-header">
+            <div class="pillar-card-icon explainability">
+                <i data-lucide="lightbulb"></i>
+            </div>
+            <div class="pillar-card-title">
+                <h3>{{ t('pillars.explainability.name') or 'Explicabilité' }}</h3>
+                <span class="question">{{ t('pillars.explainability.question') or 'Pourquoi cette décision ?' }}</span>
+            </div>
+            <div class="pillar-card-score">
+                <div class="score-value" id="explainabilityScoreCard">--</div>
+                <div class="score-label">Score</div>
+            </div>
+        </div>
+        <div class="pillar-card-body">
+            <p>{{ t('pillars.explainability.desc') or 'Feature importance, scores de confiance, alternatives écartées. Répondez aux obligations légales et éthiques.' }}</p>
+            <div class="pillar-metrics">
+                <span class="pillar-metric"><i data-lucide="list-ordered"></i> Features</span>
+                <span class="pillar-metric"><i data-lucide="gauge"></i> Confiance</span>
+                <span class="pillar-metric"><i data-lucide="heart"></i> Éthique</span>
+            </div>
+        </div>
+        <div class="pillar-card-footer">
+            <span class="pillar-card-link">
+                {{ t('actions.explore') or 'Explorer' }}
+                <i data-lucide="arrow-right"></i>
+            </span>
+        </div>
+    </a>
+
+    <!-- 5. PERFORMANCE -->
+    <a href="/pillars/performance" class="pillar-card performance">
+        <div class="pillar-card-header">
+            <div class="pillar-card-icon performance">
+                <i data-lucide="zap"></i>
+            </div>
+            <div class="pillar-card-title">
+                <h3>{{ t('pillars.performance.name') or 'Performance' }}</h3>
+                <span class="question">{{ t('pillars.performance.question') or 'À quel coût ?' }}</span>
+            </div>
+            <div class="pillar-card-score">
+                <div class="score-value" id="performanceScoreCard">--</div>
+                <div class="score-label">Score</div>
+            </div>
+        </div>
+        <div class="pillar-card-body">
+            <p>{{ t('pillars.performance.desc') or 'Latence, débit, coût par inférence, utilisation GPU. Optimisez le trade-off qualité/vitesse.' }}</p>
+            <div class="pillar-metrics">
+                <span class="pillar-metric"><i data-lucide="clock"></i> Latence</span>
+                <span class="pillar-metric"><i data-lucide="wallet"></i> Coût</span>
+                <span class="pillar-metric"><i data-lucide="cpu"></i> GPU</span>
+            </div>
+        </div>
+        <div class="pillar-card-footer">
+            <span class="pillar-card-link">
+                {{ t('actions.explore') or 'Explorer' }}
+                <i data-lucide="arrow-right"></i>
+            </span>
+        </div>
+    </a>
+</div>
+
+<!-- Quick Insights -->
+<div class="grid grid-2 mb-6">
+    <div class="card">
+        <div class="card-header">
+            <h3 class="card-title">
+                <i data-lucide="alert-triangle"></i>
+                {{ t('pillars.issues_by_pillar') or 'Problèmes par Pilier' }}
+            </h3>
+        </div>
+        <div class="chart-container" style="height: 200px;">
+            <canvas id="issuesByPillarChart"></canvas>
+        </div>
+    </div>
+
+    <div class="card">
+        <div class="card-header">
+            <h3 class="card-title">
+                <i data-lucide="trending-up"></i>
+                {{ t('pillars.trust_evolution') or 'Évolution de la Confiance' }}
+            </h3>
+        </div>
+        <div class="chart-container" style="height: 200px;">
+            <canvas id="trustEvolutionChart"></canvas>
+        </div>
+    </div>
+</div>
+
+<!-- Persona-based Recommendations -->
+<div class="card">
+    <div class="card-header">
+        <h3 class="card-title">
+            <i data-lucide="sparkles"></i>
+            {{ t('pillars.recommendations') or 'Recommandations pour Vous' }}
+        </h3>
+    </div>
+    <div id="personaRecommendations">
+        <div class="loader"><div class="spinner"></div></div>
+    </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script>
+document.addEventListener('DOMContentLoaded', async () => {
+    await loadPillarData();
+    initCharts();
+    drawPentagon();
+    loadRecommendations();
+    lucide.createIcons();
+});
+
+async function loadPillarData() {
+    try {
+        const response = await fetch('/api/pillars/scores');
+        const data = await response.json();
+
+        if (data.success) {
+            const scores = data.data;
+
+            // Update card scores
+            document.getElementById('reliabilityScoreCard').textContent = Math.round(scores.reliability * 100) + '%';
+            document.getElementById('securityScoreCard').textContent = Math.round(scores.security * 100) + '%';
+            document.getElementById('complianceScoreCard').textContent = Math.round(scores.compliance * 100) + '%';
+            document.getElementById('explainabilityScoreCard').textContent = Math.round(scores.explainability * 100) + '%';
+            document.getElementById('performanceScoreCard').textContent = Math.round(scores.performance * 100) + '%';
+
+            // Calculate global score
+            const globalScore = (scores.reliability + scores.security + scores.compliance +
+                                scores.explainability + scores.performance) / 5;
+            document.getElementById('globalTrustScore').querySelector('.score').textContent =
+                Math.round(globalScore * 100) + '%';
+
+            // Store for pentagon
+            window.pillarScores = scores;
+            drawPentagon();
+        }
+    } catch (error) {
+        console.error('Error loading pillar data:', error);
+        // Show demo data
+        const demoScores = {
+            reliability: 0.87,
+            security: 0.82,
+            compliance: 0.78,
+            explainability: 0.75,
+            performance: 0.91
+        };
+        window.pillarScores = demoScores;
+
+        document.getElementById('reliabilityScoreCard').textContent = '87%';
+        document.getElementById('securityScoreCard').textContent = '82%';
+        document.getElementById('complianceScoreCard').textContent = '78%';
+        document.getElementById('explainabilityScoreCard').textContent = '75%';
+        document.getElementById('performanceScoreCard').textContent = '91%';
+        document.getElementById('globalTrustScore').querySelector('.score').textContent = '83%';
+
+        drawPentagon();
+    }
+}
+
+function drawPentagon() {
+    const svg = document.getElementById('pentagonSvg');
+    if (!svg || !window.pillarScores) return;
+
+    const scores = window.pillarScores;
+    const center = { x: 200, y: 200 };
+    const maxRadius = 150;
+
+    // Pentagon vertices (5 points, starting from top)
+    const pillars = [
+        { name: 'Fiabilité', key: 'reliability', angle: -90 },
+        { name: 'Sécurité', key: 'security', angle: -18 },
+        { name: 'Performance', key: 'performance', angle: 54 },
+        { name: 'Explicabilité', key: 'explainability', angle: 126 },
+        { name: 'Conformité', key: 'compliance', angle: 198 }
+    ];
+
+    // Clear existing
+    svg.innerHTML = '';
+
+    // Draw grid circles
+    for (let i = 1; i <= 5; i++) {
+        const radius = maxRadius * (i / 5);
+        const points = pillars.map(p => {
+            const rad = p.angle * Math.PI / 180;
+            return `${center.x + radius * Math.cos(rad)},${center.y + radius * Math.sin(rad)}`;
+        }).join(' ');
+
+        const polygon = document.createElementNS('http://www.w3.org/2000/svg', 'polygon');
+        polygon.setAttribute('points', points);
+        polygon.setAttribute('class', 'pentagon-grid');
+        svg.appendChild(polygon);
+    }
+
+    // Draw axes
+    pillars.forEach(p => {
+        const rad = p.angle * Math.PI / 180;
+        const line = document.createElementNS('http://www.w3.org/2000/svg', 'line');
+        line.setAttribute('x1', center.x);
+        line.setAttribute('y1', center.y);
+        line.setAttribute('x2', center.x + maxRadius * Math.cos(rad));
+        line.setAttribute('y2', center.y + maxRadius * Math.sin(rad));
+        line.setAttribute('class', 'pentagon-axis');
+        svg.appendChild(line);
+    });
+
+    // Draw score shape
+    const scorePoints = pillars.map(p => {
+        const rad = p.angle * Math.PI / 180;
+        const score = scores[p.key] || 0;
+        const radius = maxRadius * score;
+        return `${center.x + radius * Math.cos(rad)},${center.y + radius * Math.sin(rad)}`;
+    }).join(' ');
+
+    const shape = document.createElementNS('http://www.w3.org/2000/svg', 'polygon');
+    shape.setAttribute('points', scorePoints);
+    shape.setAttribute('class', 'pentagon-shape');
+    svg.appendChild(shape);
+
+    // Draw points and labels
+    pillars.forEach(p => {
+        const rad = p.angle * Math.PI / 180;
+        const score = scores[p.key] || 0;
+        const radius = maxRadius * score;
+
+        // Score point
+        const point = document.createElementNS('http://www.w3.org/2000/svg', 'circle');
+        point.setAttribute('cx', center.x + radius * Math.cos(rad));
+        point.setAttribute('cy', center.y + radius * Math.sin(rad));
+        point.setAttribute('class', 'pentagon-point');
+        point.setAttribute('r', 6);
+        svg.appendChild(point);
+
+        // Label
+        const labelRadius = maxRadius + 30;
+        const label = document.createElementNS('http://www.w3.org/2000/svg', 'text');
+        label.setAttribute('x', center.x + labelRadius * Math.cos(rad));
+        label.setAttribute('y', center.y + labelRadius * Math.sin(rad));
+        label.setAttribute('class', 'pentagon-label');
+        label.textContent = p.name;
+        svg.appendChild(label);
+
+        // Score value
+        const scoreText = document.createElementNS('http://www.w3.org/2000/svg', 'text');
+        scoreText.setAttribute('x', center.x + labelRadius * Math.cos(rad));
+        scoreText.setAttribute('y', center.y + labelRadius * Math.sin(rad) + 16);
+        scoreText.setAttribute('class', 'pentagon-score');
+        scoreText.textContent = Math.round(score * 100) + '%';
+        svg.appendChild(scoreText);
+    });
+}
+
+function initCharts() {
+    // Issues by Pillar
+    const issuesCtx = document.getElementById('issuesByPillarChart').getContext('2d');
+    new Chart(issuesCtx, {
+        type: 'bar',
+        data: {
+            labels: ['Fiabilité', 'Sécurité', 'Conformité', 'Explicabilité', 'Performance'],
+            datasets: [{
+                label: 'Problèmes',
+                data: [3, 5, 2, 4, 1],
+                backgroundColor: [
+                    'rgba(16, 185, 129, 0.8)',
+                    'rgba(245, 158, 11, 0.8)',
+                    'rgba(99, 102, 241, 0.8)',
+                    'rgba(139, 92, 246, 0.8)',
+                    'rgba(59, 130, 246, 0.8)'
+                ],
+                borderRadius: 6
+            }]
+        },
+        options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            plugins: { legend: { display: false } },
+            scales: {
+                x: { grid: { display: false } },
+                y: { beginAtZero: true, ticks: { stepSize: 1 } }
+            }
+        }
+    });
+
+    // Trust Evolution
+    const trustCtx = document.getElementById('trustEvolutionChart').getContext('2d');
+    new Chart(trustCtx, {
+        type: 'line',
+        data: {
+            labels: ['Jan', 'Fév', 'Mar', 'Avr', 'Mai', 'Juin'],
+            datasets: [
+                { label: 'Fiabilité', data: [82, 84, 85, 86, 87, 87], borderColor: '#10b981', tension: 0.4, borderWidth: 2, pointRadius: 0 },
+                { label: 'Sécurité', data: [78, 79, 80, 81, 82, 82], borderColor: '#f59e0b', tension: 0.4, borderWidth: 2, pointRadius: 0 },
+                { label: 'Conformité', data: [70, 72, 74, 75, 77, 78], borderColor: '#6366f1', tension: 0.4, borderWidth: 2, pointRadius: 0 },
+                { label: 'Explicabilité', data: [68, 70, 72, 73, 74, 75], borderColor: '#8b5cf6', tension: 0.4, borderWidth: 2, pointRadius: 0 },
+                { label: 'Performance', data: [88, 89, 90, 90, 91, 91], borderColor: '#3b82f6', tension: 0.4, borderWidth: 2, pointRadius: 0 }
+            ]
+        },
+        options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            plugins: { legend: { position: 'bottom', labels: { boxWidth: 12, padding: 8 } } },
+            scales: {
+                x: { grid: { display: false } },
+                y: { min: 60, max: 100, ticks: { callback: v => v + '%' } }
+            }
+        }
+    });
+}
+
+async function loadRecommendations() {
+    const container = document.getElementById('personaRecommendations');
+    const persona = localStorage.getItem('gaskia-persona') || 'business_executive';
+
+    // Demo recommendations based on persona
+    const recommendations = {
+        'business_executive': [
+            { icon: 'scale', title: 'Conformité AI Act', desc: 'Votre score de conformité est à 78%. Préparez les preuves pour l\'audit Q1.', action: '/pillars/compliance', priority: 'high' },
+            { icon: 'trending-up', title: 'ROI en amélioration', desc: 'Le coût par inférence a baissé de 12% ce mois.', action: '/pillars/performance', priority: 'low' }
+        ],
+        'tech_ml_engineer': [
+            { icon: 'git-merge', title: 'Drift détecté', desc: 'Le modèle fraud-detection montre un concept drift. Réévaluez le seuil.', action: '/pillars/reliability#drift', priority: 'high' },
+            { icon: 'lightbulb', title: 'Explicabilité insuffisante', desc: 'Ajoutez des feature importances au modèle pricing.', action: '/pillars/explainability', priority: 'medium' }
+        ],
+        'security_soc': [
+            { icon: 'alert-triangle', title: 'Tentatives d\'injection', desc: '12 tentatives de prompt injection bloquées cette semaine.', action: '/pillars/security#injection', priority: 'high' },
+            { icon: 'shield', title: 'Score sécurité stable', desc: 'Votre posture de sécurité est stable à 82%.', action: '/pillars/security', priority: 'low' }
+        ],
+        'compliance_legal': [
+            { icon: 'file-check', title: 'Documentation AI Act', desc: '3 modèles nécessitent une mise à jour de leur documentation.', action: '/pillars/compliance#aiact', priority: 'high' },
+            { icon: 'history', title: 'Audit trail complet', desc: 'Toutes les inférences des 90 derniers jours sont tracées.', action: '/pillars/compliance#traceability', priority: 'low' }
+        ]
+    };
+
+    const items = recommendations[persona] || recommendations['business_executive'];
+
+    container.innerHTML = items.map(item => `
+        <a href="${item.action}" class="flex items-center gap-4 p-4 hover:bg-secondary rounded-lg transition-colors" style="text-decoration: none; color: inherit; border-bottom: 1px solid var(--border-color);">
+            <div class="flex-shrink-0 w-10 h-10 rounded-lg flex items-center justify-center" style="background: ${item.priority === 'high' ? 'var(--color-danger-light)' : item.priority === 'medium' ? 'var(--color-warning-light)' : 'var(--color-success-light)'};">
+                <i data-lucide="${item.icon}" style="width: 20px; height: 20px; color: ${item.priority === 'high' ? 'var(--color-danger)' : item.priority === 'medium' ? 'var(--color-warning)' : 'var(--color-success)'};"></i>
+            </div>
+            <div class="flex-1">
+                <strong>${item.title}</strong>
+                <p class="text-sm text-muted m-0">${item.desc}</p>
+            </div>
+            <i data-lucide="chevron-right" style="width: 20px; height: 20px; color: var(--text-muted);"></i>
+        </a>
+    `).join('');
+
+    lucide.createIcons();
+}
+</script>
+
+<style>
+.global-score-badge {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding: var(--space-3) var(--space-4);
+    background: var(--gradient-primary);
+    border-radius: var(--radius-xl);
+    color: white;
+}
+
+.global-score-badge .score {
+    font-size: 2rem;
+    font-weight: 800;
+    font-family: 'Space Grotesk', sans-serif;
+    line-height: 1;
+}
+
+.global-score-badge .label {
+    font-size: 0.75rem;
+    opacity: 0.9;
+    margin-top: 4px;
+}
+</style>
+{% endblock %}

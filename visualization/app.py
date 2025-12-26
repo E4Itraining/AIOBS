@@ -33,6 +33,7 @@ from .routers import (
     cognitive_router,
     causal_router,
 )
+from .routers.pillars import router as pillars_router
 
 # Import new module routers (optional - may fail due to dependencies)
 auth_router = None
@@ -152,6 +153,7 @@ app.include_router(monitoring_router)
 # New feature routers
 app.include_router(cognitive_router)
 app.include_router(causal_router)
+app.include_router(pillars_router)
 
 # Optional routers (may not be available due to dependencies)
 if auth_router:
@@ -625,6 +627,117 @@ async def business_intelligence_view(request: Request):
             "request": request,
             "title": f"{APP_TITLE} - Business Intelligence",
             "active_page": "business-intelligence",
+            **i18n,
+        },
+    )
+
+
+# ============================================================================
+# 5 Pillars Routes - New UX Architecture
+# ============================================================================
+
+# Personas configuration for pillars
+PILLAR_PERSONAS = [
+    {"id": "business_executive", "name": "Dirigeant", "icon": "briefcase"},
+    {"id": "tech_ml_engineer", "name": "ML Engineer", "icon": "cpu"},
+    {"id": "tech_devops", "name": "DevOps", "icon": "terminal"},
+    {"id": "security_soc", "name": "Security", "icon": "shield"},
+    {"id": "compliance_legal", "name": "Compliance", "icon": "scale"},
+    {"id": "sustainability_esg", "name": "ESG", "icon": "leaf"},
+]
+
+
+@app.get("/pillars", response_class=HTMLResponse)
+async def pillars_home(request: Request):
+    """5 Pillars Overview - Main landing page for pillar-based navigation"""
+    i18n = create_i18n_context(request)
+    return templates.TemplateResponse(
+        "pillars/home.html",
+        {
+            "request": request,
+            "title": "Les 5 Piliers de la Confiance IA",
+            "active_pillar": "home",
+            "personas": PILLAR_PERSONAS,
+            **i18n,
+        },
+    )
+
+
+@app.get("/pillars/reliability", response_class=HTMLResponse)
+async def pillars_reliability(request: Request):
+    """Reliability Pillar - Accuracy, Drift, Quality over time"""
+    i18n = create_i18n_context(request)
+    return templates.TemplateResponse(
+        "pillars/reliability.html",
+        {
+            "request": request,
+            "title": "Fiabilité - Les 5 Piliers",
+            "active_pillar": "reliability",
+            "personas": PILLAR_PERSONAS,
+            **i18n,
+        },
+    )
+
+
+@app.get("/pillars/security", response_class=HTMLResponse)
+async def pillars_security(request: Request):
+    """Security Pillar - Prompt Injection, Adversarial, Anomaly Detection"""
+    i18n = create_i18n_context(request)
+    return templates.TemplateResponse(
+        "pillars/security.html",
+        {
+            "request": request,
+            "title": "Sécurité - Les 5 Piliers",
+            "active_pillar": "security",
+            "personas": PILLAR_PERSONAS,
+            **i18n,
+        },
+    )
+
+
+@app.get("/pillars/compliance", response_class=HTMLResponse)
+async def pillars_compliance(request: Request):
+    """Compliance Pillar - Traceability, Versioning, AI Act"""
+    i18n = create_i18n_context(request)
+    return templates.TemplateResponse(
+        "pillars/compliance.html",
+        {
+            "request": request,
+            "title": "Conformité - Les 5 Piliers",
+            "active_pillar": "compliance",
+            "personas": PILLAR_PERSONAS,
+            **i18n,
+        },
+    )
+
+
+@app.get("/pillars/explainability", response_class=HTMLResponse)
+async def pillars_explainability(request: Request):
+    """Explainability Pillar - Feature Importance, Confidence, Ethics"""
+    i18n = create_i18n_context(request)
+    return templates.TemplateResponse(
+        "pillars/explainability.html",
+        {
+            "request": request,
+            "title": "Explicabilité - Les 5 Piliers",
+            "active_pillar": "explainability",
+            "personas": PILLAR_PERSONAS,
+            **i18n,
+        },
+    )
+
+
+@app.get("/pillars/performance", response_class=HTMLResponse)
+async def pillars_performance(request: Request):
+    """Performance Pillar - Latency, Cost, GPU, Trade-offs"""
+    i18n = create_i18n_context(request)
+    return templates.TemplateResponse(
+        "pillars/performance.html",
+        {
+            "request": request,
+            "title": "Performance - Les 5 Piliers",
+            "active_pillar": "performance",
+            "personas": PILLAR_PERSONAS,
             **i18n,
         },
     )

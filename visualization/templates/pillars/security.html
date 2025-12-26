@@ -1,0 +1,369 @@
+{% extends "pillars/base_pillars.html" %}
+
+{% set active_pillar = 'security' %}
+
+{% block page_title %}{{ t('pillars.security.name') or 'Sécurité' }}{% endblock %}
+
+{% block content %}
+<!-- Pillar Header -->
+<div class="pillar-header">
+    <div class="pillar-header-info">
+        <div class="pillar-header-icon security">
+            <i data-lucide="shield"></i>
+        </div>
+        <div class="pillar-header-text">
+            <h1>{{ t('pillars.security.name') or 'Sécurité' }}</h1>
+            <span class="question">{{ t('pillars.security.question') or 'Le modèle est-il protégé ?' }}</span>
+        </div>
+    </div>
+    <div class="pillar-header-score">
+        <div class="score-value" id="securityScore" style="color: var(--pillar-security);">--</div>
+        <div class="score-label">{{ t('pillars.score') or 'Score' }}</div>
+        <div class="score-trend stable" id="securityTrend">
+            <i data-lucide="minus"></i>
+            <span>Stable</span>
+        </div>
+    </div>
+</div>
+
+<!-- KPI Grid -->
+<div class="pillar-kpi-grid">
+    <div class="pillar-kpi-card">
+        <div class="pillar-kpi-header">
+            <span class="pillar-kpi-label">{{ t('pillars.security.injection_blocked') or 'Injections Bloquées' }}</span>
+            <i data-lucide="syringe"></i>
+        </div>
+        <div class="pillar-kpi-value" id="injectionsBlocked">127</div>
+        <div class="pillar-kpi-trend down" style="color: var(--color-success);">
+            <i data-lucide="trending-down"></i> -15% vs semaine dern.
+        </div>
+    </div>
+
+    <div class="pillar-kpi-card">
+        <div class="pillar-kpi-header">
+            <span class="pillar-kpi-label">{{ t('pillars.security.adversarial_detected') or 'Attaques Adversariales' }}</span>
+            <i data-lucide="alert-triangle"></i>
+        </div>
+        <div class="pillar-kpi-value" id="adversarialCount">8</div>
+        <div class="pillar-kpi-trend stable">
+            <i data-lucide="minus"></i> 0 aujourd'hui
+        </div>
+    </div>
+
+    <div class="pillar-kpi-card">
+        <div class="pillar-kpi-header">
+            <span class="pillar-kpi-label">{{ t('pillars.security.data_extraction') or 'Tentatives Extraction' }}</span>
+            <i data-lucide="database"></i>
+        </div>
+        <div class="pillar-kpi-value" id="extractionAttempts">3</div>
+        <div class="pillar-kpi-trend down" style="color: var(--color-success);">
+            <i data-lucide="shield-check"></i> Toutes bloquées
+        </div>
+    </div>
+
+    <div class="pillar-kpi-card">
+        <div class="pillar-kpi-header">
+            <span class="pillar-kpi-label">{{ t('pillars.security.anomalies') or 'Anomalies Comportementales' }}</span>
+            <i data-lucide="activity"></i>
+        </div>
+        <div class="pillar-kpi-value" id="anomalyCount">2</div>
+        <div class="pillar-kpi-trend up" style="color: var(--color-warning);">
+            <i data-lucide="trending-up"></i> +1 cette semaine
+        </div>
+    </div>
+</div>
+
+<!-- Prompt Injection Section -->
+<div class="pillar-section" id="injection">
+    <div class="pillar-section-header">
+        <h2 class="pillar-section-title">
+            <i data-lucide="syringe"></i>
+            {{ t('pillars.security.prompt_injection') or 'Prompt Injection' }}
+        </h2>
+        <span class="badge badge-healthy">Protection Active</span>
+    </div>
+
+    <div class="grid grid-2 gap-4 mb-4">
+        <div class="card">
+            <h4 class="text-sm text-muted mb-2">{{ t('pillars.security.injection_timeline') or 'Timeline des Tentatives' }}</h4>
+            <div class="chart-container" style="height: 200px;">
+                <canvas id="injectionChart"></canvas>
+            </div>
+        </div>
+        <div class="card">
+            <h4 class="text-sm text-muted mb-2">{{ t('pillars.security.injection_types') or 'Types d\'Injection' }}</h4>
+            <div class="chart-container" style="height: 200px;">
+                <canvas id="injectionTypesChart"></canvas>
+            </div>
+        </div>
+    </div>
+
+    <div class="table-container">
+        <table class="table">
+            <thead>
+                <tr>
+                    <th>{{ t('table.timestamp') or 'Horodatage' }}</th>
+                    <th>{{ t('table.type') or 'Type' }}</th>
+                    <th>{{ t('table.model') or 'Modèle Ciblé' }}</th>
+                    <th>{{ t('table.severity') or 'Sévérité' }}</th>
+                    <th>{{ t('table.status') or 'Statut' }}</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td>2024-12-26 14:32:15</td>
+                    <td>Jailbreak Attempt</td>
+                    <td>chatbot-assistant</td>
+                    <td><span class="badge badge-danger">High</span></td>
+                    <td><span class="badge badge-healthy">Bloqué</span></td>
+                </tr>
+                <tr>
+                    <td>2024-12-26 11:18:42</td>
+                    <td>Prompt Leaking</td>
+                    <td>code-generator</td>
+                    <td><span class="badge badge-warning">Medium</span></td>
+                    <td><span class="badge badge-healthy">Bloqué</span></td>
+                </tr>
+                <tr>
+                    <td>2024-12-25 22:45:03</td>
+                    <td>Role Manipulation</td>
+                    <td>customer-support</td>
+                    <td><span class="badge badge-warning">Medium</span></td>
+                    <td><span class="badge badge-healthy">Bloqué</span></td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+</div>
+
+<!-- Adversarial Attacks Section -->
+<div class="pillar-section" id="adversarial">
+    <div class="pillar-section-header">
+        <h2 class="pillar-section-title">
+            <i data-lucide="alert-triangle"></i>
+            {{ t('pillars.security.adversarial_attacks') or 'Attaques Adversariales' }}
+        </h2>
+    </div>
+
+    <div class="grid grid-3 gap-4 mb-4">
+        <div class="card text-center">
+            <div class="kpi-icon" style="background: var(--color-danger-light); margin: 0 auto var(--space-2);">
+                <i data-lucide="image" style="color: var(--color-danger);"></i>
+            </div>
+            <div class="text-muted text-sm">Image Perturbation</div>
+            <div class="kpi-value">3</div>
+            <div class="text-sm text-muted">Cette semaine</div>
+        </div>
+        <div class="card text-center">
+            <div class="kpi-icon" style="background: var(--color-warning-light); margin: 0 auto var(--space-2);">
+                <i data-lucide="type" style="color: var(--color-warning);"></i>
+            </div>
+            <div class="text-muted text-sm">Text Manipulation</div>
+            <div class="kpi-value">5</div>
+            <div class="text-sm text-muted">Cette semaine</div>
+        </div>
+        <div class="card text-center">
+            <div class="kpi-icon" style="background: var(--color-success-light); margin: 0 auto var(--space-2);">
+                <i data-lucide="shield-check" style="color: var(--color-success);"></i>
+            </div>
+            <div class="text-muted text-sm">Taux de Blocage</div>
+            <div class="kpi-value" style="color: var(--color-success);">100%</div>
+            <div class="text-sm text-muted">Toutes bloquées</div>
+        </div>
+    </div>
+</div>
+
+<!-- Anomaly Detection Section -->
+<div class="pillar-section" id="anomaly">
+    <div class="pillar-section-header">
+        <h2 class="pillar-section-title">
+            <i data-lucide="activity"></i>
+            {{ t('pillars.security.anomaly_detection') or 'Détection de Comportements Anormaux' }}
+        </h2>
+    </div>
+
+    <div class="chart-container" style="height: 250px;">
+        <canvas id="anomalyChart"></canvas>
+    </div>
+
+    <div id="anomalyAlerts" class="mt-4">
+        <div class="flex items-center gap-4 p-4" style="border-bottom: 1px solid var(--border-color); background: var(--color-warning-light); border-radius: var(--radius-md);">
+            <span class="badge badge-warning"><span class="badge-dot"></span>Anomalie</span>
+            <div style="flex: 1;">
+                <strong>Pic de requêtes inhabituel détecté</strong>
+                <div class="text-sm text-muted">fraud-detection: +340% de requêtes vs baseline - il y a 45min</div>
+            </div>
+            <button class="btn btn-warning btn-sm">
+                <i data-lucide="search"></i>
+                Investiguer
+            </button>
+        </div>
+    </div>
+</div>
+
+<!-- Security Posture -->
+<div class="pillar-section">
+    <div class="pillar-section-header">
+        <h2 class="pillar-section-title">
+            <i data-lucide="shield"></i>
+            {{ t('pillars.security.posture') or 'Posture de Sécurité' }}
+        </h2>
+    </div>
+
+    <div class="grid grid-2 gap-4">
+        <div>
+            <h4 class="text-sm text-muted mb-3">{{ t('pillars.security.protection_status') or 'Statut des Protections' }}</h4>
+            <div class="flex flex-col gap-2">
+                <div class="flex items-center justify-between p-3 bg-secondary rounded-lg">
+                    <span><i data-lucide="syringe" class="inline-block w-4 h-4 mr-2"></i> Prompt Injection Guard</span>
+                    <span class="badge badge-healthy">Actif</span>
+                </div>
+                <div class="flex items-center justify-between p-3 bg-secondary rounded-lg">
+                    <span><i data-lucide="alert-triangle" class="inline-block w-4 h-4 mr-2"></i> Adversarial Detection</span>
+                    <span class="badge badge-healthy">Actif</span>
+                </div>
+                <div class="flex items-center justify-between p-3 bg-secondary rounded-lg">
+                    <span><i data-lucide="database" class="inline-block w-4 h-4 mr-2"></i> Data Extraction Prevention</span>
+                    <span class="badge badge-healthy">Actif</span>
+                </div>
+                <div class="flex items-center justify-between p-3 bg-secondary rounded-lg">
+                    <span><i data-lucide="activity" class="inline-block w-4 h-4 mr-2"></i> Anomaly Detection</span>
+                    <span class="badge badge-healthy">Actif</span>
+                </div>
+                <div class="flex items-center justify-between p-3 bg-secondary rounded-lg">
+                    <span><i data-lucide="lock" class="inline-block w-4 h-4 mr-2"></i> Output Validation</span>
+                    <span class="badge badge-healthy">Actif</span>
+                </div>
+            </div>
+        </div>
+        <div>
+            <h4 class="text-sm text-muted mb-3">{{ t('pillars.security.threat_level') or 'Niveau de Menace' }}</h4>
+            <div class="chart-container" style="height: 200px;">
+                <canvas id="threatGaugeChart"></canvas>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script>
+document.addEventListener('DOMContentLoaded', () => {
+    loadSecurityData();
+    initCharts();
+    lucide.createIcons();
+});
+
+async function loadSecurityData() {
+    try {
+        const response = await fetch('/api/pillars/security');
+        const data = await response.json();
+        if (data.success) {
+            document.getElementById('securityScore').textContent = Math.round(data.data.score * 100) + '%';
+        }
+    } catch (error) {
+        document.getElementById('securityScore').textContent = '82%';
+    }
+}
+
+function initCharts() {
+    // Injection Timeline
+    const injectionCtx = document.getElementById('injectionChart').getContext('2d');
+    new Chart(injectionCtx, {
+        type: 'bar',
+        data: {
+            labels: ['Lun', 'Mar', 'Mer', 'Jeu', 'Ven', 'Sam', 'Dim'],
+            datasets: [{
+                label: 'Tentatives bloquées',
+                data: [18, 22, 15, 19, 24, 12, 17],
+                backgroundColor: 'rgba(245, 158, 11, 0.8)',
+                borderRadius: 4
+            }]
+        },
+        options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            plugins: { legend: { display: false } },
+            scales: {
+                x: { grid: { display: false } },
+                y: { beginAtZero: true }
+            }
+        }
+    });
+
+    // Injection Types
+    const typesCtx = document.getElementById('injectionTypesChart').getContext('2d');
+    new Chart(typesCtx, {
+        type: 'doughnut',
+        data: {
+            labels: ['Jailbreak', 'Prompt Leaking', 'Role Manipulation', 'Other'],
+            datasets: [{
+                data: [45, 25, 20, 10],
+                backgroundColor: ['#ef4444', '#f59e0b', '#6366f1', '#94a3b8'],
+                borderWidth: 0
+            }]
+        },
+        options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            cutout: '60%',
+            plugins: { legend: { position: 'right', labels: { boxWidth: 12 } } }
+        }
+    });
+
+    // Anomaly Chart
+    const anomalyCtx = document.getElementById('anomalyChart').getContext('2d');
+    new Chart(anomalyCtx, {
+        type: 'line',
+        data: {
+            labels: Array.from({length: 24}, (_, i) => `${i}h`),
+            datasets: [
+                { label: 'Requêtes/min', data: generateAnomalyData(), borderColor: '#3b82f6', tension: 0.4, borderWidth: 2, pointRadius: 0, fill: true, backgroundColor: 'rgba(59, 130, 246, 0.1)' },
+                { label: 'Baseline', data: Array(24).fill(100), borderColor: '#94a3b8', borderDash: [5, 5], borderWidth: 1, pointRadius: 0 }
+            ]
+        },
+        options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            plugins: { legend: { position: 'bottom' } },
+            scales: {
+                x: { grid: { display: false } },
+                y: { beginAtZero: true }
+            }
+        }
+    });
+
+    // Threat Gauge
+    const gaugeCtx = document.getElementById('threatGaugeChart').getContext('2d');
+    new Chart(gaugeCtx, {
+        type: 'doughnut',
+        data: {
+            labels: ['Niveau actuel', 'Marge'],
+            datasets: [{
+                data: [25, 75],
+                backgroundColor: ['#10b981', '#e2e8f0'],
+                borderWidth: 0,
+                circumference: 180,
+                rotation: 270
+            }]
+        },
+        options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            cutout: '75%',
+            plugins: {
+                legend: { display: false },
+                tooltip: { enabled: false }
+            }
+        }
+    });
+}
+
+function generateAnomalyData() {
+    const data = Array.from({length: 24}, () => Math.random() * 30 + 85);
+    data[14] = 340; // Spike
+    data[15] = 280;
+    return data;
+}
+</script>
+{% endblock %}
