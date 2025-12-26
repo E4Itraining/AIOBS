@@ -119,7 +119,7 @@
                         {{ t('nav.explore') or 'Explorer' }}
                     </span>
 
-                    <!-- Accordion: Perspectives -->
+                    <!-- Accordion: Perspectives (merged with Vues) -->
                     <div class="nav-accordion" data-accordion="perspectives">
                         <button class="nav-accordion-header" onclick="toggleAccordion('perspectives')">
                             <i data-lucide="eye"></i>
@@ -130,6 +130,14 @@
                             <a href="/global" class="nav-link {% if active_page == 'global' %}active{% endif %}">
                                 <i data-lucide="globe"></i>
                                 <span>{{ t('nav.global_view') or 'Global' }}</span>
+                            </a>
+                            <a href="/unified" class="nav-link {% if active_page == 'unified' %}active{% endif %}">
+                                <i data-lucide="layers"></i>
+                                <span>{{ t('nav.unified_view') or 'Vue Unifiée' }}</span>
+                            </a>
+                            <a href="/executive" class="nav-link {% if active_page == 'executive' %}active{% endif %}">
+                                <i data-lucide="briefcase"></i>
+                                <span>{{ t('nav.executive_view') or 'Vue Executive' }}</span>
                             </a>
                             <a href="/dirigeant" class="nav-link {% if active_page == 'dirigeant' %}active{% endif %}">
                                 <i data-lucide="building-2"></i>
@@ -150,30 +158,11 @@
                         </div>
                     </div>
 
-                    <!-- Accordion: Vues -->
-                    <div class="nav-accordion" data-accordion="views">
-                        <button class="nav-accordion-header" onclick="toggleAccordion('views')">
-                            <i data-lucide="layout-dashboard"></i>
-                            <span>{{ t('nav.views') or 'Vues' }}</span>
-                            <i data-lucide="chevron-right" class="accordion-chevron"></i>
-                        </button>
-                        <div class="nav-accordion-content">
-                            <a href="/unified" class="nav-link {% if active_page == 'unified' %}active{% endif %}">
-                                <i data-lucide="layers"></i>
-                                <span>{{ t('nav.unified_view') or 'Vue Unifiée' }}</span>
-                            </a>
-                            <a href="/executive" class="nav-link {% if active_page == 'executive' %}active{% endif %}">
-                                <i data-lucide="briefcase"></i>
-                                <span>{{ t('nav.executive_view') or 'Vue Executive' }}</span>
-                            </a>
-                        </div>
-                    </div>
-
-                    <!-- Accordion: Analyse -->
+                    <!-- Accordion: Analyse & IA (merged Analysis + Intelligence) -->
                     <div class="nav-accordion" data-accordion="analysis">
                         <button class="nav-accordion-header" onclick="toggleAccordion('analysis')">
                             <i data-lucide="brain"></i>
-                            <span>{{ t('nav.analysis') or 'Analyse' }}</span>
+                            <span>{{ t('nav.analysis_ia') or 'Analyse & IA' }}</span>
                             <i data-lucide="chevron-right" class="accordion-chevron"></i>
                         </button>
                         <div class="nav-accordion-content">
@@ -184,6 +173,18 @@
                             <a href="/impact" class="nav-link {% if active_page == 'impact' %}active{% endif %}">
                                 <i data-lucide="trending-up"></i>
                                 <span>{{ t('nav.impact_analysis') or 'Analyse d\'Impact' }}</span>
+                            </a>
+                            <a href="/multi-agent" class="nav-link {% if active_page == 'multi-agent' %}active{% endif %}">
+                                <i data-lucide="network"></i>
+                                <span>{{ t('nav.multi_agent') or 'Orchestration Multi-Agents' }}</span>
+                            </a>
+                            <a href="/healing" class="nav-link {% if active_page == 'healing' %}active{% endif %}">
+                                <i data-lucide="heart-pulse"></i>
+                                <span>{{ t('nav.healing') or 'Auto-Réparation' }}</span>
+                            </a>
+                            <a href="/business-intelligence" class="nav-link {% if active_page == 'business-intelligence' %}active{% endif %}">
+                                <i data-lucide="bar-chart-3"></i>
+                                <span>{{ t('nav.business_intelligence') or 'Tableaux de Bord BI' }}</span>
                             </a>
                         </div>
                     </div>
@@ -238,28 +239,6 @@
                         </div>
                     </div>
 
-                    <!-- Accordion: Intelligence -->
-                    <div class="nav-accordion" data-accordion="intelligence">
-                        <button class="nav-accordion-header" onclick="toggleAccordion('intelligence')">
-                            <i data-lucide="sparkles"></i>
-                            <span>{{ t('nav.intelligence') or 'Intelligence IA' }}</span>
-                            <i data-lucide="chevron-right" class="accordion-chevron"></i>
-                        </button>
-                        <div class="nav-accordion-content">
-                            <a href="/multi-agent" class="nav-link {% if active_page == 'multi-agent' %}active{% endif %}">
-                                <i data-lucide="network"></i>
-                                <span>{{ t('nav.multi_agent') or 'Orchestration Multi-Agents' }}</span>
-                            </a>
-                            <a href="/healing" class="nav-link {% if active_page == 'healing' %}active{% endif %}">
-                                <i data-lucide="heart-pulse"></i>
-                                <span>{{ t('nav.healing') or 'Auto-Réparation Système' }}</span>
-                            </a>
-                            <a href="/business-intelligence" class="nav-link {% if active_page == 'business-intelligence' %}active{% endif %}">
-                                <i data-lucide="bar-chart-3"></i>
-                                <span>{{ t('nav.business_intelligence') or 'Tableaux de Bord BI' }}</span>
-                            </a>
-                        </div>
-                    </div>
                 </div>
 
                 <!-- Change Journey Link -->
