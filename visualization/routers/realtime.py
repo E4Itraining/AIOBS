@@ -1,6 +1,6 @@
 """
 AIOBS Real-time WebSocket API
-Game-changer feature: Live updates for dashboards and alerts
+Advanced feature: Live updates for dashboards and alerts
 """
 
 import asyncio

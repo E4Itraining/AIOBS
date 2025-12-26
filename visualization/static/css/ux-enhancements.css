@@ -1,6 +1,6 @@
 /* ========================================
    GASKIA UX ENHANCEMENTS v2.0
-   Game Changer Features for Enterprise AI
+   Advanced Features for Enterprise AI
    ======================================== */
 
 /* ========== ADVANCED ANIMATIONS & MICRO-INTERACTIONS ========== */
@@ -110,7 +110,7 @@
     }
 }
 
-/* ========== QUICK INSIGHTS PANEL (GAME CHANGER) ========== */
+/* ========== QUICK INSIGHTS PANEL ========== */
 .quick-insights-container {
     position: fixed;
     top: var(--topbar-height);
@@ -134,7 +134,7 @@
 
 .quick-insights-header {
     padding: var(--space-5);
-    background: linear-gradient(135deg, var(--color-or-sahel), var(--color-terre-cuite));
+    background: linear-gradient(135deg, var(--color-primary), var(--color-accent));
     color: white;
     display: flex;
     align-items: center;
@@ -438,7 +438,7 @@
     right: var(--space-4);
     width: 52px;
     height: 52px;
-    background: linear-gradient(135deg, var(--color-or-sahel), var(--color-terre-cuite));
+    background: linear-gradient(135deg, var(--color-primary), var(--color-accent));
     border: none;
     border-radius: var(--radius-xl);
     color: white;
@@ -446,7 +446,7 @@
     display: flex;
     align-items: center;
     justify-content: center;
-    box-shadow: var(--shadow-lg), 0 0 20px rgba(212, 160, 23, 0.3);
+    box-shadow: var(--shadow-lg), 0 0 20px rgba(37, 99, 235, 0.3);
     transition: all var(--transition-base);
     z-index: 700;
 }
@@ -867,7 +867,7 @@
     color: var(--text-secondary);
 }
 
-/* ========== COMMAND PALETTE (GAME CHANGER) ========== */
+/* ========== COMMAND PALETTE ========== */
 .command-palette {
     position: fixed;
     inset: 0;
@@ -1487,13 +1487,13 @@ select:focus-visible {
 .persona-select-btn.active,
 .feature-try {
     background: var(--color-primary);
-    color: var(--text-on-primary, #1A1A2E);
+    color: var(--text-on-primary, #FFFFFF);
 }
 
 .btn-primary:hover,
 .persona-select-btn.active:hover,
 .feature-try:hover {
-    background: var(--color-primary-dark, #B8890F);
+    background: var(--color-primary-hover, #1D4ED8);
     transform: translateY(-1px);
 }
 
@@ -1528,9 +1528,9 @@ select:focus-visible {
 /* ========== DARK MODE ENHANCEMENTS ========== */
 [data-theme="dark"] {
     /* Extended dark mode variables */
-    --bg-elevated: #2D2D4A;
-    --text-on-primary: #1A1A2E;
-    --color-primary-dark: #C89915;
+    --bg-elevated: #334155;
+    --text-on-primary: #FFFFFF;
+    --color-primary-dark: #1D4ED8;
 
     /* Skip-to-content in dark mode */
     .skip-to-content {

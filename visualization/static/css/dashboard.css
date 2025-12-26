@@ -1,54 +1,63 @@
 /* ========================================
-   GASKIA Design System v1.0
+   GASKIA Design System v2.0
    "Voir. Prouver. Maîtriser."
    Trust Control Layer for AI Systems
    ======================================== */
 
 /* ========== CSS Variables / Design Tokens ========== */
 :root {
-    /* GASKIA Brand Colors */
-    --color-or-sahel: #D4A017;        /* Primary - Gold Sahel */
-    --color-bleu-nuit: #1A1A2E;       /* Secondary - Night Blue */
-    --color-blanc-chaud: #F5F5F0;     /* Background - Warm White */
-    --color-terre-cuite: #C17A4A;     /* Accent - Cuivre Chaud */
+    /* GASKIA Brand Colors - Modern Palette */
+    --color-deep-blue: #1E40AF;        /* Primary - Deep Blue */
+    --color-slate-dark: #1E293B;       /* Secondary - Slate Dark */
+    --color-slate-light: #F8FAFC;      /* Background - Slate Light */
+    --color-cyan-accent: #0891B2;      /* Accent - Cyan */
 
     /* Colors - Light Theme */
-    --color-primary: #D4A017;          /* Or Sahel */
-    --color-primary-hover: #B8890F;    /* Or Sahel darker */
-    --color-primary-light: #FDF6E3;    /* Or Sahel très clair */
-    --color-accent: #C17A4A;           /* Cuivre Chaud */
+    --color-primary: #2563EB;          /* Blue 600 */
+    --color-primary-hover: #1D4ED8;    /* Blue 700 */
+    --color-primary-light: #EFF6FF;    /* Blue 50 */
+    --color-accent: #0891B2;           /* Cyan 600 */
 
-    --color-success: #10b981;
-    --color-success-light: #d1fae5;
-    --color-warning: #D4A017;          /* Or Sahel for warnings */
-    --color-warning-light: #FDF6E3;
-    --color-danger: #ef4444;
-    --color-danger-light: #fee2e2;
-    --color-info: #1A1A2E;             /* Bleu Nuit */
-    --color-info-light: #E8E8EC;
+    --color-success: #059669;
+    --color-success-light: #D1FAE5;
+    --color-warning: #D97706;          /* Amber 600 */
+    --color-warning-light: #FEF3C7;
+    --color-danger: #DC2626;
+    --color-danger-light: #FEE2E2;
+    --color-info: #0284C7;             /* Sky 600 */
+    --color-info-light: #E0F2FE;
 
     /* Backgrounds */
-    --bg-body: #F5F5F0;                /* Blanc Chaud */
-    --bg-card: #ffffff;
-    --bg-sidebar: #ffffff;
-    --bg-hover: #ECEEE9;
-    --bg-active: #FDF6E3;              /* Or Sahel très léger */
+    --bg-body: #F8FAFC;                /* Slate 50 */
+    --bg-card: #FFFFFF;
+    --bg-sidebar: #FFFFFF;
+    --bg-hover: #F1F5F9;               /* Slate 100 */
+    --bg-active: #EFF6FF;              /* Blue 50 */
 
     /* Text */
-    --text-primary: #1A1A2E;           /* Bleu Nuit */
-    --text-secondary: #4A4A5E;
-    --text-tertiary: #7A7A8E;
-    --text-inverse: #F5F5F0;           /* Blanc Chaud */
+    --text-primary: #1E293B;           /* Slate 800 */
+    --text-secondary: #475569;         /* Slate 600 */
+    --text-tertiary: #94A3B8;          /* Slate 400 */
+    --text-inverse: #F8FAFC;           /* Slate 50 */
 
     /* Borders */
-    --border-color: #E0E0DA;
-    --border-light: #ECEEE9;
+    --border-color: #E2E8F0;           /* Slate 200 */
+    --border-light: #F1F5F9;           /* Slate 100 */
 
     /* Shadows */
-    --shadow-sm: 0 1px 2px rgba(26, 26, 46, 0.05);
-    --shadow-md: 0 4px 6px -1px rgba(26, 26, 46, 0.1), 0 2px 4px -2px rgba(26, 26, 46, 0.1);
-    --shadow-lg: 0 10px 15px -3px rgba(26, 26, 46, 0.1), 0 4px 6px -4px rgba(26, 26, 46, 0.1);
-    --shadow-xl: 0 20px 25px -5px rgba(26, 26, 46, 0.1), 0 8px 10px -6px rgba(26, 26, 46, 0.1);
+    --shadow-sm: 0 1px 2px rgba(15, 23, 42, 0.04);
+    --shadow-md: 0 4px 6px -1px rgba(15, 23, 42, 0.08), 0 2px 4px -2px rgba(15, 23, 42, 0.06);
+    --shadow-lg: 0 10px 15px -3px rgba(15, 23, 42, 0.08), 0 4px 6px -4px rgba(15, 23, 42, 0.04);
+    --shadow-xl: 0 20px 25px -5px rgba(15, 23, 42, 0.08), 0 8px 10px -6px rgba(15, 23, 42, 0.04);
+
+    /* Unified Gradients - Harmonized across platform */
+    --gradient-primary: linear-gradient(135deg, #2563EB, #0891B2);
+    --gradient-success: linear-gradient(135deg, #059669, #10B981);
+    --gradient-warning: linear-gradient(135deg, #D97706, #F59E0B);
+    --gradient-danger: linear-gradient(135deg, #DC2626, #EF4444);
+    --gradient-info: linear-gradient(135deg, #0284C7, #38BDF8);
+    --gradient-purple: linear-gradient(135deg, #7C3AED, #A78BFA);
+    --gradient-indigo: linear-gradient(135deg, #4F46E5, #818CF8);
 
     /* Spacing */
     --space-1: 0.25rem;
@@ -80,30 +89,30 @@
     --font-body: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
 }
 
-/* Dark Theme - GASKIA */
+/* Dark Theme - GASKIA Modern */
 [data-theme="dark"] {
-    --bg-body: #1A1A2E;                /* Bleu Nuit */
-    --bg-card: #252540;
-    --bg-sidebar: #252540;
-    --bg-hover: #35355A;
-    --bg-active: #3D3520;              /* Or Sahel sombre */
+    --bg-body: #0F172A;                /* Slate 900 */
+    --bg-card: #1E293B;                /* Slate 800 */
+    --bg-sidebar: #1E293B;
+    --bg-hover: #334155;               /* Slate 700 */
+    --bg-active: #1E3A5F;              /* Blue Dark */
 
-    --text-primary: #F5F5F0;           /* Blanc Chaud */
-    --text-secondary: #B0B0BA;
-    --text-tertiary: #7A7A8E;
+    --text-primary: #F1F5F9;           /* Slate 100 */
+    --text-secondary: #CBD5E1;         /* Slate 300 */
+    --text-tertiary: #64748B;          /* Slate 500 */
 
-    --border-color: #35355A;
-    --border-light: #252540;
+    --border-color: #334155;           /* Slate 700 */
+    --border-light: #1E293B;           /* Slate 800 */
 
-    --color-primary-light: #3D3520;
-    --color-success-light: #064e3b;
-    --color-warning-light: #3D3520;
-    --color-danger-light: #7f1d1d;
-    --color-info-light: #35355A;
+    --color-primary-light: #1E3A5F;
+    --color-success-light: #064E3B;
+    --color-warning-light: #451A03;
+    --color-danger-light: #7F1D1D;
+    --color-info-light: #0C4A6E;
 
-    --shadow-sm: 0 1px 2px rgba(0, 0, 0, 0.3);
-    --shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.4);
-    --shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.5);
+    --shadow-sm: 0 1px 2px rgba(0, 0, 0, 0.4);
+    --shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.5);
+    --shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.6);
 }
 
 /* ========== Reset & Base ========== */
@@ -141,7 +150,7 @@ h3 { font-size: 1.5rem; font-weight: 500; }    /* 24px */
     font-family: var(--font-heading);
     font-weight: 500;
     font-size: 1.25rem;                        /* 20px */
-    color: var(--color-or-sahel);
+    color: var(--color-primary);
 }
 
 /* ========== Layout ========== */
@@ -212,7 +221,7 @@ h3 { font-size: 1.5rem; font-weight: 500; }    /* 24px */
     font-size: 1.35rem;
     font-weight: 700;
     letter-spacing: 0.05em;
-    background: linear-gradient(135deg, var(--color-or-sahel), var(--color-terre-cuite));
+    background: linear-gradient(135deg, var(--color-primary), var(--color-accent));
     -webkit-background-clip: text;
     -webkit-text-fill-color: transparent;
     background-clip: text;
@@ -1432,13 +1441,13 @@ h3 { font-size: 1.5rem; font-weight: 500; }    /* 24px */
     width: 80px;
     height: 80px;
     margin: 0 auto var(--space-6);
-    background: linear-gradient(135deg, var(--color-primary), #8b5cf6);
+    background: var(--gradient-primary);
     border-radius: var(--radius-xl);
     display: flex;
     align-items: center;
     justify-content: center;
     color: white;
-    box-shadow: 0 10px 40px rgba(99, 102, 241, 0.3);
+    box-shadow: 0 10px 40px rgba(37, 99, 235, 0.3);
 }
 
 .hero-icon svg {
@@ -1756,7 +1765,7 @@ h3 { font-size: 1.5rem; font-weight: 500; }    /* 24px */
     width: 56px;
     height: 56px;
     border-radius: 50%;
-    background: linear-gradient(135deg, var(--color-primary), #8b5cf6);
+    background: var(--gradient-primary);
     color: white;
     border: none;
     cursor: pointer;
@@ -1769,7 +1778,7 @@ h3 { font-size: 1.5rem; font-weight: 500; }    /* 24px */
 
 .help-trigger:hover {
     transform: scale(1.1);
-    box-shadow: 0 10px 40px rgba(99, 102, 241, 0.4);
+    box-shadow: 0 10px 40px rgba(37, 99, 235, 0.4);
 }
 
 .help-trigger svg {
@@ -2134,11 +2143,11 @@ h3 { font-size: 1.5rem; font-weight: 500; }    /* 24px */
 }
 
 /* ========== Tech vs Non-Tech Visual Differentiation ========== */
-/* Technical Pages - Blue/Purple Accent */
+/* Technical Pages - Blue/Cyan Accent */
 .view-technical .kpi-icon.primary,
 .view-technical .narrative-icon,
 .view-technical .profile-icon {
-    background: linear-gradient(135deg, var(--color-primary), #8b5cf6);
+    background: var(--gradient-primary);
 }
 
 .view-technical .page-narrative {
@@ -2591,11 +2600,11 @@ h3 { font-size: 1.5rem; font-weight: 500; }    /* 24px */
     width: 60px;
     height: 60px;
     border-radius: 50%;
-    background: linear-gradient(135deg, #10b981, #059669);
+    background: var(--gradient-success);
     color: white;
     border: none;
     cursor: pointer;
-    box-shadow: var(--shadow-lg), 0 0 20px rgba(16, 185, 129, 0.3);
+    box-shadow: var(--shadow-lg), 0 0 20px rgba(5, 150, 105, 0.3);
     display: flex;
     align-items: center;
     justify-content: center;
@@ -2652,7 +2661,7 @@ h3 { font-size: 1.5rem; font-weight: 500; }    /* 24px */
 
 .chatbot-header {
     padding: var(--space-4);
-    background: linear-gradient(135deg, #10b981, #059669);
+    background: var(--gradient-success);
     color: white;
     display: flex;
     align-items: center;
@@ -2844,7 +2853,7 @@ h3 { font-size: 1.5rem; font-weight: 500; }    /* 24px */
 }
 
 .chat-message-user .chat-message-content {
-    background: linear-gradient(135deg, #10b981, #059669);
+    background: var(--gradient-success);
     color: white;
     border-bottom-right-radius: var(--radius-sm);
 }
@@ -3089,8 +3098,8 @@ h3 { font-size: 1.5rem; font-weight: 500; }    /* 24px */
 
 .chatbot-input:focus {
     outline: none;
-    border-color: #10b981;
-    box-shadow: 0 0 0 3px rgba(16, 185, 129, 0.15);
+    border-color: var(--color-success);
+    box-shadow: 0 0 0 3px rgba(5, 150, 105, 0.15);
 }
 
 .chatbot-input::placeholder {
@@ -3100,7 +3109,7 @@ h3 { font-size: 1.5rem; font-weight: 500; }    /* 24px */
 .chatbot-send {
     width: 44px;
     height: 44px;
-    background: linear-gradient(135deg, #10b981, #059669);
+    background: var(--gradient-success);
     border: none;
     border-radius: var(--radius-lg);
     color: white;

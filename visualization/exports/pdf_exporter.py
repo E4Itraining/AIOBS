@@ -41,7 +41,7 @@ class PDFExporter:
             parent=self.styles['Heading1'],
             fontSize=24,
             spaceAfter=30,
-            textColor=colors.HexColor('#1A1A2E'),
+            textColor=colors.HexColor('#1E293B'),
             alignment=TA_CENTER,
         ))
 
@@ -51,7 +51,7 @@ class PDFExporter:
             parent=self.styles['Heading2'],
             fontSize=14,
             spaceAfter=20,
-            textColor=colors.HexColor('#D4A017'),
+            textColor=colors.HexColor('#2563EB'),
             alignment=TA_CENTER,
         ))
 
@@ -62,7 +62,7 @@ class PDFExporter:
             fontSize=16,
             spaceBefore=20,
             spaceAfter=10,
-            textColor=colors.HexColor('#1A1A2E'),
+            textColor=colors.HexColor('#1E293B'),
         ))
 
         # Body text style
@@ -104,7 +104,7 @@ class PDFExporter:
 
         style = TableStyle([
             # Header row
-            ('BACKGROUND', (0, 0), (-1, 0), colors.HexColor('#1A1A2E')),
+            ('BACKGROUND', (0, 0), (-1, 0), colors.HexColor('#1E293B')),
             ('TEXTCOLOR', (0, 0), (-1, 0), colors.white),
             ('FONTNAME', (0, 0), (-1, 0), 'Helvetica-Bold'),
             ('FONTSIZE', (0, 0), (-1, 0), 10),
@@ -113,7 +113,7 @@ class PDFExporter:
 
             # Data rows
             ('BACKGROUND', (0, 1), (-1, -1), colors.white),
-            ('TEXTCOLOR', (0, 1), (-1, -1), colors.HexColor('#1A1A2E')),
+            ('TEXTCOLOR', (0, 1), (-1, -1), colors.HexColor('#1E293B')),
             ('FONTNAME', (0, 1), (-1, -1), 'Helvetica'),
             ('FONTSIZE', (0, 1), (-1, -1), 9),
             ('TOPPADDING', (0, 1), (-1, -1), 8),
