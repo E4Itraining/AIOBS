@@ -1,0 +1,473 @@
+{% extends "pillars/base_pillars.html" %}
+
+{% set active_pillar = 'performance' %}
+
+{% block page_title %}{{ t('pillars.performance.name') or 'Performance' }}{% endblock %}
+
+{% block content %}
+<!-- Pillar Header -->
+<div class="pillar-header">
+    <div class="pillar-header-info">
+        <div class="pillar-header-icon performance">
+            <i data-lucide="zap"></i>
+        </div>
+        <div class="pillar-header-text">
+            <h1>{{ t('pillars.performance.name') or 'Performance' }}</h1>
+            <span class="question">{{ t('pillars.performance.question') or 'À quel coût ?' }}</span>
+        </div>
+    </div>
+    <div class="pillar-header-score">
+        <div class="score-value" id="performanceScore" style="color: var(--pillar-performance);">--</div>
+        <div class="score-label">{{ t('pillars.score') or 'Score' }}</div>
+        <div class="score-trend up" id="performanceTrend">
+            <i data-lucide="trending-up"></i>
+            <span>+4.2%</span>
+        </div>
+    </div>
+</div>
+
+<!-- KPI Grid -->
+<div class="pillar-kpi-grid">
+    <div class="pillar-kpi-card">
+        <div class="pillar-kpi-header">
+            <span class="pillar-kpi-label">{{ t('pillars.performance.latency_p99') or 'Latence P99' }}</span>
+            <i data-lucide="clock"></i>
+        </div>
+        <div class="pillar-kpi-value" id="latencyP99">124ms</div>
+        <div class="pillar-kpi-trend down" style="color: var(--color-success);">
+            <i data-lucide="trending-down"></i> -8ms
+        </div>
+    </div>
+
+    <div class="pillar-kpi-card">
+        <div class="pillar-kpi-header">
+            <span class="pillar-kpi-label">{{ t('pillars.performance.throughput') or 'Débit' }}</span>
+            <i data-lucide="activity"></i>
+        </div>
+        <div class="pillar-kpi-value" id="throughput">2.4K/s</div>
+        <div class="pillar-kpi-trend up">
+            <i data-lucide="trending-up"></i> +12%
+        </div>
+    </div>
+
+    <div class="pillar-kpi-card">
+        <div class="pillar-kpi-header">
+            <span class="pillar-kpi-label">{{ t('pillars.performance.cost_per_inference') or 'Coût/Inférence' }}</span>
+            <i data-lucide="wallet"></i>
+        </div>
+        <div class="pillar-kpi-value" id="costPerInference">$0.0023</div>
+        <div class="pillar-kpi-trend down" style="color: var(--color-success);">
+            <i data-lucide="trending-down"></i> -15%
+        </div>
+    </div>
+
+    <div class="pillar-kpi-card">
+        <div class="pillar-kpi-header">
+            <span class="pillar-kpi-label">{{ t('pillars.performance.gpu_utilization') or 'Utilisation GPU' }}</span>
+            <i data-lucide="cpu"></i>
+        </div>
+        <div class="pillar-kpi-value" id="gpuUtilization">72%</div>
+        <div class="pillar-kpi-trend stable">
+            <i data-lucide="check"></i> Optimal
+        </div>
+    </div>
+</div>
+
+<!-- Latency Section -->
+<div class="pillar-section" id="latency">
+    <div class="pillar-section-header">
+        <h2 class="pillar-section-title">
+            <i data-lucide="clock"></i>
+            {{ t('pillars.performance.latency_throughput') or 'Latence & Débit' }}
+        </h2>
+        <div class="flex gap-2">
+            <button class="btn btn-secondary btn-sm" data-range="1h">1h</button>
+            <button class="btn btn-primary btn-sm" data-range="24h">24h</button>
+            <button class="btn btn-secondary btn-sm" data-range="7d">7j</button>
+        </div>
+    </div>
+
+    <div class="grid grid-2 gap-4 mb-4">
+        <div class="card">
+            <h4 class="text-sm text-muted mb-2">{{ t('pillars.performance.latency_distribution') or 'Distribution de Latence' }}</h4>
+            <div class="chart-container" style="height: 250px;">
+                <canvas id="latencyChart"></canvas>
+            </div>
+        </div>
+        <div class="card">
+            <h4 class="text-sm text-muted mb-2">{{ t('pillars.performance.throughput_trend') or 'Tendance du Débit' }}</h4>
+            <div class="chart-container" style="height: 250px;">
+                <canvas id="throughputChart"></canvas>
+            </div>
+        </div>
+    </div>
+
+    <div class="grid grid-4 gap-4">
+        <div class="card text-center">
+            <div class="text-muted text-sm">P50</div>
+            <div class="kpi-value" style="color: var(--color-success);">45ms</div>
+        </div>
+        <div class="card text-center">
+            <div class="text-muted text-sm">P90</div>
+            <div class="kpi-value" style="color: var(--color-success);">89ms</div>
+        </div>
+        <div class="card text-center">
+            <div class="text-muted text-sm">P95</div>
+            <div class="kpi-value" style="color: var(--color-warning);">112ms</div>
+        </div>
+        <div class="card text-center">
+            <div class="text-muted text-sm">P99</div>
+            <div class="kpi-value" style="color: var(--color-warning);">124ms</div>
+        </div>
+    </div>
+</div>
+
+<!-- Cost Section -->
+<div class="pillar-section" id="cost">
+    <div class="pillar-section-header">
+        <h2 class="pillar-section-title">
+            <i data-lucide="wallet"></i>
+            {{ t('pillars.performance.cost_per_inference') or 'Coût par Inférence' }}
+        </h2>
+    </div>
+
+    <div class="grid grid-2 gap-4 mb-4">
+        <div class="card">
+            <h4 class="text-sm text-muted mb-2">{{ t('pillars.performance.cost_breakdown') or 'Répartition des Coûts' }}</h4>
+            <div class="chart-container" style="height: 200px;">
+                <canvas id="costBreakdownChart"></canvas>
+            </div>
+        </div>
+        <div class="card">
+            <h4 class="text-sm text-muted mb-2">{{ t('pillars.performance.daily_cost') or 'Coût Journalier' }}</h4>
+            <div class="chart-container" style="height: 200px;">
+                <canvas id="dailyCostChart"></canvas>
+            </div>
+        </div>
+    </div>
+
+    <div class="table-container">
+        <table class="table">
+            <thead>
+                <tr>
+                    <th>{{ t('table.model') or 'Modèle' }}</th>
+                    <th>{{ t('pillars.performance.inferences_day') or 'Inférences/jour' }}</th>
+                    <th>{{ t('pillars.performance.cost_inference') or 'Coût/inf.' }}</th>
+                    <th>{{ t('pillars.performance.daily_cost') or 'Coût/jour' }}</th>
+                    <th>{{ t('pillars.performance.trend') or 'Tendance' }}</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td><strong>fraud-detection-v3</strong></td>
+                    <td>45,230</td>
+                    <td>$0.0018</td>
+                    <td>$81.41</td>
+                    <td><span class="badge badge-healthy"><i data-lucide="trending-down" class="inline-block w-3 h-3"></i> -12%</span></td>
+                </tr>
+                <tr>
+                    <td><strong>recommendation-engine</strong></td>
+                    <td>128,450</td>
+                    <td>$0.0025</td>
+                    <td>$321.13</td>
+                    <td><span class="badge badge-warning"><i data-lucide="trending-up" class="inline-block w-3 h-3"></i> +5%</span></td>
+                </tr>
+                <tr>
+                    <td><strong>chatbot-assistant (LLM)</strong></td>
+                    <td>23,180</td>
+                    <td>$0.0089</td>
+                    <td>$206.30</td>
+                    <td><span class="badge badge-healthy"><i data-lucide="trending-down" class="inline-block w-3 h-3"></i> -8%</span></td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+</div>
+
+<!-- GPU Utilization Section -->
+<div class="pillar-section" id="gpu">
+    <div class="pillar-section-header">
+        <h2 class="pillar-section-title">
+            <i data-lucide="cpu"></i>
+            {{ t('pillars.performance.gpu_utilization') or 'Utilisation GPU' }}
+        </h2>
+    </div>
+
+    <div class="grid grid-3 gap-4 mb-4">
+        <div class="card text-center">
+            <div class="text-muted text-sm mb-2">GPU Cluster A</div>
+            <div class="progress-ring" style="--progress: 78;">
+                <svg viewBox="0 0 36 36" style="width: 100px; height: 100px;">
+                    <path class="progress-ring-bg" d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831" fill="none" stroke="var(--bg-tertiary)" stroke-width="3"/>
+                    <path class="progress-ring-fill" d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831" fill="none" stroke="var(--pillar-performance)" stroke-width="3" stroke-dasharray="78, 100"/>
+                </svg>
+                <span style="font-size: 1.5rem; font-weight: 700;">78%</span>
+            </div>
+            <div class="text-sm text-muted mt-2">8x A100</div>
+        </div>
+        <div class="card text-center">
+            <div class="text-muted text-sm mb-2">GPU Cluster B</div>
+            <div class="progress-ring" style="--progress: 65;">
+                <svg viewBox="0 0 36 36" style="width: 100px; height: 100px;">
+                    <path class="progress-ring-bg" d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831" fill="none" stroke="var(--bg-tertiary)" stroke-width="3"/>
+                    <path class="progress-ring-fill" d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831" fill="none" stroke="var(--color-success)" stroke-width="3" stroke-dasharray="65, 100"/>
+                </svg>
+                <span style="font-size: 1.5rem; font-weight: 700;">65%</span>
+            </div>
+            <div class="text-sm text-muted mt-2">4x A100</div>
+        </div>
+        <div class="card text-center">
+            <div class="text-muted text-sm mb-2">GPU Inference</div>
+            <div class="progress-ring" style="--progress: 82;">
+                <svg viewBox="0 0 36 36" style="width: 100px; height: 100px;">
+                    <path class="progress-ring-bg" d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831" fill="none" stroke="var(--bg-tertiary)" stroke-width="3"/>
+                    <path class="progress-ring-fill" d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831" fill="none" stroke="var(--color-warning)" stroke-width="3" stroke-dasharray="82, 100"/>
+                </svg>
+                <span style="font-size: 1.5rem; font-weight: 700;">82%</span>
+            </div>
+            <div class="text-sm text-muted mt-2">16x T4</div>
+        </div>
+    </div>
+</div>
+
+<!-- Trade-off Section -->
+<div class="pillar-section" id="tradeoff">
+    <div class="pillar-section-header">
+        <h2 class="pillar-section-title">
+            <i data-lucide="sliders"></i>
+            {{ t('pillars.performance.tradeoff') or 'Trade-off Qualité/Vitesse' }}
+        </h2>
+    </div>
+
+    <div class="card mb-4" style="background: linear-gradient(135deg, var(--pillar-performance-light) 0%, var(--bg-card) 100%);">
+        <div class="grid grid-2 gap-6">
+            <div>
+                <h4 class="text-sm text-muted mb-3">{{ t('pillars.performance.current_config') or 'Configuration Actuelle' }}</h4>
+                <div class="flex flex-col gap-3">
+                    <div>
+                        <div class="flex justify-between text-sm mb-1">
+                            <span>Qualité</span>
+                            <span>87%</span>
+                        </div>
+                        <div class="progress-bar">
+                            <div class="progress-bar-fill" style="width: 87%; background: var(--color-success);"></div>
+                        </div>
+                    </div>
+                    <div>
+                        <div class="flex justify-between text-sm mb-1">
+                            <span>Vitesse</span>
+                            <span>92%</span>
+                        </div>
+                        <div class="progress-bar">
+                            <div class="progress-bar-fill" style="width: 92%; background: var(--pillar-performance);"></div>
+                        </div>
+                    </div>
+                    <div>
+                        <div class="flex justify-between text-sm mb-1">
+                            <span>Coût</span>
+                            <span>78%</span>
+                        </div>
+                        <div class="progress-bar">
+                            <div class="progress-bar-fill" style="width: 78%; background: var(--color-warning);"></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div>
+                <h4 class="text-sm text-muted mb-3">{{ t('pillars.performance.optimization') or 'Suggestions d\'Optimisation' }}</h4>
+                <div class="flex flex-col gap-2">
+                    <div class="p-3 bg-secondary rounded-lg flex items-center gap-3">
+                        <i data-lucide="zap" style="color: var(--color-success);"></i>
+                        <div>
+                            <strong>Activer le batching</strong>
+                            <div class="text-sm text-muted">-25% latence, même qualité</div>
+                        </div>
+                    </div>
+                    <div class="p-3 bg-secondary rounded-lg flex items-center gap-3">
+                        <i data-lucide="cpu" style="color: var(--pillar-performance);"></i>
+                        <div>
+                            <strong>Quantization INT8</strong>
+                            <div class="text-sm text-muted">-40% coût, -2% qualité</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script>
+document.addEventListener('DOMContentLoaded', () => {
+    loadPerformanceData();
+    initCharts();
+    lucide.createIcons();
+});
+
+async function loadPerformanceData() {
+    try {
+        const response = await fetch('/api/pillars/performance');
+        const data = await response.json();
+        if (data.success) {
+            document.getElementById('performanceScore').textContent = Math.round(data.data.score * 100) + '%';
+        }
+    } catch (error) {
+        document.getElementById('performanceScore').textContent = '91%';
+    }
+}
+
+function initCharts() {
+    // Latency Chart
+    const latencyCtx = document.getElementById('latencyChart').getContext('2d');
+    new Chart(latencyCtx, {
+        type: 'line',
+        data: {
+            labels: generateHours(24),
+            datasets: [
+                { label: 'P99', data: generateLatencyData(24, 110, 140), borderColor: '#ef4444', tension: 0.4, borderWidth: 2, pointRadius: 0 },
+                { label: 'P95', data: generateLatencyData(24, 95, 120), borderColor: '#f59e0b', tension: 0.4, borderWidth: 2, pointRadius: 0 },
+                { label: 'P50', data: generateLatencyData(24, 40, 55), borderColor: '#10b981', tension: 0.4, borderWidth: 2, pointRadius: 0, fill: true, backgroundColor: 'rgba(16, 185, 129, 0.1)' }
+            ]
+        },
+        options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            plugins: { legend: { position: 'bottom' } },
+            scales: {
+                x: { grid: { display: false } },
+                y: { beginAtZero: true, ticks: { callback: v => v + 'ms' } }
+            }
+        }
+    });
+
+    // Throughput Chart
+    const throughputCtx = document.getElementById('throughputChart').getContext('2d');
+    new Chart(throughputCtx, {
+        type: 'bar',
+        data: {
+            labels: generateHours(24),
+            datasets: [{
+                label: 'req/s',
+                data: generateThroughputData(24),
+                backgroundColor: 'rgba(59, 130, 246, 0.8)',
+                borderRadius: 4
+            }]
+        },
+        options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            plugins: { legend: { display: false } },
+            scales: {
+                x: { grid: { display: false } },
+                y: { beginAtZero: true }
+            }
+        }
+    });
+
+    // Cost Breakdown Chart
+    const costBreakdownCtx = document.getElementById('costBreakdownChart').getContext('2d');
+    new Chart(costBreakdownCtx, {
+        type: 'doughnut',
+        data: {
+            labels: ['Compute (GPU)', 'Storage', 'Network', 'Other'],
+            datasets: [{
+                data: [65, 20, 10, 5],
+                backgroundColor: ['#3b82f6', '#10b981', '#f59e0b', '#94a3b8'],
+                borderWidth: 0
+            }]
+        },
+        options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            cutout: '60%',
+            plugins: { legend: { position: 'right', labels: { boxWidth: 12 } } }
+        }
+    });
+
+    // Daily Cost Chart
+    const dailyCostCtx = document.getElementById('dailyCostChart').getContext('2d');
+    new Chart(dailyCostCtx, {
+        type: 'line',
+        data: {
+            labels: ['Lun', 'Mar', 'Mer', 'Jeu', 'Ven', 'Sam', 'Dim'],
+            datasets: [{
+                label: 'Coût ($)',
+                data: [620, 645, 598, 672, 658, 420, 380],
+                borderColor: '#3b82f6',
+                backgroundColor: 'rgba(59, 130, 246, 0.1)',
+                fill: true,
+                tension: 0.4,
+                borderWidth: 2
+            }]
+        },
+        options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            plugins: { legend: { display: false } },
+            scales: {
+                x: { grid: { display: false } },
+                y: { beginAtZero: true, ticks: { callback: v => '$' + v } }
+            }
+        }
+    });
+}
+
+function generateHours(count) {
+    return Array.from({length: count}, (_, i) => `${i}h`);
+}
+
+function generateLatencyData(count, min, max) {
+    const data = [];
+    let value = (min + max) / 2;
+    for (let i = 0; i < count; i++) {
+        value += (Math.random() - 0.5) * 10;
+        value = Math.max(min, Math.min(max, value));
+        data.push(Math.round(value));
+    }
+    return data;
+}
+
+function generateThroughputData(count) {
+    const base = [1800, 1200, 800, 600, 500, 450, 500, 800, 1500, 2200, 2600, 2800, 2400, 2600, 2800, 2900, 2700, 2500, 2200, 2000, 1800, 1600, 1400, 1200];
+    return base.slice(0, count).map(v => v + Math.random() * 200 - 100);
+}
+</script>
+
+<style>
+.progress-ring {
+    position: relative;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.progress-ring span {
+    position: absolute;
+}
+
+.progress-bar {
+    height: 8px;
+    background: var(--bg-tertiary);
+    border-radius: 4px;
+    overflow: hidden;
+}
+
+.progress-bar-fill {
+    height: 100%;
+    border-radius: 4px;
+    transition: width 0.3s ease;
+}
+
+.grid-4 {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+}
+
+@media (max-width: 768px) {
+    .grid-4 {
+        grid-template-columns: repeat(2, 1fr);
+    }
+}
+</style>
+{% endblock %}

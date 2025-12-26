@@ -1,0 +1,361 @@
+{% extends "pillars/base_pillars.html" %}
+
+{% set active_pillar = 'reliability' %}
+
+{% block page_title %}{{ t('pillars.reliability.name') or 'Fiabilité' }}{% endblock %}
+
+{% block content %}
+<!-- Pillar Header -->
+<div class="pillar-header">
+    <div class="pillar-header-info">
+        <div class="pillar-header-icon reliability">
+            <i data-lucide="check-circle"></i>
+        </div>
+        <div class="pillar-header-text">
+            <h1>{{ t('pillars.reliability.name') or 'Fiabilité' }}</h1>
+            <span class="question">{{ t('pillars.reliability.question') or 'Est-ce que le modèle produit des résultats corrects ?' }}</span>
+        </div>
+    </div>
+    <div class="pillar-header-score">
+        <div class="score-value" id="reliabilityScore" style="color: var(--pillar-reliability);">--</div>
+        <div class="score-label">{{ t('pillars.score') or 'Score' }}</div>
+        <div class="score-trend up" id="reliabilityTrend">
+            <i data-lucide="trending-up"></i>
+            <span>+2.3%</span>
+        </div>
+    </div>
+</div>
+
+<!-- KPI Grid -->
+<div class="pillar-kpi-grid">
+    <div class="pillar-kpi-card">
+        <div class="pillar-kpi-header">
+            <span class="pillar-kpi-label">{{ t('pillars.reliability.precision') or 'Précision' }}</span>
+            <i data-lucide="target"></i>
+        </div>
+        <div class="pillar-kpi-value" id="precisionValue">92.4%</div>
+        <div class="pillar-kpi-trend up">
+            <i data-lucide="trending-up"></i> +1.2%
+        </div>
+    </div>
+
+    <div class="pillar-kpi-card">
+        <div class="pillar-kpi-header">
+            <span class="pillar-kpi-label">{{ t('pillars.reliability.recall') or 'Rappel' }}</span>
+            <i data-lucide="crosshair"></i>
+        </div>
+        <div class="pillar-kpi-value" id="recallValue">89.1%</div>
+        <div class="pillar-kpi-trend stable">
+            <i data-lucide="minus"></i> 0%
+        </div>
+    </div>
+
+    <div class="pillar-kpi-card">
+        <div class="pillar-kpi-header">
+            <span class="pillar-kpi-label">{{ t('pillars.reliability.f1_score') or 'F1-Score' }}</span>
+            <i data-lucide="activity"></i>
+        </div>
+        <div class="pillar-kpi-value" id="f1Value">90.7%</div>
+        <div class="pillar-kpi-trend up">
+            <i data-lucide="trending-up"></i> +0.8%
+        </div>
+    </div>
+
+    <div class="pillar-kpi-card">
+        <div class="pillar-kpi-header">
+            <span class="pillar-kpi-label">{{ t('pillars.reliability.drift_status') or 'Statut Drift' }}</span>
+            <i data-lucide="git-merge"></i>
+        </div>
+        <div class="pillar-kpi-value" style="color: var(--color-success);" id="driftStatus">Stable</div>
+        <div class="pillar-kpi-trend stable">
+            <i data-lucide="check"></i> OK
+        </div>
+    </div>
+</div>
+
+<!-- Drift Detection Section -->
+<div class="pillar-section" id="drift">
+    <div class="pillar-section-header">
+        <h2 class="pillar-section-title">
+            <i data-lucide="git-merge"></i>
+            {{ t('pillars.reliability.drift_detection') or 'Détection de Drift' }}
+        </h2>
+        <select class="form-select" id="driftModelSelect" style="width: auto;">
+            <option value="all">{{ t('common.all_models') or 'Tous les modèles' }}</option>
+            <option value="fraud-detection">fraud-detection</option>
+            <option value="recommendation-engine">recommendation-engine</option>
+            <option value="pricing-model">pricing-model</option>
+        </select>
+    </div>
+
+    <div class="grid grid-3 mb-4">
+        <div class="card text-center">
+            <div class="kpi-icon" style="background: var(--color-success-light); margin: 0 auto var(--space-2);">
+                <i data-lucide="database" style="color: var(--color-success);"></i>
+            </div>
+            <div class="text-muted text-sm">{{ t('pillars.reliability.data_drift') or 'Data Drift' }}</div>
+            <div class="kpi-value" style="color: var(--color-success);">0.02</div>
+            <div class="text-sm text-muted">Seuil: 0.1</div>
+        </div>
+        <div class="card text-center">
+            <div class="kpi-icon" style="background: var(--color-warning-light); margin: 0 auto var(--space-2);">
+                <i data-lucide="brain" style="color: var(--color-warning);"></i>
+            </div>
+            <div class="text-muted text-sm">{{ t('pillars.reliability.concept_drift') or 'Concept Drift' }}</div>
+            <div class="kpi-value" style="color: var(--color-warning);">0.08</div>
+            <div class="text-sm text-muted">Seuil: 0.15</div>
+        </div>
+        <div class="card text-center">
+            <div class="kpi-icon" style="background: var(--color-success-light); margin: 0 auto var(--space-2);">
+                <i data-lucide="sliders" style="color: var(--color-success);"></i>
+            </div>
+            <div class="text-muted text-sm">{{ t('pillars.reliability.feature_drift') or 'Feature Drift' }}</div>
+            <div class="kpi-value" style="color: var(--color-success);">0.01</div>
+            <div class="text-sm text-muted">Seuil: 0.05</div>
+        </div>
+    </div>
+
+    <div class="chart-container" style="height: 250px;">
+        <canvas id="driftChart"></canvas>
+    </div>
+</div>
+
+<!-- Model Performance Over Time -->
+<div class="pillar-section" id="quality">
+    <div class="pillar-section-header">
+        <h2 class="pillar-section-title">
+            <i data-lucide="bar-chart-2"></i>
+            {{ t('pillars.reliability.quality_over_time') or 'Qualité dans le Temps' }}
+        </h2>
+        <div class="flex gap-2">
+            <button class="btn btn-secondary btn-sm" data-range="7d">7j</button>
+            <button class="btn btn-primary btn-sm" data-range="30d">30j</button>
+            <button class="btn btn-secondary btn-sm" data-range="90d">90j</button>
+        </div>
+    </div>
+
+    <div class="chart-container" style="height: 300px;">
+        <canvas id="qualityChart"></canvas>
+    </div>
+</div>
+
+<!-- Accuracy by Model -->
+<div class="pillar-section" id="accuracy">
+    <div class="pillar-section-header">
+        <h2 class="pillar-section-title">
+            <i data-lucide="target"></i>
+            {{ t('pillars.reliability.accuracy_by_model') or 'Précision par Modèle' }}
+        </h2>
+    </div>
+
+    <div class="table-container">
+        <table class="table">
+            <thead>
+                <tr>
+                    <th>{{ t('table.model') or 'Modèle' }}</th>
+                    <th>{{ t('pillars.reliability.precision') or 'Précision' }}</th>
+                    <th>{{ t('pillars.reliability.recall') or 'Rappel' }}</th>
+                    <th>{{ t('pillars.reliability.f1_score') or 'F1-Score' }}</th>
+                    <th>{{ t('pillars.reliability.drift_status') or 'Drift' }}</th>
+                    <th>{{ t('table.status') or 'Statut' }}</th>
+                </tr>
+            </thead>
+            <tbody id="modelsTable">
+                <tr>
+                    <td><strong>fraud-detection-v3</strong></td>
+                    <td>94.2%</td>
+                    <td>91.8%</td>
+                    <td>93.0%</td>
+                    <td><span class="badge badge-healthy">Stable</span></td>
+                    <td><span class="badge badge-healthy"><span class="badge-dot"></span>Sain</span></td>
+                </tr>
+                <tr>
+                    <td><strong>recommendation-engine</strong></td>
+                    <td>89.5%</td>
+                    <td>85.2%</td>
+                    <td>87.3%</td>
+                    <td><span class="badge badge-warning">Minor Drift</span></td>
+                    <td><span class="badge badge-warning"><span class="badge-dot"></span>Attention</span></td>
+                </tr>
+                <tr>
+                    <td><strong>pricing-model-v2</strong></td>
+                    <td>96.1%</td>
+                    <td>94.5%</td>
+                    <td>95.3%</td>
+                    <td><span class="badge badge-healthy">Stable</span></td>
+                    <td><span class="badge badge-healthy"><span class="badge-dot"></span>Sain</span></td>
+                </tr>
+                <tr>
+                    <td><strong>sentiment-analyzer</strong></td>
+                    <td>88.7%</td>
+                    <td>86.3%</td>
+                    <td>87.5%</td>
+                    <td><span class="badge badge-healthy">Stable</span></td>
+                    <td><span class="badge badge-healthy"><span class="badge-dot"></span>Sain</span></td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+</div>
+
+<!-- Reliability Alerts -->
+<div class="pillar-section">
+    <div class="pillar-section-header">
+        <h2 class="pillar-section-title">
+            <i data-lucide="alert-triangle"></i>
+            {{ t('pillars.reliability.alerts') or 'Alertes Fiabilité' }}
+        </h2>
+    </div>
+
+    <div id="reliabilityAlerts">
+        <div class="flex items-center gap-4 p-4" style="border-bottom: 1px solid var(--border-color);">
+            <span class="badge badge-warning"><span class="badge-dot"></span>Warning</span>
+            <div style="flex: 1;">
+                <strong>Concept drift détecté sur recommendation-engine</strong>
+                <div class="text-sm text-muted">Le score PSI a atteint 0.08 (seuil: 0.15) - il y a 2h</div>
+            </div>
+            <button class="btn btn-secondary btn-sm">
+                <i data-lucide="search"></i>
+                Investiguer
+            </button>
+        </div>
+        <div class="flex items-center gap-4 p-4" style="border-bottom: 1px solid var(--border-color);">
+            <span class="badge badge-info"><span class="badge-dot"></span>Info</span>
+            <div style="flex: 1;">
+                <strong>Calibration automatique terminée</strong>
+                <div class="text-sm text-muted">fraud-detection-v3 recalibré avec succès - il y a 6h</div>
+            </div>
+            <button class="btn btn-secondary btn-sm">
+                <i data-lucide="file-text"></i>
+                Rapport
+            </button>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script>
+document.addEventListener('DOMContentLoaded', () => {
+    loadReliabilityData();
+    initCharts();
+    lucide.createIcons();
+});
+
+async function loadReliabilityData() {
+    try {
+        const response = await fetch('/api/pillars/reliability');
+        const data = await response.json();
+
+        if (data.success) {
+            document.getElementById('reliabilityScore').textContent = Math.round(data.data.score * 100) + '%';
+            document.getElementById('precisionValue').textContent = (data.data.precision * 100).toFixed(1) + '%';
+            document.getElementById('recallValue').textContent = (data.data.recall * 100).toFixed(1) + '%';
+            document.getElementById('f1Value').textContent = (data.data.f1_score * 100).toFixed(1) + '%';
+        }
+    } catch (error) {
+        console.log('Using demo data');
+        document.getElementById('reliabilityScore').textContent = '87%';
+    }
+}
+
+function initCharts() {
+    // Drift Chart
+    const driftCtx = document.getElementById('driftChart').getContext('2d');
+    new Chart(driftCtx, {
+        type: 'line',
+        data: {
+            labels: generateDays(30),
+            datasets: [
+                { label: 'Data Drift', data: generateDriftData(30, 0.02, 0.05), borderColor: '#10b981', tension: 0.4, borderWidth: 2, pointRadius: 0 },
+                { label: 'Concept Drift', data: generateDriftData(30, 0.05, 0.10), borderColor: '#f59e0b', tension: 0.4, borderWidth: 2, pointRadius: 0 },
+                { label: 'Feature Drift', data: generateDriftData(30, 0.01, 0.03), borderColor: '#6366f1', tension: 0.4, borderWidth: 2, pointRadius: 0 }
+            ]
+        },
+        options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            plugins: {
+                legend: { position: 'bottom' },
+                annotation: {
+                    annotations: {
+                        threshold: {
+                            type: 'line',
+                            yMin: 0.1,
+                            yMax: 0.1,
+                            borderColor: 'rgba(239, 68, 68, 0.5)',
+                            borderWidth: 2,
+                            borderDash: [6, 6],
+                            label: {
+                                display: true,
+                                content: 'Seuil',
+                                position: 'end'
+                            }
+                        }
+                    }
+                }
+            },
+            scales: {
+                x: { grid: { display: false } },
+                y: { min: 0, max: 0.2, ticks: { callback: v => v.toFixed(2) } }
+            }
+        }
+    });
+
+    // Quality Chart
+    const qualityCtx = document.getElementById('qualityChart').getContext('2d');
+    new Chart(qualityCtx, {
+        type: 'line',
+        data: {
+            labels: generateDays(30),
+            datasets: [
+                { label: 'Précision', data: generateMetricData(30, 0.90, 0.94), borderColor: '#10b981', backgroundColor: 'rgba(16, 185, 129, 0.1)', fill: true, tension: 0.4, borderWidth: 2 },
+                { label: 'Rappel', data: generateMetricData(30, 0.86, 0.90), borderColor: '#3b82f6', tension: 0.4, borderWidth: 2, pointRadius: 0 },
+                { label: 'F1-Score', data: generateMetricData(30, 0.88, 0.92), borderColor: '#8b5cf6', tension: 0.4, borderWidth: 2, pointRadius: 0 }
+            ]
+        },
+        options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            plugins: { legend: { position: 'bottom' } },
+            scales: {
+                x: { grid: { display: false } },
+                y: { min: 0.8, max: 1, ticks: { callback: v => (v * 100) + '%' } }
+            }
+        }
+    });
+}
+
+function generateDays(count) {
+    const days = [];
+    const now = new Date();
+    for (let i = count - 1; i >= 0; i--) {
+        const d = new Date(now - i * 86400000);
+        days.push(d.toLocaleDateString('fr', { day: '2-digit', month: 'short' }));
+    }
+    return days;
+}
+
+function generateDriftData(count, base, variance) {
+    const data = [];
+    let value = base;
+    for (let i = 0; i < count; i++) {
+        value += (Math.random() - 0.5) * variance;
+        value = Math.max(0, Math.min(0.2, value));
+        data.push(value);
+    }
+    return data;
+}
+
+function generateMetricData(count, min, max) {
+    const data = [];
+    let value = (min + max) / 2;
+    for (let i = 0; i < count; i++) {
+        value += (Math.random() - 0.5) * 0.02;
+        value = Math.max(min, Math.min(max, value));
+        data.push(value);
+    }
+    return data;
+}
+</script>
+{% endblock %}

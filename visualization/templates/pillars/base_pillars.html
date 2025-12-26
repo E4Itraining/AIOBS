@@ -1,0 +1,557 @@
+<!DOCTYPE html>
+<html lang="{{ lang|default('en') }}" data-theme="light" {% if is_rtl %}dir="rtl"{% endif %}>
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{{ title }} | GASKIA</title>
+    <meta name="description" content="GASKIA - Les 5 Piliers de la Confiance IA: Fiabilité, Sécurité, Conformité, Explicabilité, Performance">
+
+    <!-- Favicon -->
+    <link rel="icon" type="image/svg+xml" href="/static/images/favicons/favicon.svg">
+
+    <!-- Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;700&family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+
+    <!-- Chart.js & D3.js -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script src="https://d3js.org/d3.v7.min.js"></script>
+
+    <!-- Lucide Icons -->
+    <script src="https://unpkg.com/lucide@latest"></script>
+
+    <!-- Custom styles -->
+    <link rel="stylesheet" href="/static/css/dashboard.css">
+    <link rel="stylesheet" href="/static/css/ux-enhancements.css">
+    <link rel="stylesheet" href="/static/css/pillars.css">
+
+    <!-- i18n Setup -->
+    <script>
+        window.GASKIA = window.GASKIA || {};
+        window.GASKIA.lang = '{{ lang|default("en") }}';
+        window.GASKIA.isRtl = {{ is_rtl|default(false)|lower }};
+        window.GASKIA.translations = {{ translations|tojson|safe }};
+        window.AIOBS = window.GASKIA;
+
+        window.t = function(key, params) {
+            const keys = key.split('.');
+            let value = window.AIOBS.translations;
+            for (const k of keys) {
+                if (value && typeof value === 'object') {
+                    value = value[k];
+                } else {
+                    return key;
+                }
+            }
+            if (typeof value !== 'string') return key;
+            if (params) {
+                Object.keys(params).forEach(param => {
+                    value = value.replace(new RegExp(`{${param}}`, 'g'), params[param]);
+                });
+            }
+            return value;
+        };
+    </script>
+</head>
+<body>
+    <a href="#main-content" class="skip-to-content">
+        {{ t('a11y.skip_to_content') or 'Skip to main content' }}
+    </a>
+
+    <div class="app pillars-layout">
+        <!-- Sidebar Navigation - 5 Pillars -->
+        <aside class="sidebar pillars-sidebar" id="sidebar">
+            <div class="sidebar-header">
+                <div class="logo">
+                    <div class="logo-icon">
+                        <img src="/static/images/logos/gaskia-icon.svg" alt="GASKIA Eye Icon" width="44" height="44">
+                    </div>
+                    <div class="logo-content">
+                        <span class="logo-text">GASKIA</span>
+                        <span class="logo-tagline">5 Piliers de Confiance</span>
+                    </div>
+                </div>
+                <button class="sidebar-close" id="sidebarClose" aria-label="Close menu">
+                    <i data-lucide="x"></i>
+                </button>
+            </div>
+
+            <nav class="sidebar-nav pillars-nav">
+                <!-- Home / Overview -->
+                <a href="/pillars" class="nav-link nav-link-home {% if active_pillar == 'home' %}active{% endif %}">
+                    <i data-lucide="home"></i>
+                    <span>{{ t('pillars.overview') or 'Vue d\'ensemble' }}</span>
+                </a>
+
+                <!-- Persona Selector -->
+                <div class="persona-quick-select" id="personaQuickSelect">
+                    <button class="persona-quick-btn" onclick="togglePersonaDropdown()">
+                        <i data-lucide="user-circle" id="currentPersonaIcon"></i>
+                        <span id="currentPersonaLabel">{{ t('pillars.my_journey') or 'Mon Parcours' }}</span>
+                        <i data-lucide="chevron-down"></i>
+                    </button>
+                    <div class="persona-dropdown" id="personaDropdown">
+                        {% for persona in personas %}
+                        <button class="persona-option" onclick="selectPersona('{{ persona.id }}')">
+                            <i data-lucide="{{ persona.icon }}"></i>
+                            <span>{{ persona.name }}</span>
+                        </button>
+                        {% endfor %}
+                    </div>
+                </div>
+
+                <div class="nav-divider"></div>
+
+                <!-- 5 PILLARS -->
+                <div class="pillars-section">
+                    <span class="pillars-section-title">
+                        <i data-lucide="layers"></i>
+                        {{ t('pillars.title') or 'Les 5 Piliers' }}
+                    </span>
+
+                    <!-- 1. FIABILITÉ -->
+                    <div class="pillar-nav-item {% if active_pillar == 'reliability' %}active{% endif %}" data-pillar="reliability">
+                        <a href="/pillars/reliability" class="pillar-link">
+                            <div class="pillar-icon reliability">
+                                <i data-lucide="check-circle"></i>
+                            </div>
+                            <div class="pillar-info">
+                                <span class="pillar-name">{{ t('pillars.reliability.name') or 'Fiabilité' }}</span>
+                                <span class="pillar-question">{{ t('pillars.reliability.question') or 'Résultats corrects ?' }}</span>
+                            </div>
+                            <div class="pillar-score" id="reliabilityScore">--</div>
+                        </a>
+                        <div class="pillar-submenu">
+                            <a href="/pillars/reliability#accuracy" class="pillar-sublink">
+                                <i data-lucide="target"></i>
+                                {{ t('pillars.reliability.accuracy') or 'Précision & Rappel' }}
+                            </a>
+                            <a href="/pillars/reliability#drift" class="pillar-sublink">
+                                <i data-lucide="git-merge"></i>
+                                {{ t('pillars.reliability.drift') or 'Détection Drift' }}
+                            </a>
+                            <a href="/pillars/reliability#quality" class="pillar-sublink">
+                                <i data-lucide="bar-chart-2"></i>
+                                {{ t('pillars.reliability.quality') or 'Qualité dans le Temps' }}
+                            </a>
+                        </div>
+                    </div>
+
+                    <!-- 2. SÉCURITÉ -->
+                    <div class="pillar-nav-item {% if active_pillar == 'security' %}active{% endif %}" data-pillar="security">
+                        <a href="/pillars/security" class="pillar-link">
+                            <div class="pillar-icon security">
+                                <i data-lucide="shield"></i>
+                            </div>
+                            <div class="pillar-info">
+                                <span class="pillar-name">{{ t('pillars.security.name') or 'Sécurité' }}</span>
+                                <span class="pillar-question">{{ t('pillars.security.question') or 'Modèle protégé ?' }}</span>
+                            </div>
+                            <div class="pillar-score" id="securityScore">--</div>
+                        </a>
+                        <div class="pillar-submenu">
+                            <a href="/pillars/security#injection" class="pillar-sublink">
+                                <i data-lucide="syringe"></i>
+                                {{ t('pillars.security.injection') or 'Prompt Injection' }}
+                            </a>
+                            <a href="/pillars/security#adversarial" class="pillar-sublink">
+                                <i data-lucide="alert-triangle"></i>
+                                {{ t('pillars.security.adversarial') or 'Attaques Adversariales' }}
+                            </a>
+                            <a href="/pillars/security#extraction" class="pillar-sublink">
+                                <i data-lucide="database"></i>
+                                {{ t('pillars.security.extraction') or 'Extraction Données' }}
+                            </a>
+                            <a href="/pillars/security#anomaly" class="pillar-sublink">
+                                <i data-lucide="activity"></i>
+                                {{ t('pillars.security.anomaly') or 'Comportements Anormaux' }}
+                            </a>
+                        </div>
+                    </div>
+
+                    <!-- 3. CONFORMITÉ -->
+                    <div class="pillar-nav-item {% if active_pillar == 'compliance' %}active{% endif %}" data-pillar="compliance">
+                        <a href="/pillars/compliance" class="pillar-link">
+                            <div class="pillar-icon compliance">
+                                <i data-lucide="scale"></i>
+                            </div>
+                            <div class="pillar-info">
+                                <span class="pillar-name">{{ t('pillars.compliance.name') or 'Conformité' }}</span>
+                                <span class="pillar-question">{{ t('pillars.compliance.question') or 'Preuves disponibles ?' }}</span>
+                            </div>
+                            <div class="pillar-score" id="complianceScore">--</div>
+                        </a>
+                        <div class="pillar-submenu">
+                            <a href="/pillars/compliance#traceability" class="pillar-sublink">
+                                <i data-lucide="git-branch"></i>
+                                {{ t('pillars.compliance.traceability') or 'Traçabilité Inférences' }}
+                            </a>
+                            <a href="/pillars/compliance#versioning" class="pillar-sublink">
+                                <i data-lucide="history"></i>
+                                {{ t('pillars.compliance.versioning') or 'Versioning Modèles' }}
+                            </a>
+                            <a href="/pillars/compliance#lineage" class="pillar-sublink">
+                                <i data-lucide="network"></i>
+                                {{ t('pillars.compliance.lineage') or 'Lignage Données' }}
+                            </a>
+                            <a href="/pillars/compliance#aiact" class="pillar-sublink">
+                                <i data-lucide="file-check"></i>
+                                {{ t('pillars.compliance.aiact') or 'Preuves AI Act' }}
+                            </a>
+                        </div>
+                    </div>
+
+                    <!-- 4. EXPLICABILITÉ -->
+                    <div class="pillar-nav-item {% if active_pillar == 'explainability' %}active{% endif %}" data-pillar="explainability">
+                        <a href="/pillars/explainability" class="pillar-link">
+                            <div class="pillar-icon explainability">
+                                <i data-lucide="lightbulb"></i>
+                            </div>
+                            <div class="pillar-info">
+                                <span class="pillar-name">{{ t('pillars.explainability.name') or 'Explicabilité' }}</span>
+                                <span class="pillar-question">{{ t('pillars.explainability.question') or 'Pourquoi cette décision ?' }}</span>
+                            </div>
+                            <div class="pillar-score" id="explainabilityScore">--</div>
+                        </a>
+                        <div class="pillar-submenu">
+                            <a href="/pillars/explainability#features" class="pillar-sublink">
+                                <i data-lucide="list-ordered"></i>
+                                {{ t('pillars.explainability.features') or 'Feature Importance' }}
+                            </a>
+                            <a href="/pillars/explainability#confidence" class="pillar-sublink">
+                                <i data-lucide="gauge"></i>
+                                {{ t('pillars.explainability.confidence') or 'Scores de Confiance' }}
+                            </a>
+                            <a href="/pillars/explainability#alternatives" class="pillar-sublink">
+                                <i data-lucide="git-compare"></i>
+                                {{ t('pillars.explainability.alternatives') or 'Alternatives Écartées' }}
+                            </a>
+                            <a href="/pillars/explainability#ethics" class="pillar-sublink">
+                                <i data-lucide="heart"></i>
+                                {{ t('pillars.explainability.ethics') or 'Obligations Éthiques' }}
+                            </a>
+                        </div>
+                    </div>
+
+                    <!-- 5. PERFORMANCE -->
+                    <div class="pillar-nav-item {% if active_pillar == 'performance' %}active{% endif %}" data-pillar="performance">
+                        <a href="/pillars/performance" class="pillar-link">
+                            <div class="pillar-icon performance">
+                                <i data-lucide="zap"></i>
+                            </div>
+                            <div class="pillar-info">
+                                <span class="pillar-name">{{ t('pillars.performance.name') or 'Performance' }}</span>
+                                <span class="pillar-question">{{ t('pillars.performance.question') or 'À quel coût ?' }}</span>
+                            </div>
+                            <div class="pillar-score" id="performanceScore">--</div>
+                        </a>
+                        <div class="pillar-submenu">
+                            <a href="/pillars/performance#latency" class="pillar-sublink">
+                                <i data-lucide="clock"></i>
+                                {{ t('pillars.performance.latency') or 'Latence & Débit' }}
+                            </a>
+                            <a href="/pillars/performance#cost" class="pillar-sublink">
+                                <i data-lucide="wallet"></i>
+                                {{ t('pillars.performance.cost') or 'Coût par Inférence' }}
+                            </a>
+                            <a href="/pillars/performance#gpu" class="pillar-sublink">
+                                <i data-lucide="cpu"></i>
+                                {{ t('pillars.performance.gpu') or 'Utilisation GPU' }}
+                            </a>
+                            <a href="/pillars/performance#tradeoff" class="pillar-sublink">
+                                <i data-lucide="sliders"></i>
+                                {{ t('pillars.performance.tradeoff') or 'Trade-off Qualité/Vitesse' }}
+                            </a>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="nav-divider"></div>
+
+                <!-- Quick Access -->
+                <div class="quick-access-section">
+                    <span class="section-title">
+                        <i data-lucide="star"></i>
+                        {{ t('pillars.quick_access') or 'Accès Rapide' }}
+                    </span>
+                    <a href="/monitoring" class="nav-link">
+                        <i data-lucide="activity"></i>
+                        <span>{{ t('nav.monitoring') or 'Monitoring Live' }}</span>
+                    </a>
+                    <a href="/causal" class="nav-link">
+                        <i data-lucide="git-branch"></i>
+                        <span>{{ t('nav.causal_analysis') or 'Analyse Causale' }}</span>
+                    </a>
+                    <a href="/executive" class="nav-link">
+                        <i data-lucide="briefcase"></i>
+                        <span>{{ t('nav.executive_view') or 'Vue Executive' }}</span>
+                    </a>
+                </div>
+            </nav>
+
+            <div class="sidebar-footer">
+                <button class="theme-toggle" onclick="toggleTheme()" title="Toggle theme">
+                    <i data-lucide="sun" class="theme-icon-light"></i>
+                    <i data-lucide="moon" class="theme-icon-dark"></i>
+                </button>
+                <div class="language-selector" id="languageSelector">
+                    <button class="language-btn" onclick="toggleLanguageDropdown()">
+                        <i data-lucide="globe"></i>
+                        <span id="currentLang">{{ lang|default('en')|upper }}</span>
+                        <i data-lucide="chevron-up" class="chevron"></i>
+                    </button>
+                    <div class="language-dropdown" id="languageDropdown">
+                        {% for code, info in (languages or {}).items() %}
+                        <button class="language-option {% if code == lang %}active{% endif %}" onclick="setLanguage('{{ code }}')">
+                            <span class="flag">{{ info.flag }}</span>
+                            <span class="name">{{ info.name }}</span>
+                        </button>
+                        {% endfor %}
+                    </div>
+                </div>
+            </div>
+        </aside>
+
+        <!-- Mobile overlay -->
+        <div class="sidebar-overlay" id="sidebarOverlay"></div>
+
+        <!-- Main Content -->
+        <main class="main">
+            <!-- Top Bar -->
+            <header class="topbar pillars-topbar">
+                <button class="menu-toggle" id="menuToggle" aria-label="Open menu">
+                    <i data-lucide="menu"></i>
+                </button>
+
+                <!-- Pillar Breadcrumb -->
+                <nav class="breadcrumbs pillar-breadcrumbs" aria-label="Breadcrumb">
+                    <a href="/pillars" class="breadcrumb-item breadcrumb-home">
+                        <i data-lucide="home"></i>
+                    </a>
+                    {% if active_pillar and active_pillar != 'home' %}
+                    <span class="breadcrumb-separator">
+                        <i data-lucide="chevron-right"></i>
+                    </span>
+                    <span class="breadcrumb-item pillar-badge {{ active_pillar }}">
+                        {% if active_pillar == 'reliability' %}
+                        <i data-lucide="check-circle"></i> Fiabilité
+                        {% elif active_pillar == 'security' %}
+                        <i data-lucide="shield"></i> Sécurité
+                        {% elif active_pillar == 'compliance' %}
+                        <i data-lucide="scale"></i> Conformité
+                        {% elif active_pillar == 'explainability' %}
+                        <i data-lucide="lightbulb"></i> Explicabilité
+                        {% elif active_pillar == 'performance' %}
+                        <i data-lucide="zap"></i> Performance
+                        {% endif %}
+                    </span>
+                    {% endif %}
+                    {% if section_title %}
+                    <span class="breadcrumb-separator">
+                        <i data-lucide="chevron-right"></i>
+                    </span>
+                    <span class="breadcrumb-item active">{{ section_title }}</span>
+                    {% endif %}
+                </nav>
+
+                <div class="topbar-title">
+                    <h1>{% block page_title %}{{ title }}{% endblock %}</h1>
+                    {% block page_subtitle %}{% endblock %}
+                </div>
+
+                <!-- Global Search -->
+                <div class="global-search" id="globalSearch">
+                    <div class="search-container">
+                        <i data-lucide="search" class="search-icon"></i>
+                        <input type="text"
+                               id="globalSearchInput"
+                               class="search-input"
+                               placeholder="{{ t('search.placeholder') or 'Rechercher...' }}"
+                               onkeyup="handleGlobalSearch(event)"
+                               onfocus="showSearchResults()"
+                               autocomplete="off">
+                        <kbd class="search-shortcut">⌘K</kbd>
+                    </div>
+                    <div class="search-results" id="searchResults">
+                        <div class="search-results-content" id="searchResultsContent"></div>
+                    </div>
+                </div>
+
+                <div class="topbar-actions">
+                    {% block topbar_actions %}{% endblock %}
+                </div>
+            </header>
+
+            <!-- Content Area -->
+            <div class="content pillars-content" id="main-content" tabindex="-1">
+                {% block content %}{% endblock %}
+            </div>
+        </main>
+    </div>
+
+    <!-- Toast Container -->
+    <div class="toast-container" id="toastContainer" role="alert" aria-live="polite" aria-atomic="true"></div>
+
+    <!-- AI Chatbot -->
+    <div class="chatbot-container" id="chatbotContainer">
+        <button class="chatbot-trigger" onclick="toggleChatbot()" title="{{ t('chatbot.title') or 'AI Assistant' }}">
+            <i data-lucide="message-circle" class="chatbot-icon-default"></i>
+            <i data-lucide="x" class="chatbot-icon-close"></i>
+        </button>
+        <div class="chatbot-panel" id="chatbotPanel">
+            <div class="chatbot-header">
+                <div class="chatbot-header-info">
+                    <div class="chatbot-avatar"><i data-lucide="bot"></i></div>
+                    <div>
+                        <h3>{{ t('chatbot.title') or 'Assistant IA' }}</h3>
+                        <span class="chatbot-status"><span class="status-dot"></span>{{ t('chatbot.online') or 'En ligne' }}</span>
+                    </div>
+                </div>
+                <button class="chatbot-minimize" onclick="toggleChatbot()"><i data-lucide="minus"></i></button>
+            </div>
+            <div class="chatbot-messages" id="chatbotMessages">
+                <div class="chatbot-welcome">
+                    <div class="chatbot-welcome-icon"><i data-lucide="sparkles"></i></div>
+                    <h4>{{ t('chatbot.pillars_welcome') or 'Comment puis-je vous aider avec les 5 Piliers ?' }}</h4>
+                    <p>{{ t('chatbot.pillars_desc') or 'Posez des questions sur la Fiabilité, Sécurité, Conformité, Explicabilité ou Performance de vos modèles.' }}</p>
+                </div>
+            </div>
+            <div class="chatbot-input-container">
+                <input type="text" id="chatbotInput" class="chatbot-input" placeholder="{{ t('chatbot.placeholder') or 'Votre question...' }}" onkeypress="handleChatKeypress(event)">
+                <button class="chatbot-send" onclick="sendChatMessage()"><i data-lucide="send"></i></button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Scripts -->
+    <script src="/static/js/dashboard.js"></script>
+    <script src="/static/js/ux-enhancements.js"></script>
+    <script src="/static/js/pillars.js"></script>
+    <script>
+        lucide.createIcons();
+
+        // Theme Management
+        function toggleTheme() {
+            const html = document.documentElement;
+            const current = html.getAttribute('data-theme');
+            const next = current === 'light' ? 'dark' : 'light';
+            html.setAttribute('data-theme', next);
+            localStorage.setItem('gaskia-theme', next);
+            lucide.createIcons();
+        }
+
+        // Load saved theme
+        (function() {
+            const saved = localStorage.getItem('gaskia-theme');
+            if (saved) {
+                document.documentElement.setAttribute('data-theme', saved);
+            } else if (window.matchMedia('(prefers-color-scheme: dark)').matches) {
+                document.documentElement.setAttribute('data-theme', 'dark');
+            }
+        })();
+
+        // Mobile Sidebar
+        const sidebar = document.getElementById('sidebar');
+        const overlay = document.getElementById('sidebarOverlay');
+        const menuToggle = document.getElementById('menuToggle');
+        const sidebarClose = document.getElementById('sidebarClose');
+
+        function openSidebar() {
+            sidebar.classList.add('open');
+            overlay.classList.add('active');
+            document.body.style.overflow = 'hidden';
+        }
+
+        function closeSidebar() {
+            sidebar.classList.remove('open');
+            overlay.classList.remove('active');
+            document.body.style.overflow = '';
+        }
+
+        menuToggle?.addEventListener('click', openSidebar);
+        sidebarClose?.addEventListener('click', closeSidebar);
+        overlay?.addEventListener('click', closeSidebar);
+
+        document.addEventListener('keydown', (e) => {
+            if (e.key === 'Escape') closeSidebar();
+        });
+
+        // Language Selector
+        function toggleLanguageDropdown() {
+            const selector = document.getElementById('languageSelector');
+            selector.classList.toggle('open');
+        }
+
+        async function setLanguage(code) {
+            try {
+                const response = await fetch(`/api/i18n/set-language/${code}`, { method: 'POST' });
+                if (response.ok) window.location.reload();
+            } catch (error) {
+                console.error('Error setting language:', error);
+            }
+        }
+
+        // Pillar submenu toggle
+        document.querySelectorAll('.pillar-nav-item').forEach(item => {
+            item.querySelector('.pillar-link').addEventListener('click', (e) => {
+                // Toggle submenu visibility on click
+                if (e.target.closest('.pillar-link')) {
+                    item.classList.toggle('expanded');
+                }
+            });
+        });
+
+        // Expand active pillar by default
+        document.querySelectorAll('.pillar-nav-item.active').forEach(item => {
+            item.classList.add('expanded');
+        });
+
+        // Persona dropdown
+        function togglePersonaDropdown() {
+            const dropdown = document.getElementById('personaDropdown');
+            dropdown.classList.toggle('open');
+        }
+
+        function selectPersona(personaId) {
+            localStorage.setItem('gaskia-persona', personaId);
+            document.getElementById('personaDropdown').classList.remove('open');
+            // Optionally reload or update UI
+            location.reload();
+        }
+
+        // Close dropdowns on outside click
+        document.addEventListener('click', (e) => {
+            const langSelector = document.getElementById('languageSelector');
+            if (langSelector && !langSelector.contains(e.target)) {
+                langSelector.classList.remove('open');
+            }
+            const personaDropdown = document.getElementById('personaDropdown');
+            const personaBtn = document.getElementById('personaQuickSelect');
+            if (personaDropdown && personaBtn && !personaBtn.contains(e.target)) {
+                personaDropdown.classList.remove('open');
+            }
+        });
+
+        // Load pillar scores
+        async function loadPillarScores() {
+            try {
+                const response = await fetch('/api/pillars/scores');
+                const data = await response.json();
+                if (data.success) {
+                    document.getElementById('reliabilityScore').textContent = Math.round(data.data.reliability * 100) + '%';
+                    document.getElementById('securityScore').textContent = Math.round(data.data.security * 100) + '%';
+                    document.getElementById('complianceScore').textContent = Math.round(data.data.compliance * 100) + '%';
+                    document.getElementById('explainabilityScore').textContent = Math.round(data.data.explainability * 100) + '%';
+                    document.getElementById('performanceScore').textContent = Math.round(data.data.performance * 100) + '%';
+                }
+            } catch (error) {
+                console.log('Pillar scores not available');
+            }
+        }
+
+        document.addEventListener('DOMContentLoaded', loadPillarScores);
+    </script>
+    {% block scripts %}{% endblock %}
+</body>
+</html>
