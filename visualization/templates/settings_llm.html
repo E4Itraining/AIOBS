@@ -858,6 +858,8 @@ document.getElementById('llmConfigForm').addEventListener('submit', async (e) =>
         const result = await response.json();
 
         if (result.success) {
+            // Save provider to localStorage for UI consistency
+            localStorage.setItem('gaskia-llm-provider', provider);
             showToast('Configuration sauvegardee avec succes!', 'success');
             // Update status
             testConnection();
@@ -869,14 +871,46 @@ document.getElementById('llmConfigForm').addEventListener('submit', async (e) =>
     }
 });
 
-function loadSavedConfig() {
-    // Load from localStorage or API
-    const savedProvider = localStorage.getItem('gaskia-llm-provider');
-    if (savedProvider) {
-        const radio = document.querySelector(`input[name="llm_provider"][value="${savedProvider}"]`);
-        if (radio) {
-            radio.checked = true;
-            radio.dispatchEvent(new Event('change'));
+async function loadSavedConfig() {
+    try {
+        // Fetch saved config from backend API
+        const response = await fetch('/api/llm/config');
+        const config = await response.json();
+
+        if (config.configured && config.provider) {
+            // Select the saved provider
+            const radio = document.querySelector(`input[name="llm_provider"][value="${config.provider}"]`);
+            if (radio) {
+                radio.checked = true;
+                radio.dispatchEvent(new Event('change'));
+            }
+
+            // Update status to show it's configured
+            const indicator = document.getElementById('statusIndicator');
+            const title = document.getElementById('statusTitle');
+            const message = document.getElementById('statusMessage');
+
+            if (config.has_api_key) {
+                indicator.className = 'status-indicator connected';
+                indicator.innerHTML = '<i data-lucide="check-circle"></i>';
+                title.textContent = 'Configure';
+                message.textContent = `Connecte a ${config.provider} - ${config.model || 'Pret'}`;
+                lucide.createIcons();
+            }
+
+            // Also save to localStorage for UI consistency
+            localStorage.setItem('gaskia-llm-provider', config.provider);
+        }
+    } catch (error) {
+        console.log('No saved LLM config found, using defaults');
+        // Fallback to localStorage
+        const savedProvider = localStorage.getItem('gaskia-llm-provider');
+        if (savedProvider) {
+            const radio = document.querySelector(`input[name="llm_provider"][value="${savedProvider}"]`);
+            if (radio) {
+                radio.checked = true;
+                radio.dispatchEvent(new Event('change'));
+            }
         }
     }
 }
