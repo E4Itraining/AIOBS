@@ -16,8 +16,10 @@ logger = logging.getLogger("aiobs.llm_config")
 
 router = APIRouter(prefix="/api/llm", tags=["LLM Configuration"])
 
-# Path to the persistence file
-CONFIG_FILE_PATH = Path(os.getcwd()) / "data" / "llm_config.json"
+# Path to the persistence file (relative to module, not cwd)
+# This ensures the path is stable regardless of where the process is started
+_BASE_DIR = Path(__file__).resolve().parent.parent.parent
+CONFIG_FILE_PATH = _BASE_DIR / "data" / "llm_config.json"
 
 
 class LLMConfigRequest(BaseModel):

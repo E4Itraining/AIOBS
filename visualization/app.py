@@ -7,6 +7,7 @@ import logging
 import os
 import time
 from collections import deque
+from pathlib import Path
 
 # Load .env file for environment variables
 from dotenv import load_dotenv
@@ -180,6 +181,14 @@ if integrations_router:
 @app.on_event("startup")
 async def startup_event():
     """Start background tasks and services on application startup"""
+    # Ensure data directory exists for configuration persistence
+    data_dir = Path(__file__).resolve().parent.parent / "data"
+    try:
+        data_dir.mkdir(parents=True, exist_ok=True)
+        logger.info(f"Data directory ensured at: {data_dir}")
+    except Exception as e:
+        logger.error(f"Failed to create data directory: {e}")
+
     start_background_tasks()
     await ingestion_startup()
 
