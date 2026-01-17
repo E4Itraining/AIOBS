@@ -35,6 +35,7 @@ from .routers import (
 )
 from .routers.pillars import router as pillars_router
 from .routers.llm_testing import router as llm_testing_router
+from .routers.llm_config import router as llm_config_router
 
 # Import new module routers (optional - may fail due to dependencies)
 auth_router = None
@@ -156,6 +157,7 @@ app.include_router(cognitive_router)
 app.include_router(causal_router)
 app.include_router(pillars_router)
 app.include_router(llm_testing_router)
+app.include_router(llm_config_router)
 
 # Optional routers (may not be available due to dependencies)
 if auth_router:
@@ -193,8 +195,23 @@ async def shutdown_event():
 
 
 @app.get("/", response_class=HTMLResponse)
+async def home(request: Request):
+    """Home page - Simplified hub as funnel entry point"""
+    i18n = create_i18n_context(request)
+    return templates.TemplateResponse(
+        "hub.html",
+        {
+            "request": request,
+            "title": f"{APP_TITLE} - Hub",
+            "active_page": "hub",
+            **i18n,
+        },
+    )
+
+
+@app.get("/welcome", response_class=HTMLResponse)
 async def welcome(request: Request):
-    """Welcome page - Persona selection as entry point"""
+    """Welcome page - Persona selection"""
     i18n = create_i18n_context(request)
     return templates.TemplateResponse(
         "welcome.html",
@@ -659,6 +676,21 @@ async def llm_testing_view(request: Request):
             "request": request,
             "title": f"{APP_TITLE} - LLM Testing Environment",
             "active_page": "llm-testing",
+            **i18n,
+        },
+    )
+
+
+@app.get("/settings/llm", response_class=HTMLResponse)
+async def settings_llm_view(request: Request):
+    """LLM Configuration Settings - Connect your own LLM provider"""
+    i18n = create_i18n_context(request)
+    return templates.TemplateResponse(
+        "settings_llm.html",
+        {
+            "request": request,
+            "title": f"{APP_TITLE} - Configuration LLM",
+            "active_page": "settings",
             **i18n,
         },
     )
