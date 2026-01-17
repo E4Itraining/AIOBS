@@ -3,7 +3,10 @@ LLM Configuration Router
 API endpoints for configuring and testing LLM providers
 """
 
+import json
 import logging
+import os
+from pathlib import Path
 from typing import Optional
 
 from fastapi import APIRouter, HTTPException
@@ -12,6 +15,9 @@ from pydantic import BaseModel
 logger = logging.getLogger("aiobs.llm_config")
 
 router = APIRouter(prefix="/api/llm", tags=["LLM Configuration"])
+
+# Path to the persistence file
+CONFIG_FILE_PATH = Path(os.getcwd()) / "data" / "llm_config.json"
 
 
 class LLMConfigRequest(BaseModel):
@@ -38,8 +44,34 @@ class LLMConfigResponse(BaseModel):
     model: Optional[str] = None
 
 
-# In-memory config storage (in production, use secure storage)
-_llm_config: dict = {}
+def _load_config_from_file() -> dict:
+    """Load LLM configuration from file"""
+    try:
+        if CONFIG_FILE_PATH.exists():
+            with open(CONFIG_FILE_PATH, "r", encoding="utf-8") as f:
+                return json.load(f)
+    except Exception as e:
+        logger.error(f"Failed to load LLM config from file: {e}")
+    return {}
+
+
+def _save_config_to_file(config: dict) -> bool:
+    """Save LLM configuration to file"""
+    try:
+        # Ensure data directory exists
+        CONFIG_FILE_PATH.parent.mkdir(parents=True, exist_ok=True)
+
+        with open(CONFIG_FILE_PATH, "w", encoding="utf-8") as f:
+            json.dump(config, f, indent=2)
+        logger.info("LLM config saved to file successfully")
+        return True
+    except Exception as e:
+        logger.error(f"Failed to save LLM config to file: {e}")
+        return False
+
+
+# Load config from file on startup
+_llm_config: dict = _load_config_from_file()
 
 
 @router.post("/config", response_model=LLMConfigResponse)
@@ -48,6 +80,10 @@ async def save_llm_config(config: LLMConfigRequest):
     try:
         global _llm_config
         _llm_config = config.model_dump()
+
+        # Persist to file
+        if not _save_config_to_file(_llm_config):
+            logger.warning("Failed to persist LLM config to file, changes may be lost on restart")
 
         logger.info(f"LLM configuration saved for provider: {config.provider}")
 
@@ -167,4 +203,13 @@ async def delete_llm_config():
     """Clear LLM configuration"""
     global _llm_config
     _llm_config = {}
+
+    # Remove the config file
+    try:
+        if CONFIG_FILE_PATH.exists():
+            CONFIG_FILE_PATH.unlink()
+            logger.info("LLM config file deleted")
+    except Exception as e:
+        logger.error(f"Failed to delete LLM config file: {e}")
+
     return {"success": True, "message": "Configuration cleared"}
