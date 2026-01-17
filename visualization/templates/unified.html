@@ -503,11 +503,11 @@ async function loadCosts() {
             detailsContainer.innerHTML = `
                 <div class="mb-4">
                     <div class="text-sm text-muted">Total (30d)</div>
-                    <div class="kpi-value">$${(data.total || 0).toLocaleString()}</div>
+                    <div class="kpi-value">${(data.total || 0).toLocaleString()} €</div>
                 </div>
                 <div class="mb-4">
                     <div class="text-sm text-muted">Forecast</div>
-                    <div class="font-semibold" style="font-size: 1.25rem;">$${(data.forecast_next_month || 0).toLocaleString()}</div>
+                    <div class="font-semibold" style="font-size: 1.25rem;">${(data.forecast_next_month || 0).toLocaleString()} €</div>
                 </div>
                 <div class="kpi-trend ${data.trend || 'stable'}">
                     <i data-lucide="trending-${data.trend || 'up'}"></i>

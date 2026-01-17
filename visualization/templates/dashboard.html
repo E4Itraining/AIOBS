@@ -573,9 +573,9 @@ async function renderKPICards(widgets) {
                     color: 'primary'
                 },
                 daily_cost: {
-                    icon: 'dollar-sign',
+                    icon: 'wallet',
                     label: 'Coût Journalier',
-                    format: v => '$' + (v.key_metrics?.total_daily_cost || v.total_daily_cost || 0).toFixed(0),
+                    format: v => (v.key_metrics?.total_daily_cost || v.total_daily_cost || 0).toFixed(0) + ' €',
                     color: 'warning'
                 },
                 slo_compliance: {
@@ -884,7 +884,7 @@ function renderBarChart(container, data, config) {
                         <div class="bar-label">
                             <span class="bar-name">${key.replace(/_/g, ' ')}</span>
                             <span class="bar-value ${isPositive ? 'positive' : 'negative'}">
-                                ${isPositive ? '+' : ''}$${value.toLocaleString()}
+                                ${isPositive ? '+' : ''}${value.toLocaleString()} €
                             </span>
                         </div>
                         <div class="bar-track">

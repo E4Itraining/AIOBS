@@ -638,7 +638,7 @@ async function loadHubData() {
             // Update pillar metrics
             document.getElementById('perfScore').textContent = '99.2%';
             document.getElementById('reliabilityScore').textContent = healthScore + '%';
-            document.getElementById('costValue').textContent = '$' + data.key_metrics.total_daily_cost.toFixed(0);
+            document.getElementById('costValue').textContent = data.key_metrics.total_daily_cost.toFixed(0) + ' €';
             document.getElementById('govScore').textContent = '94%';
 
             // Update trends
