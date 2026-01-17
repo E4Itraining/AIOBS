@@ -6,58 +6,58 @@
 
 /* ========== CSS Variables / Design Tokens ========== */
 :root {
-    /* GASKIA Brand Colors - Modern Palette */
-    --color-deep-blue: #1E40AF;        /* Primary - Deep Blue */
-    --color-slate-dark: #1E293B;       /* Secondary - Slate Dark */
-    --color-slate-light: #F8FAFC;      /* Background - Slate Light */
-    --color-cyan-accent: #0891B2;      /* Accent - Cyan */
+    /* GASKIA Brand Colors - Erythix Palette (Deep & Rich) */
+    --color-deep-blue: #7C2D3E;        /* Primary - Deep Burgundy */
+    --color-slate-dark: #1A1A2E;       /* Secondary - Deep Navy */
+    --color-slate-light: #F5F3F4;      /* Background - Warm Gray */
+    --color-cyan-accent: #E84A5F;      /* Accent - Coral Red */
 
-    /* Colors - Light Theme */
-    --color-primary: #2563EB;          /* Blue 600 */
-    --color-primary-hover: #1D4ED8;    /* Blue 700 */
-    --color-primary-light: #EFF6FF;    /* Blue 50 */
-    --color-accent: #0891B2;           /* Cyan 600 */
+    /* Colors - Light Theme (Erythix) */
+    --color-primary: #9B2335;          /* Burgundy 600 */
+    --color-primary-hover: #7C2D3E;    /* Burgundy 700 */
+    --color-primary-light: #FDF2F4;    /* Rose 50 */
+    --color-accent: #E84A5F;           /* Coral 600 */
 
-    --color-success: #059669;
+    --color-success: #047857;          /* Emerald 700 - Deeper */
     --color-success-light: #D1FAE5;
-    --color-warning: #D97706;          /* Amber 600 */
-    --color-warning-light: #FEF3C7;
-    --color-danger: #DC2626;
-    --color-danger-light: #FEE2E2;
-    --color-info: #0284C7;             /* Sky 600 */
-    --color-info-light: #E0F2FE;
+    --color-warning: #C2410C;          /* Orange 700 - Richer */
+    --color-warning-light: #FED7AA;
+    --color-danger: #991B1B;           /* Red 800 - Deeper */
+    --color-danger-light: #FECACA;
+    --color-info: #0369A1;             /* Sky 700 - Deeper */
+    --color-info-light: #BAE6FD;
 
-    /* Backgrounds */
-    --bg-body: #F8FAFC;                /* Slate 50 */
+    /* Backgrounds - Warmer, Less Washed Out */
+    --bg-body: #F5F3F4;                /* Warm Gray */
     --bg-card: #FFFFFF;
-    --bg-sidebar: #FFFFFF;
-    --bg-hover: #F1F5F9;               /* Slate 100 */
-    --bg-active: #EFF6FF;              /* Blue 50 */
+    --bg-sidebar: #FAFAFA;
+    --bg-hover: #F0EBED;               /* Warm Gray Hover */
+    --bg-active: #FDF2F4;              /* Rose 50 */
 
-    /* Text */
-    --text-primary: #1E293B;           /* Slate 800 */
-    --text-secondary: #475569;         /* Slate 600 */
-    --text-tertiary: #94A3B8;          /* Slate 400 */
-    --text-inverse: #F8FAFC;           /* Slate 50 */
+    /* Text - Higher Contrast */
+    --text-primary: #1A1A2E;           /* Deep Navy */
+    --text-secondary: #3D3D5C;         /* Muted Navy */
+    --text-tertiary: #6B6B8A;          /* Gray Purple */
+    --text-inverse: #F5F3F4;           /* Warm White */
 
-    /* Borders */
-    --border-color: #E2E8F0;           /* Slate 200 */
-    --border-light: #F1F5F9;           /* Slate 100 */
+    /* Borders - Warmer Tones */
+    --border-color: #DDD8DA;           /* Warm Gray 200 */
+    --border-light: #EDEAEB;           /* Warm Gray 100 */
 
-    /* Shadows */
-    --shadow-sm: 0 1px 2px rgba(15, 23, 42, 0.04);
-    --shadow-md: 0 4px 6px -1px rgba(15, 23, 42, 0.08), 0 2px 4px -2px rgba(15, 23, 42, 0.06);
-    --shadow-lg: 0 10px 15px -3px rgba(15, 23, 42, 0.08), 0 4px 6px -4px rgba(15, 23, 42, 0.04);
-    --shadow-xl: 0 20px 25px -5px rgba(15, 23, 42, 0.08), 0 8px 10px -6px rgba(15, 23, 42, 0.04);
+    /* Shadows - Warmer, More Depth */
+    --shadow-sm: 0 1px 2px rgba(26, 26, 46, 0.06);
+    --shadow-md: 0 4px 6px -1px rgba(26, 26, 46, 0.10), 0 2px 4px -2px rgba(26, 26, 46, 0.08);
+    --shadow-lg: 0 10px 15px -3px rgba(26, 26, 46, 0.12), 0 4px 6px -4px rgba(26, 26, 46, 0.08);
+    --shadow-xl: 0 20px 25px -5px rgba(26, 26, 46, 0.12), 0 8px 10px -6px rgba(26, 26, 46, 0.06);
 
-    /* Unified Gradients - Harmonized across platform */
-    --gradient-primary: linear-gradient(135deg, #2563EB, #0891B2);
-    --gradient-success: linear-gradient(135deg, #059669, #10B981);
-    --gradient-warning: linear-gradient(135deg, #D97706, #F59E0B);
-    --gradient-danger: linear-gradient(135deg, #DC2626, #EF4444);
-    --gradient-info: linear-gradient(135deg, #0284C7, #38BDF8);
-    --gradient-purple: linear-gradient(135deg, #7C3AED, #A78BFA);
-    --gradient-indigo: linear-gradient(135deg, #4F46E5, #818CF8);
+    /* Unified Gradients - Erythix Harmonized */
+    --gradient-primary: linear-gradient(135deg, #9B2335, #E84A5F);
+    --gradient-success: linear-gradient(135deg, #047857, #059669);
+    --gradient-warning: linear-gradient(135deg, #C2410C, #EA580C);
+    --gradient-danger: linear-gradient(135deg, #991B1B, #DC2626);
+    --gradient-info: linear-gradient(135deg, #0369A1, #0284C7);
+    --gradient-purple: linear-gradient(135deg, #6D28D9, #7C3AED);
+    --gradient-indigo: linear-gradient(135deg, #4338CA, #4F46E5);
 
     /* Spacing */
     --space-1: 0.25rem;
@@ -89,30 +89,34 @@
     --font-body: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
 }
 
-/* Dark Theme - GASKIA Modern */
+/* Dark Theme - Erythix Deep */
 [data-theme="dark"] {
-    --bg-body: #0F172A;                /* Slate 900 */
-    --bg-card: #1E293B;                /* Slate 800 */
-    --bg-sidebar: #1E293B;
-    --bg-hover: #334155;               /* Slate 700 */
-    --bg-active: #1E3A5F;              /* Blue Dark */
+    --bg-body: #0D0D14;                /* Deep Charcoal Navy */
+    --bg-card: #1A1A2E;                /* Deep Navy */
+    --bg-sidebar: #16162A;             /* Darker Navy */
+    --bg-hover: #2A2A45;               /* Navy Hover */
+    --bg-active: #3D1F2A;              /* Burgundy Dark */
 
-    --text-primary: #F1F5F9;           /* Slate 100 */
-    --text-secondary: #CBD5E1;         /* Slate 300 */
-    --text-tertiary: #64748B;          /* Slate 500 */
+    --text-primary: #F5F3F4;           /* Warm White */
+    --text-secondary: #C9C4C6;         /* Warm Gray 300 */
+    --text-tertiary: #8A8592;          /* Muted Purple Gray */
 
-    --border-color: #334155;           /* Slate 700 */
-    --border-light: #1E293B;           /* Slate 800 */
+    --border-color: #2A2A45;           /* Navy Border */
+    --border-light: #1A1A2E;           /* Deep Navy */
 
-    --color-primary-light: #1E3A5F;
+    --color-primary: #C45C6A;          /* Lighter Burgundy for dark mode */
+    --color-primary-hover: #D66A78;
+    --color-primary-light: #3D1F2A;    /* Burgundy Dark */
+    --color-accent: #F06B7D;           /* Coral Light */
     --color-success-light: #064E3B;
     --color-warning-light: #451A03;
     --color-danger-light: #7F1D1D;
     --color-info-light: #0C4A6E;
 
-    --shadow-sm: 0 1px 2px rgba(0, 0, 0, 0.4);
-    --shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.5);
-    --shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.6);
+    --shadow-sm: 0 1px 2px rgba(0, 0, 0, 0.5);
+    --shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.6);
+    --shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.7);
+    --shadow-xl: 0 20px 25px -5px rgba(0, 0, 0, 0.8);
 }
 
 /* ========== Reset & Base ========== */
