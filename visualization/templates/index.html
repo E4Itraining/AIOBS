@@ -336,7 +336,7 @@ function setupRealtimeUpdates() {
         if (data && data.key_metrics) {
             updateKPI('trustScore', (data.key_metrics.avg_trust_score * 100).toFixed(0) + '%');
             updateKPI('inferences', formatNumber(data.key_metrics.total_daily_inferences));
-            updateKPI('dailyCost', '$' + data.key_metrics.total_daily_cost.toFixed(0));
+            updateKPI('dailyCost', data.key_metrics.total_daily_cost.toFixed(0) + ' €');
             updateKPI('carbonKg', data.key_metrics.total_daily_carbon_kg.toFixed(1) + ' kg');
 
             if (data.health) {
@@ -434,7 +434,7 @@ async function loadDashboardData() {
             // Update KPIs
             updateKPI('trustScore', (data.key_metrics.avg_trust_score * 100).toFixed(0) + '%');
             updateKPI('inferences', formatNumber(data.key_metrics.total_daily_inferences));
-            updateKPI('dailyCost', '$' + data.key_metrics.total_daily_cost.toFixed(0));
+            updateKPI('dailyCost', data.key_metrics.total_daily_cost.toFixed(0) + ' €');
             updateKPI('carbonKg', data.key_metrics.total_daily_carbon_kg.toFixed(1) + ' kg');
 
             // Update health

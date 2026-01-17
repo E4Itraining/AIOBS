@@ -1008,7 +1008,7 @@ async function loadBenchmarks() {
                     <td>${(p.metrics.accuracy * 100).toFixed(1)}%</td>
                     <td>${p.metrics.latency_p50}ms</td>
                     <td>${(p.metrics.safety_score * 100).toFixed(1)}%</td>
-                    <td>$${p.metrics.cost_per_1k_tokens.toFixed(4)}</td>
+                    <td>${p.metrics.cost_per_1k_tokens.toFixed(4)} €</td>
                 </tr>
             `).join('');
         }
