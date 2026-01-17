@@ -688,7 +688,7 @@
 }
 
 .recommendation-card.sustainability::before {
-    background: #10b981;
+    background: #059669;
 }
 
 .recommendation-type {
@@ -1482,7 +1482,7 @@ select:focus-visible {
     border-radius: var(--radius-lg);
 }
 
-/* Unified Button Colors */
+/* Unified Button Colors - Erythix */
 .btn-primary,
 .persona-select-btn.active,
 .feature-try {
@@ -1493,7 +1493,7 @@ select:focus-visible {
 .btn-primary:hover,
 .persona-select-btn.active:hover,
 .feature-try:hover {
-    background: var(--color-primary-hover, #1D4ED8);
+    background: var(--color-primary-hover, #7C2D3E);
     transform: translateY(-1px);
 }
 
@@ -1525,12 +1525,12 @@ select:focus-visible {
     background: inherit;
 }
 
-/* ========== DARK MODE ENHANCEMENTS ========== */
+/* ========== DARK MODE ENHANCEMENTS - Erythix ========== */
 [data-theme="dark"] {
     /* Extended dark mode variables */
-    --bg-elevated: #334155;
+    --bg-elevated: #2A2A45;
     --text-on-primary: #FFFFFF;
-    --color-primary-dark: #1D4ED8;
+    --color-primary-dark: #7C2D3E;
 
     /* Skip-to-content in dark mode */
     .skip-to-content {
