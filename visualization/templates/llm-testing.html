@@ -1,0 +1,1386 @@
+{% extends "base.html" %}
+
+{% set active_page = 'llm-testing' %}
+
+{% block sidebar_extra %}
+<div class="nav-group">
+    <span class="nav-group-title">LLM Testing</span>
+    <a href="/llm-testing" class="nav-link active">
+        <i data-lucide="flask-conical"></i>
+        <span>Testing Dashboard</span>
+    </a>
+    <a href="/security" class="nav-link">
+        <i data-lucide="shield"></i>
+        <span>Security Tests</span>
+    </a>
+</div>
+<div class="nav-group">
+    <span class="nav-group-title">AI Observability</span>
+    <a href="/monitoring" class="nav-link">
+        <i data-lucide="activity"></i>
+        <span>Live Monitoring</span>
+    </a>
+    <a href="/guardrails" class="nav-link">
+        <i data-lucide="shield-check"></i>
+        <span>Guardrails</span>
+    </a>
+</div>
+{% endblock %}
+
+{% block page_title %}LLM Testing Environment{% endblock %}
+{% block page_subtitle %}<p class="text-muted">Real-time testing, benchmarking, and evaluation</p>{% endblock %}
+
+{% block topbar_actions %}
+<div class="live-indicator" id="connectionStatus">
+    <span class="live-dot"></span>
+    <span>Ready</span>
+</div>
+<button class="btn btn-secondary" onclick="openQuickTest()">
+    <i data-lucide="zap"></i>
+    Quick Test
+</button>
+<button class="btn btn-primary" onclick="openSuiteRunner()">
+    <i data-lucide="play"></i>
+    Run Suite
+</button>
+{% endblock %}
+
+{% block content %}
+<!-- Overview Stats -->
+<div class="testing-hero">
+    <div class="hero-stats">
+        <div class="hero-stat">
+            <div class="stat-icon primary">
+                <i data-lucide="flask-conical"></i>
+            </div>
+            <div class="stat-content">
+                <span class="stat-value" id="totalTests">0</span>
+                <span class="stat-label">Tests Available</span>
+            </div>
+        </div>
+        <div class="hero-stat">
+            <div class="stat-icon success">
+                <i data-lucide="check-circle"></i>
+            </div>
+            <div class="stat-content">
+                <span class="stat-value" id="passRate">-</span>
+                <span class="stat-label">Pass Rate</span>
+            </div>
+        </div>
+        <div class="hero-stat">
+            <div class="stat-icon warning">
+                <i data-lucide="clock"></i>
+            </div>
+            <div class="stat-content">
+                <span class="stat-value" id="avgLatency">-</span>
+                <span class="stat-label">Avg Latency</span>
+            </div>
+        </div>
+        <div class="hero-stat">
+            <div class="stat-icon danger">
+                <i data-lucide="alert-triangle"></i>
+            </div>
+            <div class="stat-content">
+                <span class="stat-value" id="issuesFound">0</span>
+                <span class="stat-label">Issues Found</span>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Main Content Grid -->
+<div class="grid grid-2 mb-6">
+    <!-- Test Suites -->
+    <div class="card">
+        <div class="card-header">
+            <h3 class="card-title">Test Suites</h3>
+            <button class="btn btn-sm btn-secondary" onclick="refreshSuites()">
+                <i data-lucide="refresh-cw"></i>
+            </button>
+        </div>
+        <div class="suites-list" id="suitesList">
+            <div class="loading-spinner">Loading suites...</div>
+        </div>
+    </div>
+
+    <!-- Quick Test Panel -->
+    <div class="card">
+        <div class="card-header">
+            <h3 class="card-title">Quick Test</h3>
+        </div>
+        <div class="quick-test-form">
+            <div class="form-group">
+                <label for="testPrompt">Prompt</label>
+                <textarea id="testPrompt" class="form-textarea" rows="3"
+                    placeholder="Enter a prompt to test..."></textarea>
+            </div>
+            <div class="form-row">
+                <div class="form-group">
+                    <label for="testCategory">Category</label>
+                    <select id="testCategory" class="form-select">
+                        <option value="accuracy">Accuracy</option>
+                        <option value="hallucination">Hallucination</option>
+                        <option value="security">Security</option>
+                        <option value="reasoning">Reasoning</option>
+                        <option value="consistency">Consistency</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label for="testProvider">Provider</label>
+                    <select id="testProvider" class="form-select">
+                        <option value="mock">Mock (Testing)</option>
+                        <option value="openai">OpenAI</option>
+                        <option value="anthropic">Anthropic</option>
+                        <option value="mistral">Mistral</option>
+                    </select>
+                </div>
+            </div>
+            <div class="form-group">
+                <label for="groundTruth">Expected Answer (Optional)</label>
+                <input type="text" id="groundTruth" class="form-input"
+                    placeholder="Expected response or keywords...">
+            </div>
+            <button class="btn btn-primary btn-block" onclick="runQuickTest()">
+                <i data-lucide="play"></i>
+                Run Test
+            </button>
+        </div>
+    </div>
+</div>
+
+<!-- Live Results Feed -->
+<section class="mb-6">
+    <div class="card">
+        <div class="card-header">
+            <h3 class="card-title">Live Test Results</h3>
+            <span class="live-badge"><span class="live-dot"></span> Real-time</span>
+        </div>
+        <div class="results-feed" id="resultsFeed">
+            <div class="empty-state">
+                <i data-lucide="flask-conical"></i>
+                <p>Run a test to see results here</p>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Test Categories Overview -->
+<section class="mb-6">
+    <h2 class="section-title">Test Categories</h2>
+    <div class="categories-grid">
+        <div class="category-card" onclick="runCategoryTests('accuracy')">
+            <div class="category-icon accuracy">
+                <i data-lucide="check-circle"></i>
+            </div>
+            <div class="category-content">
+                <h4>Accuracy & Factuality</h4>
+                <p>Tests factual correctness and knowledge</p>
+            </div>
+            <div class="category-stats">
+                <span class="stat-badge">5 tests</span>
+            </div>
+        </div>
+
+        <div class="category-card" onclick="runCategoryTests('hallucination')">
+            <div class="category-icon hallucination">
+                <i data-lucide="ghost"></i>
+            </div>
+            <div class="category-content">
+                <h4>Hallucination Detection</h4>
+                <p>Detects fabricated information</p>
+            </div>
+            <div class="category-stats">
+                <span class="stat-badge">4 tests</span>
+            </div>
+        </div>
+
+        <div class="category-card" onclick="runCategoryTests('security')">
+            <div class="category-icon security">
+                <i data-lucide="shield-alert"></i>
+            </div>
+            <div class="category-content">
+                <h4>Security & Adversarial</h4>
+                <p>Tests against attacks and exploits</p>
+            </div>
+            <div class="category-stats">
+                <span class="stat-badge">6 tests</span>
+            </div>
+        </div>
+
+        <div class="category-card" onclick="runCategoryTests('reasoning')">
+            <div class="category-icon reasoning">
+                <i data-lucide="brain"></i>
+            </div>
+            <div class="category-content">
+                <h4>Reasoning & Logic</h4>
+                <p>Tests logical and analytical abilities</p>
+            </div>
+            <div class="category-stats">
+                <span class="stat-badge">4 tests</span>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Recent Benchmarks -->
+<section class="mb-6">
+    <div class="grid grid-2">
+        <div class="card">
+            <div class="card-header">
+                <h3 class="card-title">Provider Comparison</h3>
+            </div>
+            <div class="benchmark-table">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Provider</th>
+                            <th>Accuracy</th>
+                            <th>Latency</th>
+                            <th>Safety</th>
+                            <th>Cost/1k</th>
+                        </tr>
+                    </thead>
+                    <tbody id="providerTable">
+                        <tr>
+                            <td>Loading...</td>
+                            <td colspan="4"></td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+        <div class="card">
+            <div class="card-header">
+                <h3 class="card-title">Performance Trends</h3>
+            </div>
+            <div class="chart-container" style="height: 250px;">
+                <canvas id="performanceChart"></canvas>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Suite Runner Modal -->
+<div class="modal" id="suiteRunnerModal">
+    <div class="modal-content modal-lg">
+        <div class="modal-header">
+            <h3>Run Test Suite</h3>
+            <button class="btn-close" onclick="closeSuiteRunner()">&times;</button>
+        </div>
+        <div class="modal-body">
+            <div class="form-group">
+                <label>Select Suite</label>
+                <select id="suiteSelect" class="form-select">
+                    <option value="">Loading suites...</option>
+                </select>
+            </div>
+            <div class="form-group">
+                <label>Provider Configuration</label>
+                <div class="provider-config">
+                    <div class="form-row">
+                        <select id="modalProvider" class="form-select">
+                            <option value="mock">Mock Provider</option>
+                            <option value="openai">OpenAI</option>
+                            <option value="anthropic">Anthropic</option>
+                        </select>
+                        <input type="text" id="modalModel" class="form-input"
+                            placeholder="Model name (e.g., gpt-4o)">
+                    </div>
+                </div>
+            </div>
+            <div id="suiteDetails" class="suite-details hidden">
+                <h4>Suite Details</h4>
+                <div id="suiteInfo"></div>
+            </div>
+        </div>
+        <div class="modal-footer">
+            <button class="btn btn-secondary" onclick="closeSuiteRunner()">Cancel</button>
+            <button class="btn btn-primary" onclick="startSuiteRun()">
+                <i data-lucide="play"></i> Start Tests
+            </button>
+        </div>
+    </div>
+</div>
+
+<!-- Result Detail Modal -->
+<div class="modal" id="resultDetailModal">
+    <div class="modal-content modal-lg">
+        <div class="modal-header">
+            <h3>Test Result Details</h3>
+            <button class="btn-close" onclick="closeResultDetail()">&times;</button>
+        </div>
+        <div class="modal-body" id="resultDetailContent">
+            <!-- Populated dynamically -->
+        </div>
+    </div>
+</div>
+
+<style>
+/* Testing Hero */
+.testing-hero {
+    padding: var(--space-6);
+    background: var(--bg-card);
+    border: 1px solid var(--border-color);
+    border-radius: var(--radius-xl);
+    margin-bottom: var(--space-6);
+}
+
+.hero-stats {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: var(--space-4);
+}
+
+.hero-stat {
+    display: flex;
+    gap: var(--space-3);
+    padding: var(--space-4);
+    background: var(--bg-hover);
+    border-radius: var(--radius-lg);
+}
+
+.stat-icon {
+    width: 48px;
+    height: 48px;
+    border-radius: var(--radius-lg);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.stat-icon svg {
+    width: 24px;
+    height: 24px;
+    color: white;
+}
+
+.stat-icon.primary { background: linear-gradient(135deg, #6366f1, #8b5cf6); }
+.stat-icon.success { background: linear-gradient(135deg, #10b981, #34d399); }
+.stat-icon.warning { background: linear-gradient(135deg, #f59e0b, #fbbf24); }
+.stat-icon.danger { background: linear-gradient(135deg, #ef4444, #f87171); }
+
+.stat-value {
+    display: block;
+    font-size: 1.75rem;
+    font-weight: 700;
+}
+
+.stat-label {
+    font-size: 0.75rem;
+    color: var(--text-secondary);
+}
+
+/* Live Indicator */
+.live-indicator {
+    display: flex;
+    align-items: center;
+    gap: var(--space-2);
+    padding: var(--space-2) var(--space-3);
+    background: var(--color-success-light);
+    color: var(--color-success);
+    border-radius: var(--radius-full);
+    font-size: 0.8125rem;
+    font-weight: 500;
+}
+
+.live-dot {
+    width: 8px;
+    height: 8px;
+    background: currentColor;
+    border-radius: 50%;
+    animation: pulse 2s infinite;
+}
+
+.live-badge {
+    display: flex;
+    align-items: center;
+    gap: var(--space-1);
+    padding: var(--space-1) var(--space-2);
+    background: var(--color-success-light);
+    color: var(--color-success);
+    border-radius: var(--radius-full);
+    font-size: 0.75rem;
+}
+
+@keyframes pulse {
+    0%, 100% { opacity: 1; }
+    50% { opacity: 0.5; }
+}
+
+/* Suites List */
+.suites-list {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-3);
+    max-height: 400px;
+    overflow-y: auto;
+}
+
+.suite-item {
+    display: flex;
+    align-items: center;
+    gap: var(--space-3);
+    padding: var(--space-3);
+    background: var(--bg-hover);
+    border-radius: var(--radius-lg);
+    cursor: pointer;
+    transition: all 0.2s;
+}
+
+.suite-item:hover {
+    background: var(--bg-active);
+    transform: translateX(4px);
+}
+
+.suite-icon {
+    width: 40px;
+    height: 40px;
+    border-radius: var(--radius-lg);
+    background: var(--color-primary-light);
+    color: var(--color-primary);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.suite-icon svg {
+    width: 20px;
+    height: 20px;
+}
+
+.suite-content {
+    flex: 1;
+}
+
+.suite-name {
+    display: block;
+    font-weight: 600;
+    font-size: 0.9375rem;
+}
+
+.suite-desc {
+    font-size: 0.75rem;
+    color: var(--text-secondary);
+}
+
+.suite-badge {
+    padding: var(--space-1) var(--space-2);
+    background: var(--bg-card);
+    border-radius: var(--radius-full);
+    font-size: 0.75rem;
+    color: var(--text-secondary);
+}
+
+/* Quick Test Form */
+.quick-test-form {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-4);
+}
+
+.form-row {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: var(--space-3);
+}
+
+.form-group {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-2);
+}
+
+.form-group label {
+    font-size: 0.8125rem;
+    font-weight: 500;
+}
+
+.form-textarea {
+    width: 100%;
+    padding: var(--space-3);
+    border: 1px solid var(--border-color);
+    border-radius: var(--radius-md);
+    background: var(--bg-card);
+    font-family: inherit;
+    font-size: 0.875rem;
+    resize: vertical;
+}
+
+.form-input,
+.form-select {
+    width: 100%;
+    padding: var(--space-2) var(--space-3);
+    border: 1px solid var(--border-color);
+    border-radius: var(--radius-md);
+    background: var(--bg-card);
+    font-family: inherit;
+    font-size: 0.875rem;
+}
+
+.btn-block {
+    width: 100%;
+}
+
+/* Results Feed */
+.results-feed {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-3);
+    max-height: 500px;
+    overflow-y: auto;
+}
+
+.result-item {
+    display: flex;
+    gap: var(--space-3);
+    padding: var(--space-4);
+    background: var(--bg-hover);
+    border-radius: var(--radius-lg);
+    border-left: 4px solid;
+    cursor: pointer;
+    transition: all 0.2s;
+}
+
+.result-item:hover {
+    background: var(--bg-active);
+}
+
+.result-item.passed { border-left-color: var(--color-success); }
+.result-item.failed { border-left-color: var(--color-danger); }
+.result-item.warning { border-left-color: var(--color-warning); }
+.result-item.running { border-left-color: var(--color-primary); }
+
+.result-status {
+    width: 40px;
+    height: 40px;
+    border-radius: var(--radius-lg);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+}
+
+.result-item.passed .result-status {
+    background: var(--color-success-light);
+    color: var(--color-success);
+}
+
+.result-item.failed .result-status {
+    background: var(--color-danger-light);
+    color: var(--color-danger);
+}
+
+.result-item.warning .result-status {
+    background: var(--color-warning-light);
+    color: var(--color-warning);
+}
+
+.result-item.running .result-status {
+    background: var(--color-primary-light);
+    color: var(--color-primary);
+}
+
+.result-status svg {
+    width: 20px;
+    height: 20px;
+}
+
+.result-content {
+    flex: 1;
+}
+
+.result-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    margin-bottom: var(--space-2);
+}
+
+.result-name {
+    font-weight: 600;
+    font-size: 0.9375rem;
+}
+
+.result-score {
+    font-weight: 700;
+    font-size: 0.875rem;
+}
+
+.result-item.passed .result-score { color: var(--color-success); }
+.result-item.failed .result-score { color: var(--color-danger); }
+.result-item.warning .result-score { color: var(--color-warning); }
+
+.result-meta {
+    display: flex;
+    gap: var(--space-4);
+    font-size: 0.75rem;
+    color: var(--text-secondary);
+}
+
+.result-meta span {
+    display: flex;
+    align-items: center;
+    gap: var(--space-1);
+}
+
+.result-meta svg {
+    width: 14px;
+    height: 14px;
+}
+
+.empty-state {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: var(--space-8);
+    color: var(--text-secondary);
+}
+
+.empty-state svg {
+    width: 48px;
+    height: 48px;
+    margin-bottom: var(--space-3);
+    opacity: 0.5;
+}
+
+/* Categories Grid */
+.section-title {
+    font-size: 1.125rem;
+    font-weight: 600;
+    margin-bottom: var(--space-4);
+}
+
+.categories-grid {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: var(--space-4);
+}
+
+.category-card {
+    padding: var(--space-4);
+    background: var(--bg-card);
+    border: 1px solid var(--border-color);
+    border-radius: var(--radius-xl);
+    cursor: pointer;
+    transition: all 0.2s;
+}
+
+.category-card:hover {
+    border-color: var(--color-primary);
+    transform: translateY(-2px);
+    box-shadow: var(--shadow-lg);
+}
+
+.category-icon {
+    width: 48px;
+    height: 48px;
+    border-radius: var(--radius-lg);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin-bottom: var(--space-3);
+}
+
+.category-icon svg {
+    width: 24px;
+    height: 24px;
+    color: white;
+}
+
+.category-icon.accuracy { background: linear-gradient(135deg, #10b981, #34d399); }
+.category-icon.hallucination { background: linear-gradient(135deg, #8b5cf6, #a78bfa); }
+.category-icon.security { background: linear-gradient(135deg, #ef4444, #f87171); }
+.category-icon.reasoning { background: linear-gradient(135deg, #3b82f6, #60a5fa); }
+
+.category-content h4 {
+    font-size: 0.9375rem;
+    font-weight: 600;
+    margin-bottom: var(--space-1);
+}
+
+.category-content p {
+    font-size: 0.75rem;
+    color: var(--text-secondary);
+    margin-bottom: var(--space-3);
+}
+
+.category-stats {
+    display: flex;
+    gap: var(--space-2);
+}
+
+.stat-badge {
+    padding: var(--space-1) var(--space-2);
+    background: var(--bg-hover);
+    border-radius: var(--radius-full);
+    font-size: 0.6875rem;
+    color: var(--text-secondary);
+}
+
+/* Benchmark Table */
+.benchmark-table {
+    overflow-x: auto;
+}
+
+.benchmark-table table {
+    width: 100%;
+    border-collapse: collapse;
+}
+
+.benchmark-table th,
+.benchmark-table td {
+    padding: var(--space-3);
+    text-align: left;
+    border-bottom: 1px solid var(--border-color);
+}
+
+.benchmark-table th {
+    font-size: 0.75rem;
+    font-weight: 600;
+    text-transform: uppercase;
+    color: var(--text-secondary);
+}
+
+.benchmark-table td {
+    font-size: 0.875rem;
+}
+
+/* Modal */
+.modal {
+    display: none;
+    position: fixed;
+    inset: 0;
+    background: rgba(0, 0, 0, 0.5);
+    z-index: 1000;
+    align-items: center;
+    justify-content: center;
+}
+
+.modal.active {
+    display: flex;
+}
+
+.modal-content {
+    background: var(--bg-card);
+    border-radius: var(--radius-xl);
+    max-width: 500px;
+    width: 90%;
+    max-height: 90vh;
+    overflow-y: auto;
+}
+
+.modal-content.modal-lg {
+    max-width: 700px;
+}
+
+.modal-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: var(--space-4);
+    border-bottom: 1px solid var(--border-color);
+}
+
+.modal-header h3 {
+    font-size: 1.125rem;
+    font-weight: 600;
+}
+
+.btn-close {
+    background: none;
+    border: none;
+    font-size: 1.5rem;
+    color: var(--text-secondary);
+    cursor: pointer;
+}
+
+.modal-body {
+    padding: var(--space-4);
+}
+
+.modal-footer {
+    display: flex;
+    justify-content: flex-end;
+    gap: var(--space-3);
+    padding: var(--space-4);
+    border-top: 1px solid var(--border-color);
+}
+
+.hidden {
+    display: none;
+}
+
+.suite-details {
+    margin-top: var(--space-4);
+    padding: var(--space-4);
+    background: var(--bg-hover);
+    border-radius: var(--radius-lg);
+}
+
+.suite-details h4 {
+    font-size: 0.9375rem;
+    font-weight: 600;
+    margin-bottom: var(--space-3);
+}
+
+/* Loading */
+.loading-spinner {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: var(--space-4);
+    color: var(--text-secondary);
+}
+
+@media (max-width: 1200px) {
+    .hero-stats {
+        grid-template-columns: repeat(2, 1fr);
+    }
+
+    .categories-grid {
+        grid-template-columns: repeat(2, 1fr);
+    }
+}
+
+@media (max-width: 768px) {
+    .hero-stats {
+        grid-template-columns: 1fr;
+    }
+
+    .categories-grid {
+        grid-template-columns: 1fr;
+    }
+
+    .form-row {
+        grid-template-columns: 1fr;
+    }
+}
+</style>
+{% endblock %}
+
+{% block scripts %}
+<script>
+const API_BASE = '/api/llm-testing';
+let ws = null;
+let testResults = [];
+
+document.addEventListener('DOMContentLoaded', async () => {
+    await loadTestSuites();
+    await loadBenchmarks();
+    initChart();
+    connectWebSocket();
+    lucide.createIcons();
+});
+
+// WebSocket Connection
+function connectWebSocket() {
+    const protocol = window.location.protocol === 'https:' ? 'wss:' : 'ws:';
+    ws = new WebSocket(`${protocol}//${window.location.host}${API_BASE}/stream`);
+
+    ws.onopen = () => {
+        updateConnectionStatus(true);
+        console.log('WebSocket connected');
+    };
+
+    ws.onmessage = (event) => {
+        const data = JSON.parse(event.data);
+        handleTestEvent(data);
+    };
+
+    ws.onclose = () => {
+        updateConnectionStatus(false);
+        // Reconnect after 3 seconds
+        setTimeout(connectWebSocket, 3000);
+    };
+
+    ws.onerror = (error) => {
+        console.error('WebSocket error:', error);
+    };
+}
+
+function updateConnectionStatus(connected) {
+    const status = document.getElementById('connectionStatus');
+    if (connected) {
+        status.innerHTML = '<span class="live-dot"></span><span>Connected</span>';
+        status.style.background = 'var(--color-success-light)';
+        status.style.color = 'var(--color-success)';
+    } else {
+        status.innerHTML = '<span class="live-dot"></span><span>Disconnected</span>';
+        status.style.background = 'var(--color-danger-light)';
+        status.style.color = 'var(--color-danger)';
+    }
+}
+
+function handleTestEvent(event) {
+    console.log('Test event:', event);
+
+    switch (event.event_type) {
+        case 'test_started':
+            addTestResult({
+                test_id: event.data.test_id,
+                test_name: event.data.test_name,
+                category: event.data.category,
+                status: 'running',
+                score: null
+            });
+            break;
+
+        case 'test_completed':
+            updateTestResult(event.data);
+            updateStats();
+            break;
+
+        case 'test_failed':
+            updateTestResult({
+                ...event.data,
+                status: 'failed'
+            });
+            break;
+
+        case 'suite_started':
+            showToast(`Starting suite: ${event.data.suite_name}`, 'info');
+            break;
+
+        case 'suite_completed':
+            showToast(`Suite completed! Pass rate: ${(event.data.pass_rate * 100).toFixed(1)}%`,
+                event.data.pass_rate > 0.8 ? 'success' : 'warning');
+            break;
+    }
+}
+
+// Load Test Suites
+async function loadTestSuites() {
+    try {
+        const response = await fetch(`${API_BASE}/suites`);
+        const suites = await response.json();
+
+        const container = document.getElementById('suitesList');
+        const select = document.getElementById('suiteSelect');
+
+        let totalTests = 0;
+
+        container.innerHTML = suites.map(suite => {
+            totalTests += suite.test_count;
+            return `
+                <div class="suite-item" onclick="runSuite('${suite.id}')">
+                    <div class="suite-icon">
+                        <i data-lucide="folder"></i>
+                    </div>
+                    <div class="suite-content">
+                        <span class="suite-name">${suite.name}</span>
+                        <span class="suite-desc">${suite.description}</span>
+                    </div>
+                    <span class="suite-badge">${suite.test_count} tests</span>
+                </div>
+            `;
+        }).join('');
+
+        select.innerHTML = suites.map(suite =>
+            `<option value="${suite.id}">${suite.name} (${suite.test_count} tests)</option>`
+        ).join('');
+
+        document.getElementById('totalTests').textContent = totalTests;
+        lucide.createIcons();
+
+    } catch (error) {
+        console.error('Error loading suites:', error);
+    }
+}
+
+function refreshSuites() {
+    loadTestSuites();
+    showToast('Suites refreshed', 'success');
+}
+
+// Load Benchmarks
+async function loadBenchmarks() {
+    try {
+        const response = await fetch(`${API_BASE}/benchmarks/providers`);
+        const result = await response.json();
+
+        if (result.success) {
+            const tbody = document.getElementById('providerTable');
+            tbody.innerHTML = result.data.providers.map(p => `
+                <tr>
+                    <td><strong>${p.name}</strong></td>
+                    <td>${(p.metrics.accuracy * 100).toFixed(1)}%</td>
+                    <td>${p.metrics.latency_p50}ms</td>
+                    <td>${(p.metrics.safety_score * 100).toFixed(1)}%</td>
+                    <td>$${p.metrics.cost_per_1k_tokens.toFixed(4)}</td>
+                </tr>
+            `).join('');
+        }
+    } catch (error) {
+        console.error('Error loading benchmarks:', error);
+    }
+}
+
+// Chart
+function initChart() {
+    const ctx = document.getElementById('performanceChart');
+    if (!ctx) return;
+
+    const labels = ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'];
+
+    new Chart(ctx, {
+        type: 'line',
+        data: {
+            labels: labels,
+            datasets: [{
+                label: 'Accuracy',
+                data: [92, 93, 91, 94, 93, 95, 94],
+                borderColor: '#10b981',
+                backgroundColor: 'rgba(16, 185, 129, 0.1)',
+                fill: true,
+                tension: 0.4
+            }, {
+                label: 'Safety Score',
+                data: [98, 97, 98, 99, 98, 99, 98],
+                borderColor: '#6366f1',
+                backgroundColor: 'rgba(99, 102, 241, 0.1)',
+                fill: true,
+                tension: 0.4
+            }]
+        },
+        options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            plugins: {
+                legend: {
+                    position: 'bottom'
+                }
+            },
+            scales: {
+                y: {
+                    min: 80,
+                    max: 100
+                }
+            }
+        }
+    });
+}
+
+// Test Execution
+async function runQuickTest() {
+    const prompt = document.getElementById('testPrompt').value;
+    const category = document.getElementById('testCategory').value;
+    const provider = document.getElementById('testProvider').value;
+    const groundTruth = document.getElementById('groundTruth').value;
+
+    if (!prompt) {
+        showToast('Please enter a prompt', 'warning');
+        return;
+    }
+
+    try {
+        const response = await fetch(`${API_BASE}/run/single`, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+                prompt: prompt,
+                category: category,
+                ground_truth: groundTruth || null,
+                provider: {
+                    name: provider.charAt(0).toUpperCase() + provider.slice(1),
+                    provider: provider,
+                    model: provider === 'mock' ? 'mock-model' : 'gpt-4o-mini',
+                    max_tokens: 1024,
+                    temperature: 0.7
+                }
+            })
+        });
+
+        const result = await response.json();
+        addTestResult(result);
+        updateStats();
+
+        showToast(`Test ${result.status}: Score ${(result.score * 100).toFixed(1)}%`,
+            result.status === 'passed' ? 'success' : 'warning');
+
+    } catch (error) {
+        console.error('Error running test:', error);
+        showToast('Test execution failed', 'danger');
+    }
+}
+
+function addTestResult(result) {
+    const feed = document.getElementById('resultsFeed');
+
+    // Remove empty state if present
+    const emptyState = feed.querySelector('.empty-state');
+    if (emptyState) {
+        emptyState.remove();
+    }
+
+    const statusIcon = {
+        passed: 'check-circle',
+        failed: 'x-circle',
+        warning: 'alert-triangle',
+        running: 'loader'
+    }[result.status] || 'circle';
+
+    const item = document.createElement('div');
+    item.className = `result-item ${result.status}`;
+    item.id = `result-${result.test_id}`;
+    item.onclick = () => showResultDetail(result);
+
+    item.innerHTML = `
+        <div class="result-status">
+            <i data-lucide="${statusIcon}"></i>
+        </div>
+        <div class="result-content">
+            <div class="result-header">
+                <span class="result-name">${result.test_name}</span>
+                <span class="result-score">${result.score !== null ? (result.score * 100).toFixed(1) + '%' : '...'}</span>
+            </div>
+            <div class="result-meta">
+                <span><i data-lucide="tag"></i> ${result.category}</span>
+                ${result.duration ? `<span><i data-lucide="clock"></i> ${result.duration.toFixed(0)}ms</span>` : ''}
+                ${result.model ? `<span><i data-lucide="cpu"></i> ${result.model}</span>` : ''}
+            </div>
+        </div>
+    `;
+
+    feed.insertBefore(item, feed.firstChild);
+    testResults.unshift(result);
+    lucide.createIcons();
+}
+
+function updateTestResult(data) {
+    const item = document.getElementById(`result-${data.test_id}`);
+    if (item) {
+        item.className = `result-item ${data.status}`;
+        const scoreEl = item.querySelector('.result-score');
+        if (scoreEl) {
+            scoreEl.textContent = (data.score * 100).toFixed(1) + '%';
+        }
+    }
+}
+
+function updateStats() {
+    if (testResults.length === 0) return;
+
+    const passed = testResults.filter(r => r.status === 'passed').length;
+    const total = testResults.length;
+    const passRate = (passed / total * 100).toFixed(1);
+
+    document.getElementById('passRate').textContent = passRate + '%';
+
+    const avgLatency = testResults.reduce((acc, r) => acc + (r.duration || 0), 0) / total;
+    document.getElementById('avgLatency').textContent = avgLatency.toFixed(0) + 'ms';
+
+    const issues = testResults.filter(r => r.issues && r.issues.length > 0)
+        .reduce((acc, r) => acc + r.issues.length, 0);
+    document.getElementById('issuesFound').textContent = issues;
+}
+
+// Modal Functions
+function openQuickTest() {
+    document.getElementById('testPrompt').focus();
+}
+
+function openSuiteRunner() {
+    document.getElementById('suiteRunnerModal').classList.add('active');
+}
+
+function closeSuiteRunner() {
+    document.getElementById('suiteRunnerModal').classList.remove('active');
+}
+
+async function startSuiteRun() {
+    const suiteId = document.getElementById('suiteSelect').value;
+    const provider = document.getElementById('modalProvider').value;
+    const model = document.getElementById('modalModel').value || 'mock-model';
+
+    if (ws && ws.readyState === WebSocket.OPEN) {
+        ws.send(JSON.stringify({
+            action: 'run_suite',
+            suite_id: suiteId,
+            providers: [{
+                name: provider.charAt(0).toUpperCase() + provider.slice(1),
+                provider: provider,
+                model: model,
+                max_tokens: 2048,
+                temperature: 0.7
+            }]
+        }));
+
+        closeSuiteRunner();
+        showToast('Suite execution started', 'info');
+    } else {
+        showToast('WebSocket not connected', 'danger');
+    }
+}
+
+function runSuite(suiteId) {
+    document.getElementById('suiteSelect').value = suiteId;
+    openSuiteRunner();
+}
+
+function runCategoryTests(category) {
+    showToast(`Running ${category} tests...`, 'info');
+    // Could implement category-specific test running
+}
+
+function showResultDetail(result) {
+    const modal = document.getElementById('resultDetailModal');
+    const content = document.getElementById('resultDetailContent');
+
+    content.innerHTML = `
+        <div class="result-detail">
+            <h4>${result.test_name}</h4>
+            <div class="detail-grid">
+                <div class="detail-item">
+                    <label>Status</label>
+                    <span class="badge ${result.status}">${result.status}</span>
+                </div>
+                <div class="detail-item">
+                    <label>Score</label>
+                    <span>${result.score !== null ? (result.score * 100).toFixed(1) + '%' : 'N/A'}</span>
+                </div>
+                <div class="detail-item">
+                    <label>Category</label>
+                    <span>${result.category}</span>
+                </div>
+                <div class="detail-item">
+                    <label>Duration</label>
+                    <span>${result.duration ? result.duration.toFixed(0) + 'ms' : 'N/A'}</span>
+                </div>
+            </div>
+            ${result.response_content ? `
+                <div class="response-section">
+                    <h5>Response</h5>
+                    <pre>${result.response_content}</pre>
+                </div>
+            ` : ''}
+            ${result.insights && result.insights.length > 0 ? `
+                <div class="insights-section">
+                    <h5>Insights</h5>
+                    <ul>
+                        ${result.insights.map(i => `<li>${i}</li>`).join('')}
+                    </ul>
+                </div>
+            ` : ''}
+            ${result.issues && result.issues.length > 0 ? `
+                <div class="issues-section">
+                    <h5>Issues Detected</h5>
+                    <ul>
+                        ${result.issues.map(i => `
+                            <li class="issue-item ${i.severity}">
+                                <strong>${i.type}</strong>: ${i.description}
+                            </li>
+                        `).join('')}
+                    </ul>
+                </div>
+            ` : ''}
+        </div>
+    `;
+
+    modal.classList.add('active');
+}
+
+function closeResultDetail() {
+    document.getElementById('resultDetailModal').classList.remove('active');
+}
+
+// Toast notification
+function showToast(message, type = 'info') {
+    const toast = document.createElement('div');
+    toast.className = `toast toast-${type}`;
+    toast.innerHTML = message;
+    toast.style.cssText = `
+        position: fixed;
+        bottom: 20px;
+        right: 20px;
+        padding: 12px 24px;
+        background: var(--bg-card);
+        border: 1px solid var(--border-color);
+        border-radius: var(--radius-lg);
+        box-shadow: var(--shadow-lg);
+        z-index: 1100;
+        animation: slideIn 0.3s ease;
+    `;
+
+    document.body.appendChild(toast);
+
+    setTimeout(() => {
+        toast.style.animation = 'slideOut 0.3s ease';
+        setTimeout(() => toast.remove(), 300);
+    }, 3000);
+}
+</script>
+
+<style>
+@keyframes slideIn {
+    from { transform: translateX(100%); opacity: 0; }
+    to { transform: translateX(0); opacity: 1; }
+}
+
+@keyframes slideOut {
+    from { transform: translateX(0); opacity: 1; }
+    to { transform: translateX(100%); opacity: 0; }
+}
+
+.detail-grid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: var(--space-4);
+    margin: var(--space-4) 0;
+}
+
+.detail-item {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-1);
+}
+
+.detail-item label {
+    font-size: 0.75rem;
+    color: var(--text-secondary);
+    text-transform: uppercase;
+}
+
+.badge {
+    display: inline-block;
+    padding: var(--space-1) var(--space-2);
+    border-radius: var(--radius-full);
+    font-size: 0.75rem;
+    font-weight: 600;
+    text-transform: uppercase;
+}
+
+.badge.passed { background: var(--color-success-light); color: var(--color-success); }
+.badge.failed { background: var(--color-danger-light); color: var(--color-danger); }
+.badge.warning { background: var(--color-warning-light); color: var(--color-warning); }
+
+.response-section,
+.insights-section,
+.issues-section {
+    margin-top: var(--space-4);
+    padding-top: var(--space-4);
+    border-top: 1px solid var(--border-color);
+}
+
+.response-section pre {
+    background: var(--bg-hover);
+    padding: var(--space-3);
+    border-radius: var(--radius-md);
+    overflow-x: auto;
+    font-size: 0.8125rem;
+}
+
+.issue-item {
+    padding: var(--space-2);
+    margin-bottom: var(--space-2);
+    border-radius: var(--radius-md);
+    border-left: 3px solid;
+}
+
+.issue-item.critical { border-left-color: var(--color-danger); background: var(--color-danger-light); }
+.issue-item.high { border-left-color: var(--color-warning); background: var(--color-warning-light); }
+.issue-item.medium { border-left-color: #f59e0b; background: rgba(245, 158, 11, 0.1); }
+.issue-item.low { border-left-color: var(--text-secondary); background: var(--bg-hover); }
+</style>
+{% endblock %}
