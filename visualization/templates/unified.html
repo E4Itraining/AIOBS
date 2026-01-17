@@ -731,7 +731,7 @@ async function loadCompliance() {
 function generateLabels(count) {
     const labels = [];
     const now = new Date();
-    for (let i = count; i >= 0; i--) {
+    for (let i = count - 1; i >= 0; i--) {
         const d = new Date(now - i * 3600000);
         labels.push(d.getHours() + ':00');
     }
