@@ -101,11 +101,15 @@
                     </span>
                     <div class="nav-essentials-list" id="essentialsList">
                         <!-- Dynamically populated based on persona -->
-                        <a href="/dashboard" class="nav-link {% if active_page == 'dashboard' %}active{% endif %}">
-                            <i data-lucide="home"></i>
-                            <span>{{ t('nav.home') or 'Tableau de Bord' }}</span>
+                        <a href="/" class="nav-link {% if active_page == 'hub' %}active{% endif %}">
+                            <i data-lucide="layout-dashboard"></i>
+                            <span>{{ t('nav.hub') or 'Hub' }}</span>
                         </a>
-                        <a href="/" class="nav-link {% if active_page == 'welcome' %}active{% endif %}">
+                        <a href="/dashboard" class="nav-link {% if active_page == 'dashboard' %}active{% endif %}">
+                            <i data-lucide="bar-chart-3"></i>
+                            <span>{{ t('nav.dashboard_detail') or 'Dashboard Complet' }}</span>
+                        </a>
+                        <a href="/welcome" class="nav-link {% if active_page == 'welcome' %}active{% endif %}">
                             <i data-lucide="compass"></i>
                             <span>{{ t('nav.persona_selection') or 'Choix Parcours' }}</span>
                         </a>
@@ -239,6 +243,18 @@
                         </div>
                     </div>
 
+                </div>
+
+                <!-- Settings -->
+                <div class="nav-group nav-group-settings">
+                    <span class="nav-group-title">
+                        <i data-lucide="settings" class="title-icon"></i>
+                        {{ t('nav.settings') or 'Parametres' }}
+                    </span>
+                    <a href="/settings/llm" class="nav-link {% if active_page == 'settings' %}active{% endif %}">
+                        <i data-lucide="cpu"></i>
+                        <span>{{ t('nav.llm_config') or 'Configuration LLM' }}</span>
+                    </a>
                 </div>
 
                 <!-- Change Journey Link -->
@@ -610,28 +626,28 @@
                 name: 'Dirigeant',
                 icon: 'briefcase',
                 essentials: [
-                    { url: '/', icon: 'home', label: 'Tableau de Bord' },
+                    { url: '/', icon: 'layout-dashboard', label: 'Hub' },
                     { url: '/executive', icon: 'briefcase', label: 'Vue Executive' },
-                    { url: '/compliance', icon: 'shield-check', label: 'Conformité IA' },
-                    { url: '/finops', icon: 'coins', label: 'Coûts & FinOps' }
+                    { url: '/compliance', icon: 'shield-check', label: 'Conformite IA' },
+                    { url: '/finops', icon: 'coins', label: 'Couts & FinOps' }
                 ]
             },
             'tech_ml_engineer': {
                 name: 'ML Engineer',
                 icon: 'cpu',
                 essentials: [
-                    { url: '/', icon: 'home', label: 'Tableau de Bord' },
-                    { url: '/tech', icon: 'server', label: 'Vue Tech' },
+                    { url: '/', icon: 'layout-dashboard', label: 'Hub' },
+                    { url: '/unified', icon: 'layers', label: 'Vue Unifiee' },
                     { url: '/causal', icon: 'git-branch', label: 'Analyse Causale' },
-                    { url: '/monitoring', icon: 'activity', label: 'Monitoring Live' }
+                    { url: '/llm-testing', icon: 'flask-conical', label: 'Test LLM' }
                 ]
             },
             'tech_data_scientist': {
                 name: 'Data Scientist',
                 icon: 'bar-chart-2',
                 essentials: [
-                    { url: '/', icon: 'home', label: 'Tableau de Bord' },
-                    { url: '/tech', icon: 'server', label: 'Vue Tech' },
+                    { url: '/', icon: 'layout-dashboard', label: 'Hub' },
+                    { url: '/unified', icon: 'layers', label: 'Vue Unifiee' },
                     { url: '/causal', icon: 'git-branch', label: 'Analyse Causale' },
                     { url: '/impact', icon: 'trending-up', label: 'Analyse d\'Impact' }
                 ]
@@ -640,79 +656,79 @@
                 name: 'DevOps Engineer',
                 icon: 'terminal',
                 essentials: [
-                    { url: '/', icon: 'home', label: 'Tableau de Bord' },
+                    { url: '/', icon: 'layout-dashboard', label: 'Hub' },
                     { url: '/monitoring', icon: 'activity', label: 'Monitoring Live' },
-                    { url: '/unified', icon: 'layers', label: 'Vue Unifiée' },
-                    { url: '/security', icon: 'lock', label: 'Centre Sécurité' }
+                    { url: '/unified', icon: 'layers', label: 'Vue Unifiee' },
+                    { url: '/security', icon: 'lock', label: 'Centre Securite' }
                 ]
             },
             'compliance_legal': {
                 name: 'Compliance Officer',
                 icon: 'shield-check',
                 essentials: [
-                    { url: '/', icon: 'home', label: 'Tableau de Bord' },
-                    { url: '/compliance', icon: 'shield-check', label: 'Conformité IA' },
+                    { url: '/', icon: 'layout-dashboard', label: 'Hub' },
+                    { url: '/compliance', icon: 'shield-check', label: 'Conformite IA' },
                     { url: '/juridique', icon: 'gavel', label: 'Vue Juridique' },
-                    { url: '/security', icon: 'lock', label: 'Centre Sécurité' }
+                    { url: '/security', icon: 'lock', label: 'Centre Securite' }
                 ]
             },
             'security_soc': {
                 name: 'Security SOC',
                 icon: 'shield',
                 essentials: [
-                    { url: '/', icon: 'home', label: 'Tableau de Bord' },
-                    { url: '/security', icon: 'lock', label: 'Centre Sécurité' },
+                    { url: '/', icon: 'layout-dashboard', label: 'Hub' },
+                    { url: '/security', icon: 'lock', label: 'Centre Securite' },
                     { url: '/monitoring', icon: 'activity', label: 'Monitoring Live' },
-                    { url: '/compliance', icon: 'shield-check', label: 'Conformité IA' }
+                    { url: '/guardrails', icon: 'shield-alert', label: 'Guardrails' }
                 ]
             },
             'sustainability_esg': {
                 name: 'ESG Manager',
                 icon: 'leaf',
                 essentials: [
-                    { url: '/', icon: 'home', label: 'Tableau de Bord' },
+                    { url: '/', icon: 'layout-dashboard', label: 'Hub' },
                     { url: '/greenops', icon: 'leaf', label: 'Impact Carbone' },
-                    { url: '/finops', icon: 'coins', label: 'Coûts & FinOps' },
-                    { url: '/compliance', icon: 'shield-check', label: 'Conformité IA' }
+                    { url: '/finops', icon: 'coins', label: 'Couts & FinOps' },
+                    { url: '/compliance', icon: 'shield-check', label: 'Conformite IA' }
                 ]
             },
             'governance_dsi': {
                 name: 'DSI / CIO',
                 icon: 'landmark',
                 essentials: [
-                    { url: '/', icon: 'home', label: 'Tableau de Bord' },
+                    { url: '/', icon: 'layout-dashboard', label: 'Hub' },
                     { url: '/executive', icon: 'briefcase', label: 'Vue Executive' },
                     { url: '/tech', icon: 'server', label: 'Vue Tech' },
-                    { url: '/finops', icon: 'coins', label: 'Coûts & FinOps' }
+                    { url: '/finops', icon: 'coins', label: 'Couts & FinOps' }
                 ]
             },
             'governance_rsi': {
                 name: 'RSI / IT Manager',
                 icon: 'settings',
                 essentials: [
-                    { url: '/', icon: 'home', label: 'Tableau de Bord' },
+                    { url: '/', icon: 'layout-dashboard', label: 'Hub' },
                     { url: '/monitoring', icon: 'activity', label: 'Monitoring Live' },
-                    { url: '/unified', icon: 'layers', label: 'Vue Unifiée' },
-                    { url: '/security', icon: 'lock', label: 'Centre Sécurité' }
+                    { url: '/unified', icon: 'layers', label: 'Vue Unifiee' },
+                    { url: '/security', icon: 'lock', label: 'Centre Securite' }
                 ]
             },
             'privacy_dpo': {
                 name: 'DPO',
                 icon: 'user-check',
                 essentials: [
-                    { url: '/', icon: 'home', label: 'Tableau de Bord' },
-                    { url: '/compliance', icon: 'shield-check', label: 'Conformité IA' },
+                    { url: '/', icon: 'layout-dashboard', label: 'Hub' },
+                    { url: '/compliance', icon: 'shield-check', label: 'Conformite IA' },
                     { url: '/juridique', icon: 'gavel', label: 'Vue Juridique' },
-                    { url: '/security', icon: 'lock', label: 'Centre Sécurité' }
+                    { url: '/security', icon: 'lock', label: 'Centre Securite' }
                 ]
             },
             'legal_counsel': {
                 name: 'Legal Counsel',
                 icon: 'scale',
                 essentials: [
-                    { url: '/', icon: 'home', label: 'Tableau de Bord' },
+                    { url: '/', icon: 'layout-dashboard', label: 'Hub' },
                     { url: '/juridique', icon: 'gavel', label: 'Vue Juridique' },
-                    { url: '/compliance', icon: 'shield-check', label: 'Conformité IA' },
+                    { url: '/compliance', icon: 'shield-check', label: 'Conformite IA' },
                     { url: '/impact', icon: 'trending-up', label: 'Analyse d\'Impact' }
                 ]
             },
@@ -720,7 +736,7 @@
                 name: 'Product Owner',
                 icon: 'package',
                 essentials: [
-                    { url: '/', icon: 'home', label: 'Tableau de Bord' },
+                    { url: '/', icon: 'layout-dashboard', label: 'Hub' },
                     { url: '/dirigeant', icon: 'building-2', label: 'Vue Business' },
                     { url: '/impact', icon: 'trending-up', label: 'Analyse d\'Impact' },
                     { url: '/monitoring', icon: 'activity', label: 'Monitoring Live' }
@@ -730,10 +746,10 @@
 
         // Default essentials when no persona selected
         const DEFAULT_ESSENTIALS = [
-            { url: '/', icon: 'home', label: 'Tableau de Bord' },
-            { url: '/global', icon: 'globe', label: 'Vue Globale' },
-            { url: '/executive', icon: 'briefcase', label: 'Vue Executive' },
-            { url: '/monitoring', icon: 'activity', label: 'Monitoring Live' }
+            { url: '/', icon: 'layout-dashboard', label: 'Hub' },
+            { url: '/dashboard', icon: 'bar-chart-3', label: 'Dashboard Complet' },
+            { url: '/monitoring', icon: 'activity', label: 'Monitoring Live' },
+            { url: '/settings/llm', icon: 'cpu', label: 'Config LLM' }
         ];
 
         // Accordion state
@@ -1039,26 +1055,19 @@
             }
         });
 
-        // Check for first visit - redirect to onboarding
+        // Check for first visit - show subtle prompt instead of redirect
         document.addEventListener('DOMContentLoaded', () => {
-            const onboardingComplete = localStorage.getItem('gaskia-onboarding-complete') || localStorage.getItem('aiobs-onboarding-complete');
             const hasPersona = localStorage.getItem('gaskia-persona') || localStorage.getItem('aiobs-persona');
             const currentPath = window.location.pathname;
-            const excludedPaths = ['/onboarding', '/personas', '/api/', '/static/', '/health'];
+            const excludedPaths = ['/onboarding', '/personas', '/welcome', '/api/', '/static/', '/health', '/settings'];
 
-            // Redirect to onboarding if first visit and no persona selected
+            // If no persona selected, show subtle prompt (don't redirect)
             const isExcludedPath = excludedPaths.some(path => currentPath.startsWith(path));
-            if (!onboardingComplete && !hasPersona && !isExcludedPath) {
-                // Redirect new users to onboarding
-                window.location.href = '/onboarding';
-                return;
-            }
-
-            // If onboarding complete but no persona, show prompt
-            if (onboardingComplete && !hasPersona && !isExcludedPath) {
+            if (!hasPersona && !isExcludedPath && currentPath === '/') {
+                // Show gentle prompt for new users on hub
                 setTimeout(() => {
-                    showToast(window.t('onboarding.select_persona') || 'Select your profile to personalize your experience', 'info', 6000);
-                }, 2000);
+                    showToast(window.t('onboarding.select_persona') || 'Personnalisez votre experience en choisissant votre parcours', 'info', 6000);
+                }, 3000);
             }
         });
 

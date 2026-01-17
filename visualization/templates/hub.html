@@ -1,0 +1,731 @@
+{% extends "base.html" %}
+
+{% set active_page = 'hub' %}
+
+{% block page_title %}{{ t('hub.title') or 'GASKIA Hub' }}{% endblock %}
+
+{% block content %}
+<div class="hub-container">
+    <!-- Global Health Summary - The Funnel Entry Point -->
+    <div class="hub-hero">
+        <div class="health-ring" id="healthRing">
+            <svg viewBox="0 0 200 200" class="health-ring-svg">
+                <circle cx="100" cy="100" r="90" class="health-ring-bg"/>
+                <circle cx="100" cy="100" r="90" class="health-ring-progress" id="healthRingProgress"/>
+            </svg>
+            <div class="health-ring-content">
+                <span class="health-score" id="healthScore">--</span>
+                <span class="health-label">{{ t('hub.health_score') or 'Score Global' }}</span>
+            </div>
+        </div>
+        <div class="hub-summary">
+            <h1>{{ t('hub.welcome') or 'Vos systmes IA en un coup d oeil' }}</h1>
+            <p class="hub-subtitle" id="hubStatus">{{ t('hub.loading') or 'Chargement...' }}</p>
+            <div class="hub-quick-stats" id="quickStats">
+                <div class="quick-stat">
+                    <span class="quick-stat-value" id="activeServices">--</span>
+                    <span class="quick-stat-label">{{ t('hub.active_services') or 'Services actifs' }}</span>
+                </div>
+                <div class="quick-stat">
+                    <span class="quick-stat-value" id="activeAlerts">--</span>
+                    <span class="quick-stat-label">{{ t('hub.alerts') or 'Alertes' }}</span>
+                </div>
+                <div class="quick-stat">
+                    <span class="quick-stat-value" id="complianceRate">--</span>
+                    <span class="quick-stat-label">{{ t('hub.compliance') or 'Conformite' }}</span>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- 4 Main Pillars - Level 1 of the Funnel -->
+    <div class="hub-pillars">
+        <h2 class="hub-section-title">
+            <i data-lucide="layers"></i>
+            {{ t('hub.explore_pillars') or 'Explorer par pilier' }}
+        </h2>
+        <div class="pillars-grid">
+            <!-- Performance Pillar -->
+            <a href="/monitoring" class="pillar-card" data-pillar="performance">
+                <div class="pillar-icon performance">
+                    <i data-lucide="activity"></i>
+                </div>
+                <div class="pillar-content">
+                    <h3>{{ t('hub.performance') or 'Performance' }}</h3>
+                    <p>{{ t('hub.performance_desc') or 'Latence, throughput, SLOs' }}</p>
+                    <div class="pillar-metric">
+                        <span class="pillar-value" id="perfScore">--</span>
+                        <span class="pillar-trend up" id="perfTrend">
+                            <i data-lucide="trending-up"></i>
+                        </span>
+                    </div>
+                </div>
+                <i data-lucide="chevron-right" class="pillar-arrow"></i>
+            </a>
+
+            <!-- Reliability Pillar -->
+            <a href="/unified" class="pillar-card" data-pillar="reliability">
+                <div class="pillar-icon reliability">
+                    <i data-lucide="shield-check"></i>
+                </div>
+                <div class="pillar-content">
+                    <h3>{{ t('hub.reliability') or 'Fiabilite' }}</h3>
+                    <p>{{ t('hub.reliability_desc') or 'Trust score, drift, qualite' }}</p>
+                    <div class="pillar-metric">
+                        <span class="pillar-value" id="reliabilityScore">--</span>
+                        <span class="pillar-trend" id="reliabilityTrend">
+                            <i data-lucide="minus"></i>
+                        </span>
+                    </div>
+                </div>
+                <i data-lucide="chevron-right" class="pillar-arrow"></i>
+            </a>
+
+            <!-- Cost Pillar -->
+            <a href="/finops" class="pillar-card" data-pillar="cost">
+                <div class="pillar-icon cost">
+                    <i data-lucide="wallet"></i>
+                </div>
+                <div class="pillar-content">
+                    <h3>{{ t('hub.cost') or 'Couts' }}</h3>
+                    <p>{{ t('hub.cost_desc') or 'Budget, ROI, optimisation' }}</p>
+                    <div class="pillar-metric">
+                        <span class="pillar-value" id="costValue">--</span>
+                        <span class="pillar-trend" id="costTrend">
+                            <i data-lucide="minus"></i>
+                        </span>
+                    </div>
+                </div>
+                <i data-lucide="chevron-right" class="pillar-arrow"></i>
+            </a>
+
+            <!-- Governance Pillar -->
+            <a href="/compliance" class="pillar-card" data-pillar="governance">
+                <div class="pillar-icon governance">
+                    <i data-lucide="scale"></i>
+                </div>
+                <div class="pillar-content">
+                    <h3>{{ t('hub.governance') or 'Gouvernance' }}</h3>
+                    <p>{{ t('hub.governance_desc') or 'Conformite, audit, securite' }}</p>
+                    <div class="pillar-metric">
+                        <span class="pillar-value" id="govScore">--</span>
+                        <span class="pillar-trend" id="govTrend">
+                            <i data-lucide="minus"></i>
+                        </span>
+                    </div>
+                </div>
+                <i data-lucide="chevron-right" class="pillar-arrow"></i>
+            </a>
+        </div>
+    </div>
+
+    <!-- Quick Actions - Deep Dive Entry Points -->
+    <div class="hub-actions">
+        <h2 class="hub-section-title">
+            <i data-lucide="zap"></i>
+            {{ t('hub.quick_actions') or 'Actions rapides' }}
+        </h2>
+        <div class="actions-grid">
+            <a href="/causal" class="action-card">
+                <i data-lucide="git-branch"></i>
+                <span>{{ t('hub.investigate') or 'Investiguer un incident' }}</span>
+            </a>
+            <a href="/llm-testing" class="action-card">
+                <i data-lucide="flask-conical"></i>
+                <span>{{ t('hub.test_llm') or 'Tester un LLM' }}</span>
+            </a>
+            <a href="/greenops" class="action-card">
+                <i data-lucide="leaf"></i>
+                <span>{{ t('hub.carbon') or 'Impact carbone' }}</span>
+            </a>
+            <a href="/settings/llm" class="action-card">
+                <i data-lucide="settings"></i>
+                <span>{{ t('hub.configure_llm') or 'Configurer LLM' }}</span>
+            </a>
+        </div>
+    </div>
+
+    <!-- Recent Activity - Minimal -->
+    <div class="hub-activity" id="hubActivity">
+        <h2 class="hub-section-title">
+            <i data-lucide="clock"></i>
+            {{ t('hub.recent') or 'Activite recente' }}
+        </h2>
+        <div class="activity-list" id="activityList">
+            <!-- Dynamic content -->
+        </div>
+        <a href="/dashboard" class="see-all-link">
+            {{ t('hub.see_details') or 'Voir le dashboard complet' }}
+            <i data-lucide="arrow-right"></i>
+        </a>
+    </div>
+</div>
+
+<style>
+/* Hub Container */
+.hub-container {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: var(--space-6);
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-8);
+}
+
+/* Hero Section */
+.hub-hero {
+    display: flex;
+    align-items: center;
+    gap: var(--space-8);
+    padding: var(--space-8);
+    background: linear-gradient(135deg, var(--bg-card) 0%, var(--bg-body) 100%);
+    border-radius: var(--radius-xl);
+    border: 1px solid var(--border-color);
+}
+
+.health-ring {
+    position: relative;
+    width: 180px;
+    height: 180px;
+    flex-shrink: 0;
+}
+
+.health-ring-svg {
+    width: 100%;
+    height: 100%;
+    transform: rotate(-90deg);
+}
+
+.health-ring-bg {
+    fill: none;
+    stroke: var(--border-color);
+    stroke-width: 12;
+}
+
+.health-ring-progress {
+    fill: none;
+    stroke: url(#healthGradient);
+    stroke-width: 12;
+    stroke-linecap: round;
+    stroke-dasharray: 565;
+    stroke-dashoffset: 565;
+    transition: stroke-dashoffset 1s ease-out;
+}
+
+.health-ring-content {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    text-align: center;
+}
+
+.health-score {
+    display: block;
+    font-size: 2.5rem;
+    font-weight: 700;
+    color: var(--text-primary);
+    line-height: 1;
+}
+
+.health-label {
+    font-size: 0.875rem;
+    color: var(--text-secondary);
+    margin-top: var(--space-1);
+}
+
+.hub-summary {
+    flex: 1;
+}
+
+.hub-summary h1 {
+    font-size: 1.75rem;
+    font-weight: 600;
+    color: var(--text-primary);
+    margin-bottom: var(--space-2);
+}
+
+.hub-subtitle {
+    font-size: 1rem;
+    color: var(--text-secondary);
+    margin-bottom: var(--space-4);
+}
+
+.hub-quick-stats {
+    display: flex;
+    gap: var(--space-6);
+}
+
+.quick-stat {
+    display: flex;
+    flex-direction: column;
+}
+
+.quick-stat-value {
+    font-size: 1.5rem;
+    font-weight: 600;
+    color: var(--text-primary);
+}
+
+.quick-stat-label {
+    font-size: 0.8125rem;
+    color: var(--text-tertiary);
+}
+
+/* Section Titles */
+.hub-section-title {
+    display: flex;
+    align-items: center;
+    gap: var(--space-2);
+    font-size: 1rem;
+    font-weight: 600;
+    color: var(--text-secondary);
+    margin-bottom: var(--space-4);
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+}
+
+.hub-section-title svg {
+    width: 18px;
+    height: 18px;
+}
+
+/* Pillars Grid */
+.pillars-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+    gap: var(--space-4);
+}
+
+.pillar-card {
+    display: flex;
+    align-items: center;
+    gap: var(--space-4);
+    padding: var(--space-5);
+    background: var(--bg-card);
+    border: 1px solid var(--border-color);
+    border-radius: var(--radius-lg);
+    text-decoration: none;
+    transition: all 0.2s ease;
+    cursor: pointer;
+}
+
+.pillar-card:hover {
+    border-color: var(--color-primary);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+    transform: translateY(-2px);
+}
+
+.pillar-card:hover .pillar-arrow {
+    transform: translateX(4px);
+    opacity: 1;
+}
+
+.pillar-icon {
+    width: 56px;
+    height: 56px;
+    border-radius: var(--radius-md);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+}
+
+.pillar-icon svg {
+    width: 28px;
+    height: 28px;
+    color: white;
+}
+
+.pillar-icon.performance {
+    background: linear-gradient(135deg, #3b82f6, #1d4ed8);
+}
+
+.pillar-icon.reliability {
+    background: linear-gradient(135deg, #10b981, #059669);
+}
+
+.pillar-icon.cost {
+    background: linear-gradient(135deg, #f59e0b, #d97706);
+}
+
+.pillar-icon.governance {
+    background: linear-gradient(135deg, #8b5cf6, #7c3aed);
+}
+
+.pillar-content {
+    flex: 1;
+    min-width: 0;
+}
+
+.pillar-content h3 {
+    font-size: 1.125rem;
+    font-weight: 600;
+    color: var(--text-primary);
+    margin-bottom: 2px;
+}
+
+.pillar-content p {
+    font-size: 0.8125rem;
+    color: var(--text-secondary);
+    margin-bottom: var(--space-2);
+}
+
+.pillar-metric {
+    display: flex;
+    align-items: center;
+    gap: var(--space-2);
+}
+
+.pillar-value {
+    font-size: 1.25rem;
+    font-weight: 700;
+    color: var(--text-primary);
+}
+
+.pillar-trend {
+    display: flex;
+    align-items: center;
+    padding: 2px 6px;
+    border-radius: var(--radius-sm);
+    font-size: 0.75rem;
+}
+
+.pillar-trend svg {
+    width: 14px;
+    height: 14px;
+}
+
+.pillar-trend.up {
+    background: rgba(16, 185, 129, 0.1);
+    color: #10b981;
+}
+
+.pillar-trend.down {
+    background: rgba(239, 68, 68, 0.1);
+    color: #ef4444;
+}
+
+.pillar-trend.stable {
+    background: rgba(100, 116, 139, 0.1);
+    color: #64748b;
+}
+
+.pillar-arrow {
+    width: 20px;
+    height: 20px;
+    color: var(--text-tertiary);
+    opacity: 0.5;
+    transition: all 0.2s ease;
+    flex-shrink: 0;
+}
+
+/* Actions Grid */
+.actions-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+    gap: var(--space-3);
+}
+
+.action-card {
+    display: flex;
+    align-items: center;
+    gap: var(--space-3);
+    padding: var(--space-4);
+    background: var(--bg-card);
+    border: 1px solid var(--border-color);
+    border-radius: var(--radius-md);
+    text-decoration: none;
+    color: var(--text-primary);
+    font-size: 0.9375rem;
+    font-weight: 500;
+    transition: all 0.2s ease;
+}
+
+.action-card:hover {
+    background: var(--bg-body);
+    border-color: var(--color-primary);
+}
+
+.action-card svg {
+    width: 20px;
+    height: 20px;
+    color: var(--color-primary);
+    flex-shrink: 0;
+}
+
+/* Activity Section */
+.activity-list {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-2);
+    margin-bottom: var(--space-4);
+}
+
+.activity-item {
+    display: flex;
+    align-items: center;
+    gap: var(--space-3);
+    padding: var(--space-3) var(--space-4);
+    background: var(--bg-card);
+    border: 1px solid var(--border-color);
+    border-radius: var(--radius-md);
+}
+
+.activity-icon {
+    width: 32px;
+    height: 32px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+}
+
+.activity-icon svg {
+    width: 16px;
+    height: 16px;
+}
+
+.activity-icon.success {
+    background: rgba(16, 185, 129, 0.1);
+    color: #10b981;
+}
+
+.activity-icon.warning {
+    background: rgba(245, 158, 11, 0.1);
+    color: #f59e0b;
+}
+
+.activity-icon.error {
+    background: rgba(239, 68, 68, 0.1);
+    color: #ef4444;
+}
+
+.activity-icon.info {
+    background: rgba(59, 130, 246, 0.1);
+    color: #3b82f6;
+}
+
+.activity-content {
+    flex: 1;
+    min-width: 0;
+}
+
+.activity-title {
+    font-size: 0.875rem;
+    font-weight: 500;
+    color: var(--text-primary);
+}
+
+.activity-time {
+    font-size: 0.75rem;
+    color: var(--text-tertiary);
+}
+
+.see-all-link {
+    display: inline-flex;
+    align-items: center;
+    gap: var(--space-2);
+    font-size: 0.875rem;
+    color: var(--color-primary);
+    text-decoration: none;
+    font-weight: 500;
+}
+
+.see-all-link:hover {
+    text-decoration: underline;
+}
+
+.see-all-link svg {
+    width: 16px;
+    height: 16px;
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+    .hub-container {
+        padding: var(--space-4);
+        gap: var(--space-6);
+    }
+
+    .hub-hero {
+        flex-direction: column;
+        text-align: center;
+        padding: var(--space-6);
+    }
+
+    .health-ring {
+        width: 140px;
+        height: 140px;
+    }
+
+    .health-score {
+        font-size: 2rem;
+    }
+
+    .hub-quick-stats {
+        justify-content: center;
+    }
+
+    .pillars-grid {
+        grid-template-columns: 1fr;
+    }
+
+    .actions-grid {
+        grid-template-columns: repeat(2, 1fr);
+    }
+}
+
+/* SVG Gradient Definition */
+.hub-container::before {
+    content: '';
+    position: absolute;
+    width: 0;
+    height: 0;
+    overflow: hidden;
+}
+</style>
+
+<!-- SVG Gradient Definition -->
+<svg style="position: absolute; width: 0; height: 0;">
+    <defs>
+        <linearGradient id="healthGradient" x1="0%" y1="0%" x2="100%" y2="0%">
+            <stop offset="0%" style="stop-color:#10b981"/>
+            <stop offset="50%" style="stop-color:#3b82f6"/>
+            <stop offset="100%" style="stop-color:#8b5cf6"/>
+        </linearGradient>
+    </defs>
+</svg>
+
+<script>
+document.addEventListener('DOMContentLoaded', async () => {
+    await loadHubData();
+    lucide.createIcons();
+});
+
+async function loadHubData() {
+    try {
+        const response = await fetch('/api/dashboard/overview');
+        const result = await response.json();
+
+        if (result.success) {
+            const data = result.data;
+
+            // Update health ring
+            const healthScore = Math.round(data.key_metrics.avg_trust_score * 100);
+            updateHealthRing(healthScore);
+
+            // Update quick stats
+            const totalServices = data.health.healthy + data.health.degraded + data.health.unhealthy;
+            document.getElementById('activeServices').textContent = totalServices;
+            document.getElementById('activeAlerts').textContent = data.alerts.critical + data.alerts.warning;
+            document.getElementById('complianceRate').textContent = '94%'; // Demo value
+
+            // Update status message
+            const statusEl = document.getElementById('hubStatus');
+            if (data.alerts.critical > 0) {
+                statusEl.textContent = `${data.alerts.critical} alerte(s) critique(s) requierent votre attention`;
+                statusEl.style.color = 'var(--color-danger)';
+            } else if (data.alerts.warning > 0) {
+                statusEl.textContent = `${data.alerts.warning} avertissement(s) a surveiller`;
+                statusEl.style.color = 'var(--color-warning)';
+            } else {
+                statusEl.textContent = 'Tous les systemes fonctionnent normalement';
+                statusEl.style.color = 'var(--color-success)';
+            }
+
+            // Update pillar metrics
+            document.getElementById('perfScore').textContent = '99.2%';
+            document.getElementById('reliabilityScore').textContent = healthScore + '%';
+            document.getElementById('costValue').textContent = '$' + data.key_metrics.total_daily_cost.toFixed(0);
+            document.getElementById('govScore').textContent = '94%';
+
+            // Update trends
+            updateTrendIcon('perfTrend', 'up');
+            updateTrendIcon('reliabilityTrend', data.trends.trust);
+            updateTrendIcon('costTrend', data.trends.cost === 'up' ? 'down' : 'up'); // Inverse for cost
+            updateTrendIcon('govTrend', 'stable');
+
+            // Load recent activity
+            loadRecentActivity(data.top_issues);
+        }
+    } catch (error) {
+        console.error('Error loading hub data:', error);
+        document.getElementById('hubStatus').textContent = 'Erreur de connexion';
+    }
+}
+
+function updateHealthRing(score) {
+    const ring = document.getElementById('healthRingProgress');
+    const scoreEl = document.getElementById('healthScore');
+
+    // Calculate stroke-dashoffset (565 is the circumference)
+    const offset = 565 - (565 * score / 100);
+
+    scoreEl.textContent = score + '%';
+    ring.style.strokeDashoffset = offset;
+
+    // Update color based on score
+    if (score >= 80) {
+        ring.style.stroke = '#10b981';
+    } else if (score >= 60) {
+        ring.style.stroke = '#f59e0b';
+    } else {
+        ring.style.stroke = '#ef4444';
+    }
+}
+
+function updateTrendIcon(elementId, trend) {
+    const el = document.getElementById(elementId);
+    if (!el) return;
+
+    el.className = 'pillar-trend ' + trend;
+    const icon = trend === 'up' ? 'trending-up' : trend === 'down' ? 'trending-down' : 'minus';
+    el.innerHTML = `<i data-lucide="${icon}"></i>`;
+    lucide.createIcons();
+}
+
+function loadRecentActivity(issues) {
+    const container = document.getElementById('activityList');
+
+    if (!issues || issues.length === 0) {
+        container.innerHTML = `
+            <div class="activity-item">
+                <div class="activity-icon success">
+                    <i data-lucide="check-circle"></i>
+                </div>
+                <div class="activity-content">
+                    <div class="activity-title">Aucun incident recent</div>
+                    <div class="activity-time">Tous les systemes sont operationnels</div>
+                </div>
+            </div>
+        `;
+        lucide.createIcons();
+        return;
+    }
+
+    const iconMap = {
+        critical: { icon: 'alert-circle', class: 'error' },
+        warning: { icon: 'alert-triangle', class: 'warning' },
+        info: { icon: 'info', class: 'info' }
+    };
+
+    container.innerHTML = issues.slice(0, 4).map(issue => {
+        const iconInfo = iconMap[issue.severity] || iconMap.info;
+        return `
+            <div class="activity-item">
+                <div class="activity-icon ${iconInfo.class}">
+                    <i data-lucide="${iconInfo.icon}"></i>
+                </div>
+                <div class="activity-content">
+                    <div class="activity-title">${issue.title}</div>
+                    <div class="activity-time">${issue.affected_service} - il y a ${issue.duration_minutes} min</div>
+                </div>
+            </div>
+        `;
+    }).join('');
+    lucide.createIcons();
+}
+</script>
+{% endblock %}
