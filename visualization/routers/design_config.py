@@ -16,8 +16,10 @@ logger = logging.getLogger("aiobs.design_config")
 
 router = APIRouter(prefix="/api/design", tags=["Design Configuration"])
 
-# Path to the persistence file
-CONFIG_FILE_PATH = Path(os.getcwd()) / "data" / "design_config.json"
+# Path to the persistence file (relative to module, not cwd)
+# This ensures the path is stable regardless of where the process is started
+_BASE_DIR = Path(__file__).resolve().parent.parent.parent
+CONFIG_FILE_PATH = _BASE_DIR / "data" / "design_config.json"
 
 
 class DesignConfigRequest(BaseModel):
