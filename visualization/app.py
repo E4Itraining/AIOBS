@@ -34,6 +34,7 @@ from .routers import (
     causal_router,
 )
 from .routers.pillars import router as pillars_router
+from .routers.llm_testing import router as llm_testing_router
 
 # Import new module routers (optional - may fail due to dependencies)
 auth_router = None
@@ -154,6 +155,7 @@ app.include_router(monitoring_router)
 app.include_router(cognitive_router)
 app.include_router(causal_router)
 app.include_router(pillars_router)
+app.include_router(llm_testing_router)
 
 # Optional routers (may not be available due to dependencies)
 if auth_router:
@@ -642,6 +644,21 @@ async def business_intelligence_view(request: Request):
             "request": request,
             "title": f"{APP_TITLE} - Business Intelligence",
             "active_page": "business-intelligence",
+            **i18n,
+        },
+    )
+
+
+@app.get("/llm-testing", response_class=HTMLResponse)
+async def llm_testing_view(request: Request):
+    """LLM Testing Environment - Real-time testing and benchmarking"""
+    i18n = create_i18n_context(request)
+    return templates.TemplateResponse(
+        "llm-testing.html",
+        {
+            "request": request,
+            "title": f"{APP_TITLE} - LLM Testing Environment",
+            "active_page": "llm-testing",
             **i18n,
         },
     )
