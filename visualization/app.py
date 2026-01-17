@@ -36,6 +36,7 @@ from .routers import (
 from .routers.pillars import router as pillars_router
 from .routers.llm_testing import router as llm_testing_router
 from .routers.llm_config import router as llm_config_router
+from .routers.design_config import router as design_config_router
 
 # Import new module routers (optional - may fail due to dependencies)
 auth_router = None
@@ -158,6 +159,7 @@ app.include_router(causal_router)
 app.include_router(pillars_router)
 app.include_router(llm_testing_router)
 app.include_router(llm_config_router)
+app.include_router(design_config_router)
 
 # Optional routers (may not be available due to dependencies)
 if auth_router:

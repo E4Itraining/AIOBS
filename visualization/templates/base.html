@@ -544,23 +544,53 @@
         // Initialize Lucide icons
         lucide.createIcons();
 
-        // Theme Management
+        // Theme Management with API persistence
+        async function saveThemeToServer(theme) {
+            try {
+                await fetch('/api/design/config', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ theme: theme })
+                });
+            } catch (e) {
+                console.warn('Failed to save theme to server:', e);
+            }
+        }
+
         function toggleTheme() {
             const html = document.documentElement;
             const current = html.getAttribute('data-theme');
             const next = current === 'light' ? 'dark' : 'light';
             html.setAttribute('data-theme', next);
             localStorage.setItem('gaskia-theme', next);
+            // Save to server for persistence across sessions/devices
+            saveThemeToServer(next);
             lucide.createIcons();
         }
 
-        // Load saved theme
-        (function() {
-            const saved = localStorage.getItem('gaskia-theme') || localStorage.getItem('aiobs-theme');
-            if (saved) {
-                document.documentElement.setAttribute('data-theme', saved);
+        // Load saved theme from server first, then localStorage as fallback
+        (async function() {
+            // Apply localStorage immediately for fast initial render
+            const localSaved = localStorage.getItem('gaskia-theme') || localStorage.getItem('aiobs-theme');
+            if (localSaved) {
+                document.documentElement.setAttribute('data-theme', localSaved);
             } else if (window.matchMedia('(prefers-color-scheme: dark)').matches) {
                 document.documentElement.setAttribute('data-theme', 'dark');
+            }
+
+            // Then fetch from server and sync
+            try {
+                const response = await fetch('/api/design/config');
+                if (response.ok) {
+                    const config = await response.json();
+                    if (config.configured && config.theme) {
+                        document.documentElement.setAttribute('data-theme', config.theme);
+                        localStorage.setItem('gaskia-theme', config.theme);
+                        lucide.createIcons();
+                    }
+                }
+            } catch (e) {
+                console.warn('Failed to load theme from server, using local storage:', e);
             }
         })();
 
