@@ -2,38 +2,7 @@
 
 {% set active_page = 'monitoring' %}
 
-{% block sidebar_extra %}
-<div class="nav-group">
-    <span class="nav-group-title">Business Views</span>
-    <a href="/executive" class="nav-link">
-        <i data-lucide="briefcase"></i>
-        <span>Executive Dashboard</span>
-    </a>
-    <a href="/finops" class="nav-link">
-        <i data-lucide="wallet"></i>
-        <span>FinOps</span>
-    </a>
-    <a href="/greenops" class="nav-link">
-        <i data-lucide="leaf"></i>
-        <span>GreenOps</span>
-    </a>
-    <a href="/compliance" class="nav-link">
-        <i data-lucide="shield-check"></i>
-        <span>Compliance</span>
-    </a>
-</div>
-<div class="nav-group">
-    <span class="nav-group-title">Technical Views</span>
-    <a href="/monitoring" class="nav-link active">
-        <i data-lucide="activity"></i>
-        <span>Live Monitoring</span>
-    </a>
-    <a href="/security" class="nav-link">
-        <i data-lucide="lock"></i>
-        <span>Security Center</span>
-    </a>
-</div>
-{% endblock %}
+{% block sidebar_extra %}{% endblock %}
 
 {% block page_title %}Live Monitoring{% endblock %}
 {% block page_subtitle %}<p class="text-muted">API health, drift & performance</p>{% endblock %}
@@ -41,13 +10,12 @@
 {% block topbar_actions %}
 <div class="live-indicator">
     <span class="live-dot"></span>
-    <span>Live Data</span>
+    <span>Live</span>
 </div>
-<select class="form-select" id="refreshRate" style="width: 120px;" onchange="updateRefreshRate()">
-    <option value="5">5s refresh</option>
-    <option value="10" selected>10s refresh</option>
-    <option value="30">30s refresh</option>
-    <option value="60">1m refresh</option>
+<select class="form-select" id="refreshRate" style="width: 110px;" onchange="updateRefreshRate()">
+    <option value="10">10s</option>
+    <option value="30" selected>30s</option>
+    <option value="60">1min</option>
 </select>
 <button class="btn btn-secondary" onclick="togglePause()">
     <i data-lucide="pause" id="pauseIcon"></i>
@@ -56,6 +24,30 @@
 {% endblock %}
 
 {% block content %}
+<!-- Tab Navigation -->
+<div class="tab-container">
+    <div class="tab-header">
+        <button class="tab-btn active" onclick="switchMonitoringTab('health')" data-tab="health">
+            <i data-lucide="heart-pulse"></i>
+            <span>Sante systeme</span>
+        </button>
+        <button class="tab-btn" onclick="switchMonitoringTab('drift')" data-tab="drift">
+            <i data-lucide="git-branch"></i>
+            <span>Drift</span>
+        </button>
+        <button class="tab-btn" onclick="switchMonitoringTab('api')" data-tab="api">
+            <i data-lucide="server"></i>
+            <span>API Health</span>
+        </button>
+        <button class="tab-btn" onclick="switchMonitoringTab('performance')" data-tab="performance">
+            <i data-lucide="gauge"></i>
+            <span>Performance</span>
+        </button>
+    </div>
+</div>
+
+<!-- Tab: Health -->
+<div class="tab-panel active" id="tab-health">
 <!-- System Health Overview -->
 <section class="mb-6">
     <div class="health-grid">
@@ -188,8 +180,10 @@
         </div>
     </div>
 </section>
+</div><!-- /tab-health -->
 
-<!-- Drift Detection -->
+<!-- Tab: Drift -->
+<div class="tab-panel" id="tab-drift">
 <section class="mb-6">
     <div class="card">
         <div class="card-header">
@@ -313,8 +307,10 @@
         </div>
     </div>
 </section>
+</div><!-- /tab-drift -->
 
-<!-- API Health Checks -->
+<!-- Tab: API -->
+<div class="tab-panel" id="tab-api">
 <section class="mb-6">
     <div class="card">
         <div class="card-header">
@@ -376,8 +372,10 @@
         </div>
     </div>
 </section>
+</div><!-- /tab-api -->
 
-<!-- Model Performance -->
+<!-- Tab: Performance -->
+<div class="tab-panel" id="tab-performance">
 <section class="mb-6">
     <div class="grid grid-2">
         <!-- Trust Score Trend -->
@@ -450,6 +448,7 @@
         </div>
     </div>
 </section>
+</div><!-- /tab-performance -->
 
 <style>
 /* Live Indicator */
@@ -899,8 +898,19 @@
 
 {% block scripts %}
 <script>
+// Tab switching for monitoring page
+function switchMonitoringTab(tabId) {
+    document.querySelectorAll('.tab-panel').forEach(p => p.classList.remove('active'));
+    document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+    const panel = document.getElementById('tab-' + tabId);
+    if (panel) panel.classList.add('active');
+    const btn = document.querySelector('[data-tab="' + tabId + '"]');
+    if (btn) btn.classList.add('active');
+    if (typeof lucide !== 'undefined') lucide.createIcons();
+}
+
 let isPaused = false;
-let refreshInterval = 10000;
+let refreshInterval = 30000;
 let latencyChart, throughputChart, trustChart;
 let latencyData = [];
 let throughputData = [];

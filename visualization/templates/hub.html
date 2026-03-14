@@ -178,9 +178,34 @@
     align-items: center;
     gap: var(--space-8);
     padding: var(--space-8);
-    background: linear-gradient(135deg, var(--bg-card) 0%, var(--bg-body) 100%);
-    border-radius: var(--radius-xl);
-    border: 1px solid var(--border-color);
+    background: var(--gradient-hero);
+    border-radius: var(--radius-2xl, var(--radius-xl));
+    border: none;
+    color: white;
+    position: relative;
+    overflow: hidden;
+}
+
+.hub-hero::before {
+    content: '';
+    position: absolute;
+    top: -50%;
+    right: -10%;
+    width: 350px;
+    height: 350px;
+    background: radial-gradient(circle, rgba(200,16,46,0.12) 0%, transparent 70%);
+    border-radius: 50%;
+}
+
+.hub-hero .hub-welcome h2,
+.hub-hero .hub-welcome p,
+.hub-hero .hub-stats .stat-value,
+.hub-hero .hub-stats .stat-label {
+    color: white;
+}
+
+.hub-hero .hub-stats .stat-label {
+    opacity: 0.75;
 }
 
 .health-ring {

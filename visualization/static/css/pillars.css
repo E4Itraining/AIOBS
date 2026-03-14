@@ -8,51 +8,51 @@
    ============================================================================= */
 
 :root {
-    /* Pillar Colors - Erythix Rich Palette */
-    --pillar-reliability: #059669;      /* Emerald 600 - Deeper trust */
-    --pillar-reliability-light: #A7F3D0;
+    /* Pillar Colors - Bordeaux & Navy Palette */
+    --pillar-reliability: #059669;      /* Emerald 600 */
+    --pillar-reliability-light: #ECFDF5;
     --pillar-reliability-dark: #047857;
 
-    --pillar-security: #DC6B16;         /* Burnt Orange - Strong protection */
-    --pillar-security-light: #FED7AA;
-    --pillar-security-dark: #9A3412;
+    --pillar-security: #8B1A2B;         /* Bordeaux */
+    --pillar-security-light: #FDF0F2;
+    --pillar-security-dark: #6E1522;
 
-    --pillar-compliance: #4F46E5;       /* Indigo 600 - Deep authority */
-    --pillar-compliance-light: #C7D2FE;
-    --pillar-compliance-dark: #3730A3;
+    --pillar-compliance: #1B2A4A;       /* Navy */
+    --pillar-compliance-light: #E8ECF4;
+    --pillar-compliance-dark: #0F1729;
 
-    --pillar-explainability: #7C3AED;   /* Violet 600 - Rich insight */
-    --pillar-explainability-light: #DDD6FE;
+    --pillar-explainability: #7C3AED;   /* Violet 600 */
+    --pillar-explainability-light: #F5F3FF;
     --pillar-explainability-dark: #5B21B6;
 
-    --pillar-performance: #2563EB;      /* Blue 600 - Strong efficiency */
-    --pillar-performance-light: #BFDBFE;
+    --pillar-performance: #2563EB;      /* Blue 600 */
+    --pillar-performance-light: #EFF6FF;
     --pillar-performance-dark: #1D4ED8;
 
-    /* Gradients - Richer, More Contrast */
-    --gradient-reliability: linear-gradient(135deg, #059669 0%, #047857 100%);
-    --gradient-security: linear-gradient(135deg, #DC6B16 0%, #C2410C 100%);
-    --gradient-compliance: linear-gradient(135deg, #4F46E5 0%, #3730A3 100%);
-    --gradient-explainability: linear-gradient(135deg, #7C3AED 0%, #6D28D9 100%);
-    --gradient-performance: linear-gradient(135deg, #2563EB 0%, #1D4ED8 100%);
+    /* Gradients */
+    --gradient-reliability: linear-gradient(135deg, #059669 0%, #10B981 100%);
+    --gradient-security: linear-gradient(135deg, #8B1A2B 0%, #C8102E 100%);
+    --gradient-compliance: linear-gradient(135deg, #1B2A4A 0%, #2563EB 100%);
+    --gradient-explainability: linear-gradient(135deg, #7C3AED 0%, #8B5CF6 100%);
+    --gradient-performance: linear-gradient(135deg, #2563EB 0%, #3B82F6 100%);
 }
 
-/* Dark mode adjustments - Erythix */
+/* Dark mode adjustments */
 [data-theme="dark"] {
     --pillar-reliability: #10B981;
-    --pillar-reliability-light: rgba(5, 150, 105, 0.25);
+    --pillar-reliability-light: rgba(5, 150, 105, 0.15);
 
-    --pillar-security: #F59E0B;
-    --pillar-security-light: rgba(220, 107, 22, 0.25);
+    --pillar-security: #E04B5E;
+    --pillar-security-light: rgba(139, 26, 43, 0.2);
 
-    --pillar-compliance: #818CF8;
-    --pillar-compliance-light: rgba(79, 70, 229, 0.25);
+    --pillar-compliance: #60A5FA;
+    --pillar-compliance-light: rgba(37, 99, 235, 0.15);
 
     --pillar-explainability: #A78BFA;
-    --pillar-explainability-light: rgba(124, 58, 237, 0.25);
+    --pillar-explainability-light: rgba(124, 58, 237, 0.15);
 
     --pillar-performance: #60A5FA;
-    --pillar-performance-light: rgba(37, 99, 235, 0.25);
+    --pillar-performance-light: rgba(37, 99, 235, 0.15);
 }
 
 /* =============================================================================

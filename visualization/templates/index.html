@@ -18,86 +18,30 @@
 {% endblock %}
 
 {% block content %}
-<!-- Page Narrative Section -->
-<div class="page-narrative" id="pageNarrative">
-    <button class="narrative-dismiss" onclick="dismissNarrative()" title="{{ t('actions.close') or 'Close' }}">
+<!-- Unified Welcome Banner (merged narrative + tips) -->
+<div class="welcome-banner" id="welcomeBanner">
+    <button class="welcome-banner-dismiss" onclick="dismissWelcomeBanner()" title="{{ t('actions.close') or 'Close' }}">
         <i data-lucide="x"></i>
     </button>
-    <div class="narrative-header">
-        <div class="narrative-icon">
-            <i data-lucide="eye"></i>
-        </div>
-        <div class="narrative-content">
-            <h2>{{ t('narrative.dashboard_title') or 'Bienvenue dans votre Centre de Contrôle IA' }}</h2>
-            <p>{{ t('narrative.dashboard_desc') or 'GASKIA vous offre une vision unifiée de vos systèmes IA : fiabilité, performance, coûts et conformité. Voir. Prouver. Maîtriser.' }}</p>
-        </div>
-    </div>
-    <div class="narrative-features">
-        <div class="narrative-feature">
-            <i data-lucide="shield-check"></i>
-            <span>Score de Confiance</span>
-        </div>
-        <div class="narrative-feature">
-            <i data-lucide="activity"></i>
-            <span>Monitoring Live</span>
-        </div>
-        <div class="narrative-feature">
-            <i data-lucide="git-branch"></i>
-            <span>Analyse Causale</span>
-        </div>
-        <div class="narrative-feature">
-            <i data-lucide="shield"></i>
-            <span>Conformité IA</span>
-        </div>
-    </div>
-    <div class="narrative-actions">
-        <button class="btn btn-primary" onclick="startGuidedTour()">
-            <i data-lucide="play-circle"></i>
-            {{ t('help.start_tour') or 'Découvrir en 2 minutes' }}
-        </button>
-        <a href="/" class="btn btn-secondary">
-            <i data-lucide="compass"></i>
-            {{ t('help.change_profile') or 'Choisir mon Parcours' }}
-        </a>
-    </div>
-</div>
-
-<!-- Quick Tips for New Users -->
-<div class="quick-tips" id="quickTips">
-    <div class="quick-tips-header">
-        <i data-lucide="sparkles"></i>
-        {{ t('help.quick_tips') or 'Astuces Rapides' }}
-        <button class="quick-tips-dismiss" onclick="dismissTips()" title="Fermer">
-            <i data-lucide="x"></i>
-        </button>
-    </div>
-    <div class="quick-tips-grid">
-        <div class="quick-tip">
-            <div class="quick-tip-icon"><i data-lucide="mouse-pointer-click"></i></div>
-            <div class="quick-tip-content">
-                <strong>{{ t('help.tip_1_title') or 'KPIs Interactifs' }}</strong>
-                <span>{{ t('help.tip_1') or 'Cliquez sur une carte KPI pour voir les détails et tendances' }}</span>
+    <div class="welcome-banner-content">
+        <h2>{{ t('narrative.dashboard_title') or 'Centre de Controle IA' }}</h2>
+        <p>{{ t('narrative.dashboard_desc') or 'Vision unifiee de vos systemes IA : fiabilite, performance, couts et conformite.' }}</p>
+        <div class="welcome-tips">
+            <div class="welcome-tip">
+                <i data-lucide="mouse-pointer-click"></i>
+                <span>{{ t('help.tip_1_title') or 'KPIs interactifs' }}</span>
             </div>
-        </div>
-        <div class="quick-tip">
-            <div class="quick-tip-icon"><i data-lucide="command"></i></div>
-            <div class="quick-tip-content">
-                <strong>{{ t('help.tip_2_title') or 'Navigation Rapide' }}</strong>
-                <span>{{ t('help.tip_2') or 'Utilisez ⌘K pour accéder instantanément à n\'importe quelle page' }}</span>
+            <div class="welcome-tip">
+                <i data-lucide="command"></i>
+                <span>{{ t('help.tip_2_title') or 'Navigation rapide' }} (&#8984;K)</span>
             </div>
-        </div>
-        <div class="quick-tip">
-            <div class="quick-tip-icon"><i data-lucide="search"></i></div>
-            <div class="quick-tip-content">
-                <strong>{{ t('help.tip_3_title') or 'Analyse Causale' }}</strong>
-                <span>{{ t('help.tip_3') or 'Cliquez "Investiguer" sur un problème pour voir l\'analyse root cause' }}</span>
+            <div class="welcome-tip">
+                <i data-lucide="git-branch"></i>
+                <span>{{ t('help.tip_3_title') or 'Analyse causale' }}</span>
             </div>
-        </div>
-        <div class="quick-tip">
-            <div class="quick-tip-icon"><i data-lucide="message-circle"></i></div>
-            <div class="quick-tip-content">
-                <strong>{{ t('help.tip_4_title') or 'Assistant IA' }}</strong>
-                <span>{{ t('help.tip_4') or 'Posez vos questions à l\'assistant en bas à droite' }}</span>
+            <div class="welcome-tip">
+                <i data-lucide="message-circle"></i>
+                <span>{{ t('help.tip_4_title') or 'Assistant IA' }}</span>
             </div>
         </div>
     </div>
@@ -708,43 +652,24 @@ document.getElementById('serviceSearch')?.addEventListener('input', (e) => {
 
 // Narrative and Quick Tips management
 function initNarrativeAndTips() {
-    const narrativeDismissed = localStorage.getItem('aiobs-narrative-dismissed');
-    const tipsDismissed = localStorage.getItem('aiobs-tips-dismissed');
+    const bannerDismissed = localStorage.getItem('aiobs-welcome-dismissed');
     const onboardingComplete = localStorage.getItem('aiobs-onboarding-complete');
 
-    // Hide narrative if already dismissed or onboarding was completed
-    if (narrativeDismissed || onboardingComplete) {
-        const narrative = document.getElementById('pageNarrative');
-        if (narrative) narrative.style.display = 'none';
-    }
-
-    // Hide tips if dismissed
-    if (tipsDismissed || onboardingComplete) {
-        const tips = document.getElementById('quickTips');
-        if (tips) tips.style.display = 'none';
+    if (bannerDismissed || onboardingComplete) {
+        const banner = document.getElementById('welcomeBanner');
+        if (banner) banner.style.display = 'none';
     }
 }
 
-function dismissNarrative() {
-    const narrative = document.getElementById('pageNarrative');
-    if (narrative) {
-        narrative.style.animation = 'fadeOut 0.3s ease forwards';
+function dismissWelcomeBanner() {
+    const banner = document.getElementById('welcomeBanner');
+    if (banner) {
+        banner.style.animation = 'fadeOut 0.3s ease forwards';
         setTimeout(() => {
-            narrative.style.display = 'none';
+            banner.style.display = 'none';
         }, 300);
     }
-    localStorage.setItem('aiobs-narrative-dismissed', 'true');
-}
-
-function dismissTips() {
-    const tips = document.getElementById('quickTips');
-    if (tips) {
-        tips.style.animation = 'fadeOut 0.3s ease forwards';
-        setTimeout(() => {
-            tips.style.display = 'none';
-        }, 300);
-    }
-    localStorage.setItem('aiobs-tips-dismissed', 'true');
+    localStorage.setItem('aiobs-welcome-dismissed', 'true');
 }
 
 // Initialize on page load
