@@ -1,39 +1,33 @@
 # =============================================================================
-# AIOBS - AI Observability Hub
-# Docker Compose Configuration for Full Stack Deployment
+# Skophia — Sovereign AI Cybersecurity Platform
+# Docker Compose Configuration
 # =============================================================================
 #
 # Quick Start:
-#   docker-compose up -d
+#   docker compose up -d
 #
-# Services:
-#   - visualization: FastAPI Dashboard (port 8000)
-#   - backend: TypeScript Core Platform (port 3000)
-#   - victoriametrics: Time-series metrics database (port 8428)
-#   - openobserve: Logs, traces, compliance storage (port 5080)
-#   - redis: Caching and real-time pub/sub (port 6379)
-#   - test: Containerized test runner (profile: test)
+# Air-gap deployment:
+#   docker compose --profile airgap up -d
+#
+# With monitoring (Grafana):
+#   docker compose --profile monitoring up -d
 #
 # Run tests:
-#   docker-compose --profile test run --rm test
-#   docker-compose --profile test run --rm test --suite security
-#   TEST_COVERAGE=true docker-compose --profile test run --rm test
+#   docker compose --profile test run --rm test
 #
 # =============================================================================
 
 services:
   # ===========================================================================
-  # AIOBS Visualization Dashboard (FastAPI)
+  # Skophia Visualization Dashboard (FastAPI)
   # ===========================================================================
   visualization:
     build:
       context: .
       dockerfile: Dockerfile.visualization
-    container_name: aiobs-visualization
     ports:
       - "${VISUALIZATION_PORT:-8000}:8000"
     volumes:
-      # Mount source for hot-reload in development
       - ./visualization:/app/visualization:ro
     environment:
       - PORT=8000
@@ -50,7 +44,7 @@ services:
       redis:
         condition: service_healthy
     networks:
-      - aiobs-network
+      - skophia-network
     restart: unless-stopped
     healthcheck:
       test: ["CMD", "python", "-c", "import urllib.request; urllib.request.urlopen('http://localhost:8000/health')"]
@@ -58,19 +52,15 @@ services:
       timeout: 10s
       retries: 3
       start_period: 10s
-    labels:
-      - "traefik.enable=true"
-      - "traefik.http.routers.aiobs-viz.rule=Host(`aiobs.local`)"
-      - "traefik.http.services.aiobs-viz.loadbalancer.server.port=8000"
 
   # ===========================================================================
-  # AIOBS Backend Platform (TypeScript/Node.js)
+  # Skophia Backend Platform (TypeScript/Node.js)
+  # Core Gaskia telemetry engine
   # ===========================================================================
   backend:
     build:
       context: .
       dockerfile: Dockerfile.backend
-    container_name: aiobs-backend
     ports:
       - "${BACKEND_PORT:-3000}:3000"
     environment:
@@ -78,10 +68,11 @@ services:
       - PORT=3000
       - VICTORIA_METRICS_URL=http://victoriametrics:8428
       - OPENOBSERVE_URL=http://openobserve:5080
-      - OPENOBSERVE_USER=${OPENOBSERVE_USER:-admin}
-      - OPENOBSERVE_PASSWORD=${OPENOBSERVE_PASSWORD:-Complexpass#123}
+      - OPENOBSERVE_USER=${OPENOBSERVE_USER:-admin@skophia.local}
+      - OPENOBSERVE_PASSWORD=${OPENOBSERVE_PASSWORD}
       - REDIS_URL=redis://redis:6379
       - LOG_LEVEL=${LOG_LEVEL:-info}
+      - AIOBS_EDGE_MODE=${AIOBS_EDGE_MODE:-false}
     depends_on:
       victoriametrics:
         condition: service_healthy
@@ -90,7 +81,7 @@ services:
       redis:
         condition: service_healthy
     networks:
-      - aiobs-network
+      - skophia-network
     restart: unless-stopped
     healthcheck:
       test: ["CMD", "node", "-e", "require('http').get('http://localhost:3000/health', (r) => process.exit(r.statusCode === 200 ? 0 : 1))"]
@@ -100,12 +91,76 @@ services:
       start_period: 10s
 
   # ===========================================================================
-  # VictoriaMetrics - High-Performance Time-Series Database
-  # For: Metrics, SLIs, Performance Data
+  # Synapsix — Threat Detection Engine
+  # Semantic drift, MITRE ICS correlation, IT/OT correlation
+  # ===========================================================================
+  synapsix:
+    build:
+      context: .
+      dockerfile: Dockerfile.backend
+    ports:
+      - "${SYNAPSIX_PORT:-3001}:3001"
+    environment:
+      - NODE_ENV=production
+      - PORT=3001
+      - VICTORIA_METRICS_URL=http://victoriametrics:8428
+      - OPENOBSERVE_URL=http://openobserve:5080
+      - OPENOBSERVE_USER=${OPENOBSERVE_USER:-admin@skophia.local}
+      - OPENOBSERVE_PASSWORD=${OPENOBSERVE_PASSWORD}
+      - REDIS_URL=redis://redis:6379
+      - LOG_LEVEL=${LOG_LEVEL:-info}
+      - SYNAPSIX_MODE=true
+      - SYNAPSIX_ALERT_MIN_CONFIDENCE=${SYNAPSIX_ALERT_MIN_CONFIDENCE:-0.4}
+      - SYNAPSIX_NIS2_ENABLED=${SYNAPSIX_NIS2_ENABLED:-true}
+    depends_on:
+      backend:
+        condition: service_healthy
+    networks:
+      - skophia-network
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD", "node", "-e", "require('http').get('http://localhost:3001/health', (r) => process.exit(r.statusCode === 200 ? 0 : 1))"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 10s
+
+  # ===========================================================================
+  # TRM Agent — Edge AI Agent (optional, for demo)
+  # ===========================================================================
+  trm-agent:
+    build:
+      context: .
+      dockerfile: Dockerfile.backend
+    profiles:
+      - trm
+    ports:
+      - "${TRM_AGENT_PORT:-3002}:3002"
+    environment:
+      - NODE_ENV=production
+      - PORT=3002
+      - TRM_MODE=true
+      - TRM_AGENT_ID=${TRM_AGENT_ID:-trm-demo-001}
+      - TRM_UPSTREAM_URL=http://backend:3000
+      - TRM_CONNECTIVITY_CHECK_MS=${TRM_CONNECTIVITY_CHECK_MS:-30000}
+      - TRM_LOCAL_DETECTION=${TRM_LOCAL_DETECTION:-true}
+      - TRM_BUFFER_MAX_ENTRIES=${TRM_BUFFER_MAX_ENTRIES:-100000}
+      - TRM_BUFFER_MAX_SIZE_MB=${TRM_BUFFER_MAX_SIZE_MB:-100}
+    networks:
+      - skophia-network
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD", "node", "-e", "require('http').get('http://localhost:3002/health', (r) => process.exit(r.statusCode === 200 ? 0 : 1))"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 10s
+
+  # ===========================================================================
+  # VictoriaMetrics — Sovereign Time-Series Database
   # ===========================================================================
   victoriametrics:
     image: victoriametrics/victoria-metrics:v1.96.0
-    container_name: aiobs-victoriametrics
     ports:
       - "${VICTORIA_METRICS_PORT:-8428}:8428"
     volumes:
@@ -117,7 +172,7 @@ services:
       - "--search.latencyOffset=0s"
       - "--search.maxUniqueTimeseries=300000"
     networks:
-      - aiobs-network
+      - skophia-network
     restart: unless-stopped
     healthcheck:
       test: ["CMD", "sh", "-c", "wget -q -O /dev/null http://127.0.0.1:8428/health"]
@@ -127,39 +182,31 @@ services:
       start_period: 30s
 
   # ===========================================================================
-  # OpenObserve - Unified Logs, Traces, and Metrics
-  # For: Audit Logs, Compliance Records, Traces
+  # OpenObserve — Sovereign Logs, Traces, and Audit Storage
   # ===========================================================================
   openobserve:
-    # Using latest stable version
     image: public.ecr.aws/zinclabs/openobserve:latest
-    container_name: aiobs-openobserve
     ports:
       - "${OPENOBSERVE_PORT:-5080}:5080"
     environment:
-      - ZO_ROOT_USER_EMAIL=${OPENOBSERVE_USER:-admin@aiobs.local}
-      - ZO_ROOT_USER_PASSWORD=${OPENOBSERVE_PASSWORD:-Complexpass#123}
+      - ZO_ROOT_USER_EMAIL=${OPENOBSERVE_USER:-admin@skophia.local}
+      - ZO_ROOT_USER_PASSWORD=${OPENOBSERVE_PASSWORD}
       - ZO_DATA_DIR=/data
       - ZO_HTTP_PORT=5080
       - ZO_TELEMETRY_ENABLED=false
     volumes:
       - openobserve-data:/data
     networks:
-      - aiobs-network
+      - skophia-network
     restart: unless-stopped
-    # No healthcheck in container - use openobserve-healthcheck sidecar instead
-    # OpenObserve minimal image doesn't include curl/wget/shell
 
-  # Sidecar container to provide healthcheck for OpenObserve
-  # This allows dependent services to wait for OpenObserve to be ready
+  # Sidecar healthcheck for OpenObserve
   openobserve-healthcheck:
     image: busybox:stable
-    container_name: aiobs-openobserve-healthcheck
     depends_on:
       - openobserve
     networks:
-      - aiobs-network
-    # Keep container running with a sleep loop
+      - skophia-network
     command: ["sh", "-c", "while true; do sleep 3600; done"]
     restart: unless-stopped
     healthcheck:
@@ -170,19 +217,17 @@ services:
       start_period: 60s
 
   # ===========================================================================
-  # Redis - Caching and Real-time Pub/Sub
-  # For: Session Cache, WebSocket Pub/Sub, Rate Limiting
+  # Redis — Cache and Real-time Pub/Sub
   # ===========================================================================
   redis:
     image: redis:7-alpine
-    container_name: aiobs-redis
     ports:
       - "${REDIS_PORT:-6379}:6379"
     volumes:
       - redis-data:/data
-    command: redis-server --appendonly yes --maxmemory 256mb --maxmemory-policy allkeys-lru
+    command: redis-server --appendonly yes --maxmemory ${REDIS_MAXMEMORY:-256mb} --maxmemory-policy allkeys-lru
     networks:
-      - aiobs-network
+      - skophia-network
     restart: unless-stopped
     healthcheck:
       test: ["CMD", "redis-cli", "ping"]
@@ -192,12 +237,10 @@ services:
       start_period: 5s
 
   # ===========================================================================
-  # VMAgent - VictoriaMetrics Scraping Agent
-  # Collects metrics from services and writes to VictoriaMetrics
+  # VMAgent — Metrics Scraping (optional monitoring profile)
   # ===========================================================================
   vmagent:
     image: victoriametrics/vmagent:v1.96.0
-    container_name: aiobs-vmagent
     profiles:
       - monitoring
     ports:
@@ -213,31 +256,25 @@ services:
       victoriametrics:
         condition: service_healthy
     networks:
-      - aiobs-network
+      - skophia-network
     restart: unless-stopped
 
   # ===========================================================================
-  # Grafana (Optional) - Advanced Visualization
+  # Grafana — Advanced Visualization (optional monitoring profile)
   # ===========================================================================
   grafana:
     image: grafana/grafana:10.2.0
-    container_name: aiobs-grafana
     profiles:
       - monitoring
     ports:
-      - "${GRAFANA_PORT:-3001}:3000"
+      - "${GRAFANA_PORT:-3003}:3000"
     environment:
       - GF_SECURITY_ADMIN_USER=${GRAFANA_USER:-admin}
-      - GF_SECURITY_ADMIN_PASSWORD=${GRAFANA_PASSWORD:-admin}
+      - GF_SECURITY_ADMIN_PASSWORD=${GRAFANA_PASSWORD}
       - GF_USERS_ALLOW_SIGN_UP=false
       - GF_INSTALL_PLUGINS=grafana-clock-panel,grafana-simple-json-datasource,grafana-piechart-panel
-      # Configuration du format de date/heure
       - GF_DATE_FORMATS_FULL_DATE=YYYY-MM-DD HH:mm:ss
-      - GF_DATE_FORMATS_INTERVAL_HOUR=DD/MM HH:mm
-      - GF_DATE_FORMATS_INTERVAL_DAY=DD/MM
       - GF_DATE_FORMATS_DEFAULT_TIMEZONE=browser
-      - GF_DATE_FORMATS_USE_BROWSER_LOCALE=true
-      # Dashboards
       - GF_DASHBOARDS_DEFAULT_HOME_DASHBOARD_PATH=/etc/grafana/provisioning/dashboards/aiobs-dashboard.json
       - GF_DASHBOARDS_MIN_REFRESH_INTERVAL=5s
     volumes:
@@ -247,18 +284,16 @@ services:
     depends_on:
       - victoriametrics
     networks:
-      - aiobs-network
+      - skophia-network
     restart: unless-stopped
 
   # ===========================================================================
-  # AIOBS Test Runner
-  # Containerized test execution for CI/CD and local validation
+  # Test Runner
   # ===========================================================================
   test:
     build:
       context: .
       dockerfile: Dockerfile.test
-    container_name: aiobs-test
     profiles:
       - test
     environment:
@@ -269,26 +304,17 @@ services:
       - TEST_PARALLEL=${TEST_PARALLEL:-false}
       - TEST_TIMEOUT=${TEST_TIMEOUT:-600}
     volumes:
-      # Mount test reports directory for persistence
       - ./test_reports:/app/test_reports
-      # Optional: mount tests for live changes during development
-      # - ./tests:/app/tests:ro
     networks:
-      # Use dedicated test network to avoid conflicts with main services
-      # This prevents "network has active endpoints" errors when running
-      # tests while other services are running
       - test-network
-    # Test runner exits after completion
     restart: "no"
 
 # =============================================================================
 # Networks
 # =============================================================================
 networks:
-  aiobs-network:
+  skophia-network:
     driver: bridge
-    # Note: No explicit subnet - Docker assigns automatically to avoid conflicts
-  # Dedicated network for test runner to avoid conflicts with main services
   test-network:
     driver: bridge
 
