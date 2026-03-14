@@ -43,6 +43,15 @@ import type { AuditEngine } from './governance/audit/audit-engine';
 import type { SLOMonitor } from './governance/slo/slo-monitor';
 import type { HybridStorageBackend } from './storage/hybrid-backend';
 
+// Import defense module types
+import type { SemanticDriftConfig } from './core/types/semantic-drift';
+import type { SemanticDriftEngine } from './core/cognitive/semantic-drift/semantic-drift-engine';
+import type { EdgeBuffer } from './edge-mode/edge-buffer';
+import type { ResyncManager } from './edge-mode/resync-manager';
+import type { MITREICSMapper } from './security/mitre/mitre-ics-mapper';
+import type { MITREAlertEnricher } from './security/mitre/mitre-alert-enricher';
+import type { EdgeModeConfig } from './core/types/edge-mode';
+
 // Version
 export const VERSION = '1.0.0';
 
@@ -114,6 +123,39 @@ export class AIOBS {
       });
     }
 
+    // Initialize defense modules if configured
+    if (config?.semanticDrift) {
+      // eslint-disable-next-line @typescript-eslint/no-require-imports
+      const { SemanticDriftEngine: SDE } = require('./core/cognitive/semantic-drift/semantic-drift-engine');
+      instance.semanticDrift = new SDE(config.semanticDrift);
+    }
+
+    if (config?.mitre) {
+      // eslint-disable-next-line @typescript-eslint/no-require-imports
+      const { MITREICSMapper: Mapper } = require('./security/mitre/mitre-ics-mapper');
+      // eslint-disable-next-line @typescript-eslint/no-require-imports
+      const { MITREAlertEnricher: Enricher } = require('./security/mitre/mitre-alert-enricher');
+      instance.mitre = {
+        mapper: new Mapper(),
+        enricher: new Enricher(),
+      };
+    }
+
+    if (config?.edge?.enabled) {
+      // eslint-disable-next-line @typescript-eslint/no-require-imports
+      const { EdgeBuffer: EB } = require('./edge-mode/edge-buffer');
+      // eslint-disable-next-line @typescript-eslint/no-require-imports
+      const { ResyncManager: RM } = require('./edge-mode/resync-manager');
+      // eslint-disable-next-line @typescript-eslint/no-require-imports
+      const { getDefaultEdgeModeConfig } = require('./edge-mode/edge-mode-config');
+      const edgeConfig = { ...getDefaultEdgeModeConfig(), ...config.edge };
+      const buffer = new EB(edgeConfig.buffer);
+      instance.edge = {
+        buffer,
+        resync: new RM(buffer, edgeConfig.resync),
+      };
+    }
+
     return instance;
   }
 }
@@ -150,6 +192,12 @@ export interface AIBOSConfig {
   slo?: Partial<SLOMonitorConfig>;
   /** Storage backend configuration */
   storage?: AIBOSStorageConfig;
+  /** Semantic drift detection configuration (defense module) */
+  semanticDrift?: Partial<SemanticDriftConfig>;
+  /** MITRE ATT&CK ICS integration — pass {} to enable with defaults */
+  mitre?: { enabled?: boolean };
+  /** Edge / air-gap mode configuration */
+  edge?: Partial<EdgeModeConfig>;
 }
 
 /**
@@ -164,6 +212,18 @@ export interface AIBOSInstance {
   audit: AuditEngine;
   /** SLO monitor for service level objectives */
   slo: SLOMonitor;
+  /** Semantic drift detection engine (if configured) */
+  semanticDrift?: SemanticDriftEngine;
+  /** MITRE ATT&CK ICS mapper and enricher (if configured) */
+  mitre?: {
+    mapper: MITREICSMapper;
+    enricher: MITREAlertEnricher;
+  };
+  /** Edge mode buffer and resync manager (if configured) */
+  edge?: {
+    buffer: EdgeBuffer;
+    resync: ResyncManager;
+  };
   /** Storage backend (if configured) */
   storage?: HybridStorageBackend;
 }

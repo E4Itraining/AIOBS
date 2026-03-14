@@ -267,6 +267,8 @@ python run.py
 - [Features & API](./docs/FEATURES.md) - Game-changer features
 - [Architecture Overview](./docs/architecture/OVERVIEW.md) - System design
 - [Defense Capabilities](./docs/DEFENSE_CAPABILITIES.md) - Semantic drift, IT/OT, MITRE, edge mode
+- [OT Connectors](./docs/OT_CONNECTORS.md) - Protocol connector guide
+- [MITRE ATT&CK ICS](./docs/MITRE_ATTACK_ICS.md) - Technique mapping reference
 - [Edge Mode](./docs/EDGE_MODE.md) - Air-gap deployment guide
 - [Development Guide](./docs/DEVELOPMENT.md) - Local setup and development
 - [Configuration Guide](./docs/CONFIGURATION.md) - Environment and settings
