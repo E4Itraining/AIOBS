@@ -74,16 +74,16 @@ from .routers.realtime import start_background_tasks, stop_background_tasks
 logger = logging.getLogger("aiobs.app")
 
 # Application metadata
-APP_TITLE = "AIOBS - AI Observability Hub"
+APP_TITLE = "GASKIA - Cyberdéfense IA Souveraine"
 APP_DESCRIPTION = """
-## Trust Control Layer for AI Systems
+## Plateforme de Supervision IA - Ministère des Armées
 
-AIOBS provides unified observability for AI systems with:
+GASKIA fournit une supervision souveraine des systèmes d'IA pour la Défense :
 
-- **Cognitive Metrics**: Drift, reliability, hallucination detection
-- **Causal Analysis**: Root cause analysis, impact assessment
-- **Multi-Profile Views**: Adaptive dashboards for tech and non-tech users
-- **Unified Monitoring**: Single pane of glass for all AI operations
+- **Détection de menaces IA** : Drift, adversarial, injection de prompts
+- **Corrélation IT/OT** : Chaînes causales, analyse d'impact opérationnel
+- **Conformité LPM/AI Act** : Homologation, traçabilité, classification DR/CD
+- **Supervision SOC Défense** : Vue unifiée COMCYBER, alertes sémantiques MITRE
 """
 APP_VERSION = "1.0.0"
 
@@ -260,83 +260,53 @@ async def profile_dashboard(request: Request, profile_id: str):
 
     # Profile metadata for enhanced dashboard
     PROFILE_META = {
-        "tech_ml_engineer": {
-            "name": "ML Engineer",
-            "description": "Drift detection, cognitive metrics, reliability analysis et performance ML",
-            "color": "#6366f1",
-            "icon": "brain",
+        "defense_soc": {
+            "name": "Commandant SOC Défense",
+            "description": "Alertes sémantiques, corrélation IT/OT, MITRE ATT&CK/ICS, supervision COMCYBER",
+            "color": "#1e3a5f",
+            "icon": "shield",
         },
-        "tech_devops": {
-            "name": "DevOps Engineer",
-            "description": "SLOs/SLIs, latences, uptime et monitoring infrastructure",
-            "color": "#3b82f6",
-            "icon": "server",
+        "officier_cyber": {
+            "name": "Officier Cyber",
+            "description": "Posture cyberdéfense, menaces IA adverses, incidents et chaînes causales",
+            "color": "#8B1A2B",
+            "icon": "sword",
         },
-        "tech_data_scientist": {
-            "name": "Data Scientist",
-            "description": "Data quality, feature analysis, experiments et statistiques",
-            "color": "#8b5cf6",
-            "icon": "database",
-        },
-        "business_product": {
-            "name": "Product Owner",
-            "description": "AI features, user experience, adoption et impact business",
-            "color": "#f59e0b",
-            "icon": "zap",
-        },
-        "business_executive": {
-            "name": "Executive",
-            "description": "KPIs stratégiques, ROI, conformité et vue d'ensemble",
-            "color": "#10b981",
-            "icon": "briefcase",
-        },
-        "security_soc": {
-            "name": "Security Analyst",
-            "description": "Posture sécurité, menaces, incidents et vulnérabilités",
+        "ossi": {
+            "name": "OSSI / RSSI Défense",
+            "description": "Homologation, classification DR/CD, conformité LPM et IGI 1300",
             "color": "#ef4444",
             "icon": "shield-alert",
         },
+        "tech_sic": {
+            "name": "Officier SIC",
+            "description": "Infrastructure SIC, réseaux classifiés, latences et disponibilité systèmes",
+            "color": "#3b82f6",
+            "icon": "server",
+        },
+        "tech_ml_engineer": {
+            "name": "Ingénieur IA Défense",
+            "description": "Drift détection, robustesse adversariale, fiabilité modèles opérationnels",
+            "color": "#6366f1",
+            "icon": "brain",
+        },
         "compliance_legal": {
-            "name": "Compliance Officer",
-            "description": "Conformité réglementaire, audit trail et documentation",
+            "name": "Juriste Défense",
+            "description": "Conformité AI Act, LPM, RGPD Défense, homologation et audit",
             "color": "#f59e0b",
             "icon": "scale",
         },
-        "sustainability_esg": {
-            "name": "ESG Manager",
-            "description": "Empreinte carbone, consommation énergétique et reporting ESG",
-            "color": "#059669",
-            "icon": "leaf",
-        },
-        "governance_dsi": {
-            "name": "DSI / CIO",
-            "description": "Gouvernance IT stratégique, portefeuille IA, budget et transformation digitale",
-            "color": "#6366f1",
+        "etat_major": {
+            "name": "État-Major / COMCYBER",
+            "description": "Vue stratégique, posture cyber nationale, indicateurs de menace globaux",
+            "color": "#10b981",
             "icon": "landmark",
         },
-        "governance_rsi": {
-            "name": "RSI / IT Manager",
-            "description": "Gestion opérationnelle IT, systèmes IA, projets et ressources équipe",
-            "color": "#3b82f6",
-            "icon": "settings",
-        },
-        "privacy_dpo": {
-            "name": "Data Protection Officer",
-            "description": "Protection des données, GDPR, registre des traitements et droits des personnes",
+        "dga": {
+            "name": "DGA / ANSSI",
+            "description": "Évaluation technique, certification, tests adversariaux et benchmarks",
             "color": "#8b5cf6",
-            "icon": "user-check",
-        },
-        "legal_counsel": {
-            "name": "Legal Counsel",
-            "description": "Risques juridiques IA, contrats, propriété intellectuelle et veille réglementaire",
-            "color": "#0ea5e9",
-            "icon": "scale",
-        },
-        "defense_soc": {
-            "name": "Commandant SOC Défense",
-            "description": "Alertes sémantiques, chaînes causales, corrélation IT/OT, conformité AI Act",
-            "color": "#1e3a5f",
-            "icon": "shield",
+            "icon": "flask-conical",
         },
     }
 
@@ -409,7 +379,7 @@ async def executive_view(request: Request):
         "executive.html",
         {
             "request": request,
-            "title": f"{APP_TITLE} - Executive Dashboard",
+            "title": f"{APP_TITLE} - Vue État-Major",
             "active_page": "executive",
             **i18n,
         },
@@ -424,7 +394,7 @@ async def compliance_view(request: Request):
         "compliance.html",
         {
             "request": request,
-            "title": f"{APP_TITLE} - Compliance & Governance",
+            "title": f"{APP_TITLE} - Conformité & Homologation",
             "active_page": "compliance",
             **i18n,
         },
@@ -439,7 +409,7 @@ async def greenops_view(request: Request):
         "greenops.html",
         {
             "request": request,
-            "title": f"{APP_TITLE} - GreenOps Sustainability",
+            "title": f"{APP_TITLE} - Sobriété Numérique",
             "active_page": "greenops",
             **i18n,
         },
@@ -454,7 +424,7 @@ async def finops_view(request: Request):
         "finops.html",
         {
             "request": request,
-            "title": f"{APP_TITLE} - FinOps Cost Management",
+            "title": f"{APP_TITLE} - Ressources & Budget",
             "active_page": "finops",
             **i18n,
         },
@@ -469,7 +439,7 @@ async def monitoring_view(request: Request):
         "monitoring.html",
         {
             "request": request,
-            "title": f"{APP_TITLE} - Live Monitoring",
+            "title": f"{APP_TITLE} - Surveillance Opérationnelle",
             "active_page": "monitoring",
             **i18n,
         },
@@ -484,7 +454,7 @@ async def security_view(request: Request):
         "security.html",
         {
             "request": request,
-            "title": f"{APP_TITLE} - Security Center",
+            "title": f"{APP_TITLE} - Cyberdéfense",
             "active_page": "security",
             **i18n,
         },
@@ -556,7 +526,7 @@ async def tech_view(request: Request):
         "tech.html",
         {
             "request": request,
-            "title": f"{APP_TITLE} - Vue Tech (DSI/RSSI)",
+            "title": f"{APP_TITLE} - Vue Technique (SIC/SSI)",
             "active_page": "tech",
             **i18n,
         },
@@ -606,7 +576,7 @@ async def guardrails_view(request: Request):
         "guardrails.html",
         {
             "request": request,
-            "title": f"{APP_TITLE} - GenAI Guardrails",
+            "title": f"{APP_TITLE} - Garde-fous IA",
             "active_page": "guardrails",
             **i18n,
         },
@@ -621,7 +591,7 @@ async def multi_agent_view(request: Request):
         "multi-agent.html",
         {
             "request": request,
-            "title": f"{APP_TITLE} - Multi-Agent Hub",
+            "title": f"{APP_TITLE} - Hub Multi-Agents",
             "active_page": "multi-agent",
             **i18n,
         },
@@ -636,7 +606,7 @@ async def supply_chain_view(request: Request):
         "supply-chain.html",
         {
             "request": request,
-            "title": f"{APP_TITLE} - AI Supply Chain",
+            "title": f"{APP_TITLE} - Chaîne d'Approvisionnement IA",
             "active_page": "supply-chain",
             **i18n,
         },
@@ -651,7 +621,7 @@ async def healing_view(request: Request):
         "healing.html",
         {
             "request": request,
-            "title": f"{APP_TITLE} - Autonomous Healing",
+            "title": f"{APP_TITLE} - Auto-Remédiation",
             "active_page": "healing",
             **i18n,
         },
@@ -666,7 +636,7 @@ async def business_intelligence_view(request: Request):
         "business-intelligence.html",
         {
             "request": request,
-            "title": f"{APP_TITLE} - Business Intelligence",
+            "title": f"{APP_TITLE} - Renseignement Opérationnel",
             "active_page": "business-intelligence",
             **i18n,
         },
@@ -681,7 +651,7 @@ async def llm_testing_view(request: Request):
         "llm-testing.html",
         {
             "request": request,
-            "title": f"{APP_TITLE} - LLM Testing Environment",
+            "title": f"{APP_TITLE} - Banc d'Essai LLM",
             "active_page": "llm-testing",
             **i18n,
         },
@@ -709,12 +679,12 @@ async def settings_llm_view(request: Request):
 
 # Personas configuration for pillars
 PILLAR_PERSONAS = [
-    {"id": "business_executive", "name": "Dirigeant", "icon": "briefcase"},
-    {"id": "tech_ml_engineer", "name": "ML Engineer", "icon": "cpu"},
-    {"id": "tech_devops", "name": "DevOps", "icon": "terminal"},
-    {"id": "security_soc", "name": "Security", "icon": "shield"},
-    {"id": "compliance_legal", "name": "Compliance", "icon": "scale"},
-    {"id": "sustainability_esg", "name": "ESG", "icon": "leaf"},
+    {"id": "etat_major", "name": "État-Major", "icon": "landmark"},
+    {"id": "defense_soc", "name": "SOC Défense", "icon": "shield"},
+    {"id": "officier_cyber", "name": "Officier Cyber", "icon": "sword"},
+    {"id": "ossi", "name": "OSSI/RSSI", "icon": "shield-alert"},
+    {"id": "tech_ml_engineer", "name": "Ingénieur IA", "icon": "brain"},
+    {"id": "compliance_legal", "name": "Juriste", "icon": "scale"},
 ]
 
 
@@ -837,7 +807,7 @@ async def track_requests(request: Request, call_next):
 @app.get("/health")
 async def health_check():
     """Health check endpoint"""
-    return {"status": "healthy", "version": APP_VERSION, "service": "aiobs-visualization"}
+    return {"status": "healthy", "version": APP_VERSION, "service": "gaskia-defense"}
 
 
 # ============================================================================

@@ -5,7 +5,7 @@
 {% block page_title %}{{ t('dashboard.title') }}{% endblock %}
 
 {% block page_subtitle %}
-<p>{{ t('dashboard.subtitle') or 'Observabilité IA' }}</p>
+<p>{{ t('dashboard.subtitle') or 'Supervision Cyberdéfense IA' }}</p>
 {% endblock %}
 
 {% block topbar_actions %}
@@ -24,12 +24,12 @@
         <i data-lucide="x"></i>
     </button>
     <div class="welcome-banner-content">
-        <h2>{{ t('narrative.dashboard_title') or 'Centre de Controle IA' }}</h2>
-        <p>{{ t('narrative.dashboard_desc') or 'Vision unifiee de vos systemes IA : fiabilite, performance, couts et conformite.' }}</p>
+        <h2>{{ t('narrative.dashboard_title') or 'Centre de Supervision Cyberdéfense IA' }}</h2>
+        <p>{{ t('narrative.dashboard_desc') or 'Vision unifiée des systèmes IA Défense : fiabilité, cyberdéfense, conformité LPM et homologation.' }}</p>
         <div class="welcome-tips">
             <div class="welcome-tip">
                 <i data-lucide="mouse-pointer-click"></i>
-                <span>{{ t('help.tip_1_title') or 'KPIs interactifs' }}</span>
+                <span>{{ t('help.tip_1_title') or 'Indicateurs temps réel' }}</span>
             </div>
             <div class="welcome-tip">
                 <i data-lucide="command"></i>
@@ -37,7 +37,7 @@
             </div>
             <div class="welcome-tip">
                 <i data-lucide="git-branch"></i>
-                <span>{{ t('help.tip_3_title') or 'Analyse causale' }}</span>
+                <span>{{ t('help.tip_3_title') or 'Chaînes causales' }}</span>
             </div>
             <div class="welcome-tip">
                 <i data-lucide="message-circle"></i>
@@ -443,7 +443,7 @@ function renderServicesTable(services) {
             <tr>
                 <td colspan="6" class="empty-state">
                     <i data-lucide="server-off"></i>
-                    <h3>No services found</h3>
+                    <h3>Aucun système détecté</h3>
                 </td>
             </tr>
         `;
@@ -607,8 +607,8 @@ function updateTopIssues(issues) {
         container.innerHTML = `
             <div class="empty-state">
                 <i data-lucide="check-circle"></i>
-                <h3>No issues detected</h3>
-                <p class="text-muted">All systems are running smoothly</p>
+                <h3>Aucun incident détecté</h3>
+                <p class="text-muted">Posture nominale - Systèmes opérationnels</p>
             </div>
         `;
         lucide.createIcons();

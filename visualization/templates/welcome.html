@@ -6,110 +6,120 @@
     <div class="welcome-hero">
         <div class="hero-content">
             <div class="hero-logo">
-                <i data-lucide="eye"></i>
+                <i data-lucide="shield"></i>
             </div>
-            <h1>Bienvenue sur GASKIA</h1>
+            <h1>GASKIA - Cyberdéfense IA</h1>
             <p class="hero-subtitle">
-                Choisissez votre profil pour une expérience personnalisée.
+                Sélectionnez votre poste pour une vue adaptée à votre mission.
                 <br>
-                <span class="hero-hint">Vous pourrez changer de parcours à tout moment.</span>
+                <span class="hero-hint">Vous pourrez changer de poste à tout moment.</span>
             </p>
         </div>
     </div>
 
     <!-- Persona Categories -->
     <div class="persona-categories">
-        <!-- Strategic / Business -->
+        <!-- Commandement & État-Major -->
         <div class="persona-category">
             <div class="category-header">
-                <span class="category-badge business">Business</span>
+                <span class="category-badge business">Commandement</span>
             </div>
             <div class="persona-row">
-                <div class="persona-tile" data-persona="business_executive" onclick="selectPersona('business_executive')">
+                <div class="persona-tile" data-persona="etat_major" onclick="selectPersona('etat_major')">
                     <div class="tile-icon" style="--tile-color: #10b981;">
-                        <i data-lucide="building-2"></i>
+                        <i data-lucide="landmark"></i>
                     </div>
                     <div class="tile-content">
-                        <h3>Dirigeant / CDO</h3>
-                        <p>ROI, risques, conformité</p>
+                        <h3>État-Major / COMCYBER</h3>
+                        <p>Posture cyber, menaces, stratégie</p>
                     </div>
                     <i data-lucide="chevron-right" class="tile-arrow"></i>
                 </div>
-                <div class="persona-tile" data-persona="financier" onclick="selectPersona('financier')">
-                    <div class="tile-icon" style="--tile-color: #f59e0b;">
-                        <i data-lucide="wallet"></i>
+                <div class="persona-tile" data-persona="defense_soc" onclick="selectPersona('defense_soc')">
+                    <div class="tile-icon" style="--tile-color: #1e3a5f;">
+                        <i data-lucide="shield"></i>
                     </div>
                     <div class="tile-content">
-                        <h3>DAF / FinOps</h3>
-                        <p>Coûts, budgets, ROI</p>
+                        <h3>Commandant SOC Défense</h3>
+                        <p>Alertes, corrélation IT/OT, MITRE</p>
                     </div>
                     <i data-lucide="chevron-right" class="tile-arrow"></i>
                 </div>
             </div>
         </div>
 
-        <!-- Tech -->
+        <!-- Cyber & Technique -->
         <div class="persona-category">
             <div class="category-header">
-                <span class="category-badge tech">Tech</span>
+                <span class="category-badge tech">Cyber & Technique</span>
             </div>
             <div class="persona-row">
+                <div class="persona-tile" data-persona="officier_cyber" onclick="selectPersona('officier_cyber')">
+                    <div class="tile-icon" style="--tile-color: #8B1A2B;">
+                        <i data-lucide="sword"></i>
+                    </div>
+                    <div class="tile-content">
+                        <h3>Officier Cyber</h3>
+                        <p>Menaces IA, incidents, chaînes causales</p>
+                    </div>
+                    <i data-lucide="chevron-right" class="tile-arrow"></i>
+                </div>
+                <div class="persona-tile" data-persona="tech_sic" onclick="selectPersona('tech_sic')">
+                    <div class="tile-icon" style="--tile-color: #3b82f6;">
+                        <i data-lucide="server"></i>
+                    </div>
+                    <div class="tile-content">
+                        <h3>Officier SIC</h3>
+                        <p>Infrastructure, réseaux, disponibilité</p>
+                    </div>
+                    <i data-lucide="chevron-right" class="tile-arrow"></i>
+                </div>
                 <div class="persona-tile" data-persona="tech_ml_engineer" onclick="selectPersona('tech_ml_engineer')">
                     <div class="tile-icon" style="--tile-color: #6366f1;">
                         <i data-lucide="brain"></i>
                     </div>
                     <div class="tile-content">
-                        <h3>ML Engineer</h3>
-                        <p>Drift, modèles, features</p>
-                    </div>
-                    <i data-lucide="chevron-right" class="tile-arrow"></i>
-                </div>
-                <div class="persona-tile" data-persona="tech_devops" onclick="selectPersona('tech_devops')">
-                    <div class="tile-icon" style="--tile-color: #3b82f6;">
-                        <i data-lucide="server"></i>
-                    </div>
-                    <div class="tile-content">
-                        <h3>DevOps / Platform</h3>
-                        <p>SLOs, latences, uptime</p>
-                    </div>
-                    <i data-lucide="chevron-right" class="tile-arrow"></i>
-                </div>
-                <div class="persona-tile" data-persona="security_rssi" onclick="selectPersona('security_rssi')">
-                    <div class="tile-icon" style="--tile-color: #ef4444;">
-                        <i data-lucide="shield-alert"></i>
-                    </div>
-                    <div class="tile-content">
-                        <h3>RSSI / Security</h3>
-                        <p>Menaces, adversarial</p>
+                        <h3>Ingénieur IA Défense</h3>
+                        <p>Drift, robustesse, modèles</p>
                     </div>
                     <i data-lucide="chevron-right" class="tile-arrow"></i>
                 </div>
             </div>
         </div>
 
-        <!-- Compliance & ESG -->
+        <!-- Conformité & Homologation -->
         <div class="persona-category">
             <div class="category-header">
-                <span class="category-badge compliance">Compliance & RSE</span>
+                <span class="category-badge compliance">Conformité & Homologation</span>
             </div>
             <div class="persona-row">
+                <div class="persona-tile" data-persona="ossi" onclick="selectPersona('ossi')">
+                    <div class="tile-icon" style="--tile-color: #ef4444;">
+                        <i data-lucide="shield-alert"></i>
+                    </div>
+                    <div class="tile-content">
+                        <h3>OSSI / RSSI Défense</h3>
+                        <p>Homologation, IGI 1300, LPM</p>
+                    </div>
+                    <i data-lucide="chevron-right" class="tile-arrow"></i>
+                </div>
                 <div class="persona-tile" data-persona="compliance_legal" onclick="selectPersona('compliance_legal')">
                     <div class="tile-icon" style="--tile-color: #f59e0b;">
                         <i data-lucide="gavel"></i>
                     </div>
                     <div class="tile-content">
-                        <h3>DPO / Juriste</h3>
-                        <p>EU AI Act, RGPD, audits</p>
+                        <h3>Juriste Défense</h3>
+                        <p>AI Act, RGPD, droit opérationnel</p>
                     </div>
                     <i data-lucide="chevron-right" class="tile-arrow"></i>
                 </div>
-                <div class="persona-tile" data-persona="sustainability_esg" onclick="selectPersona('sustainability_esg')">
-                    <div class="tile-icon" style="--tile-color: #059669;">
-                        <i data-lucide="trees"></i>
+                <div class="persona-tile" data-persona="dga" onclick="selectPersona('dga')">
+                    <div class="tile-icon" style="--tile-color: #8b5cf6;">
+                        <i data-lucide="flask-conical"></i>
                     </div>
                     <div class="tile-content">
-                        <h3>RSE / ESG</h3>
-                        <p>Carbone, green AI</p>
+                        <h3>DGA / ANSSI</h3>
+                        <p>Évaluation, certification, tests</p>
                     </div>
                     <i data-lucide="chevron-right" class="tile-arrow"></i>
                 </div>
@@ -124,8 +134,8 @@
                 <i data-lucide="layout-grid"></i>
             </div>
             <div class="tile-content">
-                <h3>Accès Expert</h3>
-                <p>Toutes les fonctionnalités, navigation libre</p>
+                <h3>Accès Complet</h3>
+                <p>Toutes les vues, navigation libre</p>
             </div>
             <i data-lucide="chevron-right" class="tile-arrow"></i>
         </div>
@@ -476,26 +486,28 @@
 <script>
 // Persona routes mapping
 const personaRoutes = {
-    'business_executive': '/dirigeant',
+    'etat_major': '/executive',
+    'defense_soc': '/defense-soc',
+    'officier_cyber': '/security',
+    'tech_sic': '/tech',
     'tech_ml_engineer': '/tech',
-    'tech_devops': '/tech',
-    'security_rssi': '/tech',
+    'ossi': '/compliance',
     'compliance_legal': '/juridique',
-    'sustainability_esg': '/greenops',
-    'financier': '/financier',
+    'dga': '/llm-testing',
     'custom': '/global'
 };
 
 // Persona names for display
 const personaNames = {
-    'business_executive': 'Dirigeant',
-    'tech_ml_engineer': 'ML Engineer',
-    'tech_devops': 'DevOps',
-    'security_rssi': 'Security',
-    'compliance_legal': 'Juridique',
-    'sustainability_esg': 'ESG',
-    'financier': 'Financier',
-    'custom': 'Expert'
+    'etat_major': 'État-Major',
+    'defense_soc': 'SOC Défense',
+    'officier_cyber': 'Officier Cyber',
+    'tech_sic': 'Officier SIC',
+    'tech_ml_engineer': 'Ingénieur IA',
+    'ossi': 'OSSI/RSSI',
+    'compliance_legal': 'Juriste',
+    'dga': 'DGA/ANSSI',
+    'custom': 'Complet'
 };
 
 // Select a persona and navigate
@@ -532,14 +544,15 @@ document.addEventListener('keydown', (e) => {
 
     // Number keys for quick selection
     const personas = [
-        'business_executive',  // 1
-        'financier',           // 2
-        'tech_ml_engineer',    // 3
-        'tech_devops',         // 4
-        'security_rssi',       // 5
-        'compliance_legal',    // 6
-        'sustainability_esg',  // 7
-        'custom'               // 8
+        'etat_major',          // 1
+        'defense_soc',         // 2
+        'officier_cyber',      // 3
+        'tech_sic',            // 4
+        'tech_ml_engineer',    // 5
+        'ossi',                // 6
+        'compliance_legal',    // 7
+        'dga',                 // 8
+        'custom'               // 9
     ];
 
     const num = parseInt(e.key);
