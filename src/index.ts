@@ -1,6 +1,7 @@
 /**
- * AIOBS - AI Observability Hub
- * Trust Control Layer for AI Systems
+ * Skophia — Sovereign AI Cybersecurity Platform
+ *
+ * Three pillars: Gaskia (Telemetry) / Synapsix (Detection) / TRM (Edge AI)
  *
  * @packageDocumentation
  */
@@ -29,6 +30,13 @@ export * from './core/cognitive/semantic-drift';
 export * from './connectors/ot';
 export * from './edge-mode';
 export * from './security/mitre';
+
+// Skophia Pillars
+export * from './core/gaskia';
+export * from './synapsix';
+export * from './trm';
+export * from './connectors/it';
+export * from './governance/classification';
 
 // Import engine config types for AIBOSConfig
 import type { CognitiveEngineConfig } from './core/cognitive/cognitive-engine';
