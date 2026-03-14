@@ -107,6 +107,18 @@ export {
 // Re-export SLO types
 export * from './slo';
 
+// Re-export semantic drift types (defense/security module)
+export * from './semantic-drift';
+
+// Re-export OT connector types (IT/OT convergence)
+export * from './ot-connector';
+
+// Re-export edge mode types (air-gap / disconnected operation)
+export * from './edge-mode';
+
+// Re-export MITRE ATT&CK ICS types (threat mapping)
+export * from './mitre-attack';
+
 // Re-export tenant types, excluding RetentionPolicy (conflicts with governance)
 export {
   Tenant,

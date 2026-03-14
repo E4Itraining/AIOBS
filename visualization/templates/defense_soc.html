@@ -1,0 +1,781 @@
+{% extends "base.html" %}
+
+{% set active_page = 'defense-soc' %}
+
+{% block sidebar_extra %}
+<div class="nav-group">
+    <span class="nav-group-title">Defense SOC</span>
+    <a href="/defense-soc" class="nav-link active">
+        <i data-lucide="shield"></i>
+        <span>Vue d'ensemble</span>
+    </a>
+    <a href="/security" class="nav-link">
+        <i data-lucide="lock"></i>
+        <span>Security Center</span>
+    </a>
+</div>
+<div class="nav-group">
+    <span class="nav-group-title">Analyse</span>
+    <a href="/compliance" class="nav-link">
+        <i data-lucide="shield-check"></i>
+        <span>Compliance</span>
+    </a>
+    <a href="/monitoring" class="nav-link">
+        <i data-lucide="activity"></i>
+        <span>Monitoring</span>
+    </a>
+</div>
+{% endblock %}
+
+{% block page_title %}Commandant SOC Defense{% endblock %}
+{% block page_subtitle %}<p class="text-muted">Alertes semantiques, chaines causales, correlation IT/OT, conformite AI Act</p>{% endblock %}
+
+{% block topbar_actions %}
+<div class="live-indicator">
+    <span class="live-dot"></span>
+    <span>Surveillance Active</span>
+</div>
+<button class="btn btn-secondary" onclick="exportEvidence()">
+    <i data-lucide="download"></i>
+    Export Preuves AI Act
+</button>
+<button class="btn btn-primary" onclick="refreshAll()">
+    <i data-lucide="refresh-cw"></i>
+    Actualiser
+</button>
+{% endblock %}
+
+{% block content %}
+<!-- Threat Level & Key Metrics -->
+<div class="defense-hero" id="defenseHero">
+    <div class="threat-level-main">
+        <div class="threat-level-ring" id="threatLevelRing">
+            <svg viewBox="0 0 120 120">
+                <circle cx="60" cy="60" r="54" fill="none" stroke="var(--border-color)" stroke-width="8"/>
+                <circle cx="60" cy="60" r="54" fill="none" stroke="var(--color-warning)" stroke-width="8"
+                    stroke-dasharray="339.3" stroke-dashoffset="100" stroke-linecap="round"
+                    transform="rotate(-90 60 60)" id="threatRingCircle"/>
+            </svg>
+            <div class="score-content">
+                <span class="score-value" id="threatLevelLabel">ELEVE</span>
+                <span class="score-label">Niveau de menace</span>
+            </div>
+        </div>
+    </div>
+    <div class="defense-stats">
+        <div class="defense-stat">
+            <div class="stat-icon danger">
+                <i data-lucide="brain"></i>
+            </div>
+            <div class="stat-content">
+                <span class="stat-value" id="statCriticalAlerts">--</span>
+                <span class="stat-label">Alertes Semantiques Critiques</span>
+            </div>
+        </div>
+        <div class="defense-stat">
+            <div class="stat-icon warning">
+                <i data-lucide="git-branch"></i>
+            </div>
+            <div class="stat-content">
+                <span class="stat-value" id="statCorrelations">--</span>
+                <span class="stat-label">Correlations IT/OT Actives</span>
+            </div>
+        </div>
+        <div class="defense-stat">
+            <div class="stat-icon success">
+                <i data-lucide="radio"></i>
+            </div>
+            <div class="stat-content">
+                <span class="stat-value" id="statEdgeOnline">--</span>
+                <span class="stat-label">Noeuds Edge En Ligne</span>
+            </div>
+        </div>
+        <div class="defense-stat">
+            <div class="stat-icon primary">
+                <i data-lucide="target"></i>
+            </div>
+            <div class="stat-content">
+                <span class="stat-value" id="statMitreCoverage">--</span>
+                <span class="stat-label">Couverture MITRE ICS</span>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Semantic Alerts Feed -->
+<section class="mb-6">
+    <div class="grid grid-2">
+        <div class="card">
+            <div class="card-header">
+                <h3 class="card-title">Alertes Semantiques</h3>
+                <div class="header-actions">
+                    <select class="form-select" id="severityFilter" onchange="filterAlerts()" style="width: 140px;">
+                        <option value="">Toutes</option>
+                        <option value="critical">Critiques</option>
+                        <option value="high">Hautes</option>
+                        <option value="medium">Moyennes</option>
+                    </select>
+                    <span class="live-badge"><span class="live-dot"></span> Live</span>
+                </div>
+            </div>
+            <div class="alerts-feed" id="semanticAlertsFeed">
+                <div class="loading-placeholder">Chargement des alertes...</div>
+            </div>
+        </div>
+
+        <!-- Causal Chains -->
+        <div class="card">
+            <div class="card-header">
+                <h3 class="card-title">Chaines Causales (Attaque &rarr; Derive &rarr; Alerte)</h3>
+            </div>
+            <div class="causal-chains" id="causalChains">
+                <div class="loading-placeholder">Chargement des chaines causales...</div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- IT/OT Correlation & MITRE Matrix -->
+<section class="mb-6">
+    <div class="grid grid-2">
+        <!-- IT/OT Correlation -->
+        <div class="card">
+            <div class="card-header">
+                <h3 class="card-title">Correlation IT/OT Temps Reel</h3>
+                <span class="live-badge"><span class="live-dot"></span> Live</span>
+            </div>
+            <div class="it-ot-panel" id="itOtPanel">
+                <div class="loading-placeholder">Chargement...</div>
+            </div>
+        </div>
+
+        <!-- MITRE ATT&CK ICS Matrix -->
+        <div class="card">
+            <div class="card-header">
+                <h3 class="card-title">Matrice MITRE ATT&CK ICS</h3>
+            </div>
+            <div class="mitre-matrix" id="mitreMatrix">
+                <div class="loading-placeholder">Chargement...</div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Edge Nodes & Evidence Export -->
+<section class="mb-6">
+    <div class="grid grid-2">
+        <!-- Edge Nodes -->
+        <div class="card">
+            <div class="card-header">
+                <h3 class="card-title">Noeuds Edge (Mode Air-Gap)</h3>
+            </div>
+            <div class="edge-nodes" id="edgeNodes">
+                <div class="loading-placeholder">Chargement...</div>
+            </div>
+        </div>
+
+        <!-- Evidence Export -->
+        <div class="card">
+            <div class="card-header">
+                <h3 class="card-title">Export Preuves AI Act</h3>
+            </div>
+            <div class="evidence-panel">
+                <div class="evidence-info">
+                    <div class="evidence-stat">
+                        <i data-lucide="file-check"></i>
+                        <span>Cadre: EU AI Act</span>
+                    </div>
+                    <div class="evidence-stat">
+                        <i data-lucide="link"></i>
+                        <span>Chaine de preuves complete</span>
+                    </div>
+                    <div class="evidence-stat">
+                        <i data-lucide="fingerprint"></i>
+                        <span>Signature AIOBS-Evidence-v1.0</span>
+                    </div>
+                </div>
+                <div class="evidence-actions">
+                    <button class="btn btn-primary" onclick="exportEvidence('json')">
+                        <i data-lucide="file-json"></i> Export JSON
+                    </button>
+                    <button class="btn btn-secondary" onclick="exportEvidence('pdf')">
+                        <i data-lucide="file-text"></i> Export PDF
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<style>
+/* Defense SOC specific styles */
+.defense-hero {
+    display: flex;
+    gap: var(--space-6);
+    padding: var(--space-6);
+    background: var(--bg-card);
+    border: 1px solid var(--border-color);
+    border-radius: var(--radius-xl);
+    margin-bottom: var(--space-6);
+}
+
+.threat-level-main { flex-shrink: 0; }
+
+.threat-level-ring {
+    position: relative;
+    width: 150px;
+    height: 150px;
+}
+
+.threat-level-ring svg { width: 100%; height: 100%; }
+
+.threat-level-ring .score-content {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    text-align: center;
+}
+
+.threat-level-ring .score-value {
+    display: block;
+    font-size: 1.25rem;
+    font-weight: 700;
+    color: var(--color-warning);
+}
+
+.threat-level-ring .score-label {
+    font-size: 0.7rem;
+    color: var(--text-secondary);
+}
+
+.defense-stats {
+    flex: 1;
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: var(--space-4);
+}
+
+.defense-stat {
+    display: flex;
+    gap: var(--space-3);
+    padding: var(--space-4);
+    background: var(--bg-hover);
+    border-radius: var(--radius-lg);
+}
+
+.stat-icon {
+    width: 44px;
+    height: 44px;
+    border-radius: var(--radius-lg);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.stat-icon svg { width: 22px; height: 22px; color: white; }
+.stat-icon.danger { background: linear-gradient(135deg, #ef4444, #f87171); }
+.stat-icon.warning { background: linear-gradient(135deg, #f59e0b, #fbbf24); }
+.stat-icon.success { background: linear-gradient(135deg, #10b981, #34d399); }
+.stat-icon.primary { background: linear-gradient(135deg, #6366f1, #8b5cf6); }
+
+.stat-value { display: block; font-size: 1.5rem; font-weight: 700; }
+.stat-label { font-size: 0.75rem; color: var(--text-secondary); }
+
+/* Live indicators */
+.live-indicator {
+    display: flex;
+    align-items: center;
+    gap: var(--space-2);
+    padding: var(--space-2) var(--space-3);
+    background: var(--color-success-light);
+    color: var(--color-success);
+    border-radius: var(--radius-full);
+    font-size: 0.8125rem;
+    font-weight: 500;
+}
+
+.live-dot {
+    width: 8px;
+    height: 8px;
+    background: var(--color-success);
+    border-radius: 50%;
+    animation: pulse 2s infinite;
+}
+
+@keyframes pulse {
+    0%, 100% { opacity: 1; transform: scale(1); }
+    50% { opacity: 0.5; transform: scale(1.2); }
+}
+
+.live-badge {
+    display: flex;
+    align-items: center;
+    gap: var(--space-1);
+    padding: var(--space-1) var(--space-2);
+    background: var(--color-success-light);
+    color: var(--color-success);
+    border-radius: var(--radius-full);
+    font-size: 0.75rem;
+    font-weight: 500;
+}
+
+.live-badge .live-dot { width: 6px; height: 6px; }
+
+/* Alerts feed */
+.alerts-feed {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-3);
+    max-height: 400px;
+    overflow-y: auto;
+}
+
+.alert-item {
+    display: flex;
+    align-items: flex-start;
+    gap: var(--space-3);
+    padding: var(--space-3);
+    background: var(--bg-hover);
+    border-radius: var(--radius-lg);
+    border-left: 3px solid;
+    cursor: pointer;
+    transition: background 0.15s;
+}
+
+.alert-item:hover { background: var(--bg-active); }
+.alert-item.critical { border-left-color: #ef4444; }
+.alert-item.high { border-left-color: #f59e0b; }
+.alert-item.medium { border-left-color: #3b82f6; }
+.alert-item.low { border-left-color: #64748b; }
+
+.alert-content { flex: 1; display: flex; flex-direction: column; gap: 2px; }
+.alert-title { font-weight: 600; font-size: 0.875rem; }
+.alert-desc { font-size: 0.75rem; color: var(--text-secondary); }
+.alert-meta { font-size: 0.6875rem; color: var(--text-tertiary); display: flex; gap: var(--space-3); }
+.alert-badge {
+    padding: 2px 8px;
+    border-radius: var(--radius-full);
+    font-size: 0.6875rem;
+    font-weight: 600;
+    text-transform: uppercase;
+    flex-shrink: 0;
+}
+.alert-badge.critical { background: #fef2f2; color: #ef4444; }
+.alert-badge.high { background: #fffbeb; color: #f59e0b; }
+.alert-badge.medium { background: #eff6ff; color: #3b82f6; }
+
+/* Causal chains */
+.causal-chains {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-4);
+    max-height: 400px;
+    overflow-y: auto;
+}
+
+.chain-item {
+    padding: var(--space-3);
+    background: var(--bg-hover);
+    border-radius: var(--radius-lg);
+}
+
+.chain-steps {
+    display: flex;
+    align-items: center;
+    gap: var(--space-2);
+    margin-top: var(--space-2);
+    flex-wrap: wrap;
+}
+
+.chain-step {
+    padding: 4px 10px;
+    background: var(--bg-card);
+    border: 1px solid var(--border-color);
+    border-radius: var(--radius-md);
+    font-size: 0.75rem;
+}
+
+.chain-arrow { color: var(--text-tertiary); font-size: 0.75rem; }
+
+.chain-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.chain-title { font-weight: 600; font-size: 0.875rem; }
+
+.chain-severity {
+    padding: 2px 8px;
+    border-radius: var(--radius-full);
+    font-size: 0.6875rem;
+    font-weight: 600;
+}
+.chain-severity.critical { background: #fef2f2; color: #ef4444; }
+.chain-severity.high { background: #fffbeb; color: #f59e0b; }
+.chain-severity.medium { background: #eff6ff; color: #3b82f6; }
+
+/* IT/OT Panel */
+.it-ot-panel {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-4);
+}
+
+.it-ot-signals {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: var(--space-4);
+}
+
+.signal-group h4 {
+    font-size: 0.8125rem;
+    font-weight: 600;
+    margin-bottom: var(--space-2);
+    display: flex;
+    align-items: center;
+    gap: var(--space-2);
+}
+
+.signal-item {
+    display: flex;
+    justify-content: space-between;
+    padding: var(--space-2);
+    font-size: 0.8125rem;
+}
+
+.signal-value { font-weight: 600; }
+
+.correlation-item {
+    padding: var(--space-3);
+    background: var(--bg-hover);
+    border-radius: var(--radius-lg);
+    border-left: 3px solid var(--color-warning);
+    margin-top: var(--space-2);
+}
+
+.correlation-score {
+    font-weight: 700;
+    color: var(--color-warning);
+}
+
+/* MITRE Matrix */
+.mitre-matrix { display: flex; flex-direction: column; gap: var(--space-3); }
+
+.mitre-tactic {
+    display: flex;
+    align-items: center;
+    gap: var(--space-3);
+    padding: var(--space-2) var(--space-3);
+    background: var(--bg-hover);
+    border-radius: var(--radius-lg);
+}
+
+.mitre-tactic-name {
+    flex: 1;
+    font-size: 0.8125rem;
+    font-weight: 500;
+}
+
+.mitre-bar {
+    width: 100px;
+    height: 8px;
+    background: var(--border-color);
+    border-radius: 4px;
+    overflow: hidden;
+}
+
+.mitre-bar-fill {
+    height: 100%;
+    border-radius: 4px;
+    background: linear-gradient(90deg, #6366f1, #8b5cf6);
+}
+
+.mitre-count { font-size: 0.75rem; color: var(--text-secondary); min-width: 40px; text-align: right; }
+
+/* Edge nodes */
+.edge-nodes { display: flex; flex-direction: column; gap: var(--space-3); }
+
+.edge-node {
+    display: flex;
+    align-items: center;
+    gap: var(--space-3);
+    padding: var(--space-3);
+    background: var(--bg-hover);
+    border-radius: var(--radius-lg);
+}
+
+.edge-status {
+    width: 10px;
+    height: 10px;
+    border-radius: 50%;
+    flex-shrink: 0;
+}
+
+.edge-status.online { background: #10b981; }
+.edge-status.offline { background: #ef4444; }
+
+.edge-info { flex: 1; }
+.edge-name { font-weight: 600; font-size: 0.875rem; display: block; }
+.edge-detail { font-size: 0.75rem; color: var(--text-secondary); }
+
+.edge-metrics { text-align: right; font-size: 0.75rem; color: var(--text-secondary); }
+
+/* Evidence panel */
+.evidence-panel { display: flex; flex-direction: column; gap: var(--space-4); }
+
+.evidence-info { display: flex; flex-direction: column; gap: var(--space-3); }
+
+.evidence-stat {
+    display: flex;
+    align-items: center;
+    gap: var(--space-3);
+    padding: var(--space-3);
+    background: var(--bg-hover);
+    border-radius: var(--radius-lg);
+    font-size: 0.875rem;
+}
+
+.evidence-stat svg { width: 18px; height: 18px; color: var(--color-primary); }
+
+.evidence-actions { display: flex; gap: var(--space-3); }
+
+.loading-placeholder {
+    padding: var(--space-6);
+    text-align: center;
+    color: var(--text-secondary);
+    font-size: 0.875rem;
+}
+
+.header-actions { display: flex; gap: var(--space-3); align-items: center; }
+
+@media (max-width: 768px) {
+    .defense-hero { flex-direction: column; }
+    .defense-stats { grid-template-columns: 1fr; }
+    .it-ot-signals { grid-template-columns: 1fr; }
+}
+</style>
+{% endblock %}
+
+{% block scripts %}
+<script>
+document.addEventListener('DOMContentLoaded', async () => {
+    await Promise.all([
+        loadOverview(),
+        loadSemanticAlerts(),
+        loadCausalChains(),
+        loadItOtCorrelation(),
+        loadMitreMatrix(),
+        loadEdgeNodes(),
+    ]);
+    lucide.createIcons();
+    setInterval(refreshLive, 30000);
+});
+
+async function loadOverview() {
+    try {
+        const res = await fetch('/api/defense-soc/overview');
+        const result = await res.json();
+        if (!result.success) return;
+        const d = result.data;
+
+        document.getElementById('statCriticalAlerts').textContent = d.semanticAlerts.critical;
+        document.getElementById('statCorrelations').textContent = d.itOtCorrelation.activeCorrelations;
+        document.getElementById('statEdgeOnline').textContent = `${d.edgeNodes.online}/${d.edgeNodes.total}`;
+        document.getElementById('statMitreCoverage').textContent = `${d.mitreCoverage.techniquesMatched}T`;
+
+        const levelMap = { low: 'BAS', elevated: 'ELEVE', high: 'HAUT', critical: 'CRITIQUE' };
+        const colorMap = { low: '#10b981', elevated: '#f59e0b', high: '#f97316', critical: '#ef4444' };
+        const label = document.getElementById('threatLevelLabel');
+        label.textContent = levelMap[d.threatLevel] || d.threatLevel.toUpperCase();
+        label.style.color = colorMap[d.threatLevel] || '#f59e0b';
+        document.getElementById('threatRingCircle').style.stroke = colorMap[d.threatLevel] || '#f59e0b';
+    } catch (e) { console.error('Overview load error:', e); }
+}
+
+async function loadSemanticAlerts(severity) {
+    try {
+        let url = '/api/defense-soc/semantic-alerts?limit=20';
+        if (severity) url += `&severity=${severity}`;
+        const res = await fetch(url);
+        const result = await res.json();
+        if (!result.success) return;
+
+        const feed = document.getElementById('semanticAlertsFeed');
+        if (result.data.length === 0) {
+            feed.innerHTML = '<div class="loading-placeholder">Aucune alerte</div>';
+            return;
+        }
+        feed.innerHTML = result.data.map(a => `
+            <div class="alert-item ${a.severity}">
+                <div class="alert-content">
+                    <span class="alert-title">${a.title}</span>
+                    <span class="alert-desc">${a.description}</span>
+                    <span class="alert-meta">
+                        <span>${a.modelId}</span>
+                        <span>${a.mitreTechnique}</span>
+                        <span>${new Date(a.timestamp).toLocaleTimeString('fr-FR')}</span>
+                    </span>
+                </div>
+                <span class="alert-badge ${a.severity}">${a.severity}</span>
+            </div>
+        `).join('');
+    } catch (e) { console.error('Alerts load error:', e); }
+}
+
+async function loadCausalChains() {
+    try {
+        const res = await fetch('/api/defense-soc/causal-chains?limit=5');
+        const result = await res.json();
+        if (!result.success) return;
+
+        const container = document.getElementById('causalChains');
+        container.innerHTML = result.data.map(c => `
+            <div class="chain-item">
+                <div class="chain-header">
+                    <span class="chain-title">${c.rootCause.description}</span>
+                    <span class="chain-severity ${c.alertGenerated.severity}">${c.alertGenerated.severity}</span>
+                </div>
+                <div class="chain-steps">
+                    ${c.steps.map((s, i) => `
+                        ${i > 0 ? '<span class="chain-arrow">&rarr;</span>' : ''}
+                        <span class="chain-step">${s.event}</span>
+                    `).join('')}
+                </div>
+            </div>
+        `).join('');
+    } catch (e) { console.error('Causal chains load error:', e); }
+}
+
+async function loadItOtCorrelation() {
+    try {
+        const res = await fetch('/api/defense-soc/it-ot-correlation');
+        const result = await res.json();
+        if (!result.success) return;
+        const d = result.data;
+
+        const panel = document.getElementById('itOtPanel');
+        panel.innerHTML = `
+            <div class="it-ot-signals">
+                <div class="signal-group">
+                    <h4><i data-lucide="monitor"></i> Signaux IT</h4>
+                    <div class="signal-item"><span>Latence reseau</span><span class="signal-value">${d.itSignals.networkLatencyMs} ms</span></div>
+                    <div class="signal-item"><span>Echecs auth (24h)</span><span class="signal-value">${d.itSignals.authFailures24h}</span></div>
+                    <div class="signal-item"><span>Connexions suspectes</span><span class="signal-value">${d.itSignals.suspiciousConnections}</span></div>
+                    <div class="signal-item"><span>Blocages firewall</span><span class="signal-value">${d.itSignals.firewallBlocks}</span></div>
+                </div>
+                <div class="signal-group">
+                    <h4><i data-lucide="cpu"></i> Signaux OT</h4>
+                    <div class="signal-item"><span>Latence OPC-UA</span><span class="signal-value">${d.otSignals.opcuaLatencyMs} ms</span></div>
+                    <div class="signal-item"><span>Erreurs Modbus</span><span class="signal-value">${d.otSignals.modbusErrors}</span></div>
+                    <div class="signal-item"><span>Changements param.</span><span class="signal-value">${d.otSignals.parameterChanges}</span></div>
+                    <div class="signal-item"><span>Alarmes</span><span class="signal-value">${d.otSignals.alarmCount}</span></div>
+                </div>
+            </div>
+            <h4 style="font-size: 0.8125rem; font-weight: 600;">Correlations detectees</h4>
+            ${d.correlations.map(c => `
+                <div class="correlation-item">
+                    <div style="font-size: 0.8125rem;"><strong>IT:</strong> ${c.itEvent}</div>
+                    <div style="font-size: 0.8125rem;"><strong>OT:</strong> ${c.otEvent}</div>
+                    <div style="font-size: 0.75rem; margin-top: 4px; color: var(--text-secondary);">
+                        Delta: ${c.timeDeltaMs}ms | Score: <span class="correlation-score">${(c.correlationScore * 100).toFixed(0)}%</span> | ${c.mitreMapping}
+                    </div>
+                </div>
+            `).join('')}
+        `;
+        lucide.createIcons();
+    } catch (e) { console.error('IT/OT correlation load error:', e); }
+}
+
+async function loadMitreMatrix() {
+    try {
+        const res = await fetch('/api/defense-soc/mitre-matrix');
+        const result = await res.json();
+        if (!result.success) return;
+        const d = result.data;
+
+        const container = document.getElementById('mitreMatrix');
+        container.innerHTML = `
+            <div style="font-size: 0.8125rem; color: var(--text-secondary); margin-bottom: var(--space-2);">
+                MITRE ATT&CK ICS v${d.version} — Couverture: <strong>${d.coveragePercent}%</strong>
+            </div>
+            ${d.tactics.map(t => `
+                <div class="mitre-tactic">
+                    <span class="mitre-tactic-name">${t.name}</span>
+                    <div class="mitre-bar">
+                        <div class="mitre-bar-fill" style="width: ${(t.detected / t.total * 100).toFixed(0)}%"></div>
+                    </div>
+                    <span class="mitre-count">${t.detected}/${t.total}</span>
+                </div>
+            `).join('')}
+        `;
+    } catch (e) { console.error('MITRE matrix load error:', e); }
+}
+
+async function loadEdgeNodes() {
+    try {
+        const res = await fetch('/api/defense-soc/edge-nodes');
+        const result = await res.json();
+        if (!result.success) return;
+
+        const container = document.getElementById('edgeNodes');
+        container.innerHTML = result.data.map(n => `
+            <div class="edge-node">
+                <div class="edge-status ${n.status}"></div>
+                <div class="edge-info">
+                    <span class="edge-name">${n.nodeName}</span>
+                    <span class="edge-detail">${n.nodeId} | Buffer: ${(n.bufferUtilization * 100).toFixed(0)}%</span>
+                </div>
+                <div class="edge-metrics">
+                    <div>${n.pendingEntries} entrees en attente</div>
+                    <div>Sync: ${new Date(n.lastSync).toLocaleTimeString('fr-FR')}</div>
+                </div>
+            </div>
+        `).join('');
+    } catch (e) { console.error('Edge nodes load error:', e); }
+}
+
+function filterAlerts() {
+    const severity = document.getElementById('severityFilter').value;
+    loadSemanticAlerts(severity || undefined);
+}
+
+async function exportEvidence(format) {
+    format = format || 'json';
+    try {
+        const res = await fetch(`/api/defense-soc/evidence-export?format=${format}`);
+        const result = await res.json();
+        if (result.success) {
+            const blob = new Blob([JSON.stringify(result.data, null, 2)], { type: 'application/json' });
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = `aiobs-evidence-${result.data.exportId}.json`;
+            a.click();
+            URL.revokeObjectURL(url);
+            showToast('Preuves AI Act exportees avec succes', 'success');
+        }
+    } catch (e) {
+        showToast('Erreur lors de l\'export', 'error');
+    }
+}
+
+function refreshAll() {
+    loadOverview();
+    loadSemanticAlerts();
+    loadCausalChains();
+    loadItOtCorrelation();
+    loadMitreMatrix();
+    loadEdgeNodes();
+    lucide.createIcons();
+    showToast('Donnees actualisees', 'success');
+}
+
+function refreshLive() {
+    loadOverview();
+    loadSemanticAlerts();
+    loadItOtCorrelation();
+}
+</script>
+{% endblock %}
