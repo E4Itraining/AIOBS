@@ -6,6 +6,7 @@ Comprehensive overview of AIOBS capabilities and game-changing features.
 
 - [Core Capabilities](#core-capabilities)
 - [Game-Changer Features](#game-changer-features)
+- [Defense & Sovereign Capabilities](#defense--sovereign-capabilities)
 - [Cognitive Metrics Engine](#cognitive-metrics-engine)
 - [Causal Analysis Engine](#causal-analysis-engine)
 - [Governance Framework](#governance-framework)
@@ -410,6 +411,64 @@ Each profile has customized navigation:
 
 ---
 
+## Defense & Sovereign Capabilities
+
+Purpose-built modules for defense, critical infrastructure, and sovereign deployment.
+
+### Semantic Drift Detection (Differentiating Feature)
+
+Detects adversarial semantic shifts where AI outputs remain statistically normal but operational meaning has shifted — the critical gap that existing MLOps tools miss.
+
+- **Isolation Forest** + **VAE** dual-detection pipeline
+- 6 semantic shift types: meaning inversion, context displacement, confidence manipulation, boundary erosion, label semantic drift, operational decorrelation
+- Stealth attack detection (normal stats + shifted meaning)
+- Full AI Act evidence chain traceability
+
+> See [DEFENSE_CAPABILITIES.md](./DEFENSE_CAPABILITIES.md) for technical details.
+
+### IT/OT Protocol Connectors
+
+Four industrial protocol connectors with abstract base class and simulation mode:
+
+| Protocol | Use Case |
+|----------|----------|
+| OPC-UA | SCADA, PLC, DCS |
+| Modbus TCP/RTU | Motor controllers, sensors |
+| MQTT 3.1.1/5.0 | IoT sensors, edge devices |
+| SNMP v2c/v3 | Network infrastructure |
+
+> See [OT_CONNECTORS.md](./OT_CONNECTORS.md) for configuration and usage.
+
+### Air-Gap / Edge Mode
+
+Fully disconnected operation with priority-based buffer and differential resync:
+- Priority levels: critical > high > medium > low
+- Configurable via environment variables (no Docker required)
+- Automatic resync on connectivity restoration
+
+> See [EDGE_MODE.md](./EDGE_MODE.md) for deployment guide.
+
+### MITRE ATT&CK for ICS
+
+Local database mapping anomalies to ICS attack techniques:
+- 12 ICS tactics, 10+ techniques
+- 6 custom AI/OT attack patterns (AIOBS-AP-001 through AIOBS-AP-006)
+- Kill chain positioning and threat response recommendations
+
+> See [MITRE_ATTACK_ICS.md](./MITRE_ATTACK_ICS.md) for technique coverage.
+
+### Defense SOC Dashboard
+
+Dedicated **Commandant SOC Défense** profile at `/defense-soc`:
+- Semantic alerts feed (not classical MLOps metrics)
+- Causal inference chains (attack → drift → alert)
+- IT/OT real-time correlation
+- MITRE ATT&CK ICS matrix visualization
+- Edge node status monitoring
+- AI Act evidence export (JSON + PDF)
+
+---
+
 ## Technology Stack
 
 ### Backend
@@ -479,7 +538,11 @@ Each profile has customized navigation:
 | Governance by Design | No | No | Yes |
 | AI Act Compliance | No | Partial | Yes |
 | Real-time Updates | Yes | Partial | Yes |
-| Multilingual UI | Rare | No | 10 Languages |
+| Semantic Drift Detection | No | No | Yes |
+| IT/OT Convergence | No | No | Yes |
+| MITRE ATT&CK ICS | No | No | Yes |
+| Air-Gap Deployment | No | No | Yes |
+| Multilingual UI | Rare | No | 4 EU Languages |
 
 ---
 
@@ -513,6 +576,10 @@ Access the dashboard at http://localhost:8000
 
 - [API Reference](./api/README.md) - Complete endpoint documentation
 - [Architecture Overview](./architecture/OVERVIEW.md) - System design
+- [Defense Capabilities](./DEFENSE_CAPABILITIES.md) - Semantic drift, MITRE, IT/OT, edge mode
+- [OT Connectors](./OT_CONNECTORS.md) - Protocol connector guide
+- [MITRE ATT&CK ICS](./MITRE_ATTACK_ICS.md) - Technique mapping
+- [Edge Mode](./EDGE_MODE.md) - Air-gap deployment
 - [Development Guide](./DEVELOPMENT.md) - Local setup
 - [Configuration Guide](./CONFIGURATION.md) - Settings and options
 - [Docker Deployment](./DOCKER_DEPLOYMENT.md) - Container deployment

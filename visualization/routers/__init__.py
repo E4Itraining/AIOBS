@@ -12,6 +12,7 @@ from .realtime import router as realtime_router
 # New routers
 from .cognitive import router as cognitive_router
 from .causal import router as causal_router
+from .defense_soc import router as defense_soc_router
 
 __all__ = [
     "dashboard_router",
@@ -25,4 +26,5 @@ __all__ = [
     # New routers
     "cognitive_router",
     "causal_router",
+    "defense_soc_router",
 ]

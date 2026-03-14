@@ -33,6 +33,7 @@ from .routers import (
     realtime_router,
     cognitive_router,
     causal_router,
+    defense_soc_router,
 )
 from .routers.pillars import router as pillars_router
 from .routers.llm_testing import router as llm_testing_router
@@ -161,6 +162,7 @@ app.include_router(pillars_router)
 app.include_router(llm_testing_router)
 app.include_router(llm_config_router)
 app.include_router(design_config_router)
+app.include_router(defense_soc_router)
 
 # Optional routers (may not be available due to dependencies)
 if auth_router:
@@ -330,6 +332,12 @@ async def profile_dashboard(request: Request, profile_id: str):
             "color": "#0ea5e9",
             "icon": "scale",
         },
+        "defense_soc": {
+            "name": "Commandant SOC Défense",
+            "description": "Alertes sémantiques, chaînes causales, corrélation IT/OT, conformité AI Act",
+            "color": "#1e3a5f",
+            "icon": "shield",
+        },
     }
 
     meta = PROFILE_META.get(
@@ -487,6 +495,21 @@ async def security_view(request: Request):
             "request": request,
             "title": f"{APP_TITLE} - Security Center",
             "active_page": "security",
+            **i18n,
+        },
+    )
+
+
+@app.get("/defense-soc", response_class=HTMLResponse)
+async def defense_soc_view(request: Request):
+    """Defense SOC dashboard — Commandant SOC Défense profile"""
+    i18n = create_i18n_context(request)
+    return templates.TemplateResponse(
+        "defense_soc.html",
+        {
+            "request": request,
+            "title": f"{APP_TITLE} - Commandant SOC Défense",
+            "active_page": "defense-soc",
             **i18n,
         },
     )
