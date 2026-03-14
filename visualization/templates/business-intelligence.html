@@ -2,31 +2,31 @@
 
 {% set active_page = 'business-intelligence' %}
 
-{% block page_title %}BI{% endblock %}
-{% block page_subtitle %}<p class="text-muted">KPIs, revenue attribution, ROI analysis, and executive dashboards</p>{% endblock %}
+{% block page_title %}Renseignement Opérationnel{% endblock %}
+{% block page_subtitle %}<p class="text-muted">KPIs, attribution d'impact opérationnel, analyse d'efficacité opérationnelle et tableaux de bord exécutifs</p>{% endblock %}
 
 {% block topbar_actions %}
 <button class="btn btn-secondary" onclick="runSimulation()">
     <i data-lucide="play"></i>
-    Run Simulation
+    Lancer la Simulation
 </button>
 <button class="btn btn-primary" onclick="exportReport()">
     <i data-lucide="download"></i>
-    Export Report
+    Exporter le Rapport
 </button>
 {% endblock %}
 
 {% block content %}
-<!-- Executive Summary -->
+<!-- Synthèse Exécutive -->
 <div class="bi-hero">
     <div class="kpi-cards-grid">
         <div class="kpi-card">
             <div class="kpi-header">
-                <span class="kpi-title">AI Revenue Impact</span>
+                <span class="kpi-title">Impact Opérationnel de l'IA</span>
                 <span class="kpi-trend up"><i data-lucide="trending-up"></i> +12%</span>
             </div>
-            <span class="kpi-value">$2.4M</span>
-            <span class="kpi-period">This Quarter</span>
+            <span class="kpi-value">2,4 M$</span>
+            <span class="kpi-period">Ce Trimestre</span>
             <div class="kpi-chart">
                 <canvas id="revenueSparkline" height="40"></canvas>
             </div>
@@ -34,11 +34,11 @@
 
         <div class="kpi-card">
             <div class="kpi-header">
-                <span class="kpi-title">Cost Efficiency</span>
+                <span class="kpi-title">Coût-Efficacité</span>
                 <span class="kpi-trend up"><i data-lucide="trending-up"></i> +8%</span>
             </div>
             <span class="kpi-value">3.2x</span>
-            <span class="kpi-period">ROI Multiplier</span>
+            <span class="kpi-period">Multiplicateur d'Efficacité Opérationnelle</span>
             <div class="kpi-chart">
                 <canvas id="roiSparkline" height="40"></canvas>
             </div>
@@ -46,11 +46,11 @@
 
         <div class="kpi-card">
             <div class="kpi-header">
-                <span class="kpi-title">Operational Savings</span>
+                <span class="kpi-title">Économies Opérationnelles</span>
                 <span class="kpi-trend up"><i data-lucide="trending-up"></i> +23%</span>
             </div>
-            <span class="kpi-value">$890K</span>
-            <span class="kpi-period">Annual Savings</span>
+            <span class="kpi-value">890 K$</span>
+            <span class="kpi-period">Économies Annuelles</span>
             <div class="kpi-chart">
                 <canvas id="savingsSparkline" height="40"></canvas>
             </div>
@@ -58,11 +58,11 @@
 
         <div class="kpi-card">
             <div class="kpi-header">
-                <span class="kpi-title">Model Efficiency</span>
+                <span class="kpi-title">Efficacité des Modèles</span>
                 <span class="kpi-trend down"><i data-lucide="trending-down"></i> -2%</span>
             </div>
-            <span class="kpi-value">94.2%</span>
-            <span class="kpi-period">Avg Accuracy</span>
+            <span class="kpi-value">94,2%</span>
+            <span class="kpi-period">Précision Moyenne</span>
             <div class="kpi-chart">
                 <canvas id="accuracySparkline" height="40"></canvas>
             </div>
@@ -70,53 +70,53 @@
     </div>
 </div>
 
-<!-- Revenue Attribution & Cost-Benefit -->
+<!-- Attribution d'impact opérationnel et analyse coût-efficacité -->
 <section class="mb-6">
     <div class="grid grid-2">
-        <!-- Revenue Attribution -->
+        <!-- Attribution d'impact opérationnel -->
         <div class="card">
             <div class="card-header">
-                <h3 class="card-title">Revenue Attribution by Model</h3>
+                <h3 class="card-title">Attribution d'Impact Opérationnel par Modèle</h3>
             </div>
             <div class="chart-container" style="height: 250px;">
                 <canvas id="revenueAttribution"></canvas>
             </div>
             <div class="attribution-list">
                 <div class="attribution-item">
-                    <span class="attribution-model">Recommendation Engine</span>
-                    <span class="attribution-value">$1.2M</span>
+                    <span class="attribution-model">Moteur de Recommandation</span>
+                    <span class="attribution-value">1,2 M$</span>
                     <span class="attribution-percent">50%</span>
                 </div>
                 <div class="attribution-item">
-                    <span class="attribution-model">Fraud Detection</span>
-                    <span class="attribution-value">$680K</span>
+                    <span class="attribution-model">Détection de Fraude</span>
+                    <span class="attribution-value">680 K$</span>
                     <span class="attribution-percent">28%</span>
                 </div>
                 <div class="attribution-item">
-                    <span class="attribution-model">Customer Support AI</span>
-                    <span class="attribution-value">$520K</span>
+                    <span class="attribution-model">IA Support Opérateur</span>
+                    <span class="attribution-value">520 K$</span>
                     <span class="attribution-percent">22%</span>
                 </div>
             </div>
         </div>
 
-        <!-- Cost-Benefit Analysis -->
+        <!-- Analyse Coût-Efficacité -->
         <div class="card">
             <div class="card-header">
-                <h3 class="card-title">Cost-Benefit Analysis</h3>
+                <h3 class="card-title">Analyse Coût-Efficacité</h3>
             </div>
             <div class="cost-benefit-summary">
                 <div class="cb-metric positive">
-                    <span class="cb-label">Total Benefits</span>
-                    <span class="cb-value">$3.2M</span>
+                    <span class="cb-label">Bénéfices Totaux</span>
+                    <span class="cb-value">3,2 M$</span>
                 </div>
                 <div class="cb-metric negative">
-                    <span class="cb-label">Total Costs</span>
-                    <span class="cb-value">$980K</span>
+                    <span class="cb-label">Coûts Totaux</span>
+                    <span class="cb-value">980 K$</span>
                 </div>
                 <div class="cb-metric net">
-                    <span class="cb-label">Net Value</span>
-                    <span class="cb-value">$2.22M</span>
+                    <span class="cb-label">Valeur Nette</span>
+                    <span class="cb-value">2,22 M$</span>
                 </div>
             </div>
             <div class="chart-container" style="height: 180px;">
@@ -126,30 +126,30 @@
     </div>
 </section>
 
-<!-- KPI Dashboard -->
+<!-- Tableau de bord des KPIs -->
 <section class="mb-6">
     <div class="card">
         <div class="card-header">
-            <h3 class="card-title">Key Performance Indicators</h3>
+            <h3 class="card-title">Indicateurs Clés de Performance</h3>
             <div class="header-actions">
                 <select class="form-select" style="width: 150px;">
-                    <option>All Categories</option>
-                    <option>Financial</option>
-                    <option>Operational</option>
-                    <option>Quality</option>
+                    <option>Toutes les Catégories</option>
+                    <option>Financier</option>
+                    <option>Opérationnel</option>
+                    <option>Qualité</option>
                 </select>
             </div>
         </div>
         <div class="kpis-grid">
             <div class="kpi-tile on-track">
                 <div class="kpi-tile-header">
-                    <span class="kpi-category">Financial</span>
-                    <span class="kpi-status on-track">On Track</span>
+                    <span class="kpi-category">Financier</span>
+                    <span class="kpi-status on-track">En Bonne Voie</span>
                 </div>
-                <span class="kpi-tile-name">Customer Acquisition Cost</span>
+                <span class="kpi-tile-name">Coût d'Acquisition Opérateur</span>
                 <div class="kpi-tile-values">
-                    <span class="current">$45</span>
-                    <span class="target">Target: $50</span>
+                    <span class="current">45 $</span>
+                    <span class="target">Objectif : 50 $</span>
                 </div>
                 <div class="kpi-progress">
                     <div class="progress-bar" style="width: 90%"></div>
@@ -158,13 +158,13 @@
 
             <div class="kpi-tile on-track">
                 <div class="kpi-tile-header">
-                    <span class="kpi-category">Operational</span>
-                    <span class="kpi-status on-track">On Track</span>
+                    <span class="kpi-category">Opérationnel</span>
+                    <span class="kpi-status on-track">En Bonne Voie</span>
                 </div>
-                <span class="kpi-tile-name">Model Uptime</span>
+                <span class="kpi-tile-name">Disponibilité des Modèles</span>
                 <div class="kpi-tile-values">
-                    <span class="current">99.95%</span>
-                    <span class="target">Target: 99.9%</span>
+                    <span class="current">99,95%</span>
+                    <span class="target">Objectif : 99,9%</span>
                 </div>
                 <div class="kpi-progress">
                     <div class="progress-bar" style="width: 100%"></div>
@@ -173,13 +173,13 @@
 
             <div class="kpi-tile at-risk">
                 <div class="kpi-tile-header">
-                    <span class="kpi-category">Quality</span>
-                    <span class="kpi-status at-risk">At Risk</span>
+                    <span class="kpi-category">Qualité</span>
+                    <span class="kpi-status at-risk">À Risque</span>
                 </div>
-                <span class="kpi-tile-name">Customer Satisfaction</span>
+                <span class="kpi-tile-name">Satisfaction Opérateur</span>
                 <div class="kpi-tile-values">
-                    <span class="current">4.2</span>
-                    <span class="target">Target: 4.5</span>
+                    <span class="current">4,2</span>
+                    <span class="target">Objectif : 4,5</span>
                 </div>
                 <div class="kpi-progress at-risk">
                     <div class="progress-bar" style="width: 84%"></div>
@@ -188,13 +188,13 @@
 
             <div class="kpi-tile on-track">
                 <div class="kpi-tile-header">
-                    <span class="kpi-category">Financial</span>
-                    <span class="kpi-status on-track">On Track</span>
+                    <span class="kpi-category">Financier</span>
+                    <span class="kpi-status on-track">En Bonne Voie</span>
                 </div>
-                <span class="kpi-tile-name">Revenue per Model</span>
+                <span class="kpi-tile-name">Impact Opérationnel par Modèle</span>
                 <div class="kpi-tile-values">
-                    <span class="current">$180K</span>
-                    <span class="target">Target: $150K</span>
+                    <span class="current">180 K$</span>
+                    <span class="target">Objectif : 150 K$</span>
                 </div>
                 <div class="kpi-progress">
                     <div class="progress-bar" style="width: 100%"></div>
@@ -203,13 +203,13 @@
 
             <div class="kpi-tile off-track">
                 <div class="kpi-tile-header">
-                    <span class="kpi-category">Operational</span>
-                    <span class="kpi-status off-track">Off Track</span>
+                    <span class="kpi-category">Opérationnel</span>
+                    <span class="kpi-status off-track">Hors Objectif</span>
                 </div>
-                <span class="kpi-tile-name">Response Time (P95)</span>
+                <span class="kpi-tile-name">Temps de Réponse (P95)</span>
                 <div class="kpi-tile-values">
                     <span class="current">850ms</span>
-                    <span class="target">Target: 500ms</span>
+                    <span class="target">Objectif : 500ms</span>
                 </div>
                 <div class="kpi-progress off-track">
                     <div class="progress-bar" style="width: 59%"></div>
@@ -218,13 +218,13 @@
 
             <div class="kpi-tile on-track">
                 <div class="kpi-tile-header">
-                    <span class="kpi-category">Quality</span>
-                    <span class="kpi-status on-track">On Track</span>
+                    <span class="kpi-category">Qualité</span>
+                    <span class="kpi-status on-track">En Bonne Voie</span>
                 </div>
-                <span class="kpi-tile-name">Model Accuracy</span>
+                <span class="kpi-tile-name">Précision des Modèles</span>
                 <div class="kpi-tile-values">
-                    <span class="current">94.2%</span>
-                    <span class="target">Target: 92%</span>
+                    <span class="current">94,2%</span>
+                    <span class="target">Objectif : 92%</span>
                 </div>
                 <div class="kpi-progress">
                     <div class="progress-bar" style="width: 100%"></div>
@@ -234,53 +234,53 @@
     </div>
 </section>
 
-<!-- Impact Simulation -->
+<!-- Simulation d'Impact -->
 <section class="mb-6">
     <div class="card">
         <div class="card-header">
-            <h3 class="card-title">Impact Simulation</h3>
+            <h3 class="card-title">Simulation d'Impact</h3>
             <button class="btn btn-sm btn-secondary" onclick="runSimulation()">
                 <i data-lucide="play"></i>
-                New Simulation
+                Nouvelle Simulation
             </button>
         </div>
         <div class="simulation-container">
             <div class="simulation-scenario">
-                <h4>Scenario: Scale Recommendation Engine</h4>
-                <p>What if we increase the recommendation model capacity by 50%?</p>
+                <h4>Scénario : Mise à l'Échelle du Moteur de Recommandation</h4>
+                <p>Quel serait l'impact d'une augmentation de 50% de la capacité du modèle de recommandation ?</p>
             </div>
             <div class="simulation-results">
                 <div class="result-item positive">
                     <i data-lucide="trending-up"></i>
                     <div class="result-content">
-                        <span class="result-metric">Projected Revenue</span>
-                        <span class="result-value">+$450K/quarter</span>
+                        <span class="result-metric">Impact Opérationnel Projeté</span>
+                        <span class="result-value">+450 K$/trimestre</span>
                     </div>
                 </div>
                 <div class="result-item negative">
                     <i data-lucide="coins"></i>
                     <div class="result-content">
-                        <span class="result-metric">Infrastructure Cost</span>
-                        <span class="result-value">+$85K/quarter</span>
+                        <span class="result-metric">Coût d'Infrastructure</span>
+                        <span class="result-value">+85 K$/trimestre</span>
                     </div>
                 </div>
                 <div class="result-item positive">
                     <i data-lucide="percent"></i>
                     <div class="result-content">
-                        <span class="result-metric">Net ROI</span>
+                        <span class="result-metric">Efficacité Opérationnelle Nette</span>
                         <span class="result-value">429%</span>
                     </div>
                 </div>
                 <div class="result-item neutral">
                     <i data-lucide="clock"></i>
                     <div class="result-content">
-                        <span class="result-metric">Payback Period</span>
-                        <span class="result-value">2.3 months</span>
+                        <span class="result-metric">Délai de Rentabilisation</span>
+                        <span class="result-value">2,3 mois</span>
                     </div>
                 </div>
             </div>
             <div class="simulation-confidence">
-                <span>Confidence Level: <strong>82%</strong></span>
+                <span>Niveau de Confiance : <strong>82%</strong></span>
                 <div class="confidence-bar">
                     <div class="confidence-fill" style="width: 82%"></div>
                 </div>
@@ -670,13 +670,13 @@ async function loadBIData() {
 }
 
 function initCharts() {
-    // Revenue Attribution Chart
+    // Graphique d'attribution d'impact opérationnel
     const revenueCtx = document.getElementById('revenueAttribution');
     if (revenueCtx) {
         new Chart(revenueCtx, {
             type: 'doughnut',
             data: {
-                labels: ['Recommendation', 'Fraud Detection', 'Support AI'],
+                labels: ['Recommandation', 'Détection Fraude', 'IA Support'],
                 datasets: [{
                     data: [50, 28, 22],
                     backgroundColor: ['#6366f1', '#10b981', '#f59e0b'],
@@ -694,19 +694,19 @@ function initCharts() {
         });
     }
 
-    // Cost-Benefit Chart
+    // Graphique Coût-Efficacité
     const cbCtx = document.getElementById('costBenefitChart');
     if (cbCtx) {
         new Chart(cbCtx, {
             type: 'bar',
             data: {
-                labels: ['Q1', 'Q2', 'Q3', 'Q4'],
+                labels: ['T1', 'T2', 'T3', 'T4'],
                 datasets: [{
-                    label: 'Benefits',
+                    label: 'Bénéfices',
                     data: [700, 850, 820, 830],
                     backgroundColor: '#10b981'
                 }, {
-                    label: 'Costs',
+                    label: 'Coûts',
                     data: [220, 240, 260, 260],
                     backgroundColor: '#ef4444'
                 }]
@@ -721,7 +721,7 @@ function initCharts() {
                     y: {
                         beginAtZero: true,
                         ticks: {
-                            callback: value => '$' + value + 'K'
+                            callback: value => value + ' K$'
                         }
                     }
                 }
@@ -766,13 +766,13 @@ function initSparkline(id, data, color) {
 }
 
 function runSimulation() {
-    showToast('Opening simulation wizard...', 'info');
+    showToast('Ouverture de l\'assistant de simulation...', 'info');
 }
 
 function exportReport() {
-    showToast('Generating executive report...', 'info');
+    showToast('Génération du rapport exécutif...', 'info');
     setTimeout(() => {
-        showToast('Report exported successfully!', 'success');
+        showToast('Rapport exporté avec succès !', 'success');
     }, 2000);
 }
 </script>

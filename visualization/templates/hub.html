@@ -626,6 +626,7 @@
 <script>
 document.addEventListener('DOMContentLoaded', async () => {
     await loadHubData();
+    initRealtimeHub();
     lucide.createIcons();
 });
 
@@ -709,6 +710,61 @@ function updateTrendIcon(elementId, trend) {
     const icon = trend === 'up' ? 'trending-up' : trend === 'down' ? 'trending-down' : 'minus';
     el.innerHTML = `<i data-lucide="${icon}"></i>`;
     lucide.createIcons();
+}
+
+// Real-time data integration (iattack + aiobs-lab inspired)
+function initRealtimeHub() {
+    if (!window.GASKIA_RT) return;
+
+    // Update stats every 2s from RT module
+    GASKIA_RT.on('stats-update', (stats) => {
+        const scoreEl = document.getElementById('healthScore');
+        if (scoreEl) {
+            const score = Math.round(stats.trustScore * 100);
+            scoreEl.textContent = score + '%';
+            updateHealthRing(score);
+        }
+    });
+
+    // Show attack events in activity feed
+    GASKIA_RT.on('attack-event', (event) => {
+        const container = document.getElementById('activityList');
+        if (!container) return;
+
+        const iconInfo = event.blocked
+            ? { icon: 'shield-check', class: 'success' }
+            : { icon: 'alert-circle', class: 'error' };
+
+        const item = document.createElement('div');
+        item.className = 'activity-item';
+        item.innerHTML = `
+            <div class="activity-icon ${iconInfo.class}">
+                <i data-lucide="${iconInfo.icon}"></i>
+            </div>
+            <div class="activity-content">
+                <div class="activity-title">${event.details}</div>
+                <div class="activity-time">${event.targetSystem} - MITRE ${event.mitre} - ${event.blocked ? 'Bloqué' : 'NON BLOQUÉ'}</div>
+            </div>
+        `;
+
+        container.insertBefore(item, container.firstChild);
+        // Keep max 6 items
+        while (container.children.length > 6) {
+            container.removeChild(container.lastChild);
+        }
+        if (typeof lucide !== 'undefined') lucide.createIcons();
+    });
+
+    // Update metrics display
+    GASKIA_RT.on('metrics-update', (m) => {
+        const perfEl = document.getElementById('perfScore');
+        if (perfEl) perfEl.textContent = (100 - m.errorRate).toFixed(1) + '%';
+    });
+
+    // Initial stats
+    const stats = GASKIA_RT.getStats();
+    const alertsEl = document.getElementById('activeAlerts');
+    if (alertsEl) alertsEl.textContent = stats.activeAlerts;
 }
 
 function loadRecentActivity(issues) {

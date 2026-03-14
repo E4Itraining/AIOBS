@@ -6,7 +6,7 @@
 
 {% block content %}
 <div class="global-dashboard page-transition-enter">
-    <!-- Hero Section -->
+    <!-- Section Héro -->
     <div class="dashboard-hero">
         <div class="hero-content">
             <div class="hero-badge">
@@ -25,12 +25,12 @@
             </a>
             <button class="btn btn-primary" onclick="window.GASKIA_UX && window.GASKIA_UX.toggleQuickInsights()">
                 <i data-lucide="zap"></i>
-                <span>Quick Insights</span>
+                <span>Synthèse Rapide</span>
             </button>
         </div>
     </div>
 
-    <!-- KPI Overview Cards -->
+    <!-- Cartes KPI -->
     <div class="kpi-grid kpi-grid-5">
         <div class="kpi-card kpi-card-clickable" data-metric="trust_score" onclick="openTrustDeepDive()">
             <div class="kpi-header">
@@ -46,7 +46,7 @@
             <div class="kpi-label">Score de Confiance</div>
             <div class="kpi-deep-dive-hint">
                 <i data-lucide="maximize-2"></i>
-                <span>Cliquer pour Deep Dive</span>
+                <span>Cliquer pour approfondir</span>
             </div>
         </div>
 
@@ -111,7 +111,7 @@
         </div>
     </div>
 
-    <!-- Persona Quick Access -->
+    <!-- Accès Rapide par Persona -->
     <div class="section-header">
         <h2>
             <i data-lucide="users"></i>
@@ -121,14 +121,14 @@
     </div>
 
     <div class="persona-quick-grid">
-        <!-- Dirigeant -->
+        <!-- Dirigeant / Opérationnel -->
         <a href="/dirigeant" class="persona-quick-card" style="--accent: #10b981;">
             <div class="pq-icon">
                 <i data-lucide="building-2"></i>
             </div>
             <div class="pq-content">
-                <h3>Dirigeant / Business</h3>
-                <p>Vision stratégique, ROI, risques métier et conformité globale</p>
+                <h3>Dirigeant / Opérationnel</h3>
+                <p>Vision stratégique, ROI, risques opérationnels et conformité globale</p>
                 <div class="pq-metrics">
                     <span class="pq-metric">
                         <i data-lucide="trending-up"></i>
@@ -187,7 +187,7 @@
             <i data-lucide="arrow-right" class="pq-arrow"></i>
         </a>
 
-        <!-- Financier -->
+        <!-- Financier / FinOps -->
         <a href="/financier" class="persona-quick-card" style="--accent: #ef4444;">
             <div class="pq-icon">
                 <i data-lucide="wallet"></i>
@@ -210,9 +210,9 @@
         </a>
     </div>
 
-    <!-- Main Dashboard Grid -->
+    <!-- Grille Principale du Tableau de Bord -->
     <div class="dashboard-grid">
-        <!-- System Health Overview -->
+        <!-- Vue d'ensemble de la Santé des Systèmes -->
         <div class="card card-lg">
             <div class="card-header">
                 <h3>
@@ -259,7 +259,7 @@
             </div>
         </div>
 
-        <!-- Trust Score Trend -->
+        <!-- Tendance du Score de Confiance -->
         <div class="card card-lg">
             <div class="card-header">
                 <h3>
@@ -277,7 +277,7 @@
             </div>
         </div>
 
-        <!-- Cost Breakdown -->
+        <!-- Répartition des Coûts -->
         <div class="card">
             <div class="card-header">
                 <h3>
@@ -291,7 +291,7 @@
             </div>
         </div>
 
-        <!-- Compliance Status -->
+        <!-- Statut de Conformité -->
         <div class="card">
             <div class="card-header">
                 <h3>
@@ -345,7 +345,7 @@
             </div>
         </div>
 
-        <!-- Recent Alerts -->
+        <!-- Alertes Récentes -->
         <div class="card card-full">
             <div class="card-header">
                 <h3>
@@ -364,10 +364,10 @@
                             <i data-lucide="alert-circle"></i>
                         </div>
                         <div class="alert-content">
-                            <div class="alert-title">Drift critique détecté - Modèle de scoring crédit</div>
+                            <div class="alert-title">Drift critique détecté - Modèle de détection de menaces</div>
                             <div class="alert-meta">
                                 <span><i data-lucide="clock"></i> Il y a 23 min</span>
-                                <span><i data-lucide="brain"></i> credit-scoring-v2</span>
+                                <span><i data-lucide="brain"></i> detection-menaces-v2</span>
                             </div>
                         </div>
                         <div class="alert-actions">
@@ -379,10 +379,10 @@
                             <i data-lucide="alert-triangle"></i>
                         </div>
                         <div class="alert-content">
-                            <div class="alert-title">Latence élevée - API recommendation</div>
+                            <div class="alert-title">Latence élevée - API aide à la décision</div>
                             <div class="alert-meta">
                                 <span><i data-lucide="clock"></i> Il y a 1h</span>
-                                <span><i data-lucide="server"></i> reco-engine-prod</span>
+                                <span><i data-lucide="server"></i> aide-decision-prod</span>
                             </div>
                         </div>
                         <div class="alert-actions">
@@ -410,20 +410,20 @@
     </div>
 </div>
 
-<!-- Trust Score Deep Dive Modal -->
+<!-- Modale Analyse Approfondie du Score de Confiance -->
 <div class="modal-overlay" id="trustDeepDiveModal">
     <div class="modal-container modal-xl">
         <div class="modal-header">
             <h2>
                 <i data-lucide="shield-check"></i>
-                Deep Dive - Score de Confiance
+                Analyse Approfondie - Score de Confiance
             </h2>
             <button class="modal-close" onclick="closeTrustDeepDive()">
                 <i data-lucide="x"></i>
             </button>
         </div>
         <div class="modal-body">
-            <!-- Overview Header -->
+            <!-- En-tête de Vue d'ensemble -->
             <div class="deep-dive-controls">
                 <div class="framework-overview-header">
                     <div class="trust-score-large">
@@ -463,7 +463,7 @@
                 </div>
             </div>
 
-            <!-- Trust Components -->
+            <!-- Composantes de Confiance -->
             <div class="deep-dive-kpis">
                 <div class="deep-dive-kpi">
                     <div class="deep-dive-kpi-icon" style="background: linear-gradient(135deg, #10b981, #34d399);">
@@ -507,7 +507,7 @@
                 </div>
             </div>
 
-            <!-- Trust by Model -->
+            <!-- Confiance par Modèle -->
             <div class="deep-dive-table-section">
                 <h4>Score de confiance par modèle IA</h4>
                 <div class="table-container">
@@ -525,7 +525,7 @@
                         </thead>
                         <tbody>
                             <tr>
-                                <td><strong>Fraud Detection</strong></td>
+                                <td><strong>Détection de Menaces</strong></td>
                                 <td>96%</td>
                                 <td>94%</td>
                                 <td>92%</td>
@@ -534,7 +534,7 @@
                                 <td><span class="badge badge-success">Excellent</span></td>
                             </tr>
                             <tr>
-                                <td><strong>Scoring Crédit</strong></td>
+                                <td><strong>Analyse de Risques</strong></td>
                                 <td>93%</td>
                                 <td>78%</td>
                                 <td>88%</td>
@@ -543,7 +543,7 @@
                                 <td><span class="badge badge-warning">Drift détecté</span></td>
                             </tr>
                             <tr>
-                                <td><strong>Chatbot Client</strong></td>
+                                <td><strong>Assistant IA Opérationnel</strong></td>
                                 <td>91%</td>
                                 <td>88%</td>
                                 <td>90%</td>
@@ -552,7 +552,7 @@
                                 <td><span class="badge badge-success">Bon</span></td>
                             </tr>
                             <tr>
-                                <td><strong>Recommandation</strong></td>
+                                <td><strong>Aide à la Décision</strong></td>
                                 <td>89%</td>
                                 <td>85%</td>
                                 <td>87%</td>
@@ -561,7 +561,7 @@
                                 <td><span class="badge badge-success">Bon</span></td>
                             </tr>
                             <tr>
-                                <td><strong>KYC Automation</strong></td>
+                                <td><strong>Automatisation Renseignement</strong></td>
                                 <td>85%</td>
                                 <td>82%</td>
                                 <td>80%</td>
@@ -574,7 +574,7 @@
                 </div>
             </div>
 
-            <!-- Recommendations -->
+            <!-- Recommandations -->
             <div class="deep-dive-recommendations">
                 <h4>Actions recommandées</h4>
                 <div class="recommendations-list">
@@ -583,7 +583,7 @@
                             <i data-lucide="alert-triangle"></i>
                         </div>
                         <div class="recommendation-content">
-                            <h5>Investiguer le drift sur Scoring Crédit</h5>
+                            <h5>Investiguer le drift sur Détection de Menaces</h5>
                             <p>Drift critique détecté. Réviser les données d'entraînement et envisager un réentraînement.</p>
                         </div>
                     </div>
@@ -592,7 +592,7 @@
                             <i data-lucide="refresh-cw"></i>
                         </div>
                         <div class="recommendation-content">
-                            <h5>Mise à jour du modèle KYC</h5>
+                            <h5>Mise à jour du modèle Renseignement</h5>
                             <p>Score de qualité en baisse. Planifier une mise à jour du modèle avec les nouvelles données.</p>
                         </div>
                     </div>
@@ -1343,7 +1343,7 @@ function initTrustTrendChart() {
     new Chart(ctx, {
         type: 'line',
         data: {
-            labels: ['00:00', '04:00', '08:00', '12:00', '16:00', '20:00', 'Now'],
+            labels: ['00:00', '04:00', '08:00', '12:00', '16:00', '20:00', 'Maintenant'],
             datasets: [{
                 label: 'Score de Confiance',
                 data: [85, 84, 86, 87, 85, 88, 87],
@@ -1379,7 +1379,7 @@ function initCostBreakdownChart() {
     new Chart(ctx, {
         type: 'doughnut',
         data: {
-            labels: ['Inférence', 'Training', 'Stockage', 'Infrastructure'],
+            labels: ['Inférence', 'Entraînement', 'Stockage', 'Infrastructure'],
             datasets: [{
                 data: [45, 25, 15, 15],
                 backgroundColor: ['#2563EB', '#6366f1', '#059669', '#0891B2'],

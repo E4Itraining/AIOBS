@@ -920,8 +920,61 @@ document.addEventListener('DOMContentLoaded', async () => {
     initCharts();
     initEndpointHistory();
     startLiveUpdates();
+    initRealtimeMonitoring();
     lucide.createIcons();
 });
+
+// Real-time monitoring with GASKIA_RT (iattack + aiobs-lab)
+function initRealtimeMonitoring() {
+    if (!window.GASKIA_RT) return;
+
+    GASKIA_RT.on('metrics-update', (m) => {
+        // Update latency chart with real data
+        if (latencyChart) {
+            latencyData.push({ p50: m.latency * 0.7, p99: m.latency });
+            if (latencyData.length > 60) latencyData.shift();
+            latencyChart.data.datasets[0].data = latencyData.map(d => d.p50);
+            latencyChart.data.datasets[1].data = latencyData.map(d => d.p99);
+            latencyChart.update('none');
+        }
+        // Update throughput
+        if (throughputChart) {
+            throughputData.push(m.throughput);
+            if (throughputData.length > 60) throughputData.shift();
+            throughputChart.data.datasets[0].data = throughputData;
+            throughputChart.update('none');
+        }
+    });
+
+    GASKIA_RT.on('health-update', (systems) => {
+        // Update system health cards dynamically
+        const cards = document.querySelectorAll('.health-card');
+        const sysIds = ['sioc', 'routeur_ia', 'cluster', 'bdd_tactique'];
+        cards.forEach((card, idx) => {
+            const sys = systems[sysIds[idx]];
+            if (!sys) return;
+            card.className = 'health-card ' + (sys.status === 'nominal' ? 'healthy' : sys.status);
+            const uptimeEl = card.querySelector('.health-uptime');
+            if (uptimeEl) uptimeEl.textContent = sys.uptime.toFixed(2) + '% uptime';
+            const metrics = card.querySelectorAll('.metric-value');
+            if (metrics[0]) metrics[0].textContent = (sys.requestsPerMin / 1000).toFixed(1) + 'K';
+            if (metrics[1]) metrics[1].textContent = Math.round(sys.latency) + 'ms';
+            if (metrics[2]) metrics[2].textContent = sys.errorRate.toFixed(2) + '%';
+        });
+    });
+
+    GASKIA_RT.on('drift-update', (drift) => {
+        // Update trust score chart
+        if (trustChart) {
+            const labels = trustChart.data.labels;
+            const data = trustChart.data.datasets[0].data;
+            labels.push(new Date().toLocaleTimeString('fr-FR', {hour:'2-digit', minute:'2-digit'}));
+            data.push(drift.trustScore);
+            if (labels.length > 30) { labels.shift(); data.shift(); }
+            trustChart.update('none');
+        }
+    });
+}
 
 function initCharts() {
     // Initialize with empty data

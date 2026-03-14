@@ -2,26 +2,26 @@
 
 {% set active_page = 'guardrails' %}
 
-{% block page_title %}GenAI Guardrails & Safety Mesh{% endblock %}
-{% block page_subtitle %}<p class="text-muted">Prompt injection protection, jailbreak detection, and content safety controls</p>{% endblock %}
+{% block page_title %}Garde-fous IA & Maillage de Sécurité{% endblock %}
+{% block page_subtitle %}<p class="text-muted">Protection contre l'injection de prompts, détection de contournement et contrôles de sécurité des contenus</p>{% endblock %}
 
 {% block topbar_actions %}
 <div class="live-indicator">
     <span class="live-dot"></span>
-    <span>Real-time Protection</span>
+    <span>Protection en temps réel</span>
 </div>
 <button class="btn btn-secondary" onclick="testPrompt()">
     <i data-lucide="flask-conical"></i>
-    Test Prompt
+    Tester un Prompt
 </button>
 <button class="btn btn-primary" onclick="viewPolicies()">
     <i data-lucide="shield"></i>
-    Manage Policies
+    Gérer les Politiques
 </button>
 {% endblock %}
 
 {% block content %}
-<!-- Safety Mesh Overview -->
+<!-- Vue d'ensemble du Maillage de Sécurité -->
 <div class="guardrails-hero">
     <div class="safety-score-main">
         <div class="score-ring large">
@@ -33,7 +33,7 @@
             </svg>
             <div class="score-content">
                 <span class="score-value" id="safetyScore">95</span>
-                <span class="score-label">Safety Score</span>
+                <span class="score-label">Score de Sécurité</span>
             </div>
         </div>
     </div>
@@ -44,7 +44,7 @@
             </div>
             <div class="stat-content">
                 <span class="stat-value" id="injectionBlocked">127</span>
-                <span class="stat-label">Injections Blocked (24h)</span>
+                <span class="stat-label">Injections Bloquées (24h)</span>
             </div>
         </div>
         <div class="safety-stat">
@@ -53,7 +53,7 @@
             </div>
             <div class="stat-content">
                 <span class="stat-value" id="jailbreakAttempts">23</span>
-                <span class="stat-label">Jailbreak Attempts (24h)</span>
+                <span class="stat-label">Tentatives de Contournement (24h)</span>
             </div>
         </div>
         <div class="safety-stat">
@@ -62,7 +62,7 @@
             </div>
             <div class="stat-content">
                 <span class="stat-value" id="safeRequests">99.7%</span>
-                <span class="stat-label">Safe Request Rate</span>
+                <span class="stat-label">Taux de Requêtes Sûres</span>
             </div>
         </div>
         <div class="safety-stat">
@@ -71,15 +71,15 @@
             </div>
             <div class="stat-content">
                 <span class="stat-value" id="dataLeaksPrevented">0</span>
-                <span class="stat-label">Data Leaks Prevented</span>
+                <span class="stat-label">Fuites de Données Évitées</span>
             </div>
         </div>
     </div>
 </div>
 
-<!-- Guardrail Components Grid -->
+<!-- Grille des Composants de Garde-fous -->
 <section class="mb-6">
-    <h2 class="section-title">Active Guardrails</h2>
+    <h2 class="section-title">Garde-fous Actifs</h2>
     <div class="guardrails-grid">
         <div class="guardrail-card active">
             <div class="guardrail-header">
@@ -87,25 +87,25 @@
                     <i data-lucide="shield-alert"></i>
                 </div>
                 <div class="guardrail-status">
-                    <span class="status-badge active">Active</span>
+                    <span class="status-badge active">Actif</span>
                 </div>
             </div>
-            <h3>Prompt Injection Detection</h3>
-            <p>Real-time analysis of user inputs for injection attempts</p>
+            <h3>Détection d'Injection de Prompts</h3>
+            <p>Analyse en temps réel des entrées utilisateur contre les tentatives d'injection</p>
             <div class="guardrail-stats">
                 <div class="stat">
-                    <span class="label">Detection Rate</span>
+                    <span class="label">Taux de Détection</span>
                     <span class="value">99.8%</span>
                 </div>
                 <div class="stat">
-                    <span class="label">Avg Latency</span>
+                    <span class="label">Latence Moy.</span>
                     <span class="value">12ms</span>
                 </div>
             </div>
             <div class="guardrail-patterns">
-                <span class="pattern-tag">System Override</span>
-                <span class="pattern-tag">Context Injection</span>
-                <span class="pattern-tag">Delimiter Attack</span>
+                <span class="pattern-tag">Détournement Système</span>
+                <span class="pattern-tag">Injection de Contexte</span>
+                <span class="pattern-tag">Attaque par Délimiteur</span>
             </div>
         </div>
 
@@ -115,25 +115,25 @@
                     <i data-lucide="unlock"></i>
                 </div>
                 <div class="guardrail-status">
-                    <span class="status-badge active">Active</span>
+                    <span class="status-badge active">Actif</span>
                 </div>
             </div>
-            <h3>Jailbreak Prevention</h3>
-            <p>Detection of role-playing and boundary bypass attempts</p>
+            <h3>Prévention de Contournement</h3>
+            <p>Détection des tentatives de jeu de rôle et de contournement des limites</p>
             <div class="guardrail-stats">
                 <div class="stat">
-                    <span class="label">Patterns</span>
+                    <span class="label">Modèles</span>
                     <span class="value">47</span>
                 </div>
                 <div class="stat">
-                    <span class="label">Blocked Today</span>
+                    <span class="label">Bloqués Aujourd'hui</span>
                     <span class="value">23</span>
                 </div>
             </div>
             <div class="guardrail-patterns">
-                <span class="pattern-tag">DAN Mode</span>
-                <span class="pattern-tag">Role Play</span>
-                <span class="pattern-tag">Hypothetical</span>
+                <span class="pattern-tag">Mode DAN</span>
+                <span class="pattern-tag">Jeu de Rôle</span>
+                <span class="pattern-tag">Hypothétique</span>
             </div>
         </div>
 
@@ -143,25 +143,25 @@
                     <i data-lucide="file-lock"></i>
                 </div>
                 <div class="guardrail-status">
-                    <span class="status-badge active">Active</span>
+                    <span class="status-badge active">Actif</span>
                 </div>
             </div>
-            <h3>Data Loss Prevention</h3>
-            <p>PII, secrets, and sensitive data detection</p>
+            <h3>Prévention de Fuite de Données</h3>
+            <p>Détection des données personnelles, secrets défense et données sensibles</p>
             <div class="guardrail-stats">
                 <div class="stat">
-                    <span class="label">PII Types</span>
+                    <span class="label">Types DCP</span>
                     <span class="value">12</span>
                 </div>
                 <div class="stat">
-                    <span class="label">Secrets Blocked</span>
+                    <span class="label">Secrets Bloqués</span>
                     <span class="value">8</span>
                 </div>
             </div>
             <div class="guardrail-patterns">
-                <span class="pattern-tag">SSN</span>
-                <span class="pattern-tag">Credit Card</span>
-                <span class="pattern-tag">API Keys</span>
+                <span class="pattern-tag">NID</span>
+                <span class="pattern-tag">Données Classifiées</span>
+                <span class="pattern-tag">Clés API</span>
             </div>
         </div>
 
@@ -171,25 +171,25 @@
                     <i data-lucide="message-square-warning"></i>
                 </div>
                 <div class="guardrail-status">
-                    <span class="status-badge active">Active</span>
+                    <span class="status-badge active">Actif</span>
                 </div>
             </div>
-            <h3>Content Safety</h3>
-            <p>Toxicity, bias, and harmful content filtering</p>
+            <h3>Sécurité des Contenus</h3>
+            <p>Filtrage de la toxicité, des biais et des contenus nuisibles</p>
             <div class="guardrail-stats">
                 <div class="stat">
-                    <span class="label">Categories</span>
+                    <span class="label">Catégories</span>
                     <span class="value">8</span>
                 </div>
                 <div class="stat">
-                    <span class="label">Filtered</span>
+                    <span class="label">Filtrés</span>
                     <span class="value">45</span>
                 </div>
             </div>
             <div class="guardrail-patterns">
-                <span class="pattern-tag">Hate Speech</span>
+                <span class="pattern-tag">Discours Haineux</span>
                 <span class="pattern-tag">Violence</span>
-                <span class="pattern-tag">Adult</span>
+                <span class="pattern-tag">Contenu Adulte</span>
             </div>
         </div>
 
@@ -199,25 +199,25 @@
                     <i data-lucide="scale"></i>
                 </div>
                 <div class="guardrail-status">
-                    <span class="status-badge active">Active</span>
+                    <span class="status-badge active">Actif</span>
                 </div>
             </div>
-            <h3>Bias Detection</h3>
-            <p>Monitor and flag biased outputs</p>
+            <h3>Détection de Biais</h3>
+            <p>Surveillance et signalement des sorties biaisées</p>
             <div class="guardrail-stats">
                 <div class="stat">
                     <span class="label">Dimensions</span>
                     <span class="value">6</span>
                 </div>
                 <div class="stat">
-                    <span class="label">Flags</span>
+                    <span class="label">Alertes</span>
                     <span class="value">12</span>
                 </div>
             </div>
             <div class="guardrail-patterns">
-                <span class="pattern-tag">Gender</span>
-                <span class="pattern-tag">Race</span>
-                <span class="pattern-tag">Age</span>
+                <span class="pattern-tag">Genre</span>
+                <span class="pattern-tag">Origine</span>
+                <span class="pattern-tag">Âge</span>
             </div>
         </div>
 
@@ -227,37 +227,37 @@
                     <i data-lucide="radar"></i>
                 </div>
                 <div class="guardrail-status">
-                    <span class="status-badge active">Active</span>
+                    <span class="status-badge active">Actif</span>
                 </div>
             </div>
-            <h3>Semantic Firewall</h3>
-            <p>Topic boundaries and off-topic prevention</p>
+            <h3>Pare-feu Sémantique</h3>
+            <p>Limites thématiques et prévention des hors-sujet</p>
             <div class="guardrail-stats">
                 <div class="stat">
-                    <span class="label">Topics</span>
+                    <span class="label">Thèmes</span>
                     <span class="value">15</span>
                 </div>
                 <div class="stat">
-                    <span class="label">Redirected</span>
+                    <span class="label">Redirigés</span>
                     <span class="value">34</span>
                 </div>
             </div>
             <div class="guardrail-patterns">
-                <span class="pattern-tag">Off-Topic</span>
-                <span class="pattern-tag">Scope Creep</span>
-                <span class="pattern-tag">Boundary</span>
+                <span class="pattern-tag">Hors-sujet</span>
+                <span class="pattern-tag">Dérive de Périmètre</span>
+                <span class="pattern-tag">Limite</span>
             </div>
         </div>
     </div>
 </section>
 
-<!-- Real-time Threat Feed -->
+<!-- Flux de Menaces en Temps Réel -->
 <section class="mb-6">
     <div class="grid grid-2">
         <div class="card">
             <div class="card-header">
-                <h3 class="card-title">Real-time Threat Feed</h3>
-                <span class="live-badge"><span class="live-dot"></span> Live</span>
+                <h3 class="card-title">Flux de Menaces en Temps Réel</h3>
+                <span class="live-badge"><span class="live-dot"></span> Direct</span>
             </div>
             <div class="threats-feed" id="threatsFeed">
                 <div class="threat-item blocked">
@@ -265,40 +265,40 @@
                         <i data-lucide="shield-off"></i>
                     </div>
                     <div class="threat-content">
-                        <span class="threat-type">Prompt Injection</span>
-                        <span class="threat-details">"Ignore all previous instructions and..."</span>
-                        <span class="threat-time">Just now</span>
+                        <span class="threat-type">Injection de Prompt</span>
+                        <span class="threat-details">"Ignore toutes les instructions précédentes et..."</span>
+                        <span class="threat-time">À l'instant</span>
                     </div>
-                    <span class="threat-status blocked">Blocked</span>
+                    <span class="threat-status blocked">Bloqué</span>
                 </div>
                 <div class="threat-item blocked">
                     <div class="threat-icon">
                         <i data-lucide="unlock"></i>
                     </div>
                     <div class="threat-content">
-                        <span class="threat-type">Jailbreak Attempt</span>
-                        <span class="threat-details">DAN prompt pattern detected</span>
-                        <span class="threat-time">2 min ago</span>
+                        <span class="threat-type">Tentative de Contournement</span>
+                        <span class="threat-details">Modèle de prompt DAN détecté</span>
+                        <span class="threat-time">Il y a 2 min</span>
                     </div>
-                    <span class="threat-status blocked">Blocked</span>
+                    <span class="threat-status blocked">Bloqué</span>
                 </div>
                 <div class="threat-item warning">
                     <div class="threat-icon">
                         <i data-lucide="file-warning"></i>
                     </div>
                     <div class="threat-content">
-                        <span class="threat-type">PII Detected</span>
-                        <span class="threat-details">Credit card number in output</span>
-                        <span class="threat-time">5 min ago</span>
+                        <span class="threat-type">DCP Détectées</span>
+                        <span class="threat-details">Données classifiées dans la sortie</span>
+                        <span class="threat-time">Il y a 5 min</span>
                     </div>
-                    <span class="threat-status warning">Redacted</span>
+                    <span class="threat-status warning">Masqué</span>
                 </div>
             </div>
         </div>
 
         <div class="card">
             <div class="card-header">
-                <h3 class="card-title">Threat Distribution (7d)</h3>
+                <h3 class="card-title">Répartition des Menaces (7j)</h3>
             </div>
             <div class="chart-container" style="height: 250px;">
                 <canvas id="threatDistribution"></canvas>
@@ -307,25 +307,25 @@
     </div>
 </section>
 
-<!-- Policy Configuration -->
+<!-- Configuration des Politiques -->
 <section class="mb-6">
     <div class="card">
         <div class="card-header">
-            <h3 class="card-title">Guardrail Policies</h3>
+            <h3 class="card-title">Politiques de Garde-fous</h3>
             <button class="btn btn-secondary btn-sm" onclick="addPolicy()">
                 <i data-lucide="plus"></i>
-                Add Policy
+                Ajouter une Politique
             </button>
         </div>
         <table class="data-table">
             <thead>
                 <tr>
-                    <th>Policy Name</th>
+                    <th>Nom de la Politique</th>
                     <th>Type</th>
-                    <th>Severity</th>
+                    <th>Sévérité</th>
                     <th>Action</th>
-                    <th>Triggers (24h)</th>
-                    <th>Status</th>
+                    <th>Déclenchements (24h)</th>
+                    <th>Statut</th>
                     <th></th>
                 </tr>
             </thead>
@@ -334,56 +334,56 @@
                     <td>
                         <div class="policy-name">
                             <i data-lucide="shield-alert"></i>
-                            <span>Injection Blocker</span>
+                            <span>Bloqueur d'Injection</span>
                         </div>
                     </td>
                     <td><span class="badge badge-danger">Injection</span></td>
-                    <td><span class="severity critical">Critical</span></td>
-                    <td>Block + Log</td>
+                    <td><span class="severity critical">Critique</span></td>
+                    <td>Bloquer + Journaliser</td>
                     <td>127</td>
-                    <td><span class="status-dot active"></span> Active</td>
+                    <td><span class="status-dot active"></span> Actif</td>
                     <td><button class="btn-icon"><i data-lucide="settings"></i></button></td>
                 </tr>
                 <tr>
                     <td>
                         <div class="policy-name">
                             <i data-lucide="unlock"></i>
-                            <span>Jailbreak Prevention</span>
+                            <span>Prévention de Contournement</span>
                         </div>
                     </td>
                     <td><span class="badge badge-warning">Jailbreak</span></td>
-                    <td><span class="severity high">High</span></td>
-                    <td>Block + Alert</td>
+                    <td><span class="severity high">Élevée</span></td>
+                    <td>Bloquer + Alerter</td>
                     <td>23</td>
-                    <td><span class="status-dot active"></span> Active</td>
+                    <td><span class="status-dot active"></span> Actif</td>
                     <td><button class="btn-icon"><i data-lucide="settings"></i></button></td>
                 </tr>
                 <tr>
                     <td>
                         <div class="policy-name">
                             <i data-lucide="file-lock"></i>
-                            <span>PII Protection</span>
+                            <span>Protection DCP</span>
                         </div>
                     </td>
                     <td><span class="badge badge-primary">DLP</span></td>
-                    <td><span class="severity high">High</span></td>
-                    <td>Redact + Log</td>
+                    <td><span class="severity high">Élevée</span></td>
+                    <td>Masquer + Journaliser</td>
                     <td>45</td>
-                    <td><span class="status-dot active"></span> Active</td>
+                    <td><span class="status-dot active"></span> Actif</td>
                     <td><button class="btn-icon"><i data-lucide="settings"></i></button></td>
                 </tr>
                 <tr>
                     <td>
                         <div class="policy-name">
                             <i data-lucide="message-square-warning"></i>
-                            <span>Toxicity Filter</span>
+                            <span>Filtre de Toxicité</span>
                         </div>
                     </td>
-                    <td><span class="badge badge-secondary">Content</span></td>
-                    <td><span class="severity medium">Medium</span></td>
-                    <td>Warn + Log</td>
+                    <td><span class="badge badge-secondary">Contenu</span></td>
+                    <td><span class="severity medium">Moyenne</span></td>
+                    <td>Avertir + Journaliser</td>
                     <td>12</td>
-                    <td><span class="status-dot active"></span> Active</td>
+                    <td><span class="status-dot active"></span> Actif</td>
                     <td><button class="btn-icon"><i data-lucide="settings"></i></button></td>
                 </tr>
             </tbody>
@@ -865,7 +865,7 @@ function initCharts() {
         new Chart(ctx, {
             type: 'bar',
             data: {
-                labels: ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'],
+                labels: ['Lun', 'Mar', 'Mer', 'Jeu', 'Ven', 'Sam', 'Dim'],
                 datasets: [{
                     label: 'Injection',
                     data: [18, 22, 15, 25, 20, 12, 15],
@@ -907,9 +907,9 @@ function startLiveFeed() {
 
 function addThreatToFeed() {
     const threats = [
-        { type: 'Prompt Injection', details: 'System override attempt detected', status: 'blocked' },
-        { type: 'Jailbreak Attempt', details: 'Role-play manipulation detected', status: 'blocked' },
-        { type: 'PII Detected', details: 'Email address in output', status: 'warning' }
+        { type: 'Injection de Prompt', details: 'Tentative de détournement système détectée', status: 'blocked' },
+        { type: 'Tentative de Contournement', details: 'Manipulation par jeu de rôle détectée', status: 'blocked' },
+        { type: 'DCP Détectées', details: 'Adresse courriel dans la sortie', status: 'warning' }
     ];
 
     const threat = threats[Math.floor(Math.random() * threats.length)];
@@ -923,9 +923,9 @@ function addThreatToFeed() {
         <div class="threat-content">
             <span class="threat-type">${threat.type}</span>
             <span class="threat-details">${threat.details}</span>
-            <span class="threat-time">Just now</span>
+            <span class="threat-time">À l'instant</span>
         </div>
-        <span class="threat-status ${threat.status}">${threat.status === 'blocked' ? 'Blocked' : 'Redacted'}</span>
+        <span class="threat-status ${threat.status}">${threat.status === 'blocked' ? 'Bloqué' : 'Masqué'}</span>
     `;
 
     feed.insertBefore(item, feed.firstChild);
@@ -937,15 +937,15 @@ function addThreatToFeed() {
 }
 
 function testPrompt() {
-    showToast('Opening prompt testing interface...', 'info');
+    showToast('Ouverture de l\'interface de test de prompts...', 'info');
 }
 
 function viewPolicies() {
-    showToast('Opening policy management...', 'info');
+    showToast('Ouverture de la gestion des politiques...', 'info');
 }
 
 function addPolicy() {
-    showToast('Opening policy creation wizard...', 'info');
+    showToast('Ouverture de l\'assistant de création de politique...', 'info');
 }
 </script>
 {% endblock %}

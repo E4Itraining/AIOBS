@@ -349,14 +349,14 @@
 
     <!-- Contextual Help Bubble -->
     <div class="help-bubble" id="helpBubble">
-        <button class="help-trigger" onclick="toggleHelpPanel()" title="{{ t('help.title') or 'Help & Guide' }}">
+        <button class="help-trigger" onclick="toggleHelpPanel()" title="{{ t('help.title') or 'Aide & Guide' }}">
             <i data-lucide="help-circle"></i>
         </button>
         <div class="help-panel">
             <div class="help-panel-header">
                 <h3>
                     <i data-lucide="compass"></i>
-                    {{ t('help.title') or 'Help & Guide' }}
+                    {{ t('help.title') or 'Aide & Guide' }}
                 </h3>
                 <button class="help-panel-close" onclick="toggleHelpPanel()">
                     <i data-lucide="x"></i>
@@ -365,14 +365,14 @@
             <div class="help-panel-content" id="helpPanelContent">
                 <!-- Quick Actions -->
                 <div class="help-section">
-                    <div class="help-section-title">{{ t('help.quick_actions') or 'Quick Actions' }}</div>
+                    <div class="help-section-title">{{ t('help.quick_actions') or 'Actions Rapides' }}</div>
                     <div class="help-item" onclick="startGuidedTour()">
                         <div class="help-item-icon">
                             <i data-lucide="play-circle"></i>
                         </div>
                         <div class="help-item-content">
-                            <h4>{{ t('help.start_tour') or 'Start Guided Tour' }}</h4>
-                            <p>{{ t('help.start_tour_desc') or 'Learn the basics with an interactive walkthrough' }}</p>
+                            <h4>{{ t('help.start_tour') or 'Visite Guidée' }}</h4>
+                            <p>{{ t('help.start_tour_desc') or 'Découvrez les fonctionnalités avec un parcours interactif' }}</p>
                         </div>
                     </div>
                     <div class="help-item" onclick="window.location.href='/onboarding'">
@@ -380,28 +380,28 @@
                             <i data-lucide="user-circle"></i>
                         </div>
                         <div class="help-item-content">
-                            <h4>{{ t('help.change_profile') or 'Change Profile' }}</h4>
-                            <p>{{ t('help.change_profile_desc') or 'Switch to a different user persona' }}</p>
+                            <h4>{{ t('help.change_profile') or 'Changer de Profil' }}</h4>
+                            <p>{{ t('help.change_profile_desc') or 'Basculer vers un autre rôle opérationnel' }}</p>
                         </div>
                     </div>
                 </div>
                 <!-- Current Page Help -->
                 <div class="help-section" id="pageHelpSection">
-                    <div class="help-section-title">{{ t('help.this_page') or 'On This Page' }}</div>
+                    <div class="help-section-title">{{ t('help.this_page') or 'Sur Cette Page' }}</div>
                     <div id="pageHelpContent">
                         <!-- Dynamically populated based on current page -->
                     </div>
                 </div>
                 <!-- Resources -->
                 <div class="help-section">
-                    <div class="help-section-title">{{ t('help.resources') or 'Resources' }}</div>
+                    <div class="help-section-title">{{ t('help.resources') or 'Ressources' }}</div>
                     <div class="help-item" onclick="showKeyboardShortcuts()">
                         <div class="help-item-icon">
                             <i data-lucide="keyboard"></i>
                         </div>
                         <div class="help-item-content">
-                            <h4>{{ t('help.keyboard_shortcuts') or 'Keyboard Shortcuts' }}</h4>
-                            <p>{{ t('help.keyboard_shortcuts_desc') or 'Speed up your workflow' }}</p>
+                            <h4>{{ t('help.keyboard_shortcuts') or 'Raccourcis Clavier' }}</h4>
+                            <p>{{ t('help.keyboard_shortcuts_desc') or 'Accélérez votre navigation' }}</p>
                         </div>
                     </div>
                 </div>
@@ -410,8 +410,8 @@
     </div>
 
     <!-- AI Chatbot Assistant -->
-    <div class="chatbot-container" id="chatbotContainer" role="complementary" aria-label="{{ t('chatbot.title') or 'AI Assistant' }}">
-        <button class="chatbot-trigger" onclick="toggleChatbot()" title="{{ t('chatbot.title') or 'AI Assistant' }}" aria-expanded="false" aria-controls="chatbotPanel" aria-label="{{ t('chatbot.title') or 'Open AI Assistant' }}">
+    <div class="chatbot-container" id="chatbotContainer" role="complementary" aria-label="{{ t('chatbot.title') or 'Assistant IA' }}">
+        <button class="chatbot-trigger" onclick="toggleChatbot()" title="{{ t('chatbot.title') or 'Assistant IA' }}" aria-expanded="false" aria-controls="chatbotPanel" aria-label="{{ t('chatbot.title') or 'Ouvrir l\'Assistant IA' }}">
             <i data-lucide="message-circle" class="chatbot-icon-default" aria-hidden="true"></i>
             <i data-lucide="x" class="chatbot-icon-close" aria-hidden="true"></i>
         </button>
@@ -422,15 +422,15 @@
                         <i data-lucide="bot"></i>
                     </div>
                     <div>
-                        <h3 id="chatbotTitle">{{ t('chatbot.title') or 'AI Assistant' }}</h3>
+                        <h3 id="chatbotTitle">{{ t('chatbot.title') or 'Assistant IA' }}</h3>
                         <span class="chatbot-status">
                             <span class="status-dot"></span>
-                            {{ t('chatbot.online') or 'Online' }}
+                            {{ t('chatbot.online') or 'En ligne' }}
                         </span>
                     </div>
                 </div>
                 <div style="display: flex; gap: var(--space-2);">
-                    <button class="chat-clear" onclick="clearChat()" title="{{ t('chatbot.clear') or 'Clear chat' }}">
+                    <button class="chat-clear" onclick="clearChat()" title="{{ t('chatbot.clear') or 'Effacer la conversation' }}">
                         <i data-lucide="trash-2"></i>
                     </button>
                     <button class="chatbot-minimize" onclick="toggleChatbot()">
@@ -443,27 +443,27 @@
                     <div class="chatbot-welcome-icon">
                         <i data-lucide="sparkles"></i>
                     </div>
-                    <h4>{{ t('chatbot.welcome_title') or 'Hello! How can I help you?' }}</h4>
-                    <p>{{ t('chatbot.welcome_desc') or 'Ask me anything about your AI systems, metrics, or how to use GASKIA.' }}</p>
+                    <h4>{{ t('chatbot.welcome_title') or 'Bonjour ! Comment puis-je vous aider ?' }}</h4>
+                    <p>{{ t('chatbot.welcome_desc') or 'Interrogez-moi sur vos systèmes IA, métriques ou l\'utilisation de GASKIA.' }}</p>
                 </div>
                 <div class="chatbot-suggestions" id="chatbotSuggestions">
-                    <span class="suggestion-label">{{ t('chatbot.suggestions') or 'Quick questions:' }}</span>
+                    <span class="suggestion-label">{{ t('chatbot.suggestions') or 'Questions rapides :' }}</span>
                     <div class="suggestion-chips">
-                        <button class="suggestion-chip" onclick="askQuestion('What is the current trust score?')">
+                        <button class="suggestion-chip" onclick="askQuestion('Quel est le score de confiance actuel ?')">
                             <i data-lucide="gauge"></i>
-                            {{ t('chatbot.q_trust') or 'Trust score?' }}
+                            {{ t('chatbot.q_trust') or 'Score de confiance ?' }}
                         </button>
-                        <button class="suggestion-chip" onclick="askQuestion('Are there any active alerts?')">
+                        <button class="suggestion-chip" onclick="askQuestion('Y a-t-il des alertes actives ?')">
                             <i data-lucide="alert-triangle"></i>
-                            {{ t('chatbot.q_alerts') or 'Active alerts?' }}
+                            {{ t('chatbot.q_alerts') or 'Alertes actives ?' }}
                         </button>
-                        <button class="suggestion-chip" onclick="askQuestion('Show me today\'s costs')">
+                        <button class="suggestion-chip" onclick="askQuestion('Afficher la posture cyber du jour')">
                             <i data-lucide="wallet"></i>
-                            {{ t('chatbot.q_costs') or 'Today\'s costs?' }}
+                            {{ t('chatbot.q_costs') or 'Posture cyber ?' }}
                         </button>
-                        <button class="suggestion-chip" onclick="askQuestion('How do I navigate to compliance?')">
+                        <button class="suggestion-chip" onclick="askQuestion('Comment accéder à l\'homologation ?')">
                             <i data-lucide="compass"></i>
-                            {{ t('chatbot.q_navigate') or 'How to navigate?' }}
+                            {{ t('chatbot.q_navigate') or 'Comment naviguer ?' }}
                         </button>
                     </div>
                 </div>
@@ -472,10 +472,10 @@
                 <input type="text"
                        id="chatbotInput"
                        class="chatbot-input"
-                       placeholder="{{ t('chatbot.placeholder') or 'Type your question...' }}"
+                       placeholder="{{ t('chatbot.placeholder') or 'Posez votre question...' }}"
                        onkeypress="handleChatKeypress(event)"
-                       aria-label="{{ t('chatbot.placeholder') or 'Type your question...' }}">
-                <button class="chatbot-send" onclick="sendChatMessage()" id="chatbotSend" aria-label="{{ t('actions.send') or 'Send message' }}">
+                       aria-label="{{ t('chatbot.placeholder') or 'Posez votre question...' }}">
+                <button class="chatbot-send" onclick="sendChatMessage()" id="chatbotSend" aria-label="{{ t('actions.send') or 'Envoyer' }}">
                     <i data-lucide="send" aria-hidden="true"></i>
                 </button>
             </div>
@@ -489,22 +489,22 @@
             <div class="tour-tooltip-arrow top"></div>
             <div class="tour-tooltip-header">
                 <span class="tour-step-badge" id="tourStepBadge">1</span>
-                <h4 id="tourStepTitle">Welcome</h4>
+                <h4 id="tourStepTitle">Bienvenue</h4>
             </div>
             <div class="tour-tooltip-body" id="tourStepBody">
-                This is your dashboard.
+                Voici votre tableau de bord.
             </div>
             <div class="tour-tooltip-footer">
-                <span class="tour-progress" id="tourProgress">Step 1 of 5</span>
+                <span class="tour-progress" id="tourProgress">Étape 1 sur 5</span>
                 <div class="tour-nav">
                     <button class="btn btn-ghost" id="tourPrevBtn" onclick="tourPrev()">
                         <i data-lucide="chevron-left"></i>
                     </button>
                     <button class="btn btn-ghost" onclick="endTour()">
-                        {{ t('help.skip') or 'Skip' }}
+                        {{ t('help.skip') or 'Passer' }}
                     </button>
                     <button class="btn btn-primary" id="tourNextBtn" onclick="tourNext()">
-                        {{ t('help.next') or 'Next' }}
+                        {{ t('help.next') or 'Suivant' }}
                         <i data-lucide="chevron-right"></i>
                     </button>
                 </div>
@@ -513,6 +513,7 @@
     </div>
 
     <!-- Scripts -->
+    <script src="/static/js/defense-realtime.js"></script>
     <script src="/static/js/dashboard.js"></script>
     <script src="/static/js/ux-enhancements.js"></script>
     <script src="/static/js/chatbot.js"></script>
@@ -628,134 +629,94 @@
 
         // Persona journey configurations
         const PERSONA_JOURNEYS = {
-            'business_executive': {
-                name: 'Dirigeant',
-                icon: 'briefcase',
+            'etat_major': {
+                name: 'État-Major',
+                icon: 'landmark',
                 essentials: [
-                    { url: '/', icon: 'layout-dashboard', label: 'Hub' },
-                    { url: '/executive', icon: 'briefcase', label: 'Vue Executive' },
-                    { url: '/compliance', icon: 'shield-check', label: 'Conformite IA' },
-                    { url: '/finops', icon: 'coins', label: 'Couts & FinOps' }
+                    { url: '/', icon: 'layout-dashboard', label: 'Centre Opérationnel' },
+                    { url: '/executive', icon: 'landmark', label: 'Vue État-Major' },
+                    { url: '/global', icon: 'globe', label: 'Vue Consolidée' },
+                    { url: '/compliance', icon: 'file-check', label: 'Homologation' }
+                ]
+            },
+            'defense_soc': {
+                name: 'SOC Défense',
+                icon: 'shield',
+                essentials: [
+                    { url: '/', icon: 'layout-dashboard', label: 'Centre Opérationnel' },
+                    { url: '/defense-soc', icon: 'shield', label: 'SOC Défense' },
+                    { url: '/monitoring', icon: 'activity', label: 'Surveillance' },
+                    { url: '/guardrails', icon: 'shield-alert', label: 'Garde-fous IA' }
+                ]
+            },
+            'officier_cyber': {
+                name: 'Officier Cyber',
+                icon: 'sword',
+                essentials: [
+                    { url: '/', icon: 'layout-dashboard', label: 'Centre Opérationnel' },
+                    { url: '/security', icon: 'lock', label: 'Cyberdéfense' },
+                    { url: '/causal', icon: 'git-branch', label: 'Chaînes Causales' },
+                    { url: '/impact', icon: 'trending-up', label: 'Impact Opérationnel' }
+                ]
+            },
+            'tech_sic': {
+                name: 'Officier SIC',
+                icon: 'server',
+                essentials: [
+                    { url: '/', icon: 'layout-dashboard', label: 'Centre Opérationnel' },
+                    { url: '/monitoring', icon: 'activity', label: 'Surveillance' },
+                    { url: '/tech', icon: 'server', label: 'Vue SIC/SSI' },
+                    { url: '/healing', icon: 'heart-pulse', label: 'Auto-Remédiation' }
                 ]
             },
             'tech_ml_engineer': {
-                name: 'ML Engineer',
-                icon: 'cpu',
+                name: 'Ingénieur IA',
+                icon: 'brain',
                 essentials: [
-                    { url: '/', icon: 'layout-dashboard', label: 'Hub' },
-                    { url: '/unified', icon: 'layers', label: 'Vue Unifiee' },
-                    { url: '/causal', icon: 'git-branch', label: 'Analyse Causale' },
-                    { url: '/llm-testing', icon: 'flask-conical', label: 'Test LLM' }
+                    { url: '/', icon: 'layout-dashboard', label: 'Centre Opérationnel' },
+                    { url: '/unified', icon: 'layers', label: 'Vue Consolidée' },
+                    { url: '/causal', icon: 'git-branch', label: 'Chaînes Causales' },
+                    { url: '/llm-testing', icon: 'flask-conical', label: 'Banc d\'Essai LLM' }
                 ]
             },
-            'tech_data_scientist': {
-                name: 'Data Scientist',
-                icon: 'bar-chart-2',
+            'ossi': {
+                name: 'OSSI/RSSI',
+                icon: 'shield-alert',
                 essentials: [
-                    { url: '/', icon: 'layout-dashboard', label: 'Hub' },
-                    { url: '/unified', icon: 'layers', label: 'Vue Unifiee' },
-                    { url: '/causal', icon: 'git-branch', label: 'Analyse Causale' },
-                    { url: '/impact', icon: 'trending-up', label: 'Analyse d\'Impact' }
-                ]
-            },
-            'tech_devops': {
-                name: 'DevOps Engineer',
-                icon: 'terminal',
-                essentials: [
-                    { url: '/', icon: 'layout-dashboard', label: 'Hub' },
-                    { url: '/monitoring', icon: 'activity', label: 'Monitoring Live' },
-                    { url: '/unified', icon: 'layers', label: 'Vue Unifiee' },
-                    { url: '/security', icon: 'lock', label: 'Centre Securite' }
+                    { url: '/', icon: 'layout-dashboard', label: 'Centre Opérationnel' },
+                    { url: '/compliance', icon: 'file-check', label: 'Homologation LPM' },
+                    { url: '/security', icon: 'lock', label: 'Cyberdéfense' },
+                    { url: '/supply-chain', icon: 'box', label: 'Supply Chain IA' }
                 ]
             },
             'compliance_legal': {
-                name: 'Compliance Officer',
-                icon: 'shield-check',
+                name: 'Juriste Défense',
+                icon: 'gavel',
                 essentials: [
-                    { url: '/', icon: 'layout-dashboard', label: 'Hub' },
-                    { url: '/compliance', icon: 'shield-check', label: 'Conformite IA' },
-                    { url: '/juridique', icon: 'gavel', label: 'Vue Juridique' },
-                    { url: '/security', icon: 'lock', label: 'Centre Securite' }
+                    { url: '/', icon: 'layout-dashboard', label: 'Centre Opérationnel' },
+                    { url: '/juridique', icon: 'gavel', label: 'AI Act / RGPD' },
+                    { url: '/compliance', icon: 'file-check', label: 'Homologation' },
+                    { url: '/impact', icon: 'trending-up', label: 'Impact Opérationnel' }
                 ]
             },
-            'security_soc': {
-                name: 'Security SOC',
-                icon: 'shield',
+            'dga': {
+                name: 'DGA/ANSSI',
+                icon: 'flask-conical',
                 essentials: [
-                    { url: '/', icon: 'layout-dashboard', label: 'Hub' },
-                    { url: '/security', icon: 'lock', label: 'Centre Securite' },
-                    { url: '/monitoring', icon: 'activity', label: 'Monitoring Live' },
-                    { url: '/guardrails', icon: 'shield-alert', label: 'Guardrails' }
-                ]
-            },
-            'sustainability_esg': {
-                name: 'ESG Manager',
-                icon: 'leaf',
-                essentials: [
-                    { url: '/', icon: 'layout-dashboard', label: 'Hub' },
-                    { url: '/greenops', icon: 'leaf', label: 'Impact Carbone' },
-                    { url: '/finops', icon: 'coins', label: 'Couts & FinOps' },
-                    { url: '/compliance', icon: 'shield-check', label: 'Conformite IA' }
-                ]
-            },
-            'governance_dsi': {
-                name: 'DSI / CIO',
-                icon: 'landmark',
-                essentials: [
-                    { url: '/', icon: 'layout-dashboard', label: 'Hub' },
-                    { url: '/executive', icon: 'briefcase', label: 'Vue Executive' },
-                    { url: '/tech', icon: 'server', label: 'Vue Tech' },
-                    { url: '/finops', icon: 'coins', label: 'Couts & FinOps' }
-                ]
-            },
-            'governance_rsi': {
-                name: 'RSI / IT Manager',
-                icon: 'settings',
-                essentials: [
-                    { url: '/', icon: 'layout-dashboard', label: 'Hub' },
-                    { url: '/monitoring', icon: 'activity', label: 'Monitoring Live' },
-                    { url: '/unified', icon: 'layers', label: 'Vue Unifiee' },
-                    { url: '/security', icon: 'lock', label: 'Centre Securite' }
-                ]
-            },
-            'privacy_dpo': {
-                name: 'DPO',
-                icon: 'user-check',
-                essentials: [
-                    { url: '/', icon: 'layout-dashboard', label: 'Hub' },
-                    { url: '/compliance', icon: 'shield-check', label: 'Conformite IA' },
-                    { url: '/juridique', icon: 'gavel', label: 'Vue Juridique' },
-                    { url: '/security', icon: 'lock', label: 'Centre Securite' }
-                ]
-            },
-            'legal_counsel': {
-                name: 'Legal Counsel',
-                icon: 'scale',
-                essentials: [
-                    { url: '/', icon: 'layout-dashboard', label: 'Hub' },
-                    { url: '/juridique', icon: 'gavel', label: 'Vue Juridique' },
-                    { url: '/compliance', icon: 'shield-check', label: 'Conformite IA' },
-                    { url: '/impact', icon: 'trending-up', label: 'Analyse d\'Impact' }
-                ]
-            },
-            'business_product': {
-                name: 'Product Owner',
-                icon: 'package',
-                essentials: [
-                    { url: '/', icon: 'layout-dashboard', label: 'Hub' },
-                    { url: '/dirigeant', icon: 'building-2', label: 'Vue Business' },
-                    { url: '/impact', icon: 'trending-up', label: 'Analyse d\'Impact' },
-                    { url: '/monitoring', icon: 'activity', label: 'Monitoring Live' }
+                    { url: '/', icon: 'layout-dashboard', label: 'Centre Opérationnel' },
+                    { url: '/llm-testing', icon: 'flask-conical', label: 'Banc d\'Essai LLM' },
+                    { url: '/guardrails', icon: 'shield-alert', label: 'Garde-fous IA' },
+                    { url: '/supply-chain', icon: 'box', label: 'Supply Chain IA' }
                 ]
             }
         };
 
         // Default essentials when no persona selected
         const DEFAULT_ESSENTIALS = [
-            { url: '/', icon: 'layout-dashboard', label: 'Hub' },
-            { url: '/dashboard', icon: 'bar-chart-3', label: 'Dashboard Complet' },
-            { url: '/monitoring', icon: 'activity', label: 'Monitoring Live' },
-            { url: '/settings/llm', icon: 'cpu', label: 'Config LLM' }
+            { url: '/', icon: 'layout-dashboard', label: 'Centre Opérationnel' },
+            { url: '/dashboard', icon: 'bar-chart-3', label: 'Tableau de Bord' },
+            { url: '/defense-soc', icon: 'shield', label: 'SOC Défense' },
+            { url: '/monitoring', icon: 'activity', label: 'Surveillance' }
         ];
 
         // Accordion state
@@ -906,33 +867,33 @@
         function getPageHelpItems(path) {
             const helpConfig = {
                 '/': [
-                    { icon: 'gauge', title: window.t('help.kpi_title') || 'KPI Overview', description: window.t('help.kpi_desc') || 'Key performance indicators for your AI systems' },
-                    { icon: 'activity', title: window.t('help.health_title') || 'System Health', description: window.t('help.health_desc') || 'Monitor the health status of all services' },
-                    { icon: 'alert-triangle', title: window.t('help.alerts_title') || 'Active Alerts', description: window.t('help.alerts_desc') || 'View and investigate current issues' }
+                    { icon: 'gauge', title: window.t('help.kpi_title') || 'Indicateurs Clés', description: window.t('help.kpi_desc') || 'Indicateurs de performance de vos systèmes IA' },
+                    { icon: 'activity', title: window.t('help.health_title') || 'État Systèmes', description: window.t('help.health_desc') || 'Surveiller l\'état de santé de tous les services' },
+                    { icon: 'alert-triangle', title: window.t('help.alerts_title') || 'Alertes Actives', description: window.t('help.alerts_desc') || 'Consulter et investiguer les incidents en cours' }
                 ],
                 '/unified': [
-                    { icon: 'layers', title: window.t('help.unified_title') || 'Unified View', description: window.t('help.unified_desc') || 'Single pane of glass for all metrics' },
-                    { icon: 'filter', title: window.t('help.filter_title') || 'Filters', description: window.t('help.filter_desc') || 'Filter data by service, model, or time range' }
+                    { icon: 'layers', title: window.t('help.unified_title') || 'Vue Unifiée', description: window.t('help.unified_desc') || 'Tableau de bord consolidé de toutes les métriques' },
+                    { icon: 'filter', title: window.t('help.filter_title') || 'Filtres', description: window.t('help.filter_desc') || 'Filtrer par service, modèle ou période' }
                 ],
                 '/causal': [
-                    { icon: 'git-branch', title: window.t('help.causal_title') || 'Causal Graph', description: window.t('help.causal_desc') || 'Visualize cause-effect relationships' },
-                    { icon: 'search', title: window.t('help.rca_title') || 'Root Cause Analysis', description: window.t('help.rca_desc') || 'Identify the source of issues' }
+                    { icon: 'git-branch', title: window.t('help.causal_title') || 'Graphe Causal', description: window.t('help.causal_desc') || 'Visualiser les relations cause-effet' },
+                    { icon: 'search', title: window.t('help.rca_title') || 'Analyse Racine', description: window.t('help.rca_desc') || 'Identifier la source des incidents' }
                 ],
                 '/executive': [
-                    { icon: 'briefcase', title: window.t('help.exec_title') || 'Executive Summary', description: window.t('help.exec_desc') || 'High-level KPIs and business impact' },
-                    { icon: 'trending-up', title: window.t('help.trends_title') || 'Trends', description: window.t('help.trends_desc') || 'Track improvements over time' }
+                    { icon: 'briefcase', title: window.t('help.exec_title') || 'Synthèse État-Major', description: window.t('help.exec_desc') || 'KPI stratégiques et impact opérationnel' },
+                    { icon: 'trending-up', title: window.t('help.trends_title') || 'Tendances', description: window.t('help.trends_desc') || 'Suivre les évolutions dans le temps' }
                 ],
                 '/compliance': [
-                    { icon: 'shield-check', title: window.t('help.compliance_title') || 'Compliance Status', description: window.t('help.compliance_desc') || 'View regulatory compliance overview' },
-                    { icon: 'clipboard', title: window.t('help.audit_title') || 'Audit Trail', description: window.t('help.audit_desc') || 'Track all compliance-related activities' }
+                    { icon: 'shield-check', title: window.t('help.compliance_title') || 'État Homologation', description: window.t('help.compliance_desc') || 'Vue d\'ensemble de la conformité réglementaire' },
+                    { icon: 'clipboard', title: window.t('help.audit_title') || 'Piste d\'Audit', description: window.t('help.audit_desc') || 'Tracer toutes les activités de conformité' }
                 ],
                 '/greenops': [
-                    { icon: 'leaf', title: window.t('help.carbon_title') || 'Carbon Tracking', description: window.t('help.carbon_desc') || 'Monitor environmental impact' },
-                    { icon: 'lightbulb', title: window.t('help.recommendations_title') || 'Recommendations', description: window.t('help.recommendations_desc') || 'Get tips to reduce carbon footprint' }
+                    { icon: 'leaf', title: window.t('help.carbon_title') || 'Empreinte Carbone', description: window.t('help.carbon_desc') || 'Surveiller l\'impact environnemental' },
+                    { icon: 'lightbulb', title: window.t('help.recommendations_title') || 'Recommandations', description: window.t('help.recommendations_desc') || 'Conseils pour réduire l\'empreinte carbone' }
                 ],
                 '/security': [
-                    { icon: 'shield', title: window.t('help.security_title') || 'Security Posture', description: window.t('help.security_desc') || 'Overall security health score' },
-                    { icon: 'alert-octagon', title: window.t('help.threats_title') || 'Threat Detection', description: window.t('help.threats_desc') || 'Monitor for security incidents' }
+                    { icon: 'shield', title: window.t('help.security_title') || 'Posture Cyberdéfense', description: window.t('help.security_desc') || 'Score global de sécurité' },
+                    { icon: 'alert-octagon', title: window.t('help.threats_title') || 'Détection Menaces', description: window.t('help.threats_desc') || 'Surveillance des incidents de sécurité' }
                 ]
             };
 
@@ -949,19 +910,19 @@
         // Tour steps configuration per page
         const tourConfigs = {
             '/': [
-                { target: '.kpi-grid', title: window.t('tour.kpi_title') || 'Key Performance Indicators', body: window.t('tour.kpi_body') || 'These cards show your most important AI metrics at a glance: trust score, daily inferences, costs, and carbon footprint.' },
-                { target: '.sidebar-nav', title: window.t('tour.nav_title') || 'Navigation', body: window.t('tour.nav_body') || 'Use the sidebar to navigate between different views. Each view is optimized for specific use cases.' },
-                { target: '#profileSelector', title: window.t('tour.profile_title') || 'Profile Selection', body: window.t('tour.profile_body') || 'Switch between different user profiles to see dashboards tailored for your role.' },
-                { target: '#trustChart', title: window.t('tour.chart_title') || 'Trust Score Trend', body: window.t('tour.chart_body') || 'Track how your AI system\'s reliability evolves over time.' },
-                { target: '.help-trigger', title: window.t('tour.help_title') || 'Help & Guide', body: window.t('tour.help_body') || 'Click here anytime to get contextual help or restart this tour.' }
+                { target: '.kpi-grid', title: window.t('tour.kpi_title') || 'Indicateurs de Performance', body: window.t('tour.kpi_body') || 'Ces cartes affichent vos métriques IA essentielles : score de confiance, inférences quotidiennes, posture cyber et empreinte carbone.' },
+                { target: '.sidebar-nav', title: window.t('tour.nav_title') || 'Navigation', body: window.t('tour.nav_body') || 'Utilisez la barre latérale pour naviguer entre les vues. Chaque vue est optimisée pour un usage opérationnel spécifique.' },
+                { target: '#profileSelector', title: window.t('tour.profile_title') || 'Sélection du Profil', body: window.t('tour.profile_body') || 'Changez de profil pour afficher les tableaux de bord adaptés à votre rôle opérationnel.' },
+                { target: '#trustChart', title: window.t('tour.chart_title') || 'Évolution Score de Confiance', body: window.t('tour.chart_body') || 'Suivez l\'évolution de la fiabilité de vos systèmes IA dans le temps.' },
+                { target: '.help-trigger', title: window.t('tour.help_title') || 'Aide & Guide', body: window.t('tour.help_body') || 'Cliquez ici à tout moment pour obtenir de l\'aide contextuelle ou relancer la visite guidée.' }
             ],
             '/causal': [
-                { target: '.card', title: window.t('tour.causal_graph_title') || 'Causal Graph', body: window.t('tour.causal_graph_body') || 'This visualization shows cause-effect relationships between events in your AI system.' },
-                { target: '.sidebar-nav', title: window.t('tour.analysis_title') || 'Analysis Tools', body: window.t('tour.analysis_body') || 'Use the navigation to access different analysis views.' }
+                { target: '.card', title: window.t('tour.causal_graph_title') || 'Graphe Causal', body: window.t('tour.causal_graph_body') || 'Cette visualisation montre les relations cause-effet entre les événements de vos systèmes IA.' },
+                { target: '.sidebar-nav', title: window.t('tour.analysis_title') || 'Outils d\'Analyse', body: window.t('tour.analysis_body') || 'Utilisez la navigation pour accéder aux différentes vues d\'analyse.' }
             ],
             '/executive': [
-                { target: '.kpi-grid', title: window.t('tour.exec_kpi_title') || 'Business KPIs', body: window.t('tour.exec_kpi_body') || 'High-level metrics that matter for business decisions.' },
-                { target: '.chart-container', title: window.t('tour.exec_charts_title') || 'Visual Insights', body: window.t('tour.exec_charts_body') || 'Charts and graphs designed for quick understanding without technical details.' }
+                { target: '.kpi-grid', title: window.t('tour.exec_kpi_title') || 'KPI Stratégiques', body: window.t('tour.exec_kpi_body') || 'Métriques de haut niveau pour les décisions du commandement.' },
+                { target: '.chart-container', title: window.t('tour.exec_charts_title') || 'Visualisations', body: window.t('tour.exec_charts_body') || 'Graphiques conçus pour une compréhension rapide sans détails techniques.' }
             ]
         };
 
@@ -1008,7 +969,7 @@
             document.getElementById('tourStepBadge').textContent = tourState.currentStep + 1;
             document.getElementById('tourStepTitle').textContent = step.title;
             document.getElementById('tourStepBody').textContent = step.body;
-            document.getElementById('tourProgress').textContent = `Step ${tourState.currentStep + 1} of ${tourState.steps.length}`;
+            document.getElementById('tourProgress').textContent = `Étape ${tourState.currentStep + 1} sur ${tourState.steps.length}`;
 
             // Position tooltip
             const tooltipTop = rect.bottom + 20;
@@ -1018,7 +979,7 @@
 
             // Update nav buttons
             document.getElementById('tourPrevBtn').style.visibility = tourState.currentStep > 0 ? 'visible' : 'hidden';
-            document.getElementById('tourNextBtn').textContent = tourState.currentStep === tourState.steps.length - 1 ? (window.t('tour.finish') || 'Finish') : (window.t('help.next') || 'Next');
+            document.getElementById('tourNextBtn').textContent = tourState.currentStep === tourState.steps.length - 1 ? (window.t('tour.finish') || 'Terminer') : (window.t('help.next') || 'Suivant');
 
             lucide.createIcons();
         }
@@ -1050,7 +1011,7 @@
 
         // Keyboard shortcuts
         function showKeyboardShortcuts() {
-            showToast(window.t('help.shortcuts_coming') || 'Keyboard shortcuts: ? for help, G+D for dashboard, G+C for causal', 'info', 5000);
+            showToast(window.t('help.shortcuts_coming') || 'Raccourcis clavier : ? pour l\'aide, G+D pour le tableau de bord, G+C pour le graphe causal', 'info', 5000);
         }
 
         // Close help panel when clicking outside
@@ -1136,15 +1097,15 @@
 
                 if (response.ok) {
                     const data = await response.json();
-                    addChatMessage(data.answer || data.response || 'I can help you with that.', 'bot', data);
+                    addChatMessage(data.answer || data.response || 'Je peux vous aider.', 'bot', data);
                     chatHistory.push({ role: 'user', content: message });
                     chatHistory.push({ role: 'assistant', content: data.answer || data.response });
                 } else {
-                    addChatMessage(window.t('chatbot.error') || 'Sorry, I encountered an error. Please try again.', 'bot', null, true);
+                    addChatMessage(window.t('chatbot.error') || 'Désolé, une erreur est survenue. Veuillez réessayer.', 'bot', null, true);
                 }
             } catch (error) {
                 removeTypingIndicator(typingId);
-                addChatMessage(window.t('chatbot.error') || 'Sorry, I encountered an error. Please try again.', 'bot', null, true);
+                addChatMessage(window.t('chatbot.error') || 'Désolé, une erreur est survenue. Veuillez réessayer.', 'bot', null, true);
             }
         }
 
@@ -1213,23 +1174,24 @@
         // Global Search System
         // =============================================
         const searchIndex = [
-            { type: 'page', title: 'Dashboard', url: '/', icon: 'home', keywords: ['home', 'overview', 'kpi', 'dashboard'] },
-            { type: 'page', title: 'Unified View', url: '/unified', icon: 'layers', keywords: ['unified', 'all', 'metrics', 'view'] },
-            { type: 'page', title: 'Executive View', url: '/executive', icon: 'briefcase', keywords: ['executive', 'business', 'kpi', 'summary'] },
-            { type: 'page', title: 'Causal Analysis', url: '/causal', icon: 'git-branch', keywords: ['causal', 'root cause', 'analysis', 'graph'] },
-            { type: 'page', title: 'Impact Analysis', url: '/impact', icon: 'trending-up', keywords: ['impact', 'business', 'effect'] },
-            { type: 'page', title: 'Live Monitoring', url: '/monitoring', icon: 'activity', keywords: ['monitoring', 'live', 'real-time', 'alerts'] },
-            { type: 'page', title: 'FinOps', url: '/finops', icon: 'wallet', keywords: ['finops', 'cost', 'budget', 'spend', 'finance'] },
-            { type: 'page', title: 'GreenOps', url: '/greenops', icon: 'leaf', keywords: ['greenops', 'carbon', 'sustainability', 'environment'] },
-            { type: 'page', title: 'Compliance', url: '/compliance', icon: 'shield-check', keywords: ['compliance', 'regulation', 'gdpr', 'audit'] },
-            { type: 'page', title: 'Security Center', url: '/security', icon: 'lock', keywords: ['security', 'threats', 'vulnerabilities'] },
-            { type: 'page', title: 'Personas & Guide', url: '/onboarding', icon: 'user-circle', keywords: ['personas', 'profile', 'onboarding', 'guide'] },
-            { type: 'metric', title: 'Trust Score', url: '/#trust-score', icon: 'shield', keywords: ['trust', 'score', 'reliability'] },
-            { type: 'metric', title: 'Data Drift', url: '/unified?metric=drift', icon: 'git-merge', keywords: ['drift', 'data', 'model'] },
-            { type: 'metric', title: 'Daily Costs', url: '/finops', icon: 'dollar-sign', keywords: ['cost', 'daily', 'spend'] },
-            { type: 'metric', title: 'Carbon Footprint', url: '/greenops', icon: 'cloud', keywords: ['carbon', 'co2', 'footprint'] },
-            { type: 'action', title: 'Change Profile', url: '/onboarding', icon: 'users', keywords: ['change', 'switch', 'profile', 'persona'] },
-            { type: 'action', title: 'Start Tour', url: '#tour', icon: 'play-circle', keywords: ['tour', 'guide', 'help', 'start'] },
+            { type: 'page', title: 'Centre Opérationnel', url: '/', icon: 'home', keywords: ['accueil', 'hub', 'situation', 'dashboard'] },
+            { type: 'page', title: 'SOC Défense', url: '/defense-soc', icon: 'shield', keywords: ['soc', 'defense', 'alertes', 'mitre'] },
+            { type: 'page', title: 'Vue Consolidée', url: '/global', icon: 'globe', keywords: ['global', 'consolidee', 'vue'] },
+            { type: 'page', title: 'Vue État-Major', url: '/executive', icon: 'landmark', keywords: ['etat-major', 'commandement', 'strategique'] },
+            { type: 'page', title: 'Chaînes Causales', url: '/causal', icon: 'git-branch', keywords: ['causal', 'incident', 'analyse', 'cause'] },
+            { type: 'page', title: 'Impact Opérationnel', url: '/impact', icon: 'trending-up', keywords: ['impact', 'operationnel', 'effet'] },
+            { type: 'page', title: 'Surveillance', url: '/monitoring', icon: 'activity', keywords: ['surveillance', 'temps reel', 'monitoring'] },
+            { type: 'page', title: 'Cyberdéfense', url: '/security', icon: 'lock', keywords: ['cyber', 'defense', 'menaces', 'securite'] },
+            { type: 'page', title: 'Homologation LPM', url: '/compliance', icon: 'file-check', keywords: ['homologation', 'lpm', 'conformite', 'audit'] },
+            { type: 'page', title: 'AI Act / RGPD', url: '/juridique', icon: 'gavel', keywords: ['juridique', 'rgpd', 'ai act', 'droit'] },
+            { type: 'page', title: 'Garde-fous IA', url: '/guardrails', icon: 'shield-alert', keywords: ['guardrails', 'garde-fous', 'protection'] },
+            { type: 'page', title: 'Supply Chain IA', url: '/supply-chain', icon: 'box', keywords: ['supply', 'chain', 'approvisionnement', 'sbom'] },
+            { type: 'page', title: 'Banc d\'Essai LLM', url: '/llm-testing', icon: 'flask-conical', keywords: ['test', 'llm', 'benchmark', 'evaluation'] },
+            { type: 'metric', title: 'Indice de Confiance', url: '/#trust-score', icon: 'shield', keywords: ['confiance', 'trust', 'score', 'fiabilite'] },
+            { type: 'metric', title: 'Dérive Modèles', url: '/monitoring', icon: 'git-merge', keywords: ['drift', 'derive', 'modele'] },
+            { type: 'metric', title: 'Alertes MITRE', url: '/defense-soc', icon: 'alert-triangle', keywords: ['mitre', 'alerte', 'attaque'] },
+            { type: 'action', title: 'Changer de Poste', url: '/welcome', icon: 'users', keywords: ['changer', 'poste', 'profil', 'persona'] },
+            { type: 'action', title: 'Visite Guidée', url: '#tour', icon: 'play-circle', keywords: ['tour', 'guide', 'aide', 'visite'] },
         ];
 
         let searchResultsVisible = false;
@@ -1252,7 +1214,7 @@
                 resultsContainer.innerHTML = `
                     <div class="search-empty">
                         <i data-lucide="search-x"></i>
-                        <span>${window.t('search.no_results') || 'No results found'}</span>
+                        <span>${window.t('search.no_results') || 'Aucun résultat trouvé'}</span>
                     </div>
                 `;
             } else {

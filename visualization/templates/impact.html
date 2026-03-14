@@ -5,121 +5,121 @@
 {% block page_title %}{{ t('nav.impact_analysis') }}{% endblock %}
 
 {% block page_subtitle %}
-<p>{{ t('impact.subtitle') or 'Quantify the business impact of AI system events' }}</p>
+<p>{{ t('impact.subtitle') or 'Quantifier l\'impact opérationnel des événements des systèmes IA de Défense' }}</p>
 {% endblock %}
 
 {% block sidebar_extra %}
 <div class="nav-group">
-    <span class="nav-group-title">{{ t('impact.event_types') or 'Event Types' }}</span>
+    <span class="nav-group-title">{{ t('impact.event_types') or 'Types d\'Événements' }}</span>
     <button class="nav-link" onclick="analyzeEvent('model_drift')">
         <i data-lucide="activity"></i>
-        <span>{{ t('impact.model_drift') or 'Model Drift' }}</span>
+        <span>{{ t('impact.model_drift') or 'Dérive de Modèle' }}</span>
     </button>
     <button class="nav-link" onclick="analyzeEvent('model_degradation')">
         <i data-lucide="trending-down"></i>
-        <span>{{ t('impact.degradation') or 'Degradation' }}</span>
+        <span>{{ t('impact.degradation') or 'Dégradation' }}</span>
     </button>
     <button class="nav-link" onclick="analyzeEvent('cost_anomaly')">
         <i data-lucide="dollar-sign"></i>
-        <span>{{ t('impact.cost_anomaly') or 'Cost Anomaly' }}</span>
+        <span>{{ t('impact.cost_anomaly') or 'Anomalie de Coûts' }}</span>
     </button>
     <button class="nav-link" onclick="analyzeEvent('latency_spike')">
         <i data-lucide="clock"></i>
-        <span>{{ t('impact.latency_spike') or 'Latency Spike' }}</span>
+        <span>{{ t('impact.latency_spike') or 'Pic de Latence' }}</span>
     </button>
 </div>
 {% endblock %}
 
 {% block content %}
-<!-- Impact Summary -->
+<!-- Résumé de l'Impact -->
 <div class="kpi-grid">
     <div class="kpi-card">
         <div class="kpi-icon danger">
             <i data-lucide="alert-circle"></i>
         </div>
-        <div class="kpi-label">Total Impact (24h)</div>
+        <div class="kpi-label">Impact Total (24h)</div>
         <div class="kpi-value" style="color: var(--color-danger);" id="totalImpact">-$--</div>
     </div>
     <div class="kpi-card">
         <div class="kpi-icon primary">
             <i data-lucide="bar-chart-2"></i>
         </div>
-        <div class="kpi-label">Events Analyzed</div>
+        <div class="kpi-label">Événements Analysés</div>
         <div class="kpi-value" id="eventsCount">--</div>
     </div>
     <div class="kpi-card">
         <div class="kpi-icon warning">
             <i data-lucide="target"></i>
         </div>
-        <div class="kpi-label">Most Affected</div>
+        <div class="kpi-label">Plus Affecté</div>
         <div class="kpi-value text-sm" id="mostAffected">--</div>
     </div>
     <div class="kpi-card">
         <div class="kpi-icon success">
             <i data-lucide="trending-up"></i>
         </div>
-        <div class="kpi-label">Trend vs Previous</div>
+        <div class="kpi-label">Tendance vs Précédent</div>
         <div class="kpi-value" id="impactTrend">--</div>
     </div>
 </div>
 
-<!-- Analysis Form -->
+<!-- Formulaire d'Analyse -->
 <div class="card mb-6">
     <div class="card-header">
-        <h3 class="card-title">{{ t('impact.analyze_event') or 'Analyze Event' }}</h3>
+        <h3 class="card-title">{{ t('impact.analyze_event') or 'Analyser un Événement' }}</h3>
     </div>
     <div class="grid grid-4 gap-4">
         <div class="form-group" style="margin-bottom: 0;">
-            <label class="form-label">Event Type</label>
+            <label class="form-label">Type d'Événement</label>
             <select id="eventType" class="form-select">
-                <option value="model_drift">Model Drift</option>
-                <option value="model_degradation">Model Degradation</option>
-                <option value="cost_anomaly">Cost Anomaly</option>
-                <option value="latency_spike">Latency Spike</option>
-                <option value="error_rate_increase">Error Rate Increase</option>
-                <option value="security_incident">Security Incident</option>
-                <option value="compliance_violation">Compliance Violation</option>
+                <option value="model_drift">Dérive de Modèle</option>
+                <option value="model_degradation">Dégradation de Modèle</option>
+                <option value="cost_anomaly">Anomalie de Coûts</option>
+                <option value="latency_spike">Pic de Latence</option>
+                <option value="error_rate_increase">Augmentation du Taux d'Erreur</option>
+                <option value="security_incident">Incident de Sécurité</option>
+                <option value="compliance_violation">Violation de Conformité</option>
             </select>
         </div>
         <div class="form-group" style="margin-bottom: 0;">
-            <label class="form-label">Affected Models</label>
-            <input type="text" id="affectedModels" class="form-input" placeholder="e.g., recommendation-v2, fraud-v1">
+            <label class="form-label">Modèles Affectés</label>
+            <input type="text" id="affectedModels" class="form-input" placeholder="ex. : reconnaissance-v2, détection-menaces-v1">
         </div>
         <div class="form-group" style="margin-bottom: 0;">
-            <label class="form-label">Time Window</label>
+            <label class="form-label">Fenêtre Temporelle</label>
             <select id="timeWindow" class="form-select">
-                <option value="1">Last 1 hour</option>
-                <option value="24" selected>Last 24 hours</option>
-                <option value="168">Last 7 days</option>
+                <option value="1">Dernière heure</option>
+                <option value="24" selected>Dernières 24 heures</option>
+                <option value="168">7 derniers jours</option>
             </select>
         </div>
         <div class="form-group" style="margin-bottom: 0; display: flex; align-items: flex-end;">
             <button class="btn btn-primary" onclick="runAnalysis()" style="width: 100%;">
                 <i data-lucide="search"></i>
-                Analyze
+                Analyser
             </button>
         </div>
     </div>
 </div>
 
-<!-- Impact Results -->
+<!-- Résultats de l'Impact -->
 <div class="grid grid-2 mb-6">
     <div class="card">
         <div class="card-header">
-            <h3 class="card-title">{{ t('impact.breakdown') or 'Impact Breakdown' }}</h3>
+            <h3 class="card-title">{{ t('impact.breakdown') or 'Ventilation de l\'Impact' }}</h3>
         </div>
         <div id="impactBreakdown">
             <div class="empty-state">
                 <i data-lucide="bar-chart-2"></i>
-                <h3>Run an analysis</h3>
-                <p class="text-muted">Select an event type and run analysis to see results</p>
+                <h3>Lancer une analyse</h3>
+                <p class="text-muted">Sélectionnez un type d'événement et lancez l'analyse pour voir les résultats</p>
             </div>
         </div>
     </div>
 
     <div class="card">
         <div class="card-header">
-            <h3 class="card-title">Impact by Domain</h3>
+            <h3 class="card-title">Impact par Domaine</h3>
         </div>
         <div class="chart-container" style="height: 300px;">
             <canvas id="domainChart"></canvas>
@@ -127,31 +127,31 @@
     </div>
 </div>
 
-<!-- Recommendations & Mitigations -->
+<!-- Recommandations & Mesures d'Atténuation -->
 <div class="card mb-6">
     <div class="card-header">
-        <h3 class="card-title">Recommendations & Mitigations</h3>
+        <h3 class="card-title">Recommandations & Mesures d'Atténuation</h3>
     </div>
     <div class="grid grid-2 gap-6">
         <div>
-            <h4 class="text-sm text-muted mb-4">Recommendations</h4>
+            <h4 class="text-sm text-muted mb-4">Recommandations</h4>
             <ul id="recommendations" style="list-style: none; padding: 0;">
-                <li class="text-muted">Run an analysis to see recommendations</li>
+                <li class="text-muted">Lancez une analyse pour voir les recommandations</li>
             </ul>
         </div>
         <div>
-            <h4 class="text-sm text-muted mb-4">Mitigation Actions</h4>
+            <h4 class="text-sm text-muted mb-4">Actions d'Atténuation</h4>
             <ul id="mitigations" style="list-style: none; padding: 0;">
-                <li class="text-muted">Run an analysis to see mitigations</li>
+                <li class="text-muted">Lancez une analyse pour voir les mesures d'atténuation</li>
             </ul>
         </div>
     </div>
 </div>
 
-<!-- Impact History -->
+<!-- Historique d'Impact -->
 <div class="card">
     <div class="card-header">
-        <h3 class="card-title">Impact Trend</h3>
+        <h3 class="card-title">Tendance de l'Impact</h3>
     </div>
     <div class="chart-container">
         <canvas id="impactTrendChart"></canvas>
@@ -213,11 +213,11 @@ async function runAnalysis() {
 
         if (result.success) {
             displayResults(result.data);
-            showToast('Analysis complete', 'success');
+            showToast('Analyse terminée', 'success');
         }
     } catch (error) {
         console.error('Error running analysis:', error);
-        showToast('Analysis failed', 'error');
+        showToast('Échec de l\'analyse', 'error');
     }
 }
 
@@ -296,7 +296,7 @@ function updateDomainChart(impacts) {
         data: {
             labels: Object.keys(domains),
             datasets: [{
-                label: 'Impact ($)',
+                label: 'Impact (€)',
                 data: Object.values(domains),
                 backgroundColor: ['#ef4444', '#f59e0b', '#3b82f6', '#10b981', '#6366f1'],
                 borderRadius: 6
@@ -344,7 +344,7 @@ function initTrendChart() {
         data: {
             labels: labels,
             datasets: [{
-                label: 'Hourly Impact',
+                label: 'Impact Horaire',
                 data: data,
                 borderColor: '#ef4444',
                 backgroundColor: 'rgba(239, 68, 68, 0.1)',

@@ -4,52 +4,52 @@
 
 {% block sidebar_extra %}
 <div class="nav-group">
-    <span class="nav-group-title">Business Views</span>
+    <span class="nav-group-title">Vues Métier</span>
     <a href="/executive" class="nav-link">
         <i data-lucide="briefcase"></i>
-        <span>Executive Dashboard</span>
+        <span>Tableau de Bord Exécutif</span>
     </a>
     <a href="/finops" class="nav-link">
         <i data-lucide="wallet"></i>
-        <span>FinOps</span>
+        <span>Ressources & Budget</span>
     </a>
     <a href="/greenops" class="nav-link active">
         <i data-lucide="leaf"></i>
-        <span>GreenOps</span>
+        <span>Sobriété Numérique</span>
     </a>
     <a href="/compliance" class="nav-link">
         <i data-lucide="shield-check"></i>
-        <span>Compliance</span>
+        <span>Conformité</span>
     </a>
 </div>
 <div class="nav-group">
-    <span class="nav-group-title">Technical Views</span>
+    <span class="nav-group-title">Vues Techniques</span>
     <a href="/monitoring" class="nav-link">
         <i data-lucide="activity"></i>
-        <span>Live Monitoring</span>
+        <span>Monitoring en Direct</span>
     </a>
     <a href="/security" class="nav-link">
         <i data-lucide="lock"></i>
-        <span>Security Center</span>
+        <span>Centre de Sécurité</span>
     </a>
 </div>
 {% endblock %}
 
-{% block page_title %}GreenOps - Sustainability{% endblock %}
-{% block page_subtitle %}<p class="text-muted">Carbon footprint, energy efficiency and environmental impact</p>{% endblock %}
+{% block page_title %}Sobriété Numérique{% endblock %}
+{% block page_subtitle %}<p class="text-muted">Empreinte carbone, efficacité énergétique et impact environnemental</p>{% endblock %}
 
 {% block topbar_actions %}
 <div class="time-range-selector">
     <select class="form-select" id="timeRange" onchange="updateTimeRange()">
-        <option value="7d">Last 7 Days</option>
-        <option value="30d" selected>Last 30 Days</option>
-        <option value="90d">Last Quarter</option>
-        <option value="365d">Last Year</option>
+        <option value="7d">7 derniers jours</option>
+        <option value="30d" selected>30 derniers jours</option>
+        <option value="90d">Dernier trimestre</option>
+        <option value="365d">Dernière année</option>
     </select>
 </div>
 <button class="btn btn-primary" onclick="generateSustainabilityReport()">
     <i data-lucide="file-text"></i>
-    ESG Report
+    Rapport ESG
 </button>
 {% endblock %}
 
@@ -76,7 +76,7 @@
                     <span class="eco-number">B+</span>
                 </div>
             </div>
-            <div class="eco-label">Sustainability Rating</div>
+            <div class="eco-label">Indice de Sobriété Numérique</div>
         </div>
     </div>
     <div class="hero-right">
@@ -87,8 +87,8 @@
                 </div>
                 <div class="stat-content">
                     <span class="stat-value">1,250.5 kg</span>
-                    <span class="stat-label">CO2 Emissions (30d)</span>
-                    <span class="stat-trend down"><i data-lucide="trending-down"></i> -8% vs last period</span>
+                    <span class="stat-label">Émissions CO2 (30j)</span>
+                    <span class="stat-trend down"><i data-lucide="trending-down"></i> -8% vs période précédente</span>
                 </div>
             </div>
             <div class="hero-stat">
@@ -97,8 +97,8 @@
                 </div>
                 <div class="stat-content">
                     <span class="stat-value">4,500 kWh</span>
-                    <span class="stat-label">Energy Consumed</span>
-                    <span class="stat-trend down"><i data-lucide="trending-down"></i> -5% vs last period</span>
+                    <span class="stat-label">Énergie Consommée</span>
+                    <span class="stat-trend down"><i data-lucide="trending-down"></i> -5% vs période précédente</span>
                 </div>
             </div>
             <div class="hero-stat">
@@ -107,8 +107,8 @@
                 </div>
                 <div class="stat-content">
                     <span class="stat-value">65%</span>
-                    <span class="stat-label">Renewable Energy</span>
-                    <span class="stat-trend up"><i data-lucide="trending-up"></i> +12% vs last period</span>
+                    <span class="stat-label">Énergie Renouvelable</span>
+                    <span class="stat-trend up"><i data-lucide="trending-up"></i> +12% vs période précédente</span>
                 </div>
             </div>
             <div class="hero-stat">
@@ -117,8 +117,8 @@
                 </div>
                 <div class="stat-content">
                     <span class="stat-value">1.35</span>
-                    <span class="stat-label">Avg. PUE</span>
-                    <span class="stat-trend down"><i data-lucide="trending-down"></i> -0.05 improved</span>
+                    <span class="stat-label">PUE Moyen</span>
+                    <span class="stat-trend down"><i data-lucide="trending-down"></i> -0.05 amélioré</span>
                 </div>
             </div>
         </div>
@@ -131,7 +131,7 @@
         <!-- Emissions by Activity -->
         <div class="card">
             <div class="card-header">
-                <h3 class="card-title">Emissions by Activity</h3>
+                <h3 class="card-title">Émissions par Activité</h3>
             </div>
             <div class="chart-container">
                 <canvas id="emissionsByActivity"></canvas>
@@ -139,22 +139,22 @@
             <div class="activity-legend">
                 <div class="legend-item">
                     <span class="legend-color" style="background: #6366f1"></span>
-                    <span class="legend-label">Inference</span>
+                    <span class="legend-label">Inférence</span>
                     <span class="legend-value">750 kg (60%)</span>
                 </div>
                 <div class="legend-item">
                     <span class="legend-color" style="background: #8b5cf6"></span>
-                    <span class="legend-label">Training</span>
+                    <span class="legend-label">Entraînement</span>
                     <span class="legend-value">350 kg (28%)</span>
                 </div>
                 <div class="legend-item">
                     <span class="legend-color" style="background: #a78bfa"></span>
-                    <span class="legend-label">Storage</span>
+                    <span class="legend-label">Stockage</span>
                     <span class="legend-value">100 kg (8%)</span>
                 </div>
                 <div class="legend-item">
                     <span class="legend-color" style="background: #c4b5fd"></span>
-                    <span class="legend-label">Network</span>
+                    <span class="legend-label">Réseau</span>
                     <span class="legend-value">50 kg (4%)</span>
                 </div>
             </div>
@@ -163,10 +163,10 @@
         <!-- Emissions Trend -->
         <div class="card">
             <div class="card-header">
-                <h3 class="card-title">Emissions Trend</h3>
+                <h3 class="card-title">Tendance des Émissions</h3>
                 <div class="chart-toggle">
-                    <button class="toggle-btn active" data-view="daily">Daily</button>
-                    <button class="toggle-btn" data-view="weekly">Weekly</button>
+                    <button class="toggle-btn active" data-view="daily">Journalier</button>
+                    <button class="toggle-btn" data-view="weekly">Hebdomadaire</button>
                 </div>
             </div>
             <div class="chart-container">
@@ -180,15 +180,15 @@
 <section class="mb-6">
     <div class="card">
         <div class="card-header">
-            <h3 class="card-title">Regional Carbon Intensity</h3>
-            <span class="text-sm text-muted">gCO2/kWh - Lower is better</span>
+            <h3 class="card-title">Intensité Carbone par Région</h3>
+            <span class="text-sm text-muted">gCO2/kWh - Plus bas = mieux</span>
         </div>
         <div class="regions-grid">
             <div class="region-card best">
                 <div class="region-header">
                     <span class="region-flag">🇪🇺</span>
                     <span class="region-name">eu-west-1 (Ireland)</span>
-                    <span class="badge badge-success">Best</span>
+                    <span class="badge badge-success">Optimal</span>
                 </div>
                 <div class="region-stats">
                     <div class="region-stat">
@@ -196,13 +196,13 @@
                         <span class="stat-unit">gCO2/kWh</span>
                     </div>
                     <div class="region-meta">
-                        <span><i data-lucide="sun"></i> 85% Renewable</span>
-                        <span><i data-lucide="cloud"></i> 350 kg emissions</span>
+                        <span><i data-lucide="sun"></i> 85% Renouvelable</span>
+                        <span><i data-lucide="cloud"></i> 350 kg émissions</span>
                     </div>
                 </div>
                 <div class="region-recommendation">
                     <i data-lucide="lightbulb"></i>
-                    <span>Recommended for new workloads</span>
+                    <span>Recommandée pour les nouvelles charges</span>
                 </div>
             </div>
 
@@ -217,8 +217,8 @@
                         <span class="stat-unit">gCO2/kWh</span>
                     </div>
                     <div class="region-meta">
-                        <span><i data-lucide="sun"></i> 45% Renewable</span>
-                        <span><i data-lucide="cloud"></i> 500 kg emissions</span>
+                        <span><i data-lucide="sun"></i> 45% Renouvelable</span>
+                        <span><i data-lucide="cloud"></i> 500 kg émissions</span>
                     </div>
                 </div>
             </div>
@@ -227,7 +227,7 @@
                 <div class="region-header">
                     <span class="region-flag">🇸🇬</span>
                     <span class="region-name">ap-southeast-1 (Singapore)</span>
-                    <span class="badge badge-warning">High Impact</span>
+                    <span class="badge badge-warning">Impact Élevé</span>
                 </div>
                 <div class="region-stats">
                     <div class="region-stat">
@@ -235,13 +235,13 @@
                         <span class="stat-unit">gCO2/kWh</span>
                     </div>
                     <div class="region-meta">
-                        <span><i data-lucide="sun"></i> 25% Renewable</span>
-                        <span><i data-lucide="cloud"></i> 400 kg emissions</span>
+                        <span><i data-lucide="sun"></i> 25% Renouvelable</span>
+                        <span><i data-lucide="cloud"></i> 400 kg émissions</span>
                     </div>
                 </div>
                 <div class="region-recommendation warning">
                     <i data-lucide="alert-triangle"></i>
-                    <span>Consider migrating batch jobs to EU</span>
+                    <span>Envisager la migration des jobs batch vers l'UE</span>
                 </div>
             </div>
         </div>
@@ -252,18 +252,18 @@
 <section class="mb-6">
     <div class="card">
         <div class="card-header">
-            <h3 class="card-title">Model Carbon Footprint</h3>
+            <h3 class="card-title">Empreinte Carbone par Modèle</h3>
         </div>
         <div class="table-container">
             <table class="table">
                 <thead>
                     <tr>
-                        <th>Model</th>
-                        <th>Daily Inferences</th>
-                        <th>Energy (kWh)</th>
+                        <th>Modèle</th>
+                        <th>Inférences/jour</th>
+                        <th>Énergie (kWh)</th>
                         <th>CO2 (kg)</th>
-                        <th>Efficiency Score</th>
-                        <th>Trend</th>
+                        <th>Score Efficacité</th>
+                        <th>Tendance</th>
                         <th>Actions</th>
                     </tr>
                 </thead>
@@ -273,6 +273,7 @@
                             <div class="model-cell">
                                 <span class="model-name">recommendation-v2</span>
                                 <span class="model-type">Production</span>
+
                             </div>
                         </td>
                         <td>1.2M</td>
@@ -292,6 +293,7 @@
                             <div class="model-cell">
                                 <span class="model-name">fraud-detector-v1</span>
                                 <span class="model-type">Production</span>
+
                             </div>
                         </td>
                         <td>850K</td>
@@ -311,6 +313,7 @@
                             <div class="model-cell">
                                 <span class="model-name">churn-predictor</span>
                                 <span class="model-type">Production</span>
+
                             </div>
                         </td>
                         <td>450K</td>
@@ -329,7 +332,7 @@
                         <td>
                             <div class="model-cell">
                                 <span class="model-name">llm-assistant</span>
-                                <span class="model-type badge badge-warning">High Impact</span>
+                                <span class="model-type badge badge-warning">Impact Élevé</span>
                             </div>
                         </td>
                         <td>50K</td>
@@ -342,7 +345,7 @@
                             <span class="efficiency-label">35%</span>
                         </td>
                         <td><span class="trend up"><i data-lucide="trending-up"></i> +15%</span></td>
-                        <td><button class="btn btn-secondary btn-sm">Optimize</button></td>
+                        <td><button class="btn btn-secondary btn-sm">Optimiser</button></td>
                     </tr>
                 </tbody>
             </table>
@@ -352,17 +355,17 @@
 
 <!-- Optimization Recommendations -->
 <section class="mb-6">
-    <h2 class="section-title">Sustainability Recommendations</h2>
+    <h2 class="section-title">Recommandations Sobriété Numérique</h2>
     <div class="recommendations-grid">
         <div class="recommendation-card high-impact">
             <div class="rec-header">
                 <div class="rec-icon">
                     <i data-lucide="moon"></i>
                 </div>
-                <div class="rec-badge">High Impact</div>
+                <div class="rec-badge">Impact Élevé</div>
             </div>
-            <h4>Enable GPU Sleep Mode</h4>
-            <p>Configure GPU instances to sleep during off-peak hours (2am-6am UTC) to reduce energy consumption.</p>
+            <h4>Activer le Mode Veille GPU</h4>
+            <p>Configurer les instances GPU en veille pendant les heures creuses (2h-6h UTC) pour réduire la consommation énergétique.</p>
             <div class="rec-impact">
                 <div class="impact-item">
                     <i data-lucide="cloud-off"></i>
@@ -373,7 +376,7 @@
                     <span>-$850/month</span>
                 </div>
             </div>
-            <button class="btn btn-primary btn-sm">Implement</button>
+            <button class="btn btn-primary btn-sm">Appliquer</button>
         </div>
 
         <div class="recommendation-card medium-impact">
@@ -381,10 +384,10 @@
                 <div class="rec-icon">
                     <i data-lucide="globe"></i>
                 </div>
-                <div class="rec-badge">Medium Impact</div>
+                <div class="rec-badge">Impact Moyen</div>
             </div>
-            <h4>Migrate Batch Jobs to EU</h4>
-            <p>Move non-latency-sensitive batch processing to eu-west-1 with lower carbon intensity.</p>
+            <h4>Migrer les Jobs Batch vers l'UE</h4>
+            <p>Déplacer les traitements batch non sensibles à la latence vers eu-west-1 avec une intensité carbone plus faible.</p>
             <div class="rec-impact">
                 <div class="impact-item">
                     <i data-lucide="cloud-off"></i>
@@ -395,7 +398,7 @@
                     <span>+$50/month</span>
                 </div>
             </div>
-            <button class="btn btn-secondary btn-sm">Review</button>
+            <button class="btn btn-secondary btn-sm">Examiner</button>
         </div>
 
         <div class="recommendation-card medium-impact">
@@ -403,10 +406,10 @@
                 <div class="rec-icon">
                     <i data-lucide="cpu"></i>
                 </div>
-                <div class="rec-badge">Medium Impact</div>
+                <div class="rec-badge">Impact Moyen</div>
             </div>
-            <h4>Optimize LLM Batching</h4>
-            <p>Implement request batching for LLM inference to improve GPU utilization efficiency.</p>
+            <h4>Optimiser le Batching LLM</h4>
+            <p>Implémenter le regroupement des requêtes pour l'inférence LLM afin d'améliorer l'efficacité GPU.</p>
             <div class="rec-impact">
                 <div class="impact-item">
                     <i data-lucide="cloud-off"></i>
@@ -414,10 +417,10 @@
                 </div>
                 <div class="impact-item">
                     <i data-lucide="zap"></i>
-                    <span>+40% efficiency</span>
+                    <span>+40% efficacité</span>
                 </div>
             </div>
-            <button class="btn btn-secondary btn-sm">Learn More</button>
+            <button class="btn btn-secondary btn-sm">En savoir plus</button>
         </div>
 
         <div class="recommendation-card low-impact">
@@ -425,10 +428,10 @@
                 <div class="rec-icon">
                     <i data-lucide="trash-2"></i>
                 </div>
-                <div class="rec-badge">Quick Win</div>
+                <div class="rec-badge">Gain Rapide</div>
             </div>
-            <h4>Clean Up Old Checkpoints</h4>
-            <p>Remove 45 unused model checkpoints consuming storage and backup energy.</p>
+            <h4>Nettoyer les Anciens Checkpoints</h4>
+            <p>Supprimer 45 checkpoints de modèles inutilisés consommant du stockage et de l'énergie de sauvegarde.</p>
             <div class="rec-impact">
                 <div class="impact-item">
                     <i data-lucide="cloud-off"></i>
@@ -439,7 +442,7 @@
                     <span>-250 GB storage</span>
                 </div>
             </div>
-            <button class="btn btn-secondary btn-sm">Clean Up</button>
+            <button class="btn btn-secondary btn-sm">Nettoyer</button>
         </div>
     </div>
 </section>
@@ -449,7 +452,7 @@
     <div class="grid grid-2">
         <div class="card">
             <div class="card-header">
-                <h3 class="card-title">Carbon Offset Status</h3>
+                <h3 class="card-title">Statut Compensation Carbone</h3>
             </div>
             <div class="offset-summary">
                 <div class="offset-gauge">
@@ -457,40 +460,40 @@
                     <div class="gauge-fill" style="--percentage: 78%"></div>
                     <div class="gauge-label">
                         <span class="gauge-value">78%</span>
-                        <span class="gauge-text">Offset</span>
+                        <span class="gauge-text">Compensé</span>
                     </div>
                 </div>
                 <div class="offset-details">
                     <div class="offset-row">
-                        <span>Total Emissions</span>
+                        <span>Émissions Totales</span>
                         <span>1,250.5 kg CO2</span>
                     </div>
                     <div class="offset-row">
-                        <span>Carbon Credits Used</span>
+                        <span>Crédits Carbone Utilisés</span>
                         <span>975 kg CO2</span>
                     </div>
                     <div class="offset-row">
-                        <span>Net Emissions</span>
+                        <span>Émissions Nettes</span>
                         <span class="text-warning">275.5 kg CO2</span>
                     </div>
                     <div class="offset-row">
-                        <span>Credits Available</span>
+                        <span>Crédits Disponibles</span>
                         <span>2,500 kg CO2</span>
                     </div>
                 </div>
             </div>
-            <button class="btn btn-secondary btn-block mt-4">Manage Carbon Credits</button>
+            <button class="btn btn-secondary btn-block mt-4">Gérer les Crédits Carbone</button>
         </div>
 
         <div class="card">
             <div class="card-header">
-                <h3 class="card-title">Sustainability Goals</h3>
+                <h3 class="card-title">Objectifs Sobriété Numérique</h3>
             </div>
             <div class="goals-list">
                 <div class="goal-item">
                     <div class="goal-header">
-                        <span class="goal-name">Net Zero by 2030</span>
-                        <span class="goal-progress">42% complete</span>
+                        <span class="goal-name">Neutralité Carbone d'ici 2030</span>
+                        <span class="goal-progress">42% accompli</span>
                     </div>
                     <div class="goal-bar">
                         <div class="goal-fill" style="width: 42%"></div>
@@ -498,8 +501,8 @@
                 </div>
                 <div class="goal-item">
                     <div class="goal-header">
-                        <span class="goal-name">100% Renewable Energy</span>
-                        <span class="goal-progress">65% complete</span>
+                        <span class="goal-name">100% Énergie Renouvelable</span>
+                        <span class="goal-progress">65% accompli</span>
                     </div>
                     <div class="goal-bar">
                         <div class="goal-fill" style="width: 65%"></div>
@@ -507,8 +510,8 @@
                 </div>
                 <div class="goal-item">
                     <div class="goal-header">
-                        <span class="goal-name">Reduce PUE to 1.2</span>
-                        <span class="goal-progress">75% complete</span>
+                        <span class="goal-name">Réduire le PUE à 1.2</span>
+                        <span class="goal-progress">75% accompli</span>
                     </div>
                     <div class="goal-bar">
                         <div class="goal-fill" style="width: 75%"></div>
@@ -516,8 +519,8 @@
                 </div>
                 <div class="goal-item">
                     <div class="goal-header">
-                        <span class="goal-name">ML Efficiency +50%</span>
-                        <span class="goal-progress">88% complete</span>
+                        <span class="goal-name">Efficacité ML +50%</span>
+                        <span class="goal-progress">88% accompli</span>
                     </div>
                     <div class="goal-bar">
                         <div class="goal-fill" style="width: 88%"></div>
@@ -1673,7 +1676,7 @@ function initCharts() {
         new Chart(activityCtx, {
             type: 'doughnut',
             data: {
-                labels: ['Inference', 'Training', 'Storage', 'Network'],
+                labels: ['Inférence', 'Entraînement', 'Stockage', 'Réseau'],
                 datasets: [{
                     data: [750, 350, 100, 50],
                     backgroundColor: ['#6366f1', '#8b5cf6', '#a78bfa', '#c4b5fd'],
@@ -1697,7 +1700,7 @@ function initCharts() {
         const labels = Array.from({length: 30}, (_, i) => {
             const d = new Date();
             d.setDate(d.getDate() - (29 - i));
-            return d.toLocaleDateString('en', {month: 'short', day: 'numeric'});
+            return d.toLocaleDateString('fr-FR', {month: 'short', day: 'numeric'});
         });
 
         // Generate realistic emissions data with downward trend
@@ -1711,7 +1714,7 @@ function initCharts() {
             data: {
                 labels: labels,
                 datasets: [{
-                    label: 'CO2 (kg/day)',
+                    label: 'CO2 (kg/jour)',
                     data: data,
                     borderColor: '#10b981',
                     backgroundColor: 'rgba(16, 185, 129, 0.1)',
@@ -1742,14 +1745,14 @@ function initCharts() {
 }
 
 function updateTimeRange() {
-    showToast('Updating data...', 'info');
+    showToast('Mise à jour des données...', 'info');
     loadGreenOpsData();
 }
 
 function generateSustainabilityReport() {
-    showToast('Generating ESG report...', 'info');
+    showToast('Génération du rapport ESG...', 'info');
     setTimeout(() => {
-        showToast('ESG report ready for download!', 'success');
+        showToast('Rapport ESG prêt au téléchargement !', 'success');
     }, 2000);
 }
 

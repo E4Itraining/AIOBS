@@ -4,25 +4,25 @@
 
 {% block sidebar_extra %}
 <div class="nav-group">
-    <span class="nav-group-title">Defense SOC</span>
+    <span class="nav-group-title">SOC Défense</span>
     <a href="/defense-soc" class="nav-link active">
         <i data-lucide="shield"></i>
         <span>Vue d'ensemble</span>
     </a>
     <a href="/security" class="nav-link">
         <i data-lucide="lock"></i>
-        <span>Security Center</span>
+        <span>Cyberdéfense</span>
     </a>
 </div>
 <div class="nav-group">
     <span class="nav-group-title">Analyse</span>
     <a href="/compliance" class="nav-link">
         <i data-lucide="shield-check"></i>
-        <span>Compliance</span>
+        <span>Homologation</span>
     </a>
     <a href="/monitoring" class="nav-link">
         <i data-lucide="activity"></i>
-        <span>Monitoring</span>
+        <span>Surveillance</span>
     </a>
 </div>
 {% endblock %}
@@ -561,6 +561,7 @@
 {% block scripts %}
 <script>
 document.addEventListener('DOMContentLoaded', async () => {
+    initDefenseRealtime();
     await Promise.all([
         loadOverview(),
         loadSemanticAlerts(),
@@ -759,6 +760,52 @@ async function exportEvidence(format) {
     } catch (e) {
         showToast('Erreur lors de l\'export', 'error');
     }
+}
+
+// Real-time integration with GASKIA_RT
+function initDefenseRealtime() {
+    if (!window.GASKIA_RT) return;
+
+    // Live attack feed
+    GASKIA_RT.on('attack-event', (event) => {
+        const alertsContainer = document.getElementById('semanticAlerts');
+        if (!alertsContainer) return;
+
+        const alertEl = document.createElement('div');
+        alertEl.className = `alert-item ${event.blocked ? 'warning' : 'critical'}`;
+        alertEl.innerHTML = `
+            <div class="alert-header">
+                <span class="alert-badge ${event.severity}">${event.severity.toUpperCase()}</span>
+                <span class="alert-time">${new Date(event.timestamp).toLocaleTimeString('fr-FR')}</span>
+            </div>
+            <div class="alert-title">${event.label} - ${event.targetSystem}</div>
+            <div class="alert-meta">
+                <span class="mitre-tag">MITRE ${event.mitre}</span>
+                <span class="confidence-tag">Confiance: ${(event.confidence * 100).toFixed(0)}%</span>
+                <span class="response-tag">${event.responseTimeMs}ms</span>
+                <span class="status-tag ${event.blocked ? 'blocked' : 'unblocked'}">${event.blocked ? 'BLOQUÉ' : 'NON BLOQUÉ'}</span>
+            </div>
+        `;
+        alertsContainer.insertBefore(alertEl, alertsContainer.firstChild);
+        while (alertsContainer.children.length > 10) {
+            alertsContainer.removeChild(alertsContainer.lastChild);
+        }
+        if (typeof lucide !== 'undefined') lucide.createIcons();
+
+        // Update attack counter
+        const stats = GASKIA_RT.getStats();
+        const counterEl = document.getElementById('totalAttacks');
+        if (counterEl) counterEl.textContent = stats.totalAttacks;
+        const detectionEl = document.getElementById('detectionRate');
+        if (detectionEl) detectionEl.textContent = stats.detectionRate + '%';
+    });
+
+    // Update MITRE coverage
+    GASKIA_RT.on('stats-update', (stats) => {
+        const mitre = GASKIA_RT.getMITRECoverage();
+        const mitreEl = document.getElementById('mitreCoverage');
+        if (mitreEl) mitreEl.textContent = mitre.percentage + '%';
+    });
 }
 
 function refreshAll() {

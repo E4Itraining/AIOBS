@@ -4,44 +4,44 @@
 
 {% block sidebar_extra %}
 <div class="nav-group">
-    <span class="nav-group-title">LLM Testing</span>
+    <span class="nav-group-title">Banc d'Essai LLM</span>
     <a href="/llm-testing" class="nav-link active">
         <i data-lucide="flask-conical"></i>
-        <span>Testing Dashboard</span>
+        <span>Tableau de bord</span>
     </a>
     <a href="/security" class="nav-link">
         <i data-lucide="shield"></i>
-        <span>Security Tests</span>
+        <span>Tests de Sécurité</span>
     </a>
 </div>
 <div class="nav-group">
-    <span class="nav-group-title">AI Observability</span>
+    <span class="nav-group-title">Observabilité IA</span>
     <a href="/monitoring" class="nav-link">
         <i data-lucide="activity"></i>
-        <span>Live Monitoring</span>
+        <span>Monitoring en Direct</span>
     </a>
     <a href="/guardrails" class="nav-link">
         <i data-lucide="shield-check"></i>
-        <span>Guardrails</span>
+        <span>Garde-fous</span>
     </a>
 </div>
 {% endblock %}
 
-{% block page_title %}LLM Testing Environment{% endblock %}
-{% block page_subtitle %}<p class="text-muted">Real-time testing, benchmarking, and evaluation</p>{% endblock %}
+{% block page_title %}Banc d'Essai LLM{% endblock %}
+{% block page_subtitle %}<p class="text-muted">Tests en temps réel, benchmarks et évaluation des modèles</p>{% endblock %}
 
 {% block topbar_actions %}
 <div class="live-indicator" id="connectionStatus">
     <span class="live-dot"></span>
-    <span>Ready</span>
+    <span>Prêt</span>
 </div>
 <button class="btn btn-secondary" onclick="openQuickTest()">
     <i data-lucide="zap"></i>
-    Quick Test
+    Test Rapide
 </button>
 <button class="btn btn-primary" onclick="openSuiteRunner()">
     <i data-lucide="play"></i>
-    Run Suite
+    Lancer la Suite
 </button>
 {% endblock %}
 
@@ -55,7 +55,7 @@
             </div>
             <div class="stat-content">
                 <span class="stat-value" id="totalTests">0</span>
-                <span class="stat-label">Tests Available</span>
+                <span class="stat-label">Tests Disponibles</span>
             </div>
         </div>
         <div class="hero-stat">
@@ -64,7 +64,7 @@
             </div>
             <div class="stat-content">
                 <span class="stat-value" id="passRate">-</span>
-                <span class="stat-label">Pass Rate</span>
+                <span class="stat-label">Taux de Réussite</span>
             </div>
         </div>
         <div class="hero-stat">
@@ -73,7 +73,7 @@
             </div>
             <div class="stat-content">
                 <span class="stat-value" id="avgLatency">-</span>
-                <span class="stat-label">Avg Latency</span>
+                <span class="stat-label">Latence Moy.</span>
             </div>
         </div>
         <div class="hero-stat">
@@ -82,7 +82,7 @@
             </div>
             <div class="stat-content">
                 <span class="stat-value" id="issuesFound">0</span>
-                <span class="stat-label">Issues Found</span>
+                <span class="stat-label">Anomalies Détectées</span>
             </div>
         </div>
     </div>
@@ -93,42 +93,42 @@
     <!-- Test Suites -->
     <div class="card">
         <div class="card-header">
-            <h3 class="card-title">Test Suites</h3>
+            <h3 class="card-title">Suites de Tests</h3>
             <button class="btn btn-sm btn-secondary" onclick="refreshSuites()">
                 <i data-lucide="refresh-cw"></i>
             </button>
         </div>
         <div class="suites-list" id="suitesList">
-            <div class="loading-spinner">Loading suites...</div>
+            <div class="loading-spinner">Chargement des suites...</div>
         </div>
     </div>
 
     <!-- Quick Test Panel -->
     <div class="card">
         <div class="card-header">
-            <h3 class="card-title">Quick Test</h3>
+            <h3 class="card-title">Test Rapide</h3>
         </div>
         <div class="quick-test-form">
             <div class="form-group">
                 <label for="testPrompt">Prompt</label>
                 <textarea id="testPrompt" class="form-textarea" rows="3"
-                    placeholder="Enter a prompt to test..."></textarea>
+                    placeholder="Saisissez un prompt à tester..."></textarea>
             </div>
             <div class="form-row">
                 <div class="form-group">
-                    <label for="testCategory">Category</label>
+                    <label for="testCategory">Catégorie</label>
                     <select id="testCategory" class="form-select">
-                        <option value="accuracy">Accuracy</option>
+                        <option value="accuracy">Précision</option>
                         <option value="hallucination">Hallucination</option>
-                        <option value="security">Security</option>
-                        <option value="reasoning">Reasoning</option>
-                        <option value="consistency">Consistency</option>
+                        <option value="security">Sécurité</option>
+                        <option value="reasoning">Raisonnement</option>
+                        <option value="consistency">Cohérence</option>
                     </select>
                 </div>
                 <div class="form-group">
-                    <label for="testProvider">Provider</label>
+                    <label for="testProvider">Fournisseur</label>
                     <select id="testProvider" class="form-select">
-                        <option value="mock">Mock (Testing)</option>
+                        <option value="mock">Simulé (Test)</option>
                         <option value="openai">OpenAI</option>
                         <option value="anthropic">Anthropic</option>
                         <option value="mistral">Mistral</option>
@@ -136,13 +136,13 @@
                 </div>
             </div>
             <div class="form-group">
-                <label for="groundTruth">Expected Answer (Optional)</label>
+                <label for="groundTruth">Réponse Attendue (Optionnel)</label>
                 <input type="text" id="groundTruth" class="form-input"
-                    placeholder="Expected response or keywords...">
+                    placeholder="Réponse attendue ou mots-clés...">
             </div>
             <button class="btn btn-primary btn-block" onclick="runQuickTest()">
                 <i data-lucide="play"></i>
-                Run Test
+                Lancer le Test
             </button>
         </div>
     </div>
@@ -152,13 +152,13 @@
 <section class="mb-6">
     <div class="card">
         <div class="card-header">
-            <h3 class="card-title">Live Test Results</h3>
-            <span class="live-badge"><span class="live-dot"></span> Real-time</span>
+            <h3 class="card-title">Résultats en Direct</h3>
+            <span class="live-badge"><span class="live-dot"></span> Temps réel</span>
         </div>
         <div class="results-feed" id="resultsFeed">
             <div class="empty-state">
                 <i data-lucide="flask-conical"></i>
-                <p>Run a test to see results here</p>
+                <p>Lancez un test pour voir les résultats ici</p>
             </div>
         </div>
     </div>
@@ -166,18 +166,19 @@
 
 <!-- Test Categories Overview -->
 <section class="mb-6">
-    <h2 class="section-title">Test Categories</h2>
+    <h2 class="section-title">Catégories de Tests</h2>
     <div class="categories-grid">
         <div class="category-card" onclick="runCategoryTests('accuracy')">
             <div class="category-icon accuracy">
                 <i data-lucide="check-circle"></i>
             </div>
             <div class="category-content">
-                <h4>Accuracy & Factuality</h4>
-                <p>Tests factual correctness and knowledge</p>
+                <h4>Précision & Exactitude</h4>
+                <p>Teste la justesse factuelle et les connaissances</p>
             </div>
             <div class="category-stats">
                 <span class="stat-badge">5 tests</span>
+
             </div>
         </div>
 
@@ -186,8 +187,8 @@
                 <i data-lucide="ghost"></i>
             </div>
             <div class="category-content">
-                <h4>Hallucination Detection</h4>
-                <p>Detects fabricated information</p>
+                <h4>Détection d'Hallucination</h4>
+                <p>Détecte les informations fabriquées</p>
             </div>
             <div class="category-stats">
                 <span class="stat-badge">4 tests</span>
@@ -199,8 +200,8 @@
                 <i data-lucide="shield-alert"></i>
             </div>
             <div class="category-content">
-                <h4>Security & Adversarial</h4>
-                <p>Tests against attacks and exploits</p>
+                <h4>Sécurité & Adversarial</h4>
+                <p>Tests contre les attaques et exploits</p>
             </div>
             <div class="category-stats">
                 <span class="stat-badge">6 tests</span>
@@ -212,8 +213,8 @@
                 <i data-lucide="brain"></i>
             </div>
             <div class="category-content">
-                <h4>Reasoning & Logic</h4>
-                <p>Tests logical and analytical abilities</p>
+                <h4>Raisonnement & Logique</h4>
+                <p>Teste les capacités logiques et analytiques</p>
             </div>
             <div class="category-stats">
                 <span class="stat-badge">4 tests</span>
@@ -227,22 +228,22 @@
     <div class="grid grid-2">
         <div class="card">
             <div class="card-header">
-                <h3 class="card-title">Provider Comparison</h3>
+                <h3 class="card-title">Comparaison des Fournisseurs</h3>
             </div>
             <div class="benchmark-table">
                 <table>
                     <thead>
                         <tr>
-                            <th>Provider</th>
-                            <th>Accuracy</th>
-                            <th>Latency</th>
-                            <th>Safety</th>
-                            <th>Cost/1k</th>
+                            <th>Fournisseur</th>
+                            <th>Précision</th>
+                            <th>Latence</th>
+                            <th>Sûreté</th>
+                            <th>Coût/1k</th>
                         </tr>
                     </thead>
                     <tbody id="providerTable">
                         <tr>
-                            <td>Loading...</td>
+                            <td>Chargement...</td>
                             <td colspan="4"></td>
                         </tr>
                     </tbody>
@@ -252,7 +253,7 @@
 
         <div class="card">
             <div class="card-header">
-                <h3 class="card-title">Performance Trends</h3>
+                <h3 class="card-title">Tendances de Performance</h3>
             </div>
             <div class="chart-container" style="height: 250px;">
                 <canvas id="performanceChart"></canvas>
@@ -265,39 +266,39 @@
 <div class="modal" id="suiteRunnerModal">
     <div class="modal-content modal-lg">
         <div class="modal-header">
-            <h3>Run Test Suite</h3>
+            <h3>Lancer une Suite de Tests</h3>
             <button class="btn-close" onclick="closeSuiteRunner()">&times;</button>
         </div>
         <div class="modal-body">
             <div class="form-group">
-                <label>Select Suite</label>
+                <label>Sélectionner la Suite</label>
                 <select id="suiteSelect" class="form-select">
-                    <option value="">Loading suites...</option>
+                    <option value="">Chargement des suites...</option>
                 </select>
             </div>
             <div class="form-group">
-                <label>Provider Configuration</label>
+                <label>Configuration du Fournisseur</label>
                 <div class="provider-config">
                     <div class="form-row">
                         <select id="modalProvider" class="form-select">
-                            <option value="mock">Mock Provider</option>
+                            <option value="mock">Fournisseur Simulé</option>
                             <option value="openai">OpenAI</option>
                             <option value="anthropic">Anthropic</option>
                         </select>
                         <input type="text" id="modalModel" class="form-input"
-                            placeholder="Model name (e.g., gpt-4o)">
+                            placeholder="Nom du modèle (ex: gpt-4o)">
                     </div>
                 </div>
             </div>
             <div id="suiteDetails" class="suite-details hidden">
-                <h4>Suite Details</h4>
+                <h4>Détails de la Suite</h4>
                 <div id="suiteInfo"></div>
             </div>
         </div>
         <div class="modal-footer">
-            <button class="btn btn-secondary" onclick="closeSuiteRunner()">Cancel</button>
+            <button class="btn btn-secondary" onclick="closeSuiteRunner()">Annuler</button>
             <button class="btn btn-primary" onclick="startSuiteRun()">
-                <i data-lucide="play"></i> Start Tests
+                <i data-lucide="play"></i> Lancer les Tests
             </button>
         </div>
     </div>
@@ -307,7 +308,7 @@
 <div class="modal" id="resultDetailModal">
     <div class="modal-content modal-lg">
         <div class="modal-header">
-            <h3>Test Result Details</h3>
+            <h3>Détails du Résultat</h3>
             <button class="btn-close" onclick="closeResultDetail()">&times;</button>
         </div>
         <div class="modal-body" id="resultDetailContent">
@@ -903,11 +904,11 @@ function connectWebSocket() {
 function updateConnectionStatus(connected) {
     const status = document.getElementById('connectionStatus');
     if (connected) {
-        status.innerHTML = '<span class="live-dot"></span><span>Connected</span>';
+        status.innerHTML = '<span class="live-dot"></span><span>Connecté</span>';
         status.style.background = 'var(--color-success-light)';
         status.style.color = 'var(--color-success)';
     } else {
-        status.innerHTML = '<span class="live-dot"></span><span>Disconnected</span>';
+        status.innerHTML = '<span class="live-dot"></span><span>Déconnecté</span>';
         status.style.background = 'var(--color-danger-light)';
         status.style.color = 'var(--color-danger)';
     }
@@ -940,11 +941,11 @@ function handleTestEvent(event) {
             break;
 
         case 'suite_started':
-            showToast(`Starting suite: ${event.data.suite_name}`, 'info');
+            showToast(`Lancement de la suite : ${event.data.suite_name}`, 'info');
             break;
 
         case 'suite_completed':
-            showToast(`Suite completed! Pass rate: ${(event.data.pass_rate * 100).toFixed(1)}%`,
+            showToast(`Suite terminée ! Taux de réussite : ${(event.data.pass_rate * 100).toFixed(1)}%`,
                 event.data.pass_rate > 0.8 ? 'success' : 'warning');
             break;
     }
@@ -991,7 +992,7 @@ async function loadTestSuites() {
 
 function refreshSuites() {
     loadTestSuites();
-    showToast('Suites refreshed', 'success');
+    showToast('Suites actualisées', 'success');
 }
 
 // Load Benchmarks
@@ -1022,21 +1023,21 @@ function initChart() {
     const ctx = document.getElementById('performanceChart');
     if (!ctx) return;
 
-    const labels = ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'];
+    const labels = ['Lun', 'Mar', 'Mer', 'Jeu', 'Ven', 'Sam', 'Dim'];
 
     new Chart(ctx, {
         type: 'line',
         data: {
             labels: labels,
             datasets: [{
-                label: 'Accuracy',
+                label: 'Précision',
                 data: [92, 93, 91, 94, 93, 95, 94],
                 borderColor: '#10b981',
                 backgroundColor: 'rgba(16, 185, 129, 0.1)',
                 fill: true,
                 tension: 0.4
             }, {
-                label: 'Safety Score',
+                label: 'Score de Sûreté',
                 data: [98, 97, 98, 99, 98, 99, 98],
                 borderColor: '#6366f1',
                 backgroundColor: 'rgba(99, 102, 241, 0.1)',
@@ -1070,7 +1071,7 @@ async function runQuickTest() {
     const groundTruth = document.getElementById('groundTruth').value;
 
     if (!prompt) {
-        showToast('Please enter a prompt', 'warning');
+        showToast('Veuillez saisir un prompt', 'warning');
         return;
     }
 
@@ -1101,7 +1102,7 @@ async function runQuickTest() {
 
     } catch (error) {
         console.error('Error running test:', error);
-        showToast('Test execution failed', 'danger');
+        showToast('Échec de l\'exécution du test', 'danger');
     }
 }
 
@@ -1208,9 +1209,9 @@ async function startSuiteRun() {
         }));
 
         closeSuiteRunner();
-        showToast('Suite execution started', 'info');
+        showToast('Exécution de la suite lancée', 'info');
     } else {
-        showToast('WebSocket not connected', 'danger');
+        showToast('WebSocket non connecté', 'danger');
     }
 }
 
@@ -1220,7 +1221,7 @@ function runSuite(suiteId) {
 }
 
 function runCategoryTests(category) {
-    showToast(`Running ${category} tests...`, 'info');
+    showToast(`Lancement des tests ${category}...`, 'info');
     // Could implement category-specific test running
 }
 
@@ -1233,7 +1234,7 @@ function showResultDetail(result) {
             <h4>${result.test_name}</h4>
             <div class="detail-grid">
                 <div class="detail-item">
-                    <label>Status</label>
+                    <label>Statut</label>
                     <span class="badge ${result.status}">${result.status}</span>
                 </div>
                 <div class="detail-item">
@@ -1241,23 +1242,23 @@ function showResultDetail(result) {
                     <span>${result.score !== null ? (result.score * 100).toFixed(1) + '%' : 'N/A'}</span>
                 </div>
                 <div class="detail-item">
-                    <label>Category</label>
+                    <label>Catégorie</label>
                     <span>${result.category}</span>
                 </div>
                 <div class="detail-item">
-                    <label>Duration</label>
+                    <label>Durée</label>
                     <span>${result.duration ? result.duration.toFixed(0) + 'ms' : 'N/A'}</span>
                 </div>
             </div>
             ${result.response_content ? `
                 <div class="response-section">
-                    <h5>Response</h5>
+                    <h5>Réponse</h5>
                     <pre>${result.response_content}</pre>
                 </div>
             ` : ''}
             ${result.insights && result.insights.length > 0 ? `
                 <div class="insights-section">
-                    <h5>Insights</h5>
+                    <h5>Observations</h5>
                     <ul>
                         ${result.insights.map(i => `<li>${i}</li>`).join('')}
                     </ul>
@@ -1265,7 +1266,7 @@ function showResultDetail(result) {
             ` : ''}
             ${result.issues && result.issues.length > 0 ? `
                 <div class="issues-section">
-                    <h5>Issues Detected</h5>
+                    <h5>Anomalies Détectées</h5>
                     <ul>
                         ${result.issues.map(i => `
                             <li class="issue-item ${i.severity}">

@@ -4,57 +4,57 @@
 
 {% block sidebar_extra %}
 <div class="nav-group">
-    <span class="nav-group-title">Business Views</span>
+    <span class="nav-group-title">Vues Opérationnelles</span>
     <a href="/executive" class="nav-link">
         <i data-lucide="briefcase"></i>
-        <span>Executive Dashboard</span>
+        <span>Tableau État-Major</span>
     </a>
     <a href="/finops" class="nav-link">
         <i data-lucide="wallet"></i>
-        <span>FinOps</span>
+        <span>Ressources & Budget</span>
     </a>
     <a href="/greenops" class="nav-link">
         <i data-lucide="leaf"></i>
-        <span>GreenOps</span>
+        <span>Sobriété Numérique</span>
     </a>
     <a href="/compliance" class="nav-link">
         <i data-lucide="shield-check"></i>
-        <span>Compliance</span>
+        <span>Conformité</span>
     </a>
 </div>
 <div class="nav-group">
-    <span class="nav-group-title">Technical Views</span>
+    <span class="nav-group-title">Vues Techniques</span>
     <a href="/monitoring" class="nav-link">
         <i data-lucide="activity"></i>
-        <span>Live Monitoring</span>
+        <span>Supervision Temps Réel</span>
     </a>
     <a href="/security" class="nav-link active">
         <i data-lucide="lock"></i>
-        <span>Security Center</span>
+        <span>Centre Cyberdéfense</span>
     </a>
 </div>
 {% endblock %}
 
-{% block page_title %}Security Center{% endblock %}
-{% block page_subtitle %}<p class="text-muted">Security monitoring and threat analysis</p>{% endblock %}
+{% block page_title %}Centre Cyberdéfense{% endblock %}
+{% block page_subtitle %}<p class="text-muted">Surveillance cyberdéfense et analyse des menaces</p>{% endblock %}
 
 {% block topbar_actions %}
 <div class="live-indicator">
     <span class="live-dot"></span>
-    <span>Live Monitoring</span>
+    <span>Supervision Temps Réel</span>
 </div>
 <button class="btn btn-secondary" onclick="runSecurityScan()">
     <i data-lucide="scan"></i>
-    Run Scan
+    Lancer Analyse
 </button>
 <button class="btn btn-primary" onclick="viewSecurityReport()">
     <i data-lucide="file-text"></i>
-    Security Report
+    Rapport Cyberdéfense
 </button>
 {% endblock %}
 
 {% block content %}
-<!-- Security Score Overview -->
+<!-- Score de Cyberdéfense -->
 <div class="security-hero">
     <div class="security-score-main">
         <div class="score-ring">
@@ -66,7 +66,7 @@
             </svg>
             <div class="score-content">
                 <span class="score-value">90</span>
-                <span class="score-label">Security Score</span>
+                <span class="score-label">Score Cyberdéfense</span>
             </div>
         </div>
     </div>
@@ -77,7 +77,7 @@
             </div>
             <div class="stat-content">
                 <span class="stat-value">12</span>
-                <span class="stat-label">Prompt Injections Blocked (24h)</span>
+                <span class="stat-label">Injections Prompt bloquées (24h)</span>
             </div>
         </div>
         <div class="security-stat">
@@ -86,7 +86,7 @@
             </div>
             <div class="stat-content">
                 <span class="stat-value">3</span>
-                <span class="stat-label">Jailbreak Attempts (24h)</span>
+                <span class="stat-label">Tentatives Jailbreak (24h)</span>
             </div>
         </div>
         <div class="security-stat">
@@ -95,7 +95,7 @@
             </div>
             <div class="stat-content">
                 <span class="stat-value">99.8%</span>
-                <span class="stat-label">Auth Success Rate</span>
+                <span class="stat-label">Taux d'authentification réussie</span>
             </div>
         </div>
         <div class="security-stat">
@@ -104,20 +104,20 @@
             </div>
             <div class="stat-content">
                 <span class="stat-value">0</span>
-                <span class="stat-label">Data Leak Incidents</span>
+                <span class="stat-label">Incidents de fuite de données</span>
             </div>
         </div>
     </div>
 </div>
 
-<!-- Threat Detection -->
+<!-- Détection des Menaces -->
 <section class="mb-6">
     <div class="grid grid-2">
-        <!-- Real-time Threats -->
+        <!-- Menaces en Temps Réel -->
         <div class="card">
             <div class="card-header">
-                <h3 class="card-title">Real-time Threat Detection</h3>
-                <span class="live-badge"><span class="live-dot"></span> Live</span>
+                <h3 class="card-title">Détection des Menaces en Temps Réel</h3>
+                <span class="live-badge"><span class="live-dot"></span> Direct</span>
             </div>
             <div class="threats-feed" id="threatsFeed">
                 <div class="threat-item blocked">
@@ -125,44 +125,44 @@
                         <i data-lucide="shield-off"></i>
                     </div>
                     <div class="threat-content">
-                        <span class="threat-type">Prompt Injection Attempt</span>
-                        <span class="threat-details">Malicious system prompt override detected in user input</span>
-                        <span class="threat-time">2 min ago</span>
+                        <span class="threat-type">Tentative d'Injection Prompt</span>
+                        <span class="threat-details">Détection d'un contournement malveillant du prompt système</span>
+                        <span class="threat-time">il y a 2 min</span>
                     </div>
-                    <span class="threat-status blocked">Blocked</span>
+                    <span class="threat-status blocked">Bloqué</span>
                 </div>
                 <div class="threat-item blocked">
                     <div class="threat-icon">
                         <i data-lucide="code"></i>
                     </div>
                     <div class="threat-content">
-                        <span class="threat-type">Code Injection</span>
-                        <span class="threat-details">SQL injection pattern in model input</span>
-                        <span class="threat-time">8 min ago</span>
+                        <span class="threat-type">Injection de Code</span>
+                        <span class="threat-details">Patron d'injection SQL détecté en entrée du modèle</span>
+                        <span class="threat-time">il y a 8 min</span>
                     </div>
-                    <span class="threat-status blocked">Blocked</span>
+                    <span class="threat-status blocked">Bloqué</span>
                 </div>
                 <div class="threat-item warning">
                     <div class="threat-icon">
                         <i data-lucide="unlock"></i>
                     </div>
                     <div class="threat-content">
-                        <span class="threat-type">Jailbreak Attempt</span>
-                        <span class="threat-details">DAN prompt pattern detected</span>
-                        <span class="threat-time">15 min ago</span>
+                        <span class="threat-type">Tentative de Jailbreak</span>
+                        <span class="threat-details">Patron de prompt DAN détecté</span>
+                        <span class="threat-time">il y a 15 min</span>
                     </div>
-                    <span class="threat-status warning">Flagged</span>
+                    <span class="threat-status warning">Signalé</span>
                 </div>
                 <div class="threat-item blocked">
                     <div class="threat-icon">
                         <i data-lucide="file-warning"></i>
                     </div>
                     <div class="threat-content">
-                        <span class="threat-type">Data Exfiltration</span>
-                        <span class="threat-details">Attempted PII extraction via prompt</span>
-                        <span class="threat-time">32 min ago</span>
+                        <span class="threat-type">Exfiltration de Données</span>
+                        <span class="threat-details">Tentative d'extraction de DCP via prompt</span>
+                        <span class="threat-time">il y a 32 min</span>
                     </div>
-                    <span class="threat-status blocked">Blocked</span>
+                    <span class="threat-status blocked">Bloqué</span>
                 </div>
             </div>
         </div>
@@ -170,7 +170,7 @@
         <!-- Threat Categories -->
         <div class="card">
             <div class="card-header">
-                <h3 class="card-title">Threat Categories (7d)</h3>
+                <h3 class="card-title">Catégories de Menaces (7j)</h3>
             </div>
             <div class="chart-container" style="height: 200px;">
                 <canvas id="threatCategories"></canvas>
@@ -178,7 +178,7 @@
             <div class="threat-legend">
                 <div class="legend-item">
                     <span class="legend-dot" style="background: #ef4444"></span>
-                    <span>Prompt Injection</span>
+                    <span>Injection Prompt</span>
                     <span class="legend-count">48</span>
                 </div>
                 <div class="legend-item">
@@ -188,12 +188,12 @@
                 </div>
                 <div class="legend-item">
                     <span class="legend-dot" style="background: #6366f1"></span>
-                    <span>Data Extraction</span>
+                    <span>Extraction de Données</span>
                     <span class="legend-count">8</span>
                 </div>
                 <div class="legend-item">
                     <span class="legend-dot" style="background: #64748b"></span>
-                    <span>Other</span>
+                    <span>Autres</span>
                     <span class="legend-count">5</span>
                 </div>
             </div>
@@ -205,10 +205,10 @@
 <section class="mb-6">
     <div class="card">
         <div class="card-header">
-            <h3 class="card-title">Prompt Injection Analysis</h3>
+            <h3 class="card-title">Analyse des Injections Prompt</h3>
             <div class="header-actions">
                 <select class="form-select" style="width: 150px;">
-                    <option>All Models</option>
+                    <option>Tous les Modèles</option>
                     <option>llm-assistant</option>
                     <option>chat-support</option>
                     <option>code-generator</option>
@@ -223,7 +223,7 @@
                     </div>
                     <div class="summary-content">
                         <span class="summary-value">48</span>
-                        <span class="summary-label">Total Attempts (7d)</span>
+                        <span class="summary-label">Tentatives Totales (7j)</span>
                     </div>
                 </div>
                 <div class="summary-card">
@@ -232,7 +232,7 @@
                     </div>
                     <div class="summary-content">
                         <span class="summary-value">100%</span>
-                        <span class="summary-label">Detection Rate</span>
+                        <span class="summary-label">Taux de Détection</span>
                     </div>
                 </div>
                 <div class="summary-card">
@@ -241,7 +241,7 @@
                     </div>
                     <div class="summary-content">
                         <span class="summary-value">12ms</span>
-                        <span class="summary-label">Avg Detection Time</span>
+                        <span class="summary-label">Temps Moyen de Détection</span>
                     </div>
                 </div>
                 <div class="summary-card">
@@ -250,44 +250,44 @@
                     </div>
                     <div class="summary-content">
                         <span class="summary-value">0.02%</span>
-                        <span class="summary-label">False Positive Rate</span>
+                        <span class="summary-label">Taux de Faux Positifs</span>
                     </div>
                 </div>
             </div>
             <div class="injection-patterns">
-                <h4>Top Attack Patterns</h4>
+                <h4>Principaux Patrons d'Attaque</h4>
                 <div class="pattern-list">
                     <div class="pattern-item">
                         <span class="pattern-rank">1</span>
                         <div class="pattern-content">
-                            <span class="pattern-name">System Prompt Override</span>
-                            <span class="pattern-desc">"Ignore all previous instructions..."</span>
+                            <span class="pattern-name">Contournement du Prompt Système</span>
+                            <span class="pattern-desc">"Ignore toutes les instructions précédentes..."</span>
                         </div>
-                        <span class="pattern-count">18 attempts</span>
+                        <span class="pattern-count">18 tentatives</span>
                     </div>
                     <div class="pattern-item">
                         <span class="pattern-rank">2</span>
                         <div class="pattern-content">
-                            <span class="pattern-name">Role Playing Manipulation</span>
-                            <span class="pattern-desc">"You are now DAN..."</span>
+                            <span class="pattern-name">Manipulation par Jeu de Rôle</span>
+                            <span class="pattern-desc">"Tu es maintenant DAN..."</span>
                         </div>
-                        <span class="pattern-count">12 attempts</span>
+                        <span class="pattern-count">12 tentatives</span>
                     </div>
                     <div class="pattern-item">
                         <span class="pattern-rank">3</span>
                         <div class="pattern-content">
-                            <span class="pattern-name">Context Injection</span>
-                            <span class="pattern-desc">"[SYSTEM]: New instructions..."</span>
+                            <span class="pattern-name">Injection de Contexte</span>
+                            <span class="pattern-desc">"[SYSTEM]: Nouvelles instructions..."</span>
                         </div>
-                        <span class="pattern-count">9 attempts</span>
+                        <span class="pattern-count">9 tentatives</span>
                     </div>
                     <div class="pattern-item">
                         <span class="pattern-rank">4</span>
                         <div class="pattern-content">
-                            <span class="pattern-name">Encoding Bypass</span>
-                            <span class="pattern-desc">Base64/Unicode obfuscation</span>
+                            <span class="pattern-name">Contournement par Encodage</span>
+                            <span class="pattern-desc">Obfuscation Base64/Unicode</span>
                         </div>
-                        <span class="pattern-count">6 attempts</span>
+                        <span class="pattern-count">6 tentatives</span>
                     </div>
                 </div>
             </div>
@@ -297,36 +297,36 @@
 
 <!-- Model Security Status -->
 <section class="mb-6">
-    <h2 class="section-title">Model Security Status</h2>
+    <h2 class="section-title">État de Sécurité des Modèles</h2>
     <div class="models-security-grid">
         <div class="model-security-card secure">
             <div class="model-header">
                 <span class="model-name">llm-assistant</span>
                 <span class="security-badge secure">
                     <i data-lucide="shield-check"></i>
-                    Secure
+                    Sécurisé
                 </span>
             </div>
             <div class="model-metrics">
                 <div class="metric">
-                    <span class="metric-label">Guardrails</span>
-                    <span class="metric-value">Active</span>
+                    <span class="metric-label">Garde-fous</span>
+                    <span class="metric-value">Actifs</span>
                 </div>
                 <div class="metric">
-                    <span class="metric-label">Input Validation</span>
-                    <span class="metric-value">Enabled</span>
+                    <span class="metric-label">Validation Entrées</span>
+                    <span class="metric-value">Activée</span>
                 </div>
                 <div class="metric">
-                    <span class="metric-label">Output Filtering</span>
-                    <span class="metric-value">Enabled</span>
+                    <span class="metric-label">Filtrage Sorties</span>
+                    <span class="metric-value">Activé</span>
                 </div>
                 <div class="metric">
-                    <span class="metric-label">Rate Limiting</span>
+                    <span class="metric-label">Limitation Débit</span>
                     <span class="metric-value">100 req/min</span>
                 </div>
             </div>
             <div class="model-stats">
-                <span><i data-lucide="shield-alert"></i> 25 attacks blocked (7d)</span>
+                <span><i data-lucide="shield-alert"></i> 25 attaques bloquées (7j)</span>
             </div>
         </div>
 
@@ -335,29 +335,29 @@
                 <span class="model-name">recommendation-v2</span>
                 <span class="security-badge secure">
                     <i data-lucide="shield-check"></i>
-                    Secure
+                    Sécurisé
                 </span>
             </div>
             <div class="model-metrics">
                 <div class="metric">
-                    <span class="metric-label">Guardrails</span>
-                    <span class="metric-value">Active</span>
+                    <span class="metric-label">Garde-fous</span>
+                    <span class="metric-value">Actifs</span>
                 </div>
                 <div class="metric">
-                    <span class="metric-label">Input Validation</span>
-                    <span class="metric-value">Enabled</span>
+                    <span class="metric-label">Validation Entrées</span>
+                    <span class="metric-value">Activée</span>
                 </div>
                 <div class="metric">
-                    <span class="metric-label">Output Filtering</span>
+                    <span class="metric-label">Filtrage Sorties</span>
                     <span class="metric-value">N/A</span>
                 </div>
                 <div class="metric">
-                    <span class="metric-label">Rate Limiting</span>
+                    <span class="metric-label">Limitation Débit</span>
                     <span class="metric-value">1000 req/min</span>
                 </div>
             </div>
             <div class="model-stats">
-                <span><i data-lucide="shield-alert"></i> 3 attacks blocked (7d)</span>
+                <span><i data-lucide="shield-alert"></i> 3 attaques bloquées (7j)</span>
             </div>
         </div>
 
@@ -366,41 +366,41 @@
                 <span class="model-name">code-generator</span>
                 <span class="security-badge warning">
                     <i data-lucide="alert-triangle"></i>
-                    Review
+                    À réviser
                 </span>
             </div>
             <div class="model-metrics">
                 <div class="metric">
-                    <span class="metric-label">Guardrails</span>
-                    <span class="metric-value">Partial</span>
+                    <span class="metric-label">Garde-fous</span>
+                    <span class="metric-value">Partiels</span>
                 </div>
                 <div class="metric">
-                    <span class="metric-label">Input Validation</span>
-                    <span class="metric-value">Enabled</span>
+                    <span class="metric-label">Validation Entrées</span>
+                    <span class="metric-value">Activée</span>
                 </div>
                 <div class="metric">
-                    <span class="metric-label">Output Filtering</span>
-                    <span class="metric-value warning">Disabled</span>
+                    <span class="metric-label">Filtrage Sorties</span>
+                    <span class="metric-value warning">Désactivé</span>
                 </div>
                 <div class="metric">
-                    <span class="metric-label">Rate Limiting</span>
+                    <span class="metric-label">Limitation Débit</span>
                     <span class="metric-value">50 req/min</span>
                 </div>
             </div>
             <div class="model-stats warning">
-                <span><i data-lucide="alert-triangle"></i> Enable output filtering recommended</span>
+                <span><i data-lucide="alert-triangle"></i> Activation du filtrage des sorties recommandée</span>
             </div>
         </div>
     </div>
 </section>
 
-<!-- Access Control & Audit -->
+<!-- Contrôle d'Accès & Audit -->
 <section class="mb-6">
     <div class="grid grid-2">
-        <!-- Access Attempts -->
+        <!-- Tentatives d'Accès -->
         <div class="card">
             <div class="card-header">
-                <h3 class="card-title">Access Attempts (24h)</h3>
+                <h3 class="card-title">Tentatives d'Accès (24h)</h3>
             </div>
             <div class="chart-container">
                 <canvas id="accessAttempts"></canvas>
@@ -408,15 +408,15 @@
             <div class="access-summary">
                 <div class="access-stat success">
                     <i data-lucide="check-circle"></i>
-                    <span>12,450 Successful</span>
+                    <span>12 450 Réussis</span>
                 </div>
                 <div class="access-stat danger">
                     <i data-lucide="x-circle"></i>
-                    <span>23 Failed</span>
+                    <span>23 Échoués</span>
                 </div>
                 <div class="access-stat warning">
                     <i data-lucide="alert-circle"></i>
-                    <span>5 Suspicious</span>
+                    <span>5 Suspects</span>
                 </div>
             </div>
         </div>
@@ -424,7 +424,7 @@
         <!-- Security Events -->
         <div class="card">
             <div class="card-header">
-                <h3 class="card-title">Recent Security Events</h3>
+                <h3 class="card-title">Événements de Sécurité Récents</h3>
             </div>
             <div class="events-list">
                 <div class="event-item">
@@ -432,8 +432,8 @@
                         <i data-lucide="shield-check"></i>
                     </div>
                     <div class="event-content">
-                        <span class="event-title">Security scan completed</span>
-                        <span class="event-time">10 min ago</span>
+                        <span class="event-title">Analyse de sécurité terminée</span>
+                        <span class="event-time">il y a 10 min</span>
                     </div>
                 </div>
                 <div class="event-item">
@@ -441,8 +441,8 @@
                         <i data-lucide="shield-alert"></i>
                     </div>
                     <div class="event-content">
-                        <span class="event-title">Prompt injection blocked</span>
-                        <span class="event-time">12 min ago</span>
+                        <span class="event-title">Injection prompt bloquée</span>
+                        <span class="event-time">il y a 12 min</span>
                     </div>
                 </div>
                 <div class="event-item">
@@ -450,8 +450,8 @@
                         <i data-lucide="user-x"></i>
                     </div>
                     <div class="event-content">
-                        <span class="event-title">Failed login attempt (3x)</span>
-                        <span class="event-time">25 min ago</span>
+                        <span class="event-title">Tentative de connexion échouée (3x)</span>
+                        <span class="event-time">il y a 25 min</span>
                     </div>
                 </div>
                 <div class="event-item">
@@ -459,8 +459,8 @@
                         <i data-lucide="key"></i>
                     </div>
                     <div class="event-content">
-                        <span class="event-title">API key rotated</span>
-                        <span class="event-time">1 hour ago</span>
+                        <span class="event-title">Clé API renouvelée</span>
+                        <span class="event-time">il y a 1 heure</span>
                     </div>
                 </div>
                 <div class="event-item">
@@ -468,8 +468,8 @@
                         <i data-lucide="settings"></i>
                     </div>
                     <div class="event-content">
-                        <span class="event-title">Guardrails updated</span>
-                        <span class="event-time">2 hours ago</span>
+                        <span class="event-title">Garde-fous mis à jour</span>
+                        <span class="event-time">il y a 2 heures</span>
                     </div>
                 </div>
             </div>
@@ -1110,7 +1110,7 @@ function initCharts() {
         new Chart(categoriesCtx, {
             type: 'doughnut',
             data: {
-                labels: ['Prompt Injection', 'Jailbreak', 'Data Extraction', 'Other'],
+                labels: ['Injection Prompt', 'Jailbreak', 'Extraction de Données', 'Autres'],
                 datasets: [{
                     data: [48, 15, 8, 5],
                     backgroundColor: ['#ef4444', '#f59e0b', '#6366f1', '#64748b'],
@@ -1140,11 +1140,11 @@ function initCharts() {
             data: {
                 labels: labels,
                 datasets: [{
-                    label: 'Successful',
+                    label: 'Réussis',
                     data: successful,
                     backgroundColor: '#10b981'
                 }, {
-                    label: 'Failed',
+                    label: 'Échoués',
                     data: failed,
                     backgroundColor: '#ef4444'
                 }]
@@ -1168,9 +1168,9 @@ function startLiveFeed() {
     // Simulate live threat feed updates
     setInterval(() => {
         const threats = [
-            { type: 'Prompt Injection Attempt', details: 'System prompt override detected', status: 'blocked' },
-            { type: 'Suspicious Pattern', details: 'Unusual query pattern detected', status: 'warning' },
-            { type: 'Rate Limit Exceeded', details: 'API rate limit triggered', status: 'blocked' }
+            { type: 'Tentative d\'Injection Prompt', details: 'Contournement du prompt système détecté', status: 'blocked' },
+            { type: 'Patron Suspect', details: 'Patron de requête inhabituel détecté', status: 'warning' },
+            { type: 'Limite de Débit Dépassée', details: 'Limitation de débit API déclenchée', status: 'blocked' }
         ];
 
         if (Math.random() > 0.7) {
@@ -1191,9 +1191,9 @@ function addThreatToFeed(threat) {
         <div class="threat-content">
             <span class="threat-type">${threat.type}</span>
             <span class="threat-details">${threat.details}</span>
-            <span class="threat-time">Just now</span>
+            <span class="threat-time">À l'instant</span>
         </div>
-        <span class="threat-status ${threat.status}">${threat.status === 'blocked' ? 'Blocked' : 'Flagged'}</span>
+        <span class="threat-status ${threat.status}">${threat.status === 'blocked' ? 'Bloqué' : 'Signalé'}</span>
     `;
 
     feed.insertBefore(item, feed.firstChild);
@@ -1206,16 +1206,16 @@ function addThreatToFeed(threat) {
 }
 
 function runSecurityScan() {
-    showToast('Starting security scan...', 'info');
+    showToast('Lancement de l\'analyse de sécurité...', 'info');
     setTimeout(() => {
-        showToast('Security scan completed. No critical issues found.', 'success');
+        showToast('Analyse de sécurité terminée. Aucun incident critique détecté.', 'success');
     }, 3000);
 }
 
 function viewSecurityReport() {
-    showToast('Generating security report...', 'info');
+    showToast('Génération du rapport de cyberdéfense...', 'info');
     setTimeout(() => {
-        showToast('Report ready for download!', 'success');
+        showToast('Rapport prêt au téléchargement !', 'success');
     }, 2000);
 }
 </script>

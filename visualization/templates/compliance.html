@@ -4,48 +4,48 @@
 
 {% block sidebar_extra %}
 <div class="nav-group">
-    <span class="nav-group-title">Business Views</span>
+    <span class="nav-group-title">Vues Opérationnelles</span>
     <a href="/executive" class="nav-link">
         <i data-lucide="briefcase"></i>
-        <span>Executive Dashboard</span>
+        <span>Tableau de Bord État-Major</span>
     </a>
     <a href="/finops" class="nav-link">
         <i data-lucide="wallet"></i>
-        <span>FinOps</span>
+        <span>Ressources & Budget</span>
     </a>
     <a href="/greenops" class="nav-link">
         <i data-lucide="leaf"></i>
-        <span>GreenOps</span>
+        <span>Sobriété Numérique</span>
     </a>
     <a href="/compliance" class="nav-link active">
         <i data-lucide="shield-check"></i>
-        <span>Compliance</span>
+        <span>Conformité</span>
     </a>
 </div>
 <div class="nav-group">
-    <span class="nav-group-title">Technical Views</span>
+    <span class="nav-group-title">Vues Techniques</span>
     <a href="/monitoring" class="nav-link">
         <i data-lucide="activity"></i>
-        <span>Live Monitoring</span>
+        <span>Supervision en Temps Réel</span>
     </a>
     <a href="/security" class="nav-link">
         <i data-lucide="lock"></i>
-        <span>Security Center</span>
+        <span>Centre de Sécurité</span>
     </a>
 </div>
 {% endblock %}
 
-{% block page_title %}Compliance & Governance{% endblock %}
+{% block page_title %}Conformité & Gouvernance{% endblock %}
 {% block page_subtitle %}<p class="text-muted">Conformité réglementaire & gouvernance</p>{% endblock %}
 
 {% block topbar_actions %}
 <button class="btn btn-secondary" onclick="scheduleAudit()">
     <i data-lucide="calendar"></i>
-    Schedule Audit
+    Planifier un Audit
 </button>
 <button class="btn btn-primary" onclick="generateComplianceReport()">
     <i data-lucide="file-text"></i>
-    Generate Report
+    Générer le Rapport
 </button>
 {% endblock %}
 
@@ -62,25 +62,25 @@
             </svg>
             <div class="score-value">
                 <span class="score-number">92</span>
-                <span class="score-label">Compliance Score</span>
+                <span class="score-label">Score de Conformité</span>
             </div>
         </div>
     </div>
     <div class="compliance-summary">
-        <h2>Overall Compliance Status</h2>
-        <p>Your AI systems are <strong>92% compliant</strong> with applicable regulations. Review the items below requiring attention.</p>
+        <h2>État Général de Conformité</h2>
+        <p>Les systèmes IA sont <strong>conformes à 92%</strong> avec la réglementation applicable. Examinez les éléments ci-dessous nécessitant une attention.</p>
         <div class="summary-stats">
             <div class="stat-item success">
                 <i data-lucide="check-circle"></i>
-                <span><strong>18</strong> Controls Passed</span>
+                <span><strong>18</strong> Contrôles Validés</span>
             </div>
             <div class="stat-item warning">
                 <i data-lucide="alert-triangle"></i>
-                <span><strong>3</strong> Need Review</span>
+                <span><strong>3</strong> À Revoir</span>
             </div>
             <div class="stat-item danger">
                 <i data-lucide="x-circle"></i>
-                <span><strong>1</strong> Non-Compliant</span>
+                <span><strong>1</strong> Non Conforme</span>
             </div>
         </div>
     </div>
@@ -88,7 +88,7 @@
 
 <!-- Regulatory Frameworks -->
 <section class="mb-6">
-    <h2 class="section-title">Regulatory Frameworks</h2>
+    <h2 class="section-title">Cadres Réglementaires</h2>
     <div class="frameworks-grid">
         <!-- EU AI Act -->
         <div class="framework-card">
@@ -98,7 +98,7 @@
                 </div>
                 <div class="framework-info">
                     <h3>EU AI Act</h3>
-                    <span class="badge badge-success"><span class="badge-dot"></span>Compliant</span>
+                    <span class="badge badge-success"><span class="badge-dot"></span>Conforme</span>
                 </div>
             </div>
             <div class="framework-score">
@@ -109,15 +109,15 @@
             </div>
             <div class="framework-details">
                 <div class="detail-row">
-                    <span>Risk Classification</span>
-                    <span class="badge badge-warning">High-Risk</span>
+                    <span>Classification des Risques</span>
+                    <span class="badge badge-warning">Haut Risque</span>
                 </div>
                 <div class="detail-row">
-                    <span>Human Oversight</span>
+                    <span>Supervision Humaine</span>
                     <span class="status-check"><i data-lucide="check"></i></span>
                 </div>
                 <div class="detail-row">
-                    <span>Transparency</span>
+                    <span>Transparence</span>
                     <span class="status-check"><i data-lucide="check"></i></span>
                 </div>
                 <div class="detail-row">
@@ -125,12 +125,12 @@
                     <span class="status-warning"><i data-lucide="alert-triangle"></i></span>
                 </div>
                 <div class="detail-row">
-                    <span>Last Audit</span>
-                    <span>Jan 15, 2025</span>
+                    <span>Dernier Audit</span>
+                    <span>15 Jan 2025</span>
                 </div>
             </div>
             <button class="btn btn-secondary btn-block" onclick="viewFrameworkDetails('ai-act')">
-                View Details
+                Voir les Détails
             </button>
         </div>
 
@@ -141,8 +141,8 @@
                     <i data-lucide="lock"></i>
                 </div>
                 <div class="framework-info">
-                    <h3>GDPR</h3>
-                    <span class="badge badge-success"><span class="badge-dot"></span>Compliant</span>
+                    <h3>RGPD</h3>
+                    <span class="badge badge-success"><span class="badge-dot"></span>Conforme</span>
                 </div>
             </div>
             <div class="framework-score">
@@ -153,28 +153,28 @@
             </div>
             <div class="framework-details">
                 <div class="detail-row">
-                    <span>Data Processing</span>
+                    <span>Traitement des Données</span>
                     <span class="status-check"><i data-lucide="check"></i></span>
                 </div>
                 <div class="detail-row">
-                    <span>Right to Erasure</span>
+                    <span>Droit à l'Effacement</span>
                     <span class="status-check"><i data-lucide="check"></i></span>
                 </div>
                 <div class="detail-row">
-                    <span>Consent Management</span>
+                    <span>Gestion du Consentement</span>
                     <span class="status-check"><i data-lucide="check"></i></span>
                 </div>
                 <div class="detail-row">
-                    <span>Data Portability</span>
+                    <span>Portabilité des Données</span>
                     <span class="status-check"><i data-lucide="check"></i></span>
                 </div>
                 <div class="detail-row">
-                    <span>Last Audit</span>
-                    <span>Jan 10, 2025</span>
+                    <span>Dernier Audit</span>
+                    <span>10 Jan 2025</span>
                 </div>
             </div>
             <button class="btn btn-secondary btn-block" onclick="viewFrameworkDetails('gdpr')">
-                View Details
+                Voir les Détails
             </button>
         </div>
 
@@ -186,7 +186,7 @@
                 </div>
                 <div class="framework-info">
                     <h3>SOC 2 Type II</h3>
-                    <span class="badge badge-warning"><span class="badge-dot"></span>Review Pending</span>
+                    <span class="badge badge-warning"><span class="badge-dot"></span>Revue en Attente</span>
                 </div>
             </div>
             <div class="framework-score">
@@ -197,28 +197,28 @@
             </div>
             <div class="framework-details">
                 <div class="detail-row">
-                    <span>Security</span>
+                    <span>Sécurité</span>
                     <span class="status-check"><i data-lucide="check"></i></span>
                 </div>
                 <div class="detail-row">
-                    <span>Availability</span>
+                    <span>Disponibilité</span>
                     <span class="status-check"><i data-lucide="check"></i></span>
                 </div>
                 <div class="detail-row">
-                    <span>Confidentiality</span>
+                    <span>Confidentialité</span>
                     <span class="status-warning"><i data-lucide="alert-triangle"></i></span>
                 </div>
                 <div class="detail-row">
-                    <span>Processing Integrity</span>
+                    <span>Intégrité du Traitement</span>
                     <span class="status-check"><i data-lucide="check"></i></span>
                 </div>
                 <div class="detail-row">
-                    <span>Next Audit</span>
-                    <span class="text-warning">Feb 1, 2025</span>
+                    <span>Prochain Audit</span>
+                    <span class="text-warning">1 Fév 2025</span>
                 </div>
             </div>
             <button class="btn btn-secondary btn-block" onclick="viewFrameworkDetails('soc2')">
-                View Details
+                Voir les Détails
             </button>
         </div>
 
@@ -230,7 +230,7 @@
                 </div>
                 <div class="framework-info">
                     <h3>ISO 27001</h3>
-                    <span class="badge badge-success"><span class="badge-dot"></span>Certified</span>
+                    <span class="badge badge-success"><span class="badge-dot"></span>Certifié</span>
                 </div>
             </div>
             <div class="framework-score">
@@ -241,28 +241,28 @@
             </div>
             <div class="framework-details">
                 <div class="detail-row">
-                    <span>ISMS Implementation</span>
+                    <span>Implémentation SMSI</span>
                     <span class="status-check"><i data-lucide="check"></i></span>
                 </div>
                 <div class="detail-row">
-                    <span>Risk Assessment</span>
+                    <span>Évaluation des Risques</span>
                     <span class="status-check"><i data-lucide="check"></i></span>
                 </div>
                 <div class="detail-row">
-                    <span>Access Controls</span>
+                    <span>Contrôles d'Accès</span>
                     <span class="status-check"><i data-lucide="check"></i></span>
                 </div>
                 <div class="detail-row">
-                    <span>Incident Management</span>
+                    <span>Gestion des Incidents</span>
                     <span class="status-check"><i data-lucide="check"></i></span>
                 </div>
                 <div class="detail-row">
-                    <span>Certificate Valid</span>
-                    <span>Until Dec 2026</span>
+                    <span>Certificat Valide</span>
+                    <span>Jusqu'en Déc 2026</span>
                 </div>
             </div>
             <button class="btn btn-secondary btn-block" onclick="viewFrameworkDetails('iso27001')">
-                View Details
+                Voir les Détails
             </button>
         </div>
     </div>
@@ -270,102 +270,102 @@
 
 <!-- AI-Specific Compliance -->
 <section class="mb-6">
-    <h2 class="section-title">AI-Specific Requirements</h2>
+    <h2 class="section-title">Exigences Spécifiques IA</h2>
     <div class="grid grid-2">
-        <!-- Model Governance -->
+        <!-- Gouvernance des Modèles -->
         <div class="card">
             <div class="card-header">
-                <h3 class="card-title">Model Governance</h3>
+                <h3 class="card-title">Gouvernance des Modèles</h3>
             </div>
             <div class="governance-checklist">
                 <div class="checklist-item complete">
                     <i data-lucide="check-square"></i>
                     <div class="checklist-content">
-                        <span class="checklist-title">Model Documentation</span>
-                        <span class="checklist-desc">All models have complete documentation</span>
+                        <span class="checklist-title">Documentation des Modèles</span>
+                        <span class="checklist-desc">Tous les modèles disposent d'une documentation complète</span>
                     </div>
                     <span class="badge badge-success">12/12</span>
                 </div>
                 <div class="checklist-item complete">
                     <i data-lucide="check-square"></i>
                     <div class="checklist-content">
-                        <span class="checklist-title">Version Control</span>
-                        <span class="checklist-desc">Model versioning with full lineage</span>
+                        <span class="checklist-title">Contrôle de Version</span>
+                        <span class="checklist-desc">Versionnage des modèles avec traçabilité complète</span>
                     </div>
-                    <span class="badge badge-success">Active</span>
+                    <span class="badge badge-success">Actif</span>
                 </div>
                 <div class="checklist-item warning">
                     <i data-lucide="alert-triangle"></i>
                     <div class="checklist-content">
-                        <span class="checklist-title">Bias Testing</span>
-                        <span class="checklist-desc">2 models need updated bias reports</span>
+                        <span class="checklist-title">Tests de Biais</span>
+                        <span class="checklist-desc">2 modèles nécessitent une mise à jour des rapports de biais</span>
                     </div>
                     <span class="badge badge-warning">10/12</span>
                 </div>
                 <div class="checklist-item complete">
                     <i data-lucide="check-square"></i>
                     <div class="checklist-content">
-                        <span class="checklist-title">Performance Monitoring</span>
-                        <span class="checklist-desc">Continuous drift and degradation tracking</span>
+                        <span class="checklist-title">Supervision des Performances</span>
+                        <span class="checklist-desc">Suivi continu du drift et de la dégradation</span>
                     </div>
-                    <span class="badge badge-success">Active</span>
+                    <span class="badge badge-success">Actif</span>
                 </div>
                 <div class="checklist-item complete">
                     <i data-lucide="check-square"></i>
                     <div class="checklist-content">
-                        <span class="checklist-title">Explainability</span>
-                        <span class="checklist-desc">SHAP/LIME explanations available</span>
+                        <span class="checklist-title">Explicabilité</span>
+                        <span class="checklist-desc">Explications SHAP/LIME disponibles</span>
                     </div>
                     <span class="badge badge-success">11/12</span>
                 </div>
             </div>
         </div>
 
-        <!-- Data Governance -->
+        <!-- Gouvernance des Données -->
         <div class="card">
             <div class="card-header">
-                <h3 class="card-title">Data Governance</h3>
+                <h3 class="card-title">Gouvernance des Données</h3>
             </div>
             <div class="governance-checklist">
                 <div class="checklist-item complete">
                     <i data-lucide="check-square"></i>
                     <div class="checklist-content">
-                        <span class="checklist-title">Data Lineage</span>
-                        <span class="checklist-desc">Full traceability for all datasets</span>
+                        <span class="checklist-title">Lignage des Données</span>
+                        <span class="checklist-desc">Traçabilité complète de tous les jeux de données</span>
                     </div>
-                    <span class="badge badge-success">Active</span>
+                    <span class="badge badge-success">Actif</span>
                 </div>
                 <div class="checklist-item complete">
                     <i data-lucide="check-square"></i>
                     <div class="checklist-content">
-                        <span class="checklist-title">PII Detection</span>
-                        <span class="checklist-desc">Automated PII scanning enabled</span>
+                        <span class="checklist-title">Détection des DCP</span>
+                        <span class="checklist-desc">Analyse automatisée des données à caractère personnel activée</span>
                     </div>
-                    <span class="badge badge-success">Active</span>
+                    <span class="badge badge-success">Actif</span>
                 </div>
                 <div class="checklist-item complete">
                     <i data-lucide="check-square"></i>
                     <div class="checklist-content">
-                        <span class="checklist-title">Data Quality</span>
-                        <span class="checklist-desc">Quality checks on all pipelines</span>
+                        <span class="checklist-title">Qualité des Données</span>
+                        <span class="checklist-desc">Contrôles qualité sur toutes les chaînes de traitement</span>
                     </div>
                     <span class="badge badge-success">98%</span>
                 </div>
                 <div class="checklist-item complete">
                     <i data-lucide="check-square"></i>
                     <div class="checklist-content">
-                        <span class="checklist-title">Retention Policies</span>
-                        <span class="checklist-desc">Automated data retention enforcement</span>
+                        <span class="checklist-title">Politiques de Rétention</span>
+                        <span class="checklist-desc">Application automatisée des durées de conservation</span>
                     </div>
-                    <span class="badge badge-success">Active</span>
+                    <span class="badge badge-success">Actif</span>
                 </div>
                 <div class="checklist-item warning">
                     <i data-lucide="alert-triangle"></i>
                     <div class="checklist-content">
-                        <span class="checklist-title">Access Logging</span>
-                        <span class="checklist-desc">1 dataset missing access logs</span>
+                        <span class="checklist-title">Journalisation des Accès</span>
+                        <span class="checklist-desc">1 jeu de données sans journal d'accès</span>
                     </div>
-                    <span class="badge badge-warning">Review</span>
+                    <span class="badge badge-warning">À Revoir</span>
                 </div>
             </div>
         </div>
@@ -376,12 +376,12 @@
 <section class="mb-6">
     <div class="card">
         <div class="card-header">
-            <h3 class="card-title">Audit Trail</h3>
+            <h3 class="card-title">Piste d'Audit</h3>
             <div class="header-actions">
-                <input type="text" class="form-input" placeholder="Search audit logs..." style="width: 250px;">
+                <input type="text" class="form-input" placeholder="Rechercher dans les journaux..." style="width: 250px;">
                 <button class="btn btn-secondary" onclick="exportAuditLogs()">
                     <i data-lucide="download"></i>
-                    Export
+                    Exporter
                 </button>
             </div>
         </div>
@@ -389,66 +389,66 @@
             <table class="table">
                 <thead>
                     <tr>
-                        <th>Timestamp</th>
-                        <th>Event</th>
-                        <th>User</th>
-                        <th>Resource</th>
+                        <th>Horodatage</th>
+                        <th>Événement</th>
+                        <th>Utilisateur</th>
+                        <th>Ressource</th>
                         <th>Action</th>
-                        <th>Status</th>
-                        <th>Details</th>
+                        <th>Statut</th>
+                        <th>Détails</th>
                     </tr>
                 </thead>
                 <tbody id="auditTable">
                     <tr>
-                        <td data-label="Timestamp">2025-01-15 14:32:15</td>
-                        <td data-label="Event">Model Deployment</td>
-                        <td data-label="User">john.smith@company.com</td>
-                        <td data-label="Resource">recommendation-v2.3</td>
-                        <td data-label="Action">DEPLOY</td>
-                        <td data-label="Status"><span class="badge badge-success">Success</span></td>
-                        <td data-label="Details"><button class="btn btn-ghost btn-sm" onclick="viewAuditDetails('AUD-001')"><i data-lucide="eye"></i></button></td>
+                        <td data-label="Horodatage">2025-01-15 14:32:15</td>
+                        <td data-label="Événement">Déploiement de Modèle</td>
+                        <td data-label="Utilisateur">j.martin@defense.gouv.fr</td>
+                        <td data-label="Ressource">recommendation-v2.3</td>
+                        <td data-label="Action">DÉPLOYER</td>
+                        <td data-label="Statut"><span class="badge badge-success">Succès</span></td>
+                        <td data-label="Détails"><button class="btn btn-ghost btn-sm" onclick="viewAuditDetails('AUD-001')"><i data-lucide="eye"></i></button></td>
                     </tr>
                     <tr>
-                        <td data-label="Timestamp">2025-01-15 12:18:42</td>
-                        <td data-label="Event">Data Access</td>
-                        <td data-label="User">ml-pipeline@service</td>
-                        <td data-label="Resource">customer-features</td>
-                        <td data-label="Action">READ</td>
-                        <td data-label="Status"><span class="badge badge-success">Success</span></td>
-                        <td data-label="Details"><button class="btn btn-ghost btn-sm" onclick="viewAuditDetails('AUD-002')"><i data-lucide="eye"></i></button></td>
+                        <td data-label="Horodatage">2025-01-15 12:18:42</td>
+                        <td data-label="Événement">Accès aux Données</td>
+                        <td data-label="Utilisateur">ml-pipeline@service</td>
+                        <td data-label="Ressource">features-operateur</td>
+                        <td data-label="Action">LECTURE</td>
+                        <td data-label="Statut"><span class="badge badge-success">Succès</span></td>
+                        <td data-label="Détails"><button class="btn btn-ghost btn-sm" onclick="viewAuditDetails('AUD-002')"><i data-lucide="eye"></i></button></td>
                     </tr>
                     <tr data-status="critical">
-                        <td data-label="Timestamp">2025-01-15 10:45:33</td>
-                        <td data-label="Event">Access Denied</td>
-                        <td data-label="User">unknown@external.com</td>
-                        <td data-label="Resource">fraud-model-v1</td>
-                        <td data-label="Action">ACCESS</td>
-                        <td data-label="Status"><span class="badge badge-danger">Blocked</span></td>
-                        <td data-label="Details"><button class="btn btn-ghost btn-sm" onclick="viewAuditDetails('AUD-003')"><i data-lucide="eye"></i></button></td>
+                        <td data-label="Horodatage">2025-01-15 10:45:33</td>
+                        <td data-label="Événement">Accès Refusé</td>
+                        <td data-label="Utilisateur">inconnu@externe.com</td>
+                        <td data-label="Ressource">fraud-model-v1</td>
+                        <td data-label="Action">ACCÈS</td>
+                        <td data-label="Statut"><span class="badge badge-danger">Bloqué</span></td>
+                        <td data-label="Détails"><button class="btn btn-ghost btn-sm" onclick="viewAuditDetails('AUD-003')"><i data-lucide="eye"></i></button></td>
                     </tr>
                     <tr>
-                        <td data-label="Timestamp">2025-01-15 09:12:08</td>
-                        <td data-label="Event">Configuration Change</td>
-                        <td data-label="User">admin@company.com</td>
-                        <td data-label="Resource">drift-threshold</td>
-                        <td data-label="Action">UPDATE</td>
-                        <td data-label="Status"><span class="badge badge-success">Success</span></td>
-                        <td data-label="Details"><button class="btn btn-ghost btn-sm" onclick="viewAuditDetails('AUD-004')"><i data-lucide="eye"></i></button></td>
+                        <td data-label="Horodatage">2025-01-15 09:12:08</td>
+                        <td data-label="Événement">Modification de Configuration</td>
+                        <td data-label="Utilisateur">admin@defense.gouv.fr</td>
+                        <td data-label="Ressource">seuil-drift</td>
+                        <td data-label="Action">MISE À JOUR</td>
+                        <td data-label="Statut"><span class="badge badge-success">Succès</span></td>
+                        <td data-label="Détails"><button class="btn btn-ghost btn-sm" onclick="viewAuditDetails('AUD-004')"><i data-lucide="eye"></i></button></td>
                     </tr>
                     <tr>
-                        <td data-label="Timestamp">2025-01-14 22:45:19</td>
-                        <td data-label="Event">Model Retrain</td>
-                        <td data-label="User">scheduler@service</td>
-                        <td data-label="Resource">churn-predictor</td>
-                        <td data-label="Action">TRAIN</td>
-                        <td data-label="Status"><span class="badge badge-success">Success</span></td>
-                        <td data-label="Details"><button class="btn btn-ghost btn-sm" onclick="viewAuditDetails('AUD-005')"><i data-lucide="eye"></i></button></td>
+                        <td data-label="Horodatage">2025-01-14 22:45:19</td>
+                        <td data-label="Événement">Réentraînement de Modèle</td>
+                        <td data-label="Utilisateur">scheduler@service</td>
+                        <td data-label="Ressource">churn-predictor</td>
+                        <td data-label="Action">ENTRAÎNER</td>
+                        <td data-label="Statut"><span class="badge badge-success">Succès</span></td>
+                        <td data-label="Détails"><button class="btn btn-ghost btn-sm" onclick="viewAuditDetails('AUD-005')"><i data-lucide="eye"></i></button></td>
                     </tr>
                 </tbody>
             </table>
         </div>
         <div class="table-pagination">
-            <span class="pagination-info">Showing 1-5 of 1,234 entries</span>
+            <span class="pagination-info">Affichage 1-5 sur 1 234 entrées</span>
             <div class="pagination-controls">
                 <button class="btn btn-ghost btn-sm" disabled><i data-lucide="chevron-left"></i></button>
                 <button class="btn btn-secondary btn-sm">1</button>
@@ -464,7 +464,7 @@
 
 <!-- Pending Actions -->
 <section class="mb-6">
-    <h2 class="section-title">Action Items</h2>
+    <h2 class="section-title">Actions à Mener</h2>
     <div class="action-items-grid">
         <div class="action-item urgent">
             <div class="action-priority">
@@ -472,26 +472,26 @@
                 <span>Urgent</span>
             </div>
             <div class="action-content">
-                <h4>Update Bias Testing for fraud-detector-v1</h4>
-                <p>Bias report is 45 days old. AI Act requires quarterly reviews.</p>
+                <h4>Mettre à jour les tests de biais pour fraud-detector-v1</h4>
+                <p>Le rapport de biais date de 45 jours. L'AI Act exige des revues trimestrielles.</p>
             </div>
             <div class="action-meta">
-                <span class="due-date">Due: Jan 20, 2025</span>
-                <button class="btn btn-primary btn-sm">Start Review</button>
+                <span class="due-date">Échéance : 20 Jan 2025</span>
+                <button class="btn btn-primary btn-sm">Lancer la Revue</button>
             </div>
         </div>
         <div class="action-item warning">
             <div class="action-priority">
                 <i data-lucide="alert-triangle"></i>
-                <span>High</span>
+                <span>Élevé</span>
             </div>
             <div class="action-content">
-                <h4>SOC 2 Audit Preparation</h4>
-                <p>Prepare documentation and evidence for upcoming SOC 2 Type II audit.</p>
+                <h4>Préparation de l'Audit SOC 2</h4>
+                <p>Préparer la documentation et les preuves pour l'audit SOC 2 Type II à venir.</p>
             </div>
             <div class="action-meta">
-                <span class="due-date">Due: Feb 1, 2025</span>
-                <button class="btn btn-secondary btn-sm">View Checklist</button>
+                <span class="due-date">Échéance : 1 Fév 2025</span>
+                <button class="btn btn-secondary btn-sm">Voir la Checklist</button>
             </div>
         </div>
         <div class="action-item normal">
@@ -500,12 +500,12 @@
                 <span>Normal</span>
             </div>
             <div class="action-content">
-                <h4>Update Model Documentation for recommendation-v2.3</h4>
-                <p>New deployment requires updated technical documentation.</p>
+                <h4>Mettre à jour la documentation de recommendation-v2.3</h4>
+                <p>Le nouveau déploiement nécessite une mise à jour de la documentation technique.</p>
             </div>
             <div class="action-meta">
-                <span class="due-date">Due: Jan 25, 2025</span>
-                <button class="btn btn-secondary btn-sm">Edit Docs</button>
+                <span class="due-date">Échéance : 25 Jan 2025</span>
+                <button class="btn btn-secondary btn-sm">Modifier la Doc</button>
             </div>
         </div>
     </div>
@@ -517,7 +517,7 @@
         <div class="modal-header">
             <h2>
                 <i data-lucide="shield-check"></i>
-                <span id="modalFrameworkTitle">Deep Dive - EU AI Act</span>
+                <span id="modalFrameworkTitle">Analyse Détaillée - EU AI Act</span>
             </h2>
             <button class="modal-close" onclick="closeComplianceDeepDive()">
                 <i data-lucide="x"></i>
@@ -1399,7 +1399,7 @@ function updateComplianceScore(data) {
 // Framework data for deep dive modal
 const frameworksData = {
     'ai-act': {
-        title: 'Deep Dive - EU AI Act',
+        title: 'Analyse Détaillée - EU AI Act',
         score: 95,
         lastAudit: '15 Jan 2025',
         nextAudit: '15 Avr 2025',
@@ -1422,7 +1422,7 @@ const frameworksData = {
         ]
     },
     'gdpr': {
-        title: 'Deep Dive - GDPR',
+        title: 'Analyse Détaillée - RGPD',
         score: 98,
         lastAudit: '10 Jan 2025',
         nextAudit: '10 Avr 2025',
@@ -1444,7 +1444,7 @@ const frameworksData = {
         ]
     },
     'soc2': {
-        title: 'Deep Dive - SOC 2 Type II',
+        title: 'Analyse Détaillée - SOC 2 Type II',
         score: 85,
         lastAudit: '1 Déc 2024',
         nextAudit: '1 Fév 2025',
@@ -1468,7 +1468,7 @@ const frameworksData = {
         ]
     },
     'iso27001': {
-        title: 'Deep Dive - ISO 27001',
+        title: 'Analyse Détaillée - ISO 27001',
         score: 100,
         lastAudit: '15 Déc 2024',
         nextAudit: '15 Déc 2025',
@@ -1492,7 +1492,7 @@ const frameworksData = {
 function viewFrameworkDetails(framework) {
     const data = frameworksData[framework];
     if (!data) {
-        showToast('Framework non trouvé', 'error');
+        showToast('Cadre réglementaire non trouvé', 'error');
         return;
     }
 
@@ -1603,24 +1603,24 @@ document.addEventListener('keydown', (e) => {
 });
 
 function viewAuditDetails(auditId) {
-    showToast(`Loading audit ${auditId} details...`, 'info');
+    showToast(`Chargement des détails de l'audit ${auditId}...`, 'info');
 }
 
 function exportAuditLogs() {
-    showToast('Exporting audit logs...', 'info');
+    showToast('Exportation des journaux d\'audit...', 'info');
     setTimeout(() => {
-        showToast('Audit logs exported successfully!', 'success');
+        showToast('Journaux d\'audit exportés avec succès !', 'success');
     }, 1500);
 }
 
 function scheduleAudit() {
-    showToast('Opening audit scheduler...', 'info');
+    showToast('Ouverture du planificateur d\'audit...', 'info');
 }
 
 function generateComplianceReport() {
-    showToast('Generating compliance report...', 'info');
+    showToast('Génération du rapport de conformité...', 'info');
     setTimeout(() => {
-        showToast('Report ready for download!', 'success');
+        showToast('Rapport prêt au téléchargement !', 'success');
     }, 2000);
 }
 </script>

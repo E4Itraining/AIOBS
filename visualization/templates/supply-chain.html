@@ -2,22 +2,22 @@
 
 {% set active_page = 'supply-chain' %}
 
-{% block page_title %}AI Supply Chain Security{% endblock %}
-{% block page_subtitle %}<p class="text-muted">AI Bill of Materials, model provenance, and vulnerability tracking</p>{% endblock %}
+{% block page_title %}Sécurité de la Chaîne d'Approvisionnement IA{% endblock %}
+{% block page_subtitle %}<p class="text-muted">Nomenclature IA, provenance des modèles et suivi des vulnérabilités</p>{% endblock %}
 
 {% block topbar_actions %}
 <button class="btn btn-secondary" onclick="scanVulnerabilities()">
     <i data-lucide="scan"></i>
-    Run Scan
+    Lancer l'Analyse
 </button>
 <button class="btn btn-primary" onclick="exportSBOM()">
     <i data-lucide="download"></i>
-    Export AI-BOM
+    Exporter AI-BOM
 </button>
 {% endblock %}
 
 {% block content %}
-<!-- Supply Chain Overview -->
+<!-- Vue d'ensemble de la chaîne d'approvisionnement -->
 <div class="supply-chain-hero">
     <div class="sbom-stats-grid">
         <div class="sbom-stat-card">
@@ -26,7 +26,7 @@
             </div>
             <div class="stat-content">
                 <span class="stat-value">24</span>
-                <span class="stat-label">AI Components</span>
+                <span class="stat-label">Composants IA</span>
             </div>
         </div>
         <div class="sbom-stat-card">
@@ -35,7 +35,7 @@
             </div>
             <div class="stat-content">
                 <span class="stat-value">21</span>
-                <span class="stat-label">Verified Origins</span>
+                <span class="stat-label">Origines Vérifiées</span>
             </div>
         </div>
         <div class="sbom-stat-card">
@@ -44,7 +44,7 @@
             </div>
             <div class="stat-content">
                 <span class="stat-value">5</span>
-                <span class="stat-label">Vulnerabilities</span>
+                <span class="stat-label">Vulnérabilités</span>
             </div>
         </div>
         <div class="sbom-stat-card">
@@ -53,22 +53,22 @@
             </div>
             <div class="stat-content">
                 <span class="stat-value">1</span>
-                <span class="stat-label">Critical Issues</span>
+                <span class="stat-label">Problèmes Critiques</span>
             </div>
         </div>
     </div>
 </div>
 
-<!-- AI Bill of Materials -->
+<!-- Nomenclature IA -->
 <section class="mb-6">
     <div class="card">
         <div class="card-header">
-            <h3 class="card-title">AI Bill of Materials (AI-BOM)</h3>
+            <h3 class="card-title">Nomenclature IA (AI-BOM)</h3>
             <div class="header-actions">
                 <select class="form-select" style="width: 150px;">
-                    <option>All Types</option>
-                    <option>Models</option>
-                    <option>Datasets</option>
+                    <option>Tous les Types</option>
+                    <option>Modèles</option>
+                    <option>Jeux de Données</option>
                     <option>Frameworks</option>
                 </select>
             </div>
@@ -76,13 +76,13 @@
         <table class="data-table">
             <thead>
                 <tr>
-                    <th>Component</th>
+                    <th>Composant</th>
                     <th>Type</th>
                     <th>Version</th>
                     <th>Source</th>
-                    <th>License</th>
+                    <th>Licence</th>
                     <th>Provenance</th>
-                    <th>Status</th>
+                    <th>Statut</th>
                 </tr>
             </thead>
             <tbody>
@@ -93,12 +93,12 @@
                             <span>gpt-4-turbo</span>
                         </div>
                     </td>
-                    <td><span class="badge badge-primary">Model</span></td>
+                    <td><span class="badge badge-primary">Modèle</span></td>
                     <td>2024.01.25</td>
                     <td>OpenAI API</td>
-                    <td>Proprietary</td>
-                    <td><span class="provenance verified"><i data-lucide="check-circle"></i> Verified</span></td>
-                    <td><span class="status-badge success">Compliant</span></td>
+                    <td>Propriétaire</td>
+                    <td><span class="provenance verified"><i data-lucide="check-circle"></i> Vérifiée</span></td>
+                    <td><span class="status-badge success">Conforme</span></td>
                 </tr>
                 <tr>
                     <td>
@@ -107,12 +107,12 @@
                             <span>claude-3-opus</span>
                         </div>
                     </td>
-                    <td><span class="badge badge-primary">Model</span></td>
+                    <td><span class="badge badge-primary">Modèle</span></td>
                     <td>2024.03.04</td>
                     <td>Anthropic API</td>
-                    <td>Proprietary</td>
-                    <td><span class="provenance verified"><i data-lucide="check-circle"></i> Verified</span></td>
-                    <td><span class="status-badge success">Compliant</span></td>
+                    <td>Propriétaire</td>
+                    <td><span class="provenance verified"><i data-lucide="check-circle"></i> Vérifiée</span></td>
+                    <td><span class="status-badge success">Conforme</span></td>
                 </tr>
                 <tr>
                     <td>
@@ -121,26 +121,26 @@
                             <span>llama-3-70b</span>
                         </div>
                     </td>
-                    <td><span class="badge badge-primary">Model</span></td>
+                    <td><span class="badge badge-primary">Modèle</span></td>
                     <td>3.0.0</td>
                     <td>HuggingFace</td>
                     <td>Meta Llama 3</td>
-                    <td><span class="provenance verified"><i data-lucide="check-circle"></i> Verified</span></td>
-                    <td><span class="status-badge warning">Review</span></td>
+                    <td><span class="provenance verified"><i data-lucide="check-circle"></i> Vérifiée</span></td>
+                    <td><span class="status-badge warning">À examiner</span></td>
                 </tr>
                 <tr>
                     <td>
                         <div class="component-name">
                             <i data-lucide="database"></i>
-                            <span>customer-embeddings</span>
+                            <span>embeddings-opérateur</span>
                         </div>
                     </td>
-                    <td><span class="badge badge-secondary">Dataset</span></td>
+                    <td><span class="badge badge-secondary">Jeu de Données</span></td>
                     <td>v2.3</td>
-                    <td>Internal</td>
-                    <td>Internal Use</td>
-                    <td><span class="provenance verified"><i data-lucide="check-circle"></i> Verified</span></td>
-                    <td><span class="status-badge success">Compliant</span></td>
+                    <td>Interne</td>
+                    <td>Usage Interne</td>
+                    <td><span class="provenance verified"><i data-lucide="check-circle"></i> Vérifiée</span></td>
+                    <td><span class="status-badge success">Conforme</span></td>
                 </tr>
                 <tr>
                     <td>
@@ -153,54 +153,54 @@
                     <td>0.1.12</td>
                     <td>PyPI</td>
                     <td>MIT</td>
-                    <td><span class="provenance verified"><i data-lucide="check-circle"></i> Verified</span></td>
-                    <td><span class="status-badge danger">Vulnerable</span></td>
+                    <td><span class="provenance verified"><i data-lucide="check-circle"></i> Vérifiée</span></td>
+                    <td><span class="status-badge danger">Vulnérable</span></td>
                 </tr>
             </tbody>
         </table>
     </div>
 </section>
 
-<!-- Vulnerability Tracking -->
+<!-- Suivi des vulnérabilités -->
 <section class="mb-6">
     <div class="grid grid-2">
         <div class="card">
             <div class="card-header">
-                <h3 class="card-title">Active Vulnerabilities</h3>
-                <span class="badge badge-danger">5 Open</span>
+                <h3 class="card-title">Vulnérabilités Actives</h3>
+                <span class="badge badge-danger">5 Ouvertes</span>
             </div>
             <div class="vulnerabilities-list">
                 <div class="vuln-item critical">
-                    <div class="vuln-severity critical">CRITICAL</div>
+                    <div class="vuln-severity critical">CRITIQUE</div>
                     <div class="vuln-content">
                         <span class="vuln-id">CVE-2024-1234</span>
-                        <span class="vuln-title">LangChain Prompt Injection</span>
+                        <span class="vuln-title">Injection de Prompt LangChain</span>
                         <span class="vuln-component">langchain v0.1.12</span>
                     </div>
                     <div class="vuln-actions">
-                        <button class="btn btn-sm btn-danger">Fix Now</button>
+                        <button class="btn btn-sm btn-danger">Corriger</button>
                     </div>
                 </div>
                 <div class="vuln-item high">
-                    <div class="vuln-severity high">HIGH</div>
+                    <div class="vuln-severity high">ÉLEVÉ</div>
                     <div class="vuln-content">
                         <span class="vuln-id">GHSA-5678</span>
-                        <span class="vuln-title">Unsafe Deserialization</span>
+                        <span class="vuln-title">Désérialisation Non Sécurisée</span>
                         <span class="vuln-component">transformers v4.35.0</span>
                     </div>
                     <div class="vuln-actions">
-                        <button class="btn btn-sm btn-secondary">View</button>
+                        <button class="btn btn-sm btn-secondary">Voir</button>
                     </div>
                 </div>
                 <div class="vuln-item medium">
-                    <div class="vuln-severity medium">MEDIUM</div>
+                    <div class="vuln-severity medium">MOYEN</div>
                     <div class="vuln-content">
                         <span class="vuln-id">CVE-2024-5678</span>
-                        <span class="vuln-title">Memory Leak</span>
+                        <span class="vuln-title">Fuite Mémoire</span>
                         <span class="vuln-component">pytorch v2.1.0</span>
                     </div>
                     <div class="vuln-actions">
-                        <button class="btn btn-sm btn-secondary">View</button>
+                        <button class="btn btn-sm btn-secondary">Voir</button>
                     </div>
                 </div>
             </div>
@@ -208,7 +208,7 @@
 
         <div class="card">
             <div class="card-header">
-                <h3 class="card-title">Model Provenance Chain</h3>
+                <h3 class="card-title">Chaîne de Provenance des Modèles</h3>
             </div>
             <div class="provenance-chain">
                 <div class="chain-item">
@@ -216,7 +216,7 @@
                         <i data-lucide="building"></i>
                     </div>
                     <div class="chain-content">
-                        <span class="chain-title">Origin</span>
+                        <span class="chain-title">Origine</span>
                         <span class="chain-value">OpenAI</span>
                         <span class="chain-hash">sha256:a1b2c3...</span>
                     </div>
@@ -230,9 +230,9 @@
                         <i data-lucide="cpu"></i>
                     </div>
                     <div class="chain-content">
-                        <span class="chain-title">Training</span>
-                        <span class="chain-value">Azure ML Cluster</span>
-                        <span class="chain-hash">signed: 2024-01-15</span>
+                        <span class="chain-title">Entraînement</span>
+                        <span class="chain-value">Cluster Azure ML</span>
+                        <span class="chain-hash">signé : 2024-01-15</span>
                     </div>
                     <div class="chain-verified">
                         <i data-lucide="check-circle"></i>
@@ -244,9 +244,9 @@
                         <i data-lucide="cloud"></i>
                     </div>
                     <div class="chain-content">
-                        <span class="chain-title">Deployment</span>
-                        <span class="chain-value">Production K8s</span>
-                        <span class="chain-hash">attestation: valid</span>
+                        <span class="chain-title">Déploiement</span>
+                        <span class="chain-value">K8s Production</span>
+                        <span class="chain-hash">attestation : valide</span>
                     </div>
                     <div class="chain-verified">
                         <i data-lucide="check-circle"></i>
@@ -257,11 +257,11 @@
     </div>
 </section>
 
-<!-- Compliance & Attestations -->
+<!-- Conformité et attestations -->
 <section class="mb-6">
     <div class="card">
         <div class="card-header">
-            <h3 class="card-title">Digital Attestations</h3>
+            <h3 class="card-title">Attestations Numériques</h3>
         </div>
         <div class="attestations-grid">
             <div class="attestation-card valid">
@@ -269,9 +269,9 @@
                     <i data-lucide="file-check"></i>
                 </div>
                 <div class="attestation-content">
-                    <span class="attestation-title">Model Card</span>
-                    <span class="attestation-status">Valid</span>
-                    <span class="attestation-date">Updated 2 days ago</span>
+                    <span class="attestation-title">Fiche Modèle</span>
+                    <span class="attestation-status">Valide</span>
+                    <span class="attestation-date">Mis à jour il y a 2 jours</span>
                 </div>
             </div>
             <div class="attestation-card valid">
@@ -279,9 +279,9 @@
                     <i data-lucide="shield-check"></i>
                 </div>
                 <div class="attestation-content">
-                    <span class="attestation-title">Security Audit</span>
-                    <span class="attestation-status">Passed</span>
-                    <span class="attestation-date">Last audit: Jan 2024</span>
+                    <span class="attestation-title">Audit de Sécurité</span>
+                    <span class="attestation-status">Réussi</span>
+                    <span class="attestation-date">Dernier audit : janv. 2024</span>
                 </div>
             </div>
             <div class="attestation-card warning">
@@ -289,9 +289,9 @@
                     <i data-lucide="scale"></i>
                 </div>
                 <div class="attestation-content">
-                    <span class="attestation-title">Bias Assessment</span>
-                    <span class="attestation-status">Needs Review</span>
-                    <span class="attestation-date">Due: 15 days</span>
+                    <span class="attestation-title">Évaluation des Biais</span>
+                    <span class="attestation-status">À examiner</span>
+                    <span class="attestation-date">Échéance : 15 jours</span>
                 </div>
             </div>
             <div class="attestation-card valid">
@@ -299,9 +299,9 @@
                     <i data-lucide="key"></i>
                 </div>
                 <div class="attestation-content">
-                    <span class="attestation-title">SLSA Level 3</span>
-                    <span class="attestation-status">Verified</span>
-                    <span class="attestation-date">Chain verified</span>
+                    <span class="attestation-title">SLSA Niveau 3</span>
+                    <span class="attestation-status">Vérifié</span>
+                    <span class="attestation-date">Chaîne vérifiée</span>
                 </div>
             </div>
         </div>
@@ -673,16 +673,16 @@ async function loadSupplyChainData() {
 }
 
 function scanVulnerabilities() {
-    showToast('Starting vulnerability scan...', 'info');
+    showToast('Lancement de l\'analyse des vulnérabilités...', 'info');
     setTimeout(() => {
-        showToast('Scan complete. 5 vulnerabilities found.', 'warning');
+        showToast('Analyse terminée. 5 vulnérabilités trouvées.', 'warning');
     }, 3000);
 }
 
 function exportSBOM() {
-    showToast('Generating AI-BOM export...', 'info');
+    showToast('Génération de l\'export AI-BOM...', 'info');
     setTimeout(() => {
-        showToast('AI-BOM exported successfully!', 'success');
+        showToast('AI-BOM exporté avec succès !', 'success');
     }, 2000);
 }
 </script>

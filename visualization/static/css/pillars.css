@@ -17,9 +17,9 @@
     --pillar-security-light: #FDF0F2;
     --pillar-security-dark: #6E1522;
 
-    --pillar-compliance: #1B2A4A;       /* Navy */
+    --pillar-compliance: #1E3352;       /* Navy - balanced */
     --pillar-compliance-light: #E8ECF4;
-    --pillar-compliance-dark: #0F1729;
+    --pillar-compliance-dark: #152238;
 
     --pillar-explainability: #7C3AED;   /* Violet 600 */
     --pillar-explainability-light: #F5F3FF;
@@ -32,7 +32,7 @@
     /* Gradients */
     --gradient-reliability: linear-gradient(135deg, #059669 0%, #10B981 100%);
     --gradient-security: linear-gradient(135deg, #8B1A2B 0%, #C8102E 100%);
-    --gradient-compliance: linear-gradient(135deg, #1B2A4A 0%, #2563EB 100%);
+    --gradient-compliance: linear-gradient(135deg, #1E3352 0%, #3B82F6 100%);
     --gradient-explainability: linear-gradient(135deg, #7C3AED 0%, #8B5CF6 100%);
     --gradient-performance: linear-gradient(135deg, #2563EB 0%, #3B82F6 100%);
 }

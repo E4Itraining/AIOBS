@@ -1,15 +1,15 @@
 /* ========================================
-   GASKIA Design System v3.0
-   "Voir. Prouver. Maitriser."
-   Trust Control Layer for AI Systems
-   Modern Bordeaux / Navy / Blue
+   GASKIA Design System v3.1
+   Cyberdéfense IA Souveraine
+   Ministère des Armées
+   Bordeaux / Navy / Blue - Équilibré
    ======================================== */
 
 /* ========== CSS Variables / Design Tokens ========== */
 :root {
     /* GASKIA Brand Colors - Bordeaux & Navy Palette */
-    --color-deep-blue: #1B2A4A;        /* Primary Navy */
-    --color-slate-dark: #0F1729;       /* Deep Background */
+    --color-deep-blue: #1E3352;        /* Primary Navy - balanced */
+    --color-slate-dark: #152238;       /* Navy Background - lighter */
     --color-slate-light: #F4F6F9;      /* Cool Gray */
     --color-cyan-accent: #C8102E;      /* Accent - Vivid Red */
 
@@ -18,7 +18,7 @@
     --color-primary-hover: #6E1522;    /* Bordeaux 700 */
     --color-primary-light: #FDF0F2;    /* Rose 50 */
     --color-accent: #C8102E;           /* Vivid Red */
-    --color-secondary: #1B2A4A;        /* Navy */
+    --color-secondary: #1E3352;        /* Navy - balanced */
     --color-secondary-light: #E8ECF4;  /* Navy tint */
     --color-tertiary: #2563EB;         /* Electric Blue */
     --color-tertiary-light: #EFF6FF;   /* Blue tint */
@@ -33,11 +33,11 @@
     --color-info-light: #EFF6FF;
 
     /* Backgrounds - Clean, modern */
-    --bg-body: #F4F6F9;                /* Cool Gray */
+    --bg-body: #F0F2F7;                /* Warm Cool Gray */
     --bg-card: #FFFFFF;
-    --bg-sidebar: #0F1729;             /* Deep Navy sidebar */
-    --bg-sidebar-hover: rgba(255,255,255,0.06);
-    --bg-sidebar-active: rgba(200,16,46,0.15);
+    --bg-sidebar: #152238;             /* Navy sidebar - lighter */
+    --bg-sidebar-hover: rgba(255,255,255,0.08);
+    --bg-sidebar-active: rgba(200,16,46,0.18);
     --bg-hover: #EFF1F5;
     --bg-active: #FDF0F2;
     --bg-glass: rgba(255,255,255,0.72);
@@ -65,15 +65,15 @@
 
     /* Gradients */
     --gradient-primary: linear-gradient(135deg, #8B1A2B 0%, #C8102E 100%);
-    --gradient-secondary: linear-gradient(135deg, #1B2A4A 0%, #2563EB 100%);
-    --gradient-hero: linear-gradient(135deg, #0F1729 0%, #1B2A4A 60%, #8B1A2B 100%);
+    --gradient-secondary: linear-gradient(135deg, #1E3352 0%, #3B82F6 100%);
+    --gradient-hero: linear-gradient(135deg, #1E3352 0%, #2A4A6E 40%, #8B1A2B 100%);
     --gradient-success: linear-gradient(135deg, #059669, #10B981);
     --gradient-warning: linear-gradient(135deg, #D97706, #F59E0B);
     --gradient-danger: linear-gradient(135deg, #DC2626, #EF4444);
     --gradient-info: linear-gradient(135deg, #2563EB, #3B82F6);
     --gradient-purple: linear-gradient(135deg, #7C3AED, #8B5CF6);
     --gradient-indigo: linear-gradient(135deg, #4F46E5, #6366F1);
-    --gradient-sidebar: linear-gradient(180deg, #0F1729 0%, #1B2A4A 100%);
+    --gradient-sidebar: linear-gradient(180deg, #152238 0%, #1E3352 100%);
     --gradient-glass: linear-gradient(135deg, rgba(255,255,255,0.9), rgba(255,255,255,0.7));
 
     /* Spacing */

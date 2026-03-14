@@ -4,39 +4,39 @@
 
 {% block sidebar_extra %}
 <div class="nav-group">
-    <span class="nav-group-title">Business Views</span>
+    <span class="nav-group-title">Vues Opérationnelles</span>
     <a href="/executive" class="nav-link">
         <i data-lucide="briefcase"></i>
-        <span>Executive Dashboard</span>
+        <span>Tableau État-Major</span>
     </a>
     <a href="/finops" class="nav-link active">
         <i data-lucide="wallet"></i>
-        <span>FinOps</span>
+        <span>Ressources & Budget</span>
     </a>
     <a href="/greenops" class="nav-link">
         <i data-lucide="leaf"></i>
-        <span>GreenOps</span>
+        <span>Sobriété Numérique</span>
     </a>
     <a href="/compliance" class="nav-link">
         <i data-lucide="shield-check"></i>
-        <span>Compliance</span>
+        <span>Conformité</span>
     </a>
 </div>
 <div class="nav-group">
-    <span class="nav-group-title">Technical Views</span>
+    <span class="nav-group-title">Vues Techniques</span>
     <a href="/monitoring" class="nav-link">
         <i data-lucide="activity"></i>
-        <span>Live Monitoring</span>
+        <span>Supervision Temps Réel</span>
     </a>
     <a href="/security" class="nav-link">
         <i data-lucide="lock"></i>
-        <span>Security Center</span>
+        <span>Centre Cyberdéfense</span>
     </a>
 </div>
 {% endblock %}
 
-{% block page_title %}FinOps{% endblock %}
-{% block page_subtitle %}<p class="text-muted">Gestion des coûts & optimisation</p>{% endblock %}
+{% block page_title %}Ressources & Budget{% endblock %}
+{% block page_subtitle %}<p class="text-muted">Gestion des Ressources & optimisation budgétaire</p>{% endblock %}
 
 {% block topbar_actions %}
 <div class="time-range-selector">
@@ -58,7 +58,7 @@
 {% endblock %}
 
 {% block content %}
-<!-- Budget Overview -->
+<!-- Vue d'ensemble Budget -->
 <div class="budget-hero">
     <div class="budget-card main">
         <div class="budget-header">
@@ -121,7 +121,7 @@
     </div>
 </div>
 
-<!-- Efficiency KPIs -->
+<!-- KPIs d'Efficacité -->
 <section class="mb-6">
     <div class="efficiency-kpis">
         <div class="kpi-card">
@@ -187,10 +187,10 @@
     </div>
 </section>
 
-<!-- Cost Breakdown -->
+<!-- Répartition des Coûts -->
 <section class="mb-6">
     <div class="grid grid-2">
-        <!-- By Category -->
+        <!-- Par Catégorie -->
         <div class="card">
             <div class="card-header">
                 <h3 class="card-title">Coûts par catégorie</h3>
@@ -232,7 +232,7 @@
             </div>
         </div>
 
-        <!-- Cost Trend -->
+        <!-- Tendance des Coûts -->
         <div class="card">
             <div class="card-header">
                 <h3 class="card-title">Tendance journalière</h3>
@@ -250,7 +250,7 @@
     </div>
 </section>
 
-<!-- Model-Level Costs -->
+<!-- Coûts par Modèle -->
 <section class="mb-6">
     <div class="card">
         <div class="card-header">
@@ -381,7 +381,7 @@
     </div>
 </section>
 
-<!-- Cost Anomalies -->
+<!-- Anomalies de Coûts -->
 <section class="mb-6">
     <div class="card">
         <div class="card-header">
@@ -455,7 +455,7 @@
     </div>
 </section>
 
-<!-- Optimization Opportunities -->
+<!-- Opportunités d'Optimisation -->
 <section class="mb-6">
     <h2 class="section-title">Opportunités d'optimisation</h2>
     <div class="optimization-grid">
@@ -555,10 +555,10 @@
     </div>
 </section>
 
-<!-- Cloud Provider Comparison & ROI -->
+<!-- Comparaison Fournisseurs Cloud & Efficacité Opérationnelle -->
 <section class="mb-6">
     <div class="grid grid-2">
-        <!-- Cloud Provider Costs -->
+        <!-- Coûts par Fournisseur Cloud -->
         <div class="card">
             <div class="card-header">
                 <h3 class="card-title">Coûts par fournisseur cloud</h3>
@@ -622,10 +622,10 @@
             </div>
         </div>
 
-        <!-- ROI Tracker -->
+        <!-- Suivi Efficacité Opérationnelle -->
         <div class="card">
             <div class="card-header">
-                <h3 class="card-title">Retour sur investissement IA</h3>
+                <h3 class="card-title">Efficacité Opérationnelle IA</h3>
                 <button class="btn btn-ghost btn-sm" onclick="openROIDeepDive()">
                     <i data-lucide="maximize-2"></i>
                 </button>
@@ -640,7 +640,7 @@
                         </svg>
                         <div class="roi-value">
                             <span class="roi-number">285%</span>
-                            <span class="roi-label">ROI</span>
+                            <span class="roi-label">Efficacité Opérationnelle</span>
                         </div>
                     </div>
                 </div>
@@ -658,7 +658,7 @@
                         <span class="roi-detail-value">89 400 €</span>
                     </div>
                     <div class="roi-detail-item">
-                        <span class="roi-detail-label">Revenu additionnel</span>
+                        <span class="roi-detail-label">Impact Opérationnel additionnel</span>
                         <span class="roi-detail-value">74 200 €</span>
                     </div>
                 </div>
@@ -667,10 +667,10 @@
     </div>
 </section>
 
-<!-- Forecast & Budget -->
+<!-- Prévisions & Budget -->
 <section class="mb-6">
     <div class="grid grid-2">
-        <!-- Cost Forecast -->
+        <!-- Prévisions de Coûts -->
         <div class="card">
             <div class="card-header">
                 <h3 class="card-title">Prévisions de coûts</h3>
@@ -694,7 +694,7 @@
             </div>
         </div>
 
-        <!-- Budget Allocation -->
+        <!-- Allocation Budgétaire -->
         <div class="card">
             <div class="card-header">
                 <h3 class="card-title">Allocation budgétaire</h3>
@@ -757,20 +757,20 @@
     </div>
 </section>
 
-<!-- ROI Deep Dive Modal -->
+<!-- Modale Analyse Approfondie Efficacité Opérationnelle -->
 <div class="modal-overlay" id="roiDeepDiveModal">
     <div class="modal-container modal-xl">
         <div class="modal-header">
             <h2>
                 <i data-lucide="target"></i>
-                Deep Dive - Retour sur Investissement IA
+                Analyse Approfondie - Efficacité Opérationnelle IA
             </h2>
             <button class="modal-close" onclick="closeROIDeepDive()">
                 <i data-lucide="x"></i>
             </button>
         </div>
         <div class="modal-body">
-            <!-- Overview Header -->
+            <!-- En-tête de Vue d'ensemble -->
             <div class="deep-dive-controls">
                 <div class="framework-overview-header">
                     <div class="roi-score-large">
@@ -803,7 +803,7 @@
                 </div>
             </div>
 
-            <!-- ROI KPIs -->
+            <!-- KPIs Efficacité Opérationnelle -->
             <div class="deep-dive-kpis">
                 <div class="deep-dive-kpi">
                     <div class="deep-dive-kpi-icon investment">
@@ -838,14 +838,14 @@
                     </div>
                     <div class="deep-dive-kpi-content">
                         <span class="deep-dive-kpi-value">74 200 €</span>
-                        <span class="deep-dive-kpi-label">Revenu additionnel</span>
+                        <span class="deep-dive-kpi-label">Impact Opérationnel additionnel</span>
                     </div>
                 </div>
             </div>
 
-            <!-- ROI by Model Table -->
+            <!-- Efficacité Opérationnelle par Modèle -->
             <div class="deep-dive-table-section">
-                <h4>ROI par système IA</h4>
+                <h4>Efficacité Opérationnelle par système IA</h4>
                 <div class="table-container">
                     <table class="table">
                         <thead>
@@ -853,7 +853,7 @@
                                 <th>Système IA</th>
                                 <th>Investissement</th>
                                 <th>Valeur générée</th>
-                                <th>ROI</th>
+                                <th>Efficacité</th>
                                 <th>Statut</th>
                             </tr>
                         </thead>
@@ -898,7 +898,7 @@
                 </div>
             </div>
 
-            <!-- Recommendations -->
+            <!-- Recommandations -->
             <div class="deep-dive-recommendations">
                 <h4>Opportunités d'amélioration</h4>
                 <div class="recommendations-list">
@@ -908,7 +908,7 @@
                         </div>
                         <div class="recommendation-content">
                             <h5>Optimiser le LLM Assistant</h5>
-                            <p>Le ROI de 32% est inférieur à l'objectif de 100%. Envisager l'activation du batching et la réduction des tokens pour améliorer l'efficacité.</p>
+                            <p>L'efficacité opérationnelle de 32% est inférieure à l'objectif de 100%. Envisager l'activation du batching et la réduction des tokens pour améliorer le rendement.</p>
                         </div>
                     </div>
                     <div class="recommendation-item success">
@@ -917,7 +917,7 @@
                         </div>
                         <div class="recommendation-content">
                             <h5>Fraud-detector : potentiel d'expansion</h5>
-                            <p>Avec un ROI de 380%, envisager d'étendre l'utilisation à d'autres cas d'usage (détection d'anomalies, KYC).</p>
+                            <p>Avec une efficacité opérationnelle de 380%, envisager d'étendre l'utilisation à d'autres cas d'usage (détection d'anomalies, vérification d'identité).</p>
                         </div>
                     </div>
                 </div>
@@ -2321,7 +2321,7 @@ function closeROIDeepDive() {
 }
 
 function exportROIReport() {
-    showToast('Génération du rapport ROI...', 'info');
+    showToast('Génération du rapport d\'efficacité opérationnelle...', 'info');
     setTimeout(() => {
         showToast('Rapport prêt au téléchargement !', 'success');
     }, 1500);

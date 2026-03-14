@@ -5,50 +5,50 @@
 {% block page_title %}{{ t('nav.causal_analysis') }}{% endblock %}
 
 {% block page_subtitle %}
-<p>{{ t('causal.subtitle') or 'Root cause analysis linking infrastructure, data, and AI outcomes' }}</p>
+<p>{{ t('causal.subtitle') or 'Analyse des causes racines reliant infrastructure, données et résultats des systèmes IA de Défense' }}</p>
 {% endblock %}
 
 {% block topbar_actions %}
 <select id="scenarioSelect" class="form-select" style="width: auto;" onchange="loadScenario(this.value)">
-    <option value="drift_incident">{{ t('causal.drift_incident') or 'Drift Incident' }}</option>
-    <option value="cost_spike">{{ t('causal.cost_spike') or 'Cost Spike' }}</option>
+    <option value="drift_incident">{{ t('causal.drift_incident') or 'Incident de Dérive' }}</option>
+    <option value="cost_spike">{{ t('causal.cost_spike') or 'Pic de Coûts' }}</option>
 </select>
 {% endblock %}
 
 {% block sidebar_extra %}
 <div class="nav-group">
-    <span class="nav-group-title">{{ t('causal.scenarios') or 'Scenarios' }}</span>
+    <span class="nav-group-title">{{ t('causal.scenarios') or 'Scénarios' }}</span>
     <button class="nav-link" onclick="loadScenario('drift_incident')">
         <i data-lucide="alert-triangle"></i>
-        <span>{{ t('causal.drift_incident') or 'Drift Incident' }}</span>
+        <span>{{ t('causal.drift_incident') or 'Incident de Dérive' }}</span>
     </button>
     <button class="nav-link" onclick="loadScenario('cost_spike')">
         <i data-lucide="dollar-sign"></i>
-        <span>{{ t('causal.cost_spike') or 'Cost Spike' }}</span>
+        <span>{{ t('causal.cost_spike') or 'Pic de Coûts' }}</span>
     </button>
 </div>
 {% endblock %}
 
 {% block content %}
-<!-- Causal Graph -->
+<!-- Graphe Causal -->
 <div class="card mb-6">
     <div class="card-header">
-        <h3 class="card-title">{{ t('causal.graph') or 'Causal Graph' }}</h3>
+        <h3 class="card-title">{{ t('causal.graph') or 'Graphe Causal' }}</h3>
         <div class="flex gap-2">
             <button class="btn btn-secondary" onclick="resetGraph()">
                 <i data-lucide="refresh-cw"></i>
-                Reset
+                Réinitialiser
             </button>
         </div>
     </div>
     <div id="causalGraph" class="graph-container" style="height: 450px;"></div>
 </div>
 
-<!-- Root Causes & Impact Path -->
+<!-- Causes Racines & Chemin d'Impact -->
 <div class="grid grid-2 mb-6">
     <div class="card">
         <div class="card-header">
-            <h3 class="card-title">{{ t('causal.root_causes') or 'Root Causes' }}</h3>
+            <h3 class="card-title">{{ t('causal.root_causes') or 'Causes Racines' }}</h3>
         </div>
         <div id="rootCauses">
             <div class="loader"><div class="spinner"></div></div>
@@ -57,7 +57,7 @@
 
     <div class="card">
         <div class="card-header">
-            <h3 class="card-title">{{ t('causal.impact_path') or 'Impact Path' }}</h3>
+            <h3 class="card-title">{{ t('causal.impact_path') or 'Chemin d\'Impact' }}</h3>
         </div>
         <div id="impactPath">
             <div class="loader"><div class="spinner"></div></div>
@@ -65,15 +65,15 @@
     </div>
 </div>
 
-<!-- Node Details -->
+<!-- Détails du Noeud -->
 <div class="card">
     <div class="card-header">
-        <h3 class="card-title">Node Details</h3>
+        <h3 class="card-title">Détails du Noeud</h3>
     </div>
     <div id="nodeDetails" class="empty-state">
         <i data-lucide="mouse-pointer-click"></i>
-        <h3>Click on a node</h3>
-        <p class="text-muted">Click on a node in the graph to see details</p>
+        <h3>Cliquez sur un noeud</h3>
+        <p class="text-muted">Cliquez sur un noeud du graphe pour afficher les détails</p>
     </div>
 </div>
 {% endblock %}
@@ -102,7 +102,7 @@ async function loadScenario(scenario) {
         }
     } catch (error) {
         console.error('Error loading scenario:', error);
-        showToast('Failed to load scenario', 'error');
+        showToast('Échec du chargement du scénario', 'error');
     }
 }
 
@@ -144,7 +144,7 @@ function renderCausalGraph(data) {
         model: '#10b981',
         configuration: '#f59e0b',
         infrastructure: '#6366f1',
-        business_metric: '#ef4444',
+        operational_metric: '#ef4444',
         incident: '#dc2626',
         external_event: '#64748b'
     };
@@ -260,7 +260,7 @@ function renderRootCauses(data) {
         container.innerHTML = `
             <div class="empty-state">
                 <i data-lucide="search"></i>
-                <h3>No root causes identified</h3>
+                <h3>Aucune cause racine identifiée</h3>
             </div>
         `;
         lucide.createIcons();
@@ -293,7 +293,7 @@ function renderImpactPath(data) {
         container.innerHTML = `
             <div class="empty-state">
                 <i data-lucide="git-branch"></i>
-                <h3>No impact paths</h3>
+                <h3>Aucun chemin d'impact</h3>
             </div>
         `;
         lucide.createIcons();
@@ -318,7 +318,7 @@ function showNodeDetails(node) {
     container.innerHTML = `
         <div class="grid grid-2 gap-4">
             <div>
-                <div class="text-sm text-muted mb-1">Name</div>
+                <div class="text-sm text-muted mb-1">Nom</div>
                 <div class="font-semibold" style="font-size: 1.25rem;">${node.name}</div>
             </div>
             <div>
@@ -326,14 +326,14 @@ function showNodeDetails(node) {
                 <div class="font-semibold">${node.type.replace(/_/g, ' ')}</div>
             </div>
             <div>
-                <div class="text-sm text-muted mb-1">Impact Score</div>
+                <div class="text-sm text-muted mb-1">Score d'Impact</div>
                 <div class="kpi-value" style="color: ${node.impact_score > 0.7 ? 'var(--color-danger)' : node.impact_score > 0.4 ? 'var(--color-warning)' : 'var(--color-success)'};">
                     ${(node.impact_score * 100).toFixed(0)}%
                 </div>
             </div>
             <div>
                 <div class="text-sm text-muted mb-1">Description</div>
-                <div>${node.description || 'No description available'}</div>
+                <div>${node.description || 'Aucune description disponible'}</div>
             </div>
         </div>
     `;

@@ -2,26 +2,26 @@
 
 {% set active_page = 'multi-agent' %}
 
-{% block page_title %}Multi-Agent Observability Hub{% endblock %}
-{% block page_subtitle %}<p class="text-muted">Agent topology, decision traces, and orchestration monitoring</p>{% endblock %}
+{% block page_title %}Hub d'Observabilité Multi-Agents{% endblock %}
+{% block page_subtitle %}<p class="text-muted">Topologie des agents, traces de décision et surveillance de l'orchestration</p>{% endblock %}
 
 {% block topbar_actions %}
 <div class="live-indicator">
     <span class="live-dot"></span>
-    <span>Live Tracing</span>
+    <span>Traçage en Direct</span>
 </div>
 <button class="btn btn-secondary" onclick="viewTopology()">
     <i data-lucide="network"></i>
-    View Topology
+    Voir la Topologie
 </button>
 <button class="btn btn-primary" onclick="exportTraces()">
     <i data-lucide="download"></i>
-    Export Traces
+    Exporter les Traces
 </button>
 {% endblock %}
 
 {% block content %}
-<!-- Agent Registry Overview -->
+<!-- Vue d'ensemble du registre des agents -->
 <div class="agents-hero">
     <div class="agent-stats-grid">
         <div class="agent-stat-card">
@@ -30,7 +30,7 @@
             </div>
             <div class="stat-content">
                 <span class="stat-value" id="totalAgents">12</span>
-                <span class="stat-label">Active Agents</span>
+                <span class="stat-label">Agents Actifs</span>
             </div>
         </div>
         <div class="agent-stat-card">
@@ -48,7 +48,7 @@
             </div>
             <div class="stat-content">
                 <span class="stat-value" id="avgDepth">4.2</span>
-                <span class="stat-label">Avg Decision Depth</span>
+                <span class="stat-label">Profondeur Moy. de Décision</span>
             </div>
         </div>
         <div class="agent-stat-card">
@@ -57,20 +57,20 @@
             </div>
             <div class="stat-content">
                 <span class="stat-value" id="anomalies">3</span>
-                <span class="stat-label">Anomalies Detected</span>
+                <span class="stat-label">Anomalies Détectées</span>
             </div>
         </div>
     </div>
 </div>
 
-<!-- Agent Topology Visualization -->
+<!-- Visualisation de la topologie des agents -->
 <section class="mb-6">
     <div class="card">
         <div class="card-header">
-            <h3 class="card-title">Agent Topology</h3>
+            <h3 class="card-title">Topologie des Agents</h3>
             <div class="header-actions">
                 <select class="form-select" id="topologySession" style="width: 200px;">
-                    <option>All Sessions</option>
+                    <option>Toutes les Sessions</option>
                     <option>Session #session-001</option>
                     <option>Session #session-002</option>
                 </select>
@@ -86,32 +86,32 @@
             <div class="topology-legend">
                 <div class="legend-item">
                     <span class="legend-dot orchestrator"></span>
-                    <span>Orchestrator</span>
+                    <span>Orchestrateur</span>
                 </div>
                 <div class="legend-item">
                     <span class="legend-dot worker"></span>
-                    <span>Worker Agent</span>
+                    <span>Agent Opérateur</span>
                 </div>
                 <div class="legend-item">
                     <span class="legend-dot specialist"></span>
-                    <span>Specialist</span>
+                    <span>Spécialiste</span>
                 </div>
                 <div class="legend-item">
                     <span class="legend-dot tool"></span>
-                    <span>Tool/Function</span>
+                    <span>Outil/Fonction</span>
                 </div>
             </div>
         </div>
     </div>
 </section>
 
-<!-- Agent Registry & Decision Traces -->
+<!-- Registre des agents et traces de décision -->
 <section class="mb-6">
     <div class="grid grid-2">
-        <!-- Agent Registry -->
+        <!-- Registre des agents -->
         <div class="card">
             <div class="card-header">
-                <h3 class="card-title">Agent Registry</h3>
+                <h3 class="card-title">Registre des Agents</h3>
                 <span class="badge badge-primary">12 Agents</span>
             </div>
             <div class="agents-list">
@@ -120,103 +120,103 @@
                         <i data-lucide="crown"></i>
                     </div>
                     <div class="agent-info">
-                        <span class="agent-name">Master Orchestrator</span>
-                        <span class="agent-type">Orchestrator</span>
+                        <span class="agent-name">Orchestrateur Principal</span>
+                        <span class="agent-type">Orchestrateur</span>
                     </div>
                     <div class="agent-metrics">
-                        <span class="metric"><i data-lucide="activity"></i> 245 calls</span>
+                        <span class="metric"><i data-lucide="activity"></i> 245 appels</span>
                         <span class="metric"><i data-lucide="clock"></i> 120ms</span>
                     </div>
-                    <span class="agent-status active">Active</span>
+                    <span class="agent-status active">Actif</span>
                 </div>
                 <div class="agent-item active">
                     <div class="agent-icon worker">
                         <i data-lucide="bot"></i>
                     </div>
                     <div class="agent-info">
-                        <span class="agent-name">Research Agent</span>
-                        <span class="agent-type">Worker</span>
+                        <span class="agent-name">Agent de Recherche</span>
+                        <span class="agent-type">Opérateur</span>
                     </div>
                     <div class="agent-metrics">
-                        <span class="metric"><i data-lucide="activity"></i> 189 calls</span>
+                        <span class="metric"><i data-lucide="activity"></i> 189 appels</span>
                         <span class="metric"><i data-lucide="clock"></i> 450ms</span>
                     </div>
-                    <span class="agent-status active">Active</span>
+                    <span class="agent-status active">Actif</span>
                 </div>
                 <div class="agent-item active">
                     <div class="agent-icon specialist">
                         <i data-lucide="code"></i>
                     </div>
                     <div class="agent-info">
-                        <span class="agent-name">Code Generator</span>
-                        <span class="agent-type">Specialist</span>
+                        <span class="agent-name">Générateur de Code</span>
+                        <span class="agent-type">Spécialiste</span>
                     </div>
                     <div class="agent-metrics">
-                        <span class="metric"><i data-lucide="activity"></i> 156 calls</span>
+                        <span class="metric"><i data-lucide="activity"></i> 156 appels</span>
                         <span class="metric"><i data-lucide="clock"></i> 890ms</span>
                     </div>
-                    <span class="agent-status active">Active</span>
+                    <span class="agent-status active">Actif</span>
                 </div>
                 <div class="agent-item idle">
                     <div class="agent-icon tool">
                         <i data-lucide="wrench"></i>
                     </div>
                     <div class="agent-info">
-                        <span class="agent-name">Web Search Tool</span>
-                        <span class="agent-type">Tool</span>
+                        <span class="agent-name">Outil de Recherche Web</span>
+                        <span class="agent-type">Outil</span>
                     </div>
                     <div class="agent-metrics">
-                        <span class="metric"><i data-lucide="activity"></i> 78 calls</span>
+                        <span class="metric"><i data-lucide="activity"></i> 78 appels</span>
                         <span class="metric"><i data-lucide="clock"></i> 1.2s</span>
                     </div>
-                    <span class="agent-status idle">Idle</span>
+                    <span class="agent-status idle">Inactif</span>
                 </div>
             </div>
         </div>
 
-        <!-- Decision Traces -->
+        <!-- Traces de décision -->
         <div class="card">
             <div class="card-header">
-                <h3 class="card-title">Recent Decision Traces</h3>
-                <span class="live-badge"><span class="live-dot"></span> Live</span>
+                <h3 class="card-title">Traces de Décision Récentes</h3>
+                <span class="live-badge"><span class="live-dot"></span> En direct</span>
             </div>
             <div class="traces-list" id="tracesList">
                 <div class="trace-item">
                     <div class="trace-header">
                         <span class="trace-id">#trace-a1b2c3</span>
-                        <span class="trace-time">2 min ago</span>
+                        <span class="trace-time">Il y a 2 min</span>
                     </div>
                     <div class="trace-path">
-                        <span class="path-node orchestrator">Orchestrator</span>
+                        <span class="path-node orchestrator">Orchestrateur</span>
                         <i data-lucide="arrow-right"></i>
-                        <span class="path-node worker">Research</span>
+                        <span class="path-node worker">Recherche</span>
                         <i data-lucide="arrow-right"></i>
-                        <span class="path-node tool">Web Search</span>
+                        <span class="path-node tool">Recherche Web</span>
                         <i data-lucide="arrow-right"></i>
-                        <span class="path-node specialist">Summarizer</span>
+                        <span class="path-node specialist">Synthétiseur</span>
                     </div>
                     <div class="trace-metrics">
                         <span><i data-lucide="clock"></i> 2.3s total</span>
-                        <span><i data-lucide="layers"></i> 4 steps</span>
-                        <span><i data-lucide="coins"></i> $0.012</span>
+                        <span><i data-lucide="layers"></i> 4 étapes</span>
+                        <span><i data-lucide="coins"></i> 0,012 $</span>
                     </div>
                 </div>
                 <div class="trace-item">
                     <div class="trace-header">
                         <span class="trace-id">#trace-d4e5f6</span>
-                        <span class="trace-time">5 min ago</span>
+                        <span class="trace-time">Il y a 5 min</span>
                     </div>
                     <div class="trace-path">
-                        <span class="path-node orchestrator">Orchestrator</span>
+                        <span class="path-node orchestrator">Orchestrateur</span>
                         <i data-lucide="arrow-right"></i>
-                        <span class="path-node specialist">Code Gen</span>
+                        <span class="path-node specialist">Gén. Code</span>
                         <i data-lucide="arrow-right"></i>
-                        <span class="path-node tool">Linter</span>
+                        <span class="path-node tool">Analyseur</span>
                     </div>
                     <div class="trace-metrics">
                         <span><i data-lucide="clock"></i> 1.8s total</span>
-                        <span><i data-lucide="layers"></i> 3 steps</span>
-                        <span><i data-lucide="coins"></i> $0.008</span>
+                        <span><i data-lucide="layers"></i> 3 étapes</span>
+                        <span><i data-lucide="coins"></i> 0,008 $</span>
                     </div>
                 </div>
             </div>
@@ -224,13 +224,13 @@
     </div>
 </section>
 
-<!-- Anomaly Detection & Cost Attribution -->
+<!-- Détection d'anomalies et attribution des coûts -->
 <section class="mb-6">
     <div class="grid grid-2">
-        <!-- Anomaly Detection -->
+        <!-- Détection d'anomalies -->
         <div class="card">
             <div class="card-header">
-                <h3 class="card-title">Anomaly Detection</h3>
+                <h3 class="card-title">Détection d'Anomalies</h3>
             </div>
             <div class="anomalies-list">
                 <div class="anomaly-item warning">
@@ -238,64 +238,64 @@
                         <i data-lucide="alert-triangle"></i>
                     </div>
                     <div class="anomaly-content">
-                        <span class="anomaly-type">Loop Detected</span>
-                        <span class="anomaly-details">Agent "Research" called 15 times in session #s-789</span>
-                        <span class="anomaly-time">10 min ago</span>
+                        <span class="anomaly-type">Boucle Détectée</span>
+                        <span class="anomaly-details">L'agent "Recherche" a été appelé 15 fois dans la session #s-789</span>
+                        <span class="anomaly-time">Il y a 10 min</span>
                     </div>
-                    <button class="btn btn-sm btn-secondary">Investigate</button>
+                    <button class="btn btn-sm btn-secondary">Investiguer</button>
                 </div>
                 <div class="anomaly-item danger">
                     <div class="anomaly-icon">
                         <i data-lucide="x-circle"></i>
                     </div>
                     <div class="anomaly-content">
-                        <span class="anomaly-type">Timeout Chain</span>
-                        <span class="anomaly-details">3 consecutive timeouts in orchestration path</span>
-                        <span class="anomaly-time">25 min ago</span>
+                        <span class="anomaly-type">Chaîne de Délais d'Attente</span>
+                        <span class="anomaly-details">3 délais d'attente consécutifs dans le chemin d'orchestration</span>
+                        <span class="anomaly-time">Il y a 25 min</span>
                     </div>
-                    <button class="btn btn-sm btn-secondary">Investigate</button>
+                    <button class="btn btn-sm btn-secondary">Investiguer</button>
                 </div>
                 <div class="anomaly-item info">
                     <div class="anomaly-icon">
                         <i data-lucide="info"></i>
                     </div>
                     <div class="anomaly-content">
-                        <span class="anomaly-type">Unusual Path</span>
-                        <span class="anomaly-details">First occurrence of this agent combination</span>
-                        <span class="anomaly-time">1 hour ago</span>
+                        <span class="anomaly-type">Chemin Inhabituel</span>
+                        <span class="anomaly-details">Première occurrence de cette combinaison d'agents</span>
+                        <span class="anomaly-time">Il y a 1 heure</span>
                     </div>
-                    <button class="btn btn-sm btn-secondary">Review</button>
+                    <button class="btn btn-sm btn-secondary">Examiner</button>
                 </div>
             </div>
         </div>
 
-        <!-- Cost Attribution -->
+        <!-- Attribution des coûts -->
         <div class="card">
             <div class="card-header">
-                <h3 class="card-title">Cost Attribution (24h)</h3>
+                <h3 class="card-title">Attribution des Coûts (24h)</h3>
             </div>
             <div class="chart-container" style="height: 200px;">
                 <canvas id="costAttribution"></canvas>
             </div>
             <div class="cost-breakdown">
                 <div class="cost-item">
-                    <span class="cost-agent">Master Orchestrator</span>
-                    <span class="cost-value">$12.45</span>
+                    <span class="cost-agent">Orchestrateur Principal</span>
+                    <span class="cost-value">12,45 $</span>
                     <span class="cost-percent">35%</span>
                 </div>
                 <div class="cost-item">
-                    <span class="cost-agent">Code Generator</span>
-                    <span class="cost-value">$8.90</span>
+                    <span class="cost-agent">Générateur de Code</span>
+                    <span class="cost-value">8,90 $</span>
                     <span class="cost-percent">25%</span>
                 </div>
                 <div class="cost-item">
-                    <span class="cost-agent">Research Agent</span>
-                    <span class="cost-value">$7.15</span>
+                    <span class="cost-agent">Agent de Recherche</span>
+                    <span class="cost-value">7,15 $</span>
                     <span class="cost-percent">20%</span>
                 </div>
                 <div class="cost-item">
-                    <span class="cost-agent">Others</span>
-                    <span class="cost-value">$7.00</span>
+                    <span class="cost-agent">Autres</span>
+                    <span class="cost-value">7,00 $</span>
                     <span class="cost-percent">20%</span>
                 </div>
             </div>
@@ -755,7 +755,7 @@ function initCharts() {
         new Chart(ctx, {
             type: 'doughnut',
             data: {
-                labels: ['Orchestrator', 'Code Gen', 'Research', 'Others'],
+                labels: ['Orchestrateur', 'Gén. Code', 'Recherche', 'Autres'],
                 datasets: [{
                     data: [35, 25, 20, 20],
                     backgroundColor: ['#6366f1', '#f59e0b', '#10b981', '#64748b'],
@@ -779,14 +779,14 @@ function initTopology() {
     const width = svg.node().getBoundingClientRect().width;
     const height = 400;
 
-    // Sample topology data
+    // Données de topologie
     const nodes = [
-        { id: 'orchestrator', name: 'Orchestrator', type: 'orchestrator', x: width/2, y: 50 },
-        { id: 'research', name: 'Research', type: 'worker', x: width/4, y: 150 },
-        { id: 'code', name: 'Code Gen', type: 'specialist', x: width/2, y: 150 },
-        { id: 'summarize', name: 'Summarizer', type: 'specialist', x: 3*width/4, y: 150 },
-        { id: 'websearch', name: 'Web Search', type: 'tool', x: width/4, y: 280 },
-        { id: 'linter', name: 'Linter', type: 'tool', x: width/2, y: 280 }
+        { id: 'orchestrator', name: 'Orchestrateur', type: 'orchestrator', x: width/2, y: 50 },
+        { id: 'research', name: 'Recherche', type: 'worker', x: width/4, y: 150 },
+        { id: 'code', name: 'Gén. Code', type: 'specialist', x: width/2, y: 150 },
+        { id: 'summarize', name: 'Synthétiseur', type: 'specialist', x: 3*width/4, y: 150 },
+        { id: 'websearch', name: 'Recherche Web', type: 'tool', x: width/4, y: 280 },
+        { id: 'linter', name: 'Analyseur', type: 'tool', x: width/2, y: 280 }
     ];
 
     const links = [
@@ -797,7 +797,7 @@ function initTopology() {
         { source: 'code', target: 'linter' }
     ];
 
-    // Draw links
+    // Tracé des liens
     const linkData = links.map(l => ({
         source: nodes.find(n => n.id === l.source),
         target: nodes.find(n => n.id === l.target)
@@ -814,7 +814,7 @@ function initTopology() {
         .attr('stroke', 'var(--border-color)')
         .attr('stroke-width', 2);
 
-    // Draw nodes
+    // Tracé des noeuds
     const nodeGroups = svg.selectAll('g')
         .data(nodes)
         .enter()
@@ -837,15 +837,15 @@ function initTopology() {
 }
 
 function viewTopology() {
-    showToast('Opening full topology view...', 'info');
+    showToast('Ouverture de la vue topologique complète...', 'info');
 }
 
 function exportTraces() {
-    showToast('Exporting decision traces...', 'info');
+    showToast('Exportation des traces de décision...', 'info');
 }
 
 function refreshTopology() {
-    showToast('Refreshing topology...', 'info');
+    showToast('Actualisation de la topologie...', 'info');
     initTopology();
 }
 </script>

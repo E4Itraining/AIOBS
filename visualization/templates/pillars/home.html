@@ -20,7 +20,7 @@
         </h3>
         <div class="global-score-badge" id="globalTrustScore">
             <span class="score">--</span>
-            <span class="label">{{ t('pillars.trust_score') or 'Trust Score' }}</span>
+            <span class="label">{{ t('pillars.trust_score') or 'Score de Confiance' }}</span>
         </div>
     </div>
     <div class="trust-pentagon-container">
@@ -53,7 +53,7 @@
             <p>{{ t('pillars.reliability.desc') or 'Surveillez la précision, le rappel, le F1-score. Détectez les dérives de modèles et suivez la qualité dans le temps.' }}</p>
             <div class="pillar-metrics">
                 <span class="pillar-metric"><i data-lucide="target"></i> Précision</span>
-                <span class="pillar-metric"><i data-lucide="git-merge"></i> Drift</span>
+                <span class="pillar-metric"><i data-lucide="git-merge"></i> Dérive</span>
                 <span class="pillar-metric"><i data-lucide="bar-chart-2"></i> F1-Score</span>
             </div>
         </div>
@@ -84,7 +84,7 @@
             <p>{{ t('pillars.security.desc') or 'Protégez contre les injections de prompts, les attaques adversariales, l\'extraction de données et les comportements anormaux.' }}</p>
             <div class="pillar-metrics">
                 <span class="pillar-metric"><i data-lucide="syringe"></i> Injection</span>
-                <span class="pillar-metric"><i data-lucide="alert-triangle"></i> Adversarial</span>
+                <span class="pillar-metric"><i data-lucide="alert-triangle"></i> Adversariale</span>
                 <span class="pillar-metric"><i data-lucide="activity"></i> Anomalies</span>
             </div>
         </div>
@@ -145,7 +145,7 @@
         <div class="pillar-card-body">
             <p>{{ t('pillars.explainability.desc') or 'Feature importance, scores de confiance, alternatives écartées. Répondez aux obligations légales et éthiques.' }}</p>
             <div class="pillar-metrics">
-                <span class="pillar-metric"><i data-lucide="list-ordered"></i> Features</span>
+                <span class="pillar-metric"><i data-lucide="list-ordered"></i> Variables</span>
                 <span class="pillar-metric"><i data-lucide="gauge"></i> Confiance</span>
                 <span class="pillar-metric"><i data-lucide="heart"></i> Éthique</span>
             </div>
@@ -449,8 +449,8 @@ async function loadRecommendations() {
             { icon: 'trending-up', title: 'ROI en amélioration', desc: 'Le coût par inférence a baissé de 12% ce mois.', action: '/pillars/performance', priority: 'low' }
         ],
         'tech_ml_engineer': [
-            { icon: 'git-merge', title: 'Drift détecté', desc: 'Le modèle fraud-detection montre un concept drift. Réévaluez le seuil.', action: '/pillars/reliability#drift', priority: 'high' },
-            { icon: 'lightbulb', title: 'Explicabilité insuffisante', desc: 'Ajoutez des feature importances au modèle pricing.', action: '/pillars/explainability', priority: 'medium' }
+            { icon: 'git-merge', title: 'Dérive détectée', desc: 'Le modèle fraud-detection montre une dérive conceptuelle. Réévaluez le seuil.', action: '/pillars/reliability#drift', priority: 'high' },
+            { icon: 'lightbulb', title: 'Explicabilité insuffisante', desc: 'Ajoutez des importances de variables au modèle pricing.', action: '/pillars/explainability', priority: 'medium' }
         ],
         'security_soc': [
             { icon: 'alert-triangle', title: 'Tentatives d\'injection', desc: '12 tentatives de prompt injection bloquées cette semaine.', action: '/pillars/security#injection', priority: 'high' },

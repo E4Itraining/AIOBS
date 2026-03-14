@@ -2,7 +2,7 @@
 
 {% set active_page = 'tech' %}
 
-{% block page_title %}Vue Technique{% endblock %}
+{% block page_title %}Vue SIC/SSI{% endblock %}
 
 {% block content %}
 <div class="tech-dashboard page-transition-enter">
@@ -11,11 +11,11 @@
         <div class="hero-content">
             <div class="hero-badge" style="background: linear-gradient(135deg, #6366f1, #8b5cf6);">
                 <i data-lucide="server"></i>
-                <span>Tech (DSI / RSSI)</span>
+                <span>SIC / SSI</span>
             </div>
-            <h1>Vue Technique</h1>
+            <h1>Vue SIC/SSI</h1>
             <p class="hero-subtitle">
-                Gouvernance IT, infrastructure IA, sécurité et performance. Vue consolidée pour DSI et RSSI.
+                Gouvernance SIC, infrastructure IA, cyberdéfense et performance. Vue consolidée pour OSSI et officiers SSI.
             </p>
         </div>
         <div class="hero-actions">
@@ -25,7 +25,7 @@
             </a>
             <a href="/monitoring" class="btn btn-primary">
                 <i data-lucide="activity"></i>
-                <span>Monitoring Live</span>
+                <span>Supervision en Direct</span>
             </a>
         </div>
     </div>
@@ -115,11 +115,11 @@
     <div class="dual-view-tabs">
         <button class="dual-tab active" data-view="dsi" onclick="switchTechView('dsi')">
             <i data-lucide="landmark"></i>
-            <span>Vue DSI</span>
+            <span>Vue OSSI</span>
         </button>
         <button class="dual-tab" data-view="rssi" onclick="switchTechView('rssi')">
             <i data-lucide="shield"></i>
-            <span>Vue RSSI</span>
+            <span>Vue Cyberdéfense</span>
         </button>
     </div>
 
@@ -145,8 +145,8 @@
                             <div class="system-status-indicator"></div>
                             <div class="system-icon"><i data-lucide="message-square"></i></div>
                             <div class="system-info">
-                                <h4>Chatbot Client</h4>
-                                <span class="system-type">NLP / LLM</span>
+                                <h4>Chatbot Opérateur</h4>
+                                <span class="system-type">TAL / LLM</span>
                             </div>
                             <div class="system-metrics">
                                 <span title="Disponibilité">99.98%</span>
@@ -158,7 +158,7 @@
                             <div class="system-icon"><i data-lucide="credit-card"></i></div>
                             <div class="system-info">
                                 <h4>Scoring Crédit</h4>
-                                <span class="system-type">ML Classification</span>
+                                <span class="system-type">Classification ML</span>
                             </div>
                             <div class="system-metrics">
                                 <span>99.95%</span>
@@ -170,7 +170,7 @@
                             <div class="system-icon"><i data-lucide="shopping-cart"></i></div>
                             <div class="system-info">
                                 <h4>Recommandation</h4>
-                                <span class="system-type">ML Ranking</span>
+                                <span class="system-type">Classement ML</span>
                             </div>
                             <div class="system-metrics">
                                 <span>99.2%</span>
@@ -181,8 +181,8 @@
                             <div class="system-status-indicator"></div>
                             <div class="system-icon"><i data-lucide="shield"></i></div>
                             <div class="system-info">
-                                <h4>Fraude Detection</h4>
-                                <span class="system-type">Anomaly Detection</span>
+                                <h4>Détection de Fraude</h4>
+                                <span class="system-type">Détection d'Anomalies</span>
                             </div>
                             <div class="system-metrics">
                                 <span>99.99%</span>
@@ -193,8 +193,8 @@
                             <div class="system-status-indicator"></div>
                             <div class="system-icon"><i data-lucide="user-check"></i></div>
                             <div class="system-info">
-                                <h4>KYC Automation</h4>
-                                <span class="system-type">Document AI</span>
+                                <h4>Automatisation Vérification</h4>
+                                <span class="system-type">IA Documentaire</span>
                             </div>
                             <div class="system-metrics">
                                 <span>85.3%</span>
@@ -205,7 +205,7 @@
                             <div class="system-status-indicator"></div>
                             <div class="system-icon"><i data-lucide="file-search"></i></div>
                             <div class="system-info">
-                                <h4>Doc Analyzer</h4>
+                                <h4>Analyseur de Documents</h4>
                                 <span class="system-type">OCR + NLP</span>
                             </div>
                             <div class="system-metrics">
@@ -222,7 +222,7 @@
                 <div class="card-header">
                     <h3>
                         <i data-lucide="target"></i>
-                        SLO / SLI Status
+                        Statut SLO / SLI
                     </h3>
                 </div>
                 <div class="card-body">
@@ -343,7 +343,7 @@
                             </div>
                             <div class="data-source-info">
                                 <h4>OpenObserve</h4>
-                                <span class="data-source-type">Logs, Metrics, Traces</span>
+                                <span class="data-source-type">Journaux, Métriques, Traces</span>
                             </div>
                             <span class="data-source-status connected">
                                 <i data-lucide="check-circle"></i>
@@ -356,7 +356,7 @@
                             </div>
                             <div class="data-source-info">
                                 <h4>VictoriaMetrics</h4>
-                                <span class="data-source-type">Time Series DB</span>
+                                <span class="data-source-type">Base Séries Temporelles</span>
                             </div>
                             <span class="data-source-status connected">
                                 <i data-lucide="check-circle"></i>
@@ -368,8 +368,8 @@
                                 <i data-lucide="cpu"></i>
                             </div>
                             <div class="data-source-info">
-                                <h4>Model Registry</h4>
-                                <span class="data-source-type">ML Models</span>
+                                <h4>Registre de Modèles</h4>
+                                <span class="data-source-type">Modèles ML</span>
                             </div>
                             <span class="data-source-status connected">
                                 <i data-lucide="check-circle"></i>
@@ -389,7 +389,7 @@
                     </h3>
                     <div class="metric-selector">
                         <button class="metric-btn active" data-metric="latency">Latence</button>
-                        <button class="metric-btn" data-metric="throughput">Throughput</button>
+                        <button class="metric-btn" data-metric="throughput">Débit</button>
                         <button class="metric-btn" data-metric="errors">Erreurs</button>
                     </div>
                 </div>
@@ -413,10 +413,10 @@
                     <div class="card-header-actions">
                         <button class="btn btn-ghost btn-sm" onclick="openSecurityDeepDive()">
                             <i data-lucide="maximize-2"></i>
-                            Deep Dive
+                            Analyse Détaillée
                         </button>
                         <a href="/security" class="btn btn-ghost btn-sm">
-                            Centre Sécurité
+                            Centre Cyberdéfense
                             <i data-lucide="arrow-right"></i>
                         </a>
                     </div>
@@ -442,12 +442,12 @@
                             <span class="sec-cat-score">98%</span>
                         </div>
                         <div class="sec-category">
-                            <span class="sec-cat-name">Adversarial Defense</span>
+                            <span class="sec-cat-name">Défense Adversariale</span>
                             <div class="sec-cat-bar"><div class="sec-cat-fill" style="width: 85%;"></div></div>
                             <span class="sec-cat-score">85%</span>
                         </div>
                         <div class="sec-category">
-                            <span class="sec-cat-name">Data Privacy</span>
+                            <span class="sec-cat-name">Protection des Données</span>
                             <div class="sec-cat-bar"><div class="sec-cat-fill" style="width: 92%;"></div></div>
                             <span class="sec-cat-score">92%</span>
                         </div>
@@ -600,7 +600,7 @@
         <div class="modal-header">
             <h2>
                 <i data-lucide="shield"></i>
-                Deep Dive - Posture de Sécurité
+                Analyse Détaillée - Posture de Sécurité
             </h2>
             <button class="modal-close" onclick="closeSecurityDeepDive()">
                 <i data-lucide="x"></i>
@@ -675,7 +675,7 @@
                     </div>
                     <div class="deep-dive-kpi-content">
                         <span class="deep-dive-kpi-value">85%</span>
-                        <span class="deep-dive-kpi-label">Adversarial Defense</span>
+                        <span class="deep-dive-kpi-label">Défense Adversariale</span>
                         <span class="deep-dive-kpi-trend warning"><i data-lucide="alert-triangle"></i> À améliorer</span>
                     </div>
                 </div>
@@ -685,7 +685,7 @@
                     </div>
                     <div class="deep-dive-kpi-content">
                         <span class="deep-dive-kpi-value">92%</span>
-                        <span class="deep-dive-kpi-label">Data Privacy</span>
+                        <span class="deep-dive-kpi-label">Protection des Données</span>
                         <span class="deep-dive-kpi-trend up"><i data-lucide="trending-up"></i> +1%</span>
                     </div>
                 </div>
@@ -701,15 +701,15 @@
                                 <th>Système IA</th>
                                 <th>Accès</th>
                                 <th>Chiffrement</th>
-                                <th>Adversarial</th>
-                                <th>Privacy</th>
+                                <th>Adversariale</th>
+                                <th>Données</th>
                                 <th>Score Global</th>
                                 <th>Statut</th>
                             </tr>
                         </thead>
                         <tbody>
                             <tr>
-                                <td><strong>Fraud Detection</strong></td>
+                                <td><strong>Détection de Fraude</strong></td>
                                 <td>98%</td>
                                 <td>100%</td>
                                 <td>95%</td>
@@ -727,7 +727,7 @@
                                 <td><span class="badge badge-success">Excellent</span></td>
                             </tr>
                             <tr>
-                                <td><strong>Chatbot Client</strong></td>
+                                <td><strong>Chatbot Opérateur</strong></td>
                                 <td>94%</td>
                                 <td>98%</td>
                                 <td>82%</td>
@@ -736,7 +736,7 @@
                                 <td><span class="badge badge-success">Bon</span></td>
                             </tr>
                             <tr>
-                                <td><strong>KYC Automation</strong></td>
+                                <td><strong>Automatisation Vérification</strong></td>
                                 <td>92%</td>
                                 <td>96%</td>
                                 <td>78%</td>
