@@ -170,7 +170,7 @@
             </div>
             <div class="kpi-content">
                 <span class="kpi-value">67%</span>
-                <span class="kpi-label">Cache hit ratio</span>
+                <span class="kpi-label">Taux de cache</span>
                 <span class="kpi-trend up"><i data-lucide="trending-up"></i> +12.3%</span>
             </div>
         </div>
@@ -181,7 +181,7 @@
             <div class="kpi-content">
                 <span class="kpi-value">142 kg</span>
                 <span class="kpi-label">CO₂ économisé</span>
-                <span class="kpi-trend down"><i data-lucide="trending-down"></i> Green</span>
+                <span class="kpi-trend down"><i data-lucide="trending-down"></i> Sobre</span>
             </div>
         </div>
     </div>
@@ -225,7 +225,7 @@
                 </div>
                 <div class="breakdown-item">
                     <span class="breakdown-color" style="background: #ddd6fe"></span>
-                    <span class="breakdown-name">Monitoring</span>
+                    <span class="breakdown-name">Supervision</span>
                     <span class="breakdown-value">1 400 €</span>
                     <span class="breakdown-pct">3%</span>
                 </div>
@@ -260,7 +260,7 @@
                 <select class="form-select" style="width: 150px;">
                     <option>Tous les environnements</option>
                     <option>Production</option>
-                    <option>Staging</option>
+                    <option>Homologation</option>
                     <option>Développement</option>
                 </select>
             </div>
@@ -321,7 +321,7 @@
                     <tr>
                         <td>
                             <div class="model-cell">
-                                <span class="model-name">churn-predictor</span>
+                                <span class="model-name">prediction-maintenance-v3</span>
                                 <span class="model-version">v3.1.0</span>
                             </div>
                         </td>
@@ -332,7 +332,7 @@
                         <td>8 010 €</td>
                         <td><span class="trend stable"><i data-lucide="minus"></i> 0%</span></td>
                         <td>
-                            <button class="btn btn-ghost btn-sm" onclick="viewModelDetails('churn-predictor')">
+                            <button class="btn btn-ghost btn-sm" onclick="viewModelDetails('prediction-maintenance-v3')">
                                 <i data-lucide="eye"></i>
                             </button>
                         </td>
@@ -359,18 +359,18 @@
                     <tr>
                         <td>
                             <div class="model-cell">
-                                <span class="model-name">sentiment-analyzer</span>
+                                <span class="model-name">analyse-osint-v2</span>
                                 <span class="model-version">v2.0.1</span>
                             </div>
                         </td>
-                        <td><span class="badge badge-info">Staging</span></td>
+                        <td><span class="badge badge-info">Homologation</span></td>
                         <td>15K</td>
                         <td>1,65 €</td>
                         <td>25 €</td>
                         <td>530 €</td>
                         <td><span class="trend down"><i data-lucide="trending-down"></i> -12%</span></td>
                         <td>
-                            <button class="btn btn-ghost btn-sm" onclick="viewModelDetails('sentiment-analyzer')">
+                            <button class="btn btn-ghost btn-sm" onclick="viewModelDetails('analyse-osint-v2')">
                                 <i data-lucide="eye"></i>
                             </button>
                         </td>
@@ -440,10 +440,10 @@
                         <span class="anomaly-title">Augmentation du trafic réseau</span>
                         <span class="anomaly-time">Il y a 3 jours</span>
                     </div>
-                    <p class="anomaly-desc">Transfert de données inter-régions en hausse de 15%. Probablement lié au déploiement EU.</p>
+                    <p class="anomaly-desc">Transfert de données inter-régions en hausse de 15%. Probablement lié au déploiement Zone Ouest.</p>
                     <div class="anomaly-impact">
                         <span><i data-lucide="euro"></i> +41 €/jour impact</span>
-                        <span><i data-lucide="target"></i> eu-west-1</span>
+                        <span><i data-lucide="target"></i> DC-Balard-01</span>
                     </div>
                 </div>
                 <div class="anomaly-actions">
@@ -571,8 +571,8 @@
                             <i data-lucide="cloud"></i>
                         </div>
                         <div class="provider-details">
-                            <span class="provider-name">AWS</span>
-                            <span class="provider-services">EC2, S3, SageMaker</span>
+                            <span class="provider-name">Cloud Défense (DIRISI)</span>
+                            <span class="provider-services">Calcul GPU, Stockage, ML Défense</span>
                         </div>
                     </div>
                     <div class="provider-cost">
@@ -589,8 +589,8 @@
                             <i data-lucide="cloud"></i>
                         </div>
                         <div class="provider-details">
-                            <span class="provider-name">Google Cloud</span>
-                            <span class="provider-services">Vertex AI, GCS, GKE</span>
+                            <span class="provider-name">Cloud SecNumCloud (Thales)</span>
+                            <span class="provider-services">IA Souveraine, Stockage, Orchestration</span>
                         </div>
                     </div>
                     <div class="provider-cost">
@@ -607,8 +607,8 @@
                             <i data-lucide="cloud"></i>
                         </div>
                         <div class="provider-details">
-                            <span class="provider-name">Azure</span>
-                            <span class="provider-services">Azure ML, Blob Storage</span>
+                            <span class="provider-name">Cloud de Confiance (OVH)</span>
+                            <span class="provider-services">ML Cloud, Stockage Objet</span>
                         </div>
                     </div>
                     <div class="provider-cost">
@@ -873,7 +873,7 @@
                                 <td><span class="badge badge-success">Excellent</span></td>
                             </tr>
                             <tr>
-                                <td><strong>churn-predictor</strong></td>
+                                <td><strong>prediction-maintenance-v3</strong></td>
                                 <td>8 010 €</td>
                                 <td>28 500 €</td>
                                 <td><strong class="text-success">256%</strong></td>
@@ -887,7 +887,7 @@
                                 <td><span class="badge badge-warning">À optimiser</span></td>
                             </tr>
                             <tr>
-                                <td><strong>sentiment-analyzer</strong></td>
+                                <td><strong>analyse-osint-v2</strong></td>
                                 <td>530 €</td>
                                 <td>1 850 €</td>
                                 <td><strong class="text-success">249%</strong></td>
@@ -2146,7 +2146,7 @@ function initCharts() {
         new Chart(categoryCtx, {
             type: 'doughnut',
             data: {
-                labels: ['Inférence', 'Entraînement', 'Stockage', 'Réseau', 'Monitoring'],
+                labels: ['Inférence', 'Entraînement', 'Stockage', 'Réseau', 'Supervision'],
                 datasets: [{
                     data: [26100, 7500, 4150, 2300, 1400],
                     backgroundColor: ['#6366f1', '#8b5cf6', '#a78bfa', '#c4b5fd', '#ddd6fe'],
