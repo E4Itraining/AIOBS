@@ -16,7 +16,7 @@ load_dotenv()
 import psutil
 from fastapi import FastAPI, Request
 from fastapi.middleware.cors import CORSMiddleware
-from fastapi.responses import HTMLResponse, PlainTextResponse
+from fastapi.responses import HTMLResponse, PlainTextResponse, RedirectResponse
 from fastapi.staticfiles import StaticFiles
 from fastapi.templating import Jinja2Templates
 
@@ -365,19 +365,10 @@ async def profile_dashboard(request: Request, profile_id: str):
     )
 
 
-@app.get("/unified", response_class=HTMLResponse)
+@app.get("/unified")
 async def unified_view(request: Request):
-    """Unified monitoring view"""
-    i18n = create_i18n_context(request)
-    return templates.TemplateResponse(
-        "unified.html",
-        {
-            "request": request,
-            "title": f"{APP_TITLE} - {i18n['t']('nav.unified_view')}",
-            "active_page": "unified",
-            **i18n,
-        },
-    )
+    """Redirect to global view (merged)"""
+    return RedirectResponse(url="/global", status_code=302)
 
 
 @app.get("/causal", response_class=HTMLResponse)
@@ -530,19 +521,10 @@ async def onboarding_view(request: Request):
     )
 
 
-@app.get("/personas", response_class=HTMLResponse)
+@app.get("/personas")
 async def personas_view(request: Request):
-    """Personas hub - select user journey based on role"""
-    i18n = create_i18n_context(request)
-    return templates.TemplateResponse(
-        "personas.html",
-        {
-            "request": request,
-            "title": f"{APP_TITLE} - Parcours Utilisateurs",
-            "active_page": "personas",
-            **i18n,
-        },
-    )
+    """Redirect to welcome (merged persona selection)"""
+    return RedirectResponse(url="/welcome", status_code=302)
 
 
 @app.get("/global", response_class=HTMLResponse)
@@ -560,19 +542,10 @@ async def global_view(request: Request):
     )
 
 
-@app.get("/dirigeant", response_class=HTMLResponse)
+@app.get("/dirigeant")
 async def dirigeant_view(request: Request):
-    """Dirigeant/Business strategic dashboard"""
-    i18n = create_i18n_context(request)
-    return templates.TemplateResponse(
-        "dirigeant.html",
-        {
-            "request": request,
-            "title": f"{APP_TITLE} - Vue Dirigeant",
-            "active_page": "dirigeant",
-            **i18n,
-        },
-    )
+    """Redirect to executive view (merged)"""
+    return RedirectResponse(url="/executive", status_code=302)
 
 
 @app.get("/tech", response_class=HTMLResponse)
