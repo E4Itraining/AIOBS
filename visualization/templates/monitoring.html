@@ -4,8 +4,8 @@
 
 {% block sidebar_extra %}{% endblock %}
 
-{% block page_title %}Live Monitoring{% endblock %}
-{% block page_subtitle %}<p class="text-muted">API health, drift & performance</p>{% endblock %}
+{% block page_title %}Surveillance Opérationnelle{% endblock %}
+{% block page_subtitle %}<p class="text-muted">Systèmes IA Défense - Temps réel</p>{% endblock %}
 
 {% block topbar_actions %}
 <div class="live-indicator">
@@ -29,15 +29,15 @@
     <div class="tab-header">
         <button class="tab-btn active" onclick="switchMonitoringTab('health')" data-tab="health">
             <i data-lucide="heart-pulse"></i>
-            <span>Sante systeme</span>
+            <span>État Systèmes</span>
         </button>
         <button class="tab-btn" onclick="switchMonitoringTab('drift')" data-tab="drift">
             <i data-lucide="git-branch"></i>
-            <span>Drift</span>
+            <span>Dérive Modèles</span>
         </button>
         <button class="tab-btn" onclick="switchMonitoringTab('api')" data-tab="api">
             <i data-lucide="server"></i>
-            <span>API Health</span>
+            <span>Services IA</span>
         </button>
         <button class="tab-btn" onclick="switchMonitoringTab('performance')" data-tab="performance">
             <i data-lucide="gauge"></i>
@@ -55,7 +55,7 @@
             <div class="health-header">
                 <span class="health-status">
                     <span class="status-dot healthy"></span>
-                    API Gateway
+                    Passerelle SIOC
                 </span>
                 <span class="health-uptime">99.99% uptime</span>
             </div>
@@ -79,7 +79,7 @@
             <div class="health-header">
                 <span class="health-status">
                     <span class="status-dot healthy"></span>
-                    Model Router
+                    Routeur Modèles IA
                 </span>
                 <span class="health-uptime">99.95% uptime</span>
             </div>
@@ -103,7 +103,7 @@
             <div class="health-header">
                 <span class="health-status">
                     <span class="status-dot degraded"></span>
-                    Inference Cluster
+                    Cluster Inférence
                 </span>
                 <span class="health-uptime">98.5% uptime</span>
             </div>
@@ -127,7 +127,7 @@
             <div class="health-header">
                 <span class="health-status">
                     <span class="status-dot healthy"></span>
-                    Feature Store
+                    Base de Données Tactique
                 </span>
                 <span class="health-uptime">99.99% uptime</span>
             </div>
@@ -155,7 +155,7 @@
         <!-- Live Latency -->
         <div class="card">
             <div class="card-header">
-                <h3 class="card-title">Inference Latency (Live)</h3>
+                <h3 class="card-title">Latence Inférence (Temps Réel)</h3>
                 <div class="metric-badges">
                     <span class="metric-badge">p50: <strong>42ms</strong></span>
                     <span class="metric-badge">p99: <strong>145ms</strong></span>
@@ -169,7 +169,7 @@
         <!-- Live Throughput -->
         <div class="card">
             <div class="card-header">
-                <h3 class="card-title">Request Throughput (Live)</h3>
+                <h3 class="card-title">Débit Requêtes (Temps Réel)</h3>
                 <div class="metric-badges">
                     <span class="metric-badge">Current: <strong>8,250 req/min</strong></span>
                 </div>
@@ -187,13 +187,13 @@
 <section class="mb-6">
     <div class="card">
         <div class="card-header">
-            <h3 class="card-title">Model Drift Detection</h3>
+            <h3 class="card-title">Détection de Dérive des Modèles</h3>
             <div class="header-actions">
                 <select class="form-select" style="width: 180px;">
-                    <option>All Models</option>
-                    <option>recommendation-v2</option>
-                    <option>fraud-detector-v1</option>
-                    <option>churn-predictor</option>
+                    <option>Tous les modèles</option>
+                    <option>detection-menaces-v2</option>
+                    <option>classification-signaux-v1</option>
+                    <option>analyse-comportement</option>
                 </select>
             </div>
         </div>
@@ -241,7 +241,7 @@
                 </div>
             </div>
             <div class="feature-drift-table">
-                <h4>Top Drifting Features</h4>
+                <h4>Features en Dérive</h4>
                 <table class="table">
                     <thead>
                         <tr>
@@ -254,7 +254,7 @@
                     </thead>
                     <tbody id="featureDriftTable">
                         <tr>
-                            <td><code>user_engagement_score</code></td>
+                            <td><code>threat_confidence_score</code></td>
                             <td>
                                 <div class="inline-bar">
                                     <div class="bar-fill warning" style="width: 42%"></div>
@@ -266,7 +266,7 @@
                             <td>2 min ago</td>
                         </tr>
                         <tr>
-                            <td><code>purchase_frequency</code></td>
+                            <td><code>anomaly_detection_rate</code></td>
                             <td>
                                 <div class="inline-bar">
                                     <div class="bar-fill warning" style="width: 36%"></div>
@@ -278,7 +278,7 @@
                             <td>2 min ago</td>
                         </tr>
                         <tr>
-                            <td><code>session_duration</code></td>
+                            <td><code>signal_latency</code></td>
                             <td>
                                 <div class="inline-bar">
                                     <div class="bar-fill success" style="width: 28%"></div>
@@ -290,7 +290,7 @@
                             <td>2 min ago</td>
                         </tr>
                         <tr>
-                            <td><code>click_through_rate</code></td>
+                            <td><code>classification_accuracy</code></td>
                             <td>
                                 <div class="inline-bar">
                                     <div class="bar-fill success" style="width: 18%"></div>
@@ -314,14 +314,14 @@
 <section class="mb-6">
     <div class="card">
         <div class="card-header">
-            <h3 class="card-title">API Health Checks</h3>
-            <span class="badge badge-success">All endpoints healthy</span>
+            <h3 class="card-title">État des Services IA</h3>
+            <span class="badge badge-success">Tous les points d'accès opérationnels</span>
         </div>
         <div class="api-health-grid">
             <div class="api-endpoint healthy">
                 <div class="endpoint-header">
                     <span class="method get">GET</span>
-                    <span class="path">/api/v1/recommend</span>
+                    <span class="path">/api/v1/detect/threats</span>
                 </div>
                 <div class="endpoint-stats">
                     <span class="stat"><i data-lucide="clock"></i> 42ms</span>
@@ -334,7 +334,7 @@
             <div class="api-endpoint healthy">
                 <div class="endpoint-header">
                     <span class="method post">POST</span>
-                    <span class="path">/api/v1/predict/fraud</span>
+                    <span class="path">/api/v1/classify/signals</span>
                 </div>
                 <div class="endpoint-stats">
                     <span class="stat"><i data-lucide="clock"></i> 85ms</span>
@@ -347,7 +347,7 @@
             <div class="api-endpoint healthy">
                 <div class="endpoint-header">
                     <span class="method post">POST</span>
-                    <span class="path">/api/v1/predict/churn</span>
+                    <span class="path">/api/v1/correlate/it-ot</span>
                 </div>
                 <div class="endpoint-stats">
                     <span class="stat"><i data-lucide="clock"></i> 35ms</span>
@@ -360,7 +360,7 @@
             <div class="api-endpoint degraded">
                 <div class="endpoint-header">
                     <span class="method post">POST</span>
-                    <span class="path">/api/v1/chat/completion</span>
+                    <span class="path">/api/v1/analyze/behavior</span>
                 </div>
                 <div class="endpoint-stats">
                     <span class="stat warning"><i data-lucide="clock"></i> 1.2s</span>
@@ -381,7 +381,7 @@
         <!-- Trust Score Trend -->
         <div class="card">
             <div class="card-header">
-                <h3 class="card-title">Trust Score Trend (24h)</h3>
+                <h3 class="card-title">Indice de Confiance (24h)</h3>
             </div>
             <div class="chart-container">
                 <canvas id="trustTrendChart"></canvas>
@@ -391,7 +391,7 @@
         <!-- Error Distribution -->
         <div class="card">
             <div class="card-header">
-                <h3 class="card-title">Error Distribution</h3>
+                <h3 class="card-title">Distribution des Erreurs</h3>
             </div>
             <div class="error-distribution">
                 <div class="error-type">
@@ -426,21 +426,21 @@
                 </div>
             </div>
             <div class="error-breakdown mt-4">
-                <h4 class="text-sm font-semibold mb-2">Top Errors (1h)</h4>
+                <h4 class="text-sm font-semibold mb-2">Erreurs Principales (1h)</h4>
                 <div class="top-errors">
                     <div class="error-item">
                         <span class="error-badge">429</span>
-                        <span class="error-msg">Rate limit exceeded</span>
+                        <span class="error-msg">Limite de débit dépassée</span>
                         <span class="error-num">45</span>
                     </div>
                     <div class="error-item">
                         <span class="error-badge">500</span>
-                        <span class="error-msg">Internal server error</span>
+                        <span class="error-msg">Erreur interne serveur</span>
                         <span class="error-num">12</span>
                     </div>
                     <div class="error-item">
                         <span class="error-badge">408</span>
-                        <span class="error-msg">Request timeout</span>
+                        <span class="error-msg">Délai d'attente dépassé</span>
                         <span class="error-num">8</span>
                     </div>
                 </div>
@@ -1102,7 +1102,7 @@ function togglePause() {
 
     if (isPaused) {
         icon.setAttribute('data-lucide', 'play');
-        text.textContent = 'Resume';
+        text.textContent = 'Reprendre';
     } else {
         icon.setAttribute('data-lucide', 'pause');
         text.textContent = 'Pause';

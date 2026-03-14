@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>{{ title }} | GASKIA</title>
-    <meta name="description" content="GASKIA - Voir. Prouver. Maîtriser. Trust Control Layer for AI Systems.">
+    <meta name="description" content="GASKIA - Voir. Prouver. Maîtriser. Plateforme de Cyberdéfense IA Souveraine - Ministère des Armées.">
 
     <!-- Favicon -->
     <link rel="icon" type="image/svg+xml" href="/static/images/favicons/favicon.svg">
@@ -72,7 +72,7 @@
                     </div>
                     <div class="logo-content">
                         <span class="logo-text">GASKIA</span>
-                        <span class="logo-tagline">Voir. Prouver. Maîtriser.</span>
+                        <span class="logo-tagline">Cyberdéfense IA Souveraine</span>
                     </div>
                 </div>
                 <button class="sidebar-close" id="sidebarClose" aria-label="Close menu">
@@ -84,152 +84,152 @@
                 <!-- Persona Indicator -->
                 <div class="persona-indicator" id="personaIndicator">
                     <div class="persona-badge">
-                        <i data-lucide="user-circle" class="persona-icon"></i>
+                        <i data-lucide="shield" class="persona-icon"></i>
                         <div class="persona-info">
-                            <span class="persona-label">{{ t('nav.my_journey') or 'Mon Parcours' }}</span>
+                            <span class="persona-label">Poste</span>
                             <span class="persona-name" id="currentPersonaName">{{ t('nav.select_persona') or 'Sélectionner' }}</span>
                         </div>
                         <i data-lucide="chevron-down" class="persona-chevron"></i>
                     </div>
                 </div>
 
-                <!-- Essentiels -->
+                <!-- Situation Opérationnelle -->
                 <div class="nav-group nav-group-essentials" id="navEssentials">
                     <span class="nav-group-title">
-                        <i data-lucide="star" class="title-icon"></i>
-                        {{ t('nav.my_essentials') or 'Essentiels' }}
+                        <i data-lucide="radar" class="title-icon"></i>
+                        Situation
                     </span>
                     <div class="nav-essentials-list" id="essentialsList">
                         <a href="/" class="nav-link {% if active_page == 'hub' %}active{% endif %}">
                             <i data-lucide="layout-dashboard"></i>
-                            <span>{{ t('nav.hub') or 'Hub' }}</span>
+                            <span>Centre Opérationnel</span>
                         </a>
                         <a href="/dashboard" class="nav-link {% if active_page == 'dashboard' %}active{% endif %}">
                             <i data-lucide="bar-chart-3"></i>
-                            <span>{{ t('nav.dashboard_detail') or 'Dashboard' }}</span>
+                            <span>Tableau de Bord</span>
+                        </a>
+                        <a href="/defense-soc" class="nav-link {% if active_page == 'defense-soc' %}active{% endif %}">
+                            <i data-lucide="shield"></i>
+                            <span>SOC Défense</span>
                         </a>
                     </div>
                 </div>
 
-                <!-- Vues -->
+                <!-- Cyberdéfense -->
                 <div class="nav-group nav-group-explore">
                     <span class="nav-group-title">
-                        <i data-lucide="eye" class="title-icon"></i>
-                        {{ t('nav.perspectives') or 'Vues' }}
+                        <i data-lucide="sword" class="title-icon"></i>
+                        Cyberdéfense
                     </span>
 
-                    <!-- Accordion: Perspectives -->
+                    <!-- Accordion: Supervision -->
                     <div class="nav-accordion" data-accordion="perspectives">
                         <button class="nav-accordion-header" onclick="toggleAccordion('perspectives')">
-                            <i data-lucide="users"></i>
-                            <span>{{ t('nav.perspectives') or 'Par role' }}</span>
-                            <i data-lucide="chevron-right" class="accordion-chevron"></i>
-                        </button>
-                        <div class="nav-accordion-content">
-                            <a href="/global" class="nav-link {% if active_page == 'global' or active_page == 'unified' %}active{% endif %}">
-                                <i data-lucide="globe"></i>
-                                <span>{{ t('nav.global_view') or 'Vue globale' }}</span>
-                            </a>
-                            <a href="/executive" class="nav-link {% if active_page == 'executive' or active_page == 'dirigeant' %}active{% endif %}">
-                                <i data-lucide="briefcase"></i>
-                                <span>{{ t('nav.executive_view') or 'Executive' }}</span>
-                            </a>
-                            <a href="/tech" class="nav-link {% if active_page == 'tech' %}active{% endif %}">
-                                <i data-lucide="server"></i>
-                                <span>{{ t('nav.tech_view') or 'Tech' }}</span>
-                            </a>
-                            <a href="/juridique" class="nav-link {% if active_page == 'juridique' %}active{% endif %}">
-                                <i data-lucide="gavel"></i>
-                                <span>{{ t('nav.juridique_view') or 'Juridique' }}</span>
-                            </a>
-                            <a href="/financier" class="nav-link {% if active_page == 'financier' %}active{% endif %}">
-                                <i data-lucide="wallet"></i>
-                                <span>{{ t('nav.financier_view') or 'Finance' }}</span>
-                            </a>
-                        </div>
-                    </div>
-
-                    <!-- Accordion: Analyse & IA -->
-                    <div class="nav-accordion" data-accordion="analysis">
-                        <button class="nav-accordion-header" onclick="toggleAccordion('analysis')">
-                            <i data-lucide="brain"></i>
-                            <span>{{ t('nav.analysis_ia') or 'Analyse & IA' }}</span>
-                            <i data-lucide="chevron-right" class="accordion-chevron"></i>
-                        </button>
-                        <div class="nav-accordion-content">
-                            <a href="/causal" class="nav-link {% if active_page == 'causal' %}active{% endif %}">
-                                <i data-lucide="git-branch"></i>
-                                <span>{{ t('nav.causal_analysis') or 'Analyse causale' }}</span>
-                            </a>
-                            <a href="/impact" class="nav-link {% if active_page == 'impact' %}active{% endif %}">
-                                <i data-lucide="trending-up"></i>
-                                <span>{{ t('nav.impact_analysis') or 'Impact' }}</span>
-                            </a>
-                            <a href="/multi-agent" class="nav-link {% if active_page == 'multi-agent' %}active{% endif %}">
-                                <i data-lucide="network"></i>
-                                <span>{{ t('nav.multi_agent') or 'Multi-agents' }}</span>
-                            </a>
-                            <a href="/healing" class="nav-link {% if active_page == 'healing' %}active{% endif %}">
-                                <i data-lucide="heart-pulse"></i>
-                                <span>{{ t('nav.healing') or 'Auto-remediation' }}</span>
-                            </a>
-                            <a href="/business-intelligence" class="nav-link {% if active_page == 'business-intelligence' %}active{% endif %}">
-                                <i data-lucide="bar-chart-3"></i>
-                                <span>{{ t('nav.business_intelligence') or 'Business Intel' }}</span>
-                            </a>
-                        </div>
-                    </div>
-
-                    <!-- Accordion: Ops & Gouvernance (merged) -->
-                    <div class="nav-accordion" data-accordion="ops-governance">
-                        <button class="nav-accordion-header" onclick="toggleAccordion('ops-governance')">
-                            <i data-lucide="shield"></i>
-                            <span>{{ t('nav.ops_governance') or 'Ops & Gouvernance' }}</span>
+                            <i data-lucide="eye"></i>
+                            <span>Supervision</span>
                             <i data-lucide="chevron-right" class="accordion-chevron"></i>
                         </button>
                         <div class="nav-accordion-content">
                             <a href="/monitoring" class="nav-link {% if active_page == 'monitoring' %}active{% endif %}">
                                 <i data-lucide="activity"></i>
-                                <span>{{ t('nav.monitoring') or 'Monitoring' }}</span>
+                                <span>Surveillance Temps Réel</span>
                             </a>
-                            <a href="/finops" class="nav-link {% if active_page == 'finops' %}active{% endif %}">
-                                <i data-lucide="coins"></i>
-                                <span>{{ t('nav.finops') or 'FinOps' }}</span>
-                            </a>
-                            <a href="/greenops" class="nav-link {% if active_page == 'greenops' %}active{% endif %}">
-                                <i data-lucide="leaf"></i>
-                                <span>{{ t('nav.greenops') or 'GreenOps' }}</span>
-                            </a>
-                            <a href="/compliance" class="nav-link {% if active_page == 'compliance' %}active{% endif %}">
-                                <i data-lucide="shield-check"></i>
-                                <span>{{ t('nav.compliance') or 'Conformite' }}</span>
+                            <a href="/global" class="nav-link {% if active_page == 'global' or active_page == 'unified' %}active{% endif %}">
+                                <i data-lucide="globe"></i>
+                                <span>Vue Consolidée</span>
                             </a>
                             <a href="/security" class="nav-link {% if active_page == 'security' %}active{% endif %}">
                                 <i data-lucide="lock"></i>
-                                <span>{{ t('nav.security') or 'Securite' }}</span>
+                                <span>Cyberdéfense</span>
                             </a>
                             <a href="/guardrails" class="nav-link {% if active_page == 'guardrails' %}active{% endif %}">
                                 <i data-lucide="shield-alert"></i>
-                                <span>{{ t('nav.guardrails') or 'Guardrails' }}</span>
+                                <span>Garde-fous IA</span>
+                            </a>
+                        </div>
+                    </div>
+
+                    <!-- Accordion: Analyse & Renseignement -->
+                    <div class="nav-accordion" data-accordion="analysis">
+                        <button class="nav-accordion-header" onclick="toggleAccordion('analysis')">
+                            <i data-lucide="brain"></i>
+                            <span>Analyse & Renseignement</span>
+                            <i data-lucide="chevron-right" class="accordion-chevron"></i>
+                        </button>
+                        <div class="nav-accordion-content">
+                            <a href="/causal" class="nav-link {% if active_page == 'causal' %}active{% endif %}">
+                                <i data-lucide="git-branch"></i>
+                                <span>Chaînes Causales</span>
+                            </a>
+                            <a href="/impact" class="nav-link {% if active_page == 'impact' %}active{% endif %}">
+                                <i data-lucide="trending-up"></i>
+                                <span>Impact Opérationnel</span>
+                            </a>
+                            <a href="/business-intelligence" class="nav-link {% if active_page == 'business-intelligence' %}active{% endif %}">
+                                <i data-lucide="radar"></i>
+                                <span>Renseignement</span>
+                            </a>
+                            <a href="/multi-agent" class="nav-link {% if active_page == 'multi-agent' %}active{% endif %}">
+                                <i data-lucide="network"></i>
+                                <span>Multi-Agents</span>
+                            </a>
+                            <a href="/healing" class="nav-link {% if active_page == 'healing' %}active{% endif %}">
+                                <i data-lucide="heart-pulse"></i>
+                                <span>Auto-Remédiation</span>
+                            </a>
+                        </div>
+                    </div>
+
+                    <!-- Accordion: Conformité & Homologation -->
+                    <div class="nav-accordion" data-accordion="ops-governance">
+                        <button class="nav-accordion-header" onclick="toggleAccordion('ops-governance')">
+                            <i data-lucide="shield-check"></i>
+                            <span>Conformité & Homologation</span>
+                            <i data-lucide="chevron-right" class="accordion-chevron"></i>
+                        </button>
+                        <div class="nav-accordion-content">
+                            <a href="/compliance" class="nav-link {% if active_page == 'compliance' %}active{% endif %}">
+                                <i data-lucide="file-check"></i>
+                                <span>Homologation LPM</span>
+                            </a>
+                            <a href="/juridique" class="nav-link {% if active_page == 'juridique' %}active{% endif %}">
+                                <i data-lucide="gavel"></i>
+                                <span>AI Act / RGPD</span>
                             </a>
                             <a href="/supply-chain" class="nav-link {% if active_page == 'supply-chain' %}active{% endif %}">
                                 <i data-lucide="box"></i>
-                                <span>{{ t('nav.supply_chain') or 'Supply Chain' }}</span>
+                                <span>Supply Chain IA</span>
+                            </a>
+                            <a href="/executive" class="nav-link {% if active_page == 'executive' or active_page == 'dirigeant' %}active{% endif %}">
+                                <i data-lucide="landmark"></i>
+                                <span>Vue État-Major</span>
                             </a>
                         </div>
                     </div>
 
                 </div>
 
-                <!-- Settings & Configuration -->
+                <!-- Technique -->
                 <div class="nav-group nav-group-settings">
                     <span class="nav-group-title">
                         <i data-lucide="settings" class="title-icon"></i>
-                        {{ t('nav.settings') or 'Configuration' }}
+                        Technique
                     </span>
+                    <a href="/tech" class="nav-link {% if active_page == 'tech' %}active{% endif %}">
+                        <i data-lucide="server"></i>
+                        <span>Vue SIC/SSI</span>
+                    </a>
+                    <a href="/llm-testing" class="nav-link {% if active_page == 'llm-testing' %}active{% endif %}">
+                        <i data-lucide="flask-conical"></i>
+                        <span>Banc d'Essai LLM</span>
+                    </a>
                     <a href="/settings/llm" class="nav-link {% if active_page == 'settings' %}active{% endif %}">
                         <i data-lucide="cpu"></i>
-                        <span>{{ t('nav.llm_config') or 'Modeles LLM' }}</span>
+                        <span>Configuration LLM</span>
+                    </a>
+                    <a href="/pillars" class="nav-link {% if active_page == 'pillars' %}active{% endif %}">
+                        <i data-lucide="columns"></i>
+                        <span>5 Piliers Confiance</span>
                     </a>
                 </div>
 
@@ -237,7 +237,7 @@
                 <div class="nav-group nav-group-change">
                     <a href="/welcome" class="nav-link nav-link-change {% if active_page == 'welcome' or active_page == 'personas' %}active{% endif %}">
                         <i data-lucide="refresh-cw"></i>
-                        <span>{{ t('nav.change_journey') or 'Changer de parcours' }}</span>
+                        <span>Changer de poste</span>
                     </a>
                 </div>
 

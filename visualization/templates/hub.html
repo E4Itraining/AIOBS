@@ -2,7 +2,7 @@
 
 {% set active_page = 'hub' %}
 
-{% block page_title %}{{ t('hub.title') or 'GASKIA Hub' }}{% endblock %}
+{% block page_title %}{{ t('hub.title') or 'Centre Opérationnel' }}{% endblock %}
 
 {% block content %}
 <div class="hub-container">
@@ -15,44 +15,44 @@
             </svg>
             <div class="health-ring-content">
                 <span class="health-score" id="healthScore">--</span>
-                <span class="health-label">{{ t('hub.health_score') or 'Score Global' }}</span>
+                <span class="health-label">{{ t('hub.health_score') or 'Posture Cyber' }}</span>
             </div>
         </div>
         <div class="hub-summary">
-            <h1>{{ t('hub.welcome') or 'Vos systmes IA en un coup d oeil' }}</h1>
-            <p class="hub-subtitle" id="hubStatus">{{ t('hub.loading') or 'Chargement...' }}</p>
+            <h1>{{ t('hub.welcome') or 'Situation Cyberdéfense IA' }}</h1>
+            <p class="hub-subtitle" id="hubStatus">{{ t('hub.loading') or 'Acquisition situation...' }}</p>
             <div class="hub-quick-stats" id="quickStats">
                 <div class="quick-stat">
                     <span class="quick-stat-value" id="activeServices">--</span>
-                    <span class="quick-stat-label">{{ t('hub.active_services') or 'Services actifs' }}</span>
+                    <span class="quick-stat-label">Systèmes surveillés</span>
                 </div>
                 <div class="quick-stat">
                     <span class="quick-stat-value" id="activeAlerts">--</span>
-                    <span class="quick-stat-label">{{ t('hub.alerts') or 'Alertes' }}</span>
+                    <span class="quick-stat-label">Alertes actives</span>
                 </div>
                 <div class="quick-stat">
                     <span class="quick-stat-value" id="complianceRate">--</span>
-                    <span class="quick-stat-label">{{ t('hub.compliance') or 'Conformite' }}</span>
+                    <span class="quick-stat-label">Homologation</span>
                 </div>
             </div>
         </div>
     </div>
 
-    <!-- 4 Main Pillars - Level 1 of the Funnel -->
+    <!-- 4 Domaines Opérationnels -->
     <div class="hub-pillars">
         <h2 class="hub-section-title">
             <i data-lucide="layers"></i>
-            {{ t('hub.explore_pillars') or 'Explorer par pilier' }}
+            Domaines Opérationnels
         </h2>
         <div class="pillars-grid">
-            <!-- Performance Pillar -->
-            <a href="/monitoring" class="pillar-card" data-pillar="performance">
+            <!-- Cyberdéfense -->
+            <a href="/security" class="pillar-card" data-pillar="performance">
                 <div class="pillar-icon performance">
-                    <i data-lucide="activity"></i>
+                    <i data-lucide="shield"></i>
                 </div>
                 <div class="pillar-content">
-                    <h3>{{ t('hub.performance') or 'Performance' }}</h3>
-                    <p>{{ t('hub.performance_desc') or 'Latence, throughput, SLOs' }}</p>
+                    <h3>Cyberdéfense</h3>
+                    <p>Menaces IA, adversarial, SOC</p>
                     <div class="pillar-metric">
                         <span class="pillar-value" id="perfScore">--</span>
                         <span class="pillar-trend up" id="perfTrend">
@@ -63,14 +63,14 @@
                 <i data-lucide="chevron-right" class="pillar-arrow"></i>
             </a>
 
-            <!-- Reliability Pillar -->
+            <!-- Fiabilité IA -->
             <a href="/unified" class="pillar-card" data-pillar="reliability">
                 <div class="pillar-icon reliability">
                     <i data-lucide="shield-check"></i>
                 </div>
                 <div class="pillar-content">
-                    <h3>{{ t('hub.reliability') or 'Fiabilite' }}</h3>
-                    <p>{{ t('hub.reliability_desc') or 'Trust score, drift, qualite' }}</p>
+                    <h3>Fiabilité IA</h3>
+                    <p>Drift, robustesse, confiance</p>
                     <div class="pillar-metric">
                         <span class="pillar-value" id="reliabilityScore">--</span>
                         <span class="pillar-trend" id="reliabilityTrend">
@@ -81,14 +81,14 @@
                 <i data-lucide="chevron-right" class="pillar-arrow"></i>
             </a>
 
-            <!-- Cost Pillar -->
-            <a href="/finops" class="pillar-card" data-pillar="cost">
+            <!-- Surveillance -->
+            <a href="/monitoring" class="pillar-card" data-pillar="cost">
                 <div class="pillar-icon cost">
-                    <i data-lucide="wallet"></i>
+                    <i data-lucide="activity"></i>
                 </div>
                 <div class="pillar-content">
-                    <h3>{{ t('hub.cost') or 'Couts' }}</h3>
-                    <p>{{ t('hub.cost_desc') or 'Budget, ROI, optimisation' }}</p>
+                    <h3>Surveillance</h3>
+                    <p>Temps réel, latence, disponibilité</p>
                     <div class="pillar-metric">
                         <span class="pillar-value" id="costValue">--</span>
                         <span class="pillar-trend" id="costTrend">
@@ -99,14 +99,14 @@
                 <i data-lucide="chevron-right" class="pillar-arrow"></i>
             </a>
 
-            <!-- Governance Pillar -->
+            <!-- Homologation -->
             <a href="/compliance" class="pillar-card" data-pillar="governance">
                 <div class="pillar-icon governance">
-                    <i data-lucide="scale"></i>
+                    <i data-lucide="file-check"></i>
                 </div>
                 <div class="pillar-content">
-                    <h3>{{ t('hub.governance') or 'Gouvernance' }}</h3>
-                    <p>{{ t('hub.governance_desc') or 'Conformite, audit, securite' }}</p>
+                    <h3>Homologation</h3>
+                    <p>LPM, AI Act, IGI 1300, ANSSI</p>
                     <div class="pillar-metric">
                         <span class="pillar-value" id="govScore">--</span>
                         <span class="pillar-trend" id="govTrend">
@@ -119,28 +119,28 @@
         </div>
     </div>
 
-    <!-- Quick Actions - Deep Dive Entry Points -->
+    <!-- Actions Rapides -->
     <div class="hub-actions">
         <h2 class="hub-section-title">
             <i data-lucide="zap"></i>
-            {{ t('hub.quick_actions') or 'Actions rapides' }}
+            Actions rapides
         </h2>
         <div class="actions-grid">
             <a href="/causal" class="action-card">
                 <i data-lucide="git-branch"></i>
-                <span>{{ t('hub.investigate') or 'Investiguer un incident' }}</span>
+                <span>Investiguer un incident</span>
+            </a>
+            <a href="/defense-soc" class="action-card">
+                <i data-lucide="shield"></i>
+                <span>SOC Défense</span>
             </a>
             <a href="/llm-testing" class="action-card">
                 <i data-lucide="flask-conical"></i>
-                <span>{{ t('hub.test_llm') or 'Tester un LLM' }}</span>
+                <span>Banc d'essai LLM</span>
             </a>
-            <a href="/greenops" class="action-card">
-                <i data-lucide="leaf"></i>
-                <span>{{ t('hub.carbon') or 'Impact carbone' }}</span>
-            </a>
-            <a href="/settings/llm" class="action-card">
-                <i data-lucide="settings"></i>
-                <span>{{ t('hub.configure_llm') or 'Configurer LLM' }}</span>
+            <a href="/guardrails" class="action-card">
+                <i data-lucide="shield-alert"></i>
+                <span>Garde-fous IA</span>
             </a>
         </div>
     </div>
@@ -149,13 +149,13 @@
     <div class="hub-activity" id="hubActivity">
         <h2 class="hub-section-title">
             <i data-lucide="clock"></i>
-            {{ t('hub.recent') or 'Activite recente' }}
+            {{ t('hub.recent') or 'Événements récents' }}
         </h2>
         <div class="activity-list" id="activityList">
             <!-- Dynamic content -->
         </div>
         <a href="/dashboard" class="see-all-link">
-            {{ t('hub.see_details') or 'Voir le dashboard complet' }}
+            {{ t('hub.see_details') or 'Tableau de bord complet' }}
             <i data-lucide="arrow-right"></i>
         </a>
     </div>
@@ -650,13 +650,13 @@ async function loadHubData() {
             // Update status message
             const statusEl = document.getElementById('hubStatus');
             if (data.alerts.critical > 0) {
-                statusEl.textContent = `${data.alerts.critical} alerte(s) critique(s) requierent votre attention`;
+                statusEl.textContent = `${data.alerts.critical} alerte(s) critique(s) - Action immédiate requise`;
                 statusEl.style.color = 'var(--color-danger)';
             } else if (data.alerts.warning > 0) {
-                statusEl.textContent = `${data.alerts.warning} avertissement(s) a surveiller`;
+                statusEl.textContent = `${data.alerts.warning} avertissement(s) en surveillance`;
                 statusEl.style.color = 'var(--color-warning)';
             } else {
-                statusEl.textContent = 'Tous les systemes fonctionnent normalement';
+                statusEl.textContent = 'Posture nominale - Tous systèmes opérationnels';
                 statusEl.style.color = 'var(--color-success)';
             }
 
@@ -721,8 +721,8 @@ function loadRecentActivity(issues) {
                     <i data-lucide="check-circle"></i>
                 </div>
                 <div class="activity-content">
-                    <div class="activity-title">Aucun incident recent</div>
-                    <div class="activity-time">Tous les systemes sont operationnels</div>
+                    <div class="activity-title">Aucun incident détecté</div>
+                    <div class="activity-time">Posture nominale - Systèmes opérationnels</div>
                 </div>
             </div>
         `;
