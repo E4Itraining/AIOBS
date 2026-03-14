@@ -24,6 +24,12 @@ export * from './governance/slo';
 // Storage Backends
 export * from './storage';
 
+// Defense & Security Modules
+export * from './core/cognitive/semantic-drift';
+export * from './connectors/ot';
+export * from './edge-mode';
+export * from './security/mitre';
+
 // Import engine config types for AIBOSConfig
 import type { CognitiveEngineConfig } from './core/cognitive/cognitive-engine';
 import type { CausalEngineConfig } from './core/causal/causal-engine';

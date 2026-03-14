@@ -59,6 +59,17 @@ Tailored perspectives for every stakeholder:
 - **ESG Officer**: Carbon metrics, sustainability
 - **Product Owner**: Feature performance, user impact
 - **Executive**: Business KPIs, risk posture
+- **Commandant SOC Défense**: Semantic alerts, IT/OT correlation, MITRE ICS
+
+### 6. Defense & Sovereign Capabilities
+Purpose-built modules for defense and critical infrastructure:
+- **Semantic Drift Detection**: Adversarial semantic shift detection (Isolation Forest + VAE) — catches attacks that bypass statistical drift tests
+- **IT/OT Connectors**: OPC-UA, Modbus, MQTT, SNMP with simulation mode
+- **Air-Gap / Edge Mode**: Disconnected operation with priority buffer and differential resync
+- **MITRE ATT&CK ICS**: Anomaly-to-technique mapping with 12 tactics and custom AI/OT attack patterns
+- **Defense SOC Dashboard**: Semantic alerts, causal chains, IT/OT correlation, AI Act evidence export
+
+> See [Defense Capabilities](./docs/DEFENSE_CAPABILITIES.md) and [Edge Mode](./docs/EDGE_MODE.md) for details.
 
 ---
 
@@ -110,6 +121,7 @@ aiobs/
 │   │   ├── cognitive/            # Cognitive Metrics Engine
 │   │   │   ├── cognitive-engine.ts
 │   │   │   ├── drift-detector.ts
+│   │   │   ├── semantic-drift/       # Adversarial semantic shift detection
 │   │   │   ├── reliability-analyzer.ts
 │   │   │   ├── hallucination-detector.ts
 │   │   │   └── degradation-tracker.ts
@@ -127,6 +139,14 @@ aiobs/
 │   │       ├── slo-monitor.ts
 │   │       ├── contract-manager.ts
 │   │       └── error-budget.ts
+│   ├── connectors/               # IT/OT Protocol Connectors
+│   │   └── ot/                   # OPC-UA, Modbus, MQTT, SNMP
+│   ├── edge-mode/                # Air-Gap / Edge Deployment
+│   │   ├── edge-buffer.ts        # Priority FIFO buffer
+│   │   ├── resync-manager.ts     # Differential resync
+│   │   └── edge-mode-config.ts   # Env-based configuration
+│   ├── security/                 # Security Modules
+│   │   └── mitre/                # MITRE ATT&CK ICS mapping
 │   └── storage/                  # Storage Connectors
 │       ├── victoriametrics-connector.ts
 │       ├── openobserve-connector.ts
@@ -137,6 +157,7 @@ aiobs/
 │   ├── requirements.txt          # Python dependencies
 │   ├── routers/                  # API endpoints
 │   │   ├── dashboard.py          # Dashboard overview
+│   │   ├── defense_soc.py        # Defense SOC dashboard API
 │   │   ├── metrics.py            # Metrics endpoints
 │   │   ├── profiles.py           # Profile management
 │   │   ├── i18n.py               # Internationalization
@@ -245,6 +266,8 @@ python run.py
 - [Platform Vision](./docs/VISION.md) - Philosophy and differentiation
 - [Features & API](./docs/FEATURES.md) - Game-changer features
 - [Architecture Overview](./docs/architecture/OVERVIEW.md) - System design
+- [Defense Capabilities](./docs/DEFENSE_CAPABILITIES.md) - Semantic drift, IT/OT, MITRE, edge mode
+- [Edge Mode](./docs/EDGE_MODE.md) - Air-gap deployment guide
 - [Development Guide](./docs/DEVELOPMENT.md) - Local setup and development
 - [Configuration Guide](./docs/CONFIGURATION.md) - Environment and settings
 - [Docker Deployment](./docs/DOCKER_DEPLOYMENT.md) - Container deployment
@@ -255,20 +278,14 @@ python run.py
 
 ## Language Support
 
-AIOBS supports 10 languages with full UI translation:
+AIOBS supports 4 EU sovereign core languages:
 
-| Language | Code | RTL |
-|----------|------|-----|
-| English | en | No |
-| French | fr | No |
-| Spanish | es | No |
-| German | de | No |
-| Portuguese | pt | No |
-| Italian | it | No |
-| Chinese | zh | No |
-| Japanese | ja | No |
-| Korean | ko | No |
-| Arabic | ar | Yes |
+| Language | Code |
+|----------|------|
+| English | en |
+| French | fr |
+| German | de |
+| Dutch | nl |
 
 ---
 
