@@ -15,13 +15,13 @@
             </div>
             <h1>Tableau de Bord Global</h1>
             <p class="hero-subtitle">
-                Vue consolidée de votre portefeuille IA. Tous les KPIs essentiels pour piloter vos systèmes d'intelligence artificielle.
+                Vue consolidée de votre parc IA. Tous les KPIs essentiels pour piloter vos systèmes d'intelligence artificielle.
             </p>
         </div>
         <div class="hero-actions">
             <a href="/personas" class="btn btn-outline">
                 <i data-lucide="compass"></i>
-                <span>Vues par Persona</span>
+                <span>Vues par Profil</span>
             </a>
             <button class="btn btn-primary" onclick="window.GASKIA_UX && window.GASKIA_UX.toggleQuickInsights()">
                 <i data-lucide="zap"></i>
@@ -75,7 +75,7 @@
                     <span>-8.5%</span>
                 </div>
             </div>
-            <div class="kpi-value" id="kpiDailyCost">€2,847</div>
+            <div class="kpi-value" id="kpiDailyCost">2 847 €</div>
             <div class="kpi-label">Coût Journalier</div>
             <div class="kpi-sparkline" id="sparkCost"></div>
         </div>
@@ -115,19 +115,19 @@
     <div class="section-header">
         <h2>
             <i data-lucide="users"></i>
-            Vues par Persona
+            Vues par Profil
         </h2>
         <p>Accédez rapidement aux tableaux de bord adaptés à votre rôle</p>
     </div>
 
     <div class="persona-quick-grid">
-        <!-- Dirigeant / Opérationnel -->
+        <!-- Commandement / Direction -->
         <a href="/dirigeant" class="persona-quick-card" style="--accent: #10b981;">
             <div class="pq-icon">
                 <i data-lucide="building-2"></i>
             </div>
             <div class="pq-content">
-                <h3>Dirigeant / Opérationnel</h3>
+                <h3>Commandement / Direction</h3>
                 <p>Vision stratégique, efficacité opérationnelle, risques et conformité globale</p>
                 <div class="pq-metrics">
                     <span class="pq-metric">
@@ -150,11 +150,11 @@
             </div>
             <div class="pq-content">
                 <h3>Tech (DSI / RSSI)</h3>
-                <p>Infrastructure, sécurité, performance et gouvernance IT</p>
+                <p>Infrastructure, sécurité, performance et gouvernance SI</p>
                 <div class="pq-metrics">
                     <span class="pq-metric">
                         <i data-lucide="activity"></i>
-                        99.9% uptime
+                        99.9% dispo.
                     </span>
                     <span class="pq-metric">
                         <i data-lucide="shield"></i>
@@ -187,22 +187,22 @@
             <i data-lucide="arrow-right" class="pq-arrow"></i>
         </a>
 
-        <!-- Financier / FinOps -->
+        <!-- Financier / Ressources & Budget -->
         <a href="/financier" class="persona-quick-card" style="--accent: #ef4444;">
             <div class="pq-icon">
                 <i data-lucide="wallet"></i>
             </div>
             <div class="pq-content">
                 <h3>Financier / Ressources & Budget</h3>
-                <p>Coûts, budgets, efficacité opérationnelle et optimisation des dépenses IA</p>
+                <p>Coûts, budgets, Coûts, exécution budgétaire et allocation des ressources IA</p>
                 <div class="pq-metrics">
                     <span class="pq-metric">
                         <i data-lucide="piggy-bank"></i>
-                        €24K économisés
+                        24 K€ optimisés
                     </span>
                     <span class="pq-metric">
                         <i data-lucide="target"></i>
-                        Budget OK
+                        Budget conforme
                     </span>
                 </div>
             </div>
@@ -334,7 +334,7 @@
                     <div class="compliance-item">
                         <div class="compliance-framework">
                             <span class="compliance-icon nist">🛡️</span>
-                            <span>NIST AI RMF</span>
+                            <span>RGS v2</span>
                         </div>
                         <div class="compliance-bar">
                             <div class="compliance-progress" style="width: 78%;"></div>
@@ -457,7 +457,7 @@
                         </div>
                         <div class="meta-item">
                             <i data-lucide="target"></i>
-                            <span>Objectif : <strong>90% fin Q1</strong></span>
+                            <span>Objectif : <strong>90% fin T1</strong></span>
                         </div>
                     </div>
                 </div>
@@ -1332,7 +1332,7 @@ function updateKPIs(data) {
         document.getElementById('kpiTrustScore').textContent = Math.round(data.trust_score * 100) + '%';
     }
     if (data.daily_cost) {
-        document.getElementById('kpiDailyCost').textContent = '€' + data.daily_cost.toLocaleString();
+        document.getElementById('kpiDailyCost').textContent = data.daily_cost.toLocaleString('fr-FR') + ' €';
     }
 }
 

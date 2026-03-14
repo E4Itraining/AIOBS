@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="{{ lang|default('en') }}" data-theme="light" {% if is_rtl %}dir="rtl"{% endif %}>
+<html lang="{{ lang|default('fr') }}" data-theme="light" {% if is_rtl %}dir="rtl"{% endif %}>
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -29,7 +29,7 @@
     <!-- i18n Setup -->
     <script>
         window.GASKIA = window.GASKIA || {};
-        window.GASKIA.lang = '{{ lang|default("en") }}';
+        window.GASKIA.lang = '{{ lang|default("fr") }}';
         window.GASKIA.isRtl = {{ is_rtl|default(false)|lower }};
         window.GASKIA.translations = {{ translations|tojson|safe }};
         window.AIOBS = window.GASKIA;
@@ -56,7 +56,7 @@
 </head>
 <body>
     <a href="#main-content" class="skip-to-content">
-        {{ t('a11y.skip_to_content') or 'Skip to main content' }}
+        {{ t('a11y.skip_to_content') or 'Aller au contenu principal' }}
     </a>
 
     <div class="app pillars-layout">
@@ -65,14 +65,14 @@
             <div class="sidebar-header">
                 <div class="logo">
                     <div class="logo-icon">
-                        <img src="/static/images/logos/gaskia-icon.svg" alt="GASKIA Eye Icon" width="44" height="44">
+                        <img src="/static/images/logos/gaskia-icon.svg" alt="Icône GASKIA" width="44" height="44">
                     </div>
                     <div class="logo-content">
                         <span class="logo-text">GASKIA</span>
                         <span class="logo-tagline">5 Piliers de Confiance</span>
                     </div>
                 </div>
-                <button class="sidebar-close" id="sidebarClose" aria-label="Close menu">
+                <button class="sidebar-close" id="sidebarClose" aria-label="Fermer le menu">
                     <i data-lucide="x"></i>
                 </button>
             </div>
@@ -153,7 +153,7 @@
                         <div class="pillar-submenu">
                             <a href="/pillars/security#injection" class="pillar-sublink">
                                 <i data-lucide="syringe"></i>
-                                {{ t('pillars.security.injection') or 'Prompt Injection' }}
+                                {{ t('pillars.security.injection') or 'Injection de Prompt' }}
                             </a>
                             <a href="/pillars/security#adversarial" class="pillar-sublink">
                                 <i data-lucide="alert-triangle"></i>
@@ -217,7 +217,7 @@
                         <div class="pillar-submenu">
                             <a href="/pillars/explainability#features" class="pillar-sublink">
                                 <i data-lucide="list-ordered"></i>
-                                {{ t('pillars.explainability.features') or 'Feature Importance' }}
+                                {{ t('pillars.explainability.features') or 'Importance des Variables' }}
                             </a>
                             <a href="/pillars/explainability#confidence" class="pillar-sublink">
                                 <i data-lucide="gauge"></i>
@@ -261,7 +261,7 @@
                             </a>
                             <a href="/pillars/performance#tradeoff" class="pillar-sublink">
                                 <i data-lucide="sliders"></i>
-                                {{ t('pillars.performance.tradeoff') or 'Trade-off Qualité/Vitesse' }}
+                                {{ t('pillars.performance.tradeoff') or 'Compromis Qualité/Vitesse' }}
                             </a>
                         </div>
                     </div>
@@ -277,7 +277,7 @@
                     </span>
                     <a href="/monitoring" class="nav-link">
                         <i data-lucide="activity"></i>
-                        <span>{{ t('nav.monitoring') or 'Monitoring Live' }}</span>
+                        <span>{{ t('nav.monitoring') or 'Supervision en Direct' }}</span>
                     </a>
                     <a href="/causal" class="nav-link">
                         <i data-lucide="git-branch"></i>
@@ -285,13 +285,13 @@
                     </a>
                     <a href="/executive" class="nav-link">
                         <i data-lucide="briefcase"></i>
-                        <span>{{ t('nav.executive_view') or 'Vue Executive' }}</span>
+                        <span>{{ t('nav.executive_view') or 'Vue Commandement' }}</span>
                     </a>
                 </div>
             </nav>
 
             <div class="sidebar-footer">
-                <button class="theme-toggle" onclick="toggleTheme()" title="Toggle theme">
+                <button class="theme-toggle" onclick="toggleTheme()" title="Changer le thème">
                     <i data-lucide="sun" class="theme-icon-light"></i>
                     <i data-lucide="moon" class="theme-icon-dark"></i>
                 </button>
@@ -320,7 +320,7 @@
         <main class="main">
             <!-- Top Bar -->
             <header class="topbar pillars-topbar">
-                <button class="menu-toggle" id="menuToggle" aria-label="Open menu">
+                <button class="menu-toggle" id="menuToggle" aria-label="Ouvrir le menu">
                     <i data-lucide="menu"></i>
                 </button>
 
@@ -395,7 +395,7 @@
 
     <!-- AI Chatbot -->
     <div class="chatbot-container" id="chatbotContainer">
-        <button class="chatbot-trigger" onclick="toggleChatbot()" title="{{ t('chatbot.title') or 'AI Assistant' }}">
+        <button class="chatbot-trigger" onclick="toggleChatbot()" title="{{ t('chatbot.title') or 'Assistant IA' }}">
             <i data-lucide="message-circle" class="chatbot-icon-default"></i>
             <i data-lucide="x" class="chatbot-icon-close"></i>
         </button>

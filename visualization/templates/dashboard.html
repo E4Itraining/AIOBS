@@ -726,7 +726,7 @@ async function loadWidgetData(widget) {
     if (!container) return;
 
     try {
-        let dataSource = widget.data_source.replace('{model_id}', 'recommendation-v2');
+        let dataSource = widget.data_source.replace('{model_id}', 'aide-decision-v2');
         const response = await fetch(dataSource);
         const result = await response.json();
 

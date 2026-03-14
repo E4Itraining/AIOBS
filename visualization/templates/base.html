@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="{{ lang|default('en') }}" data-theme="light" {% if is_rtl %}dir="rtl"{% endif %}>
+<html lang="{{ lang|default('fr') }}" data-theme="light" {% if is_rtl %}dir="rtl"{% endif %}>
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -30,7 +30,7 @@
     <!-- i18n Setup -->
     <script>
         window.GASKIA = window.GASKIA || {};
-        window.GASKIA.lang = '{{ lang|default("en") }}';
+        window.GASKIA.lang = '{{ lang|default("fr") }}';
         window.GASKIA.isRtl = {{ is_rtl|default(false)|lower }};
         window.GASKIA.translations = {{ translations|tojson|safe }};
         // Alias for compatibility
@@ -252,7 +252,7 @@
                 <div class="language-selector" id="languageSelector">
                     <button class="language-btn" onclick="toggleLanguageDropdown()">
                         <i data-lucide="globe"></i>
-                        <span id="currentLang">{{ lang|default('en')|upper }}</span>
+                        <span id="currentLang">{{ lang|default('fr')|upper }}</span>
                         <i data-lucide="chevron-up" class="chevron"></i>
                     </button>
                     <div class="language-dropdown" id="languageDropdown">

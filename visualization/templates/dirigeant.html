@@ -314,12 +314,12 @@
                     </div>
                     <div class="portfolio-item status-operational">
                         <div class="portfolio-icon"><i data-lucide="credit-card"></i></div>
-                        <span class="portfolio-name">Scoring Crédit</span>
+                        <span class="portfolio-name">Analyse Renseignement</span>
                         <span class="portfolio-status">Opérationnel</span>
                     </div>
                     <div class="portfolio-item status-warning">
                         <div class="portfolio-icon"><i data-lucide="shopping-cart"></i></div>
-                        <span class="portfolio-name">Recommandation</span>
+                        <span class="portfolio-name">Aide à la Décision</span>
                         <span class="portfolio-status">Dégradé</span>
                     </div>
                     <div class="portfolio-item status-operational">
@@ -489,7 +489,7 @@
                                 <td>
                                     <div class="system-name">
                                         <i data-lucide="credit-card"></i>
-                                        Scoring Crédit
+                                        Analyse Renseignement
                                     </div>
                                 </td>
                                 <td>€850K</td>
@@ -502,7 +502,7 @@
                                 <td>
                                     <div class="system-name">
                                         <i data-lucide="shield"></i>
-                                        Détection Fraude
+                                        Détection d'Intrusion
                                     </div>
                                 </td>
                                 <td>€680K</td>
@@ -515,7 +515,7 @@
                                 <td>
                                     <div class="system-name">
                                         <i data-lucide="shopping-cart"></i>
-                                        Recommandation
+                                        Aide à la Décision
                                     </div>
                                 </td>
                                 <td>€280K</td>
@@ -1691,7 +1691,7 @@ function initDeepDiveCharts() {
         deepDiveDistributionChart = new Chart(distributionCtx, {
             type: 'doughnut',
             data: {
-                labels: ['Chatbot Client', 'Scoring Crédit', 'Détection Fraude', 'Recommandation', 'Doc Analyzer'],
+                labels: ['Chatbot Opérateur', 'Analyse Renseignement', 'Détection Intrusion', 'Aide à la Décision', 'Analyseur Documents'],
                 datasets: [{
                     data: [1620, 2950, 2180, 930, 420],
                     backgroundColor: [

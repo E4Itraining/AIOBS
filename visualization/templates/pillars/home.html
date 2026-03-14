@@ -143,7 +143,7 @@
             </div>
         </div>
         <div class="pillar-card-body">
-            <p>{{ t('pillars.explainability.desc') or 'Feature importance, scores de confiance, alternatives écartées. Répondez aux obligations légales et éthiques.' }}</p>
+            <p>{{ t('pillars.explainability.desc') or 'Importance des variables, scores de confiance, alternatives écartées. Répondez aux obligations légales et éthiques.' }}</p>
             <div class="pillar-metrics">
                 <span class="pillar-metric"><i data-lucide="list-ordered"></i> Variables</span>
                 <span class="pillar-metric"><i data-lucide="gauge"></i> Confiance</span>
@@ -174,7 +174,7 @@
             </div>
         </div>
         <div class="pillar-card-body">
-            <p>{{ t('pillars.performance.desc') or 'Latence, débit, coût par inférence, utilisation GPU. Optimisez le trade-off qualité/vitesse.' }}</p>
+            <p>{{ t('pillars.performance.desc') or 'Latence, débit, coût par inférence, utilisation GPU. Optimisez le compromis qualité/vitesse.' }}</p>
             <div class="pillar-metrics">
                 <span class="pillar-metric"><i data-lucide="clock"></i> Latence</span>
                 <span class="pillar-metric"><i data-lucide="wallet"></i> Coût</span>
@@ -440,17 +440,17 @@ function initCharts() {
 
 async function loadRecommendations() {
     const container = document.getElementById('personaRecommendations');
-    const persona = localStorage.getItem('gaskia-persona') || 'business_executive';
+    const persona = localStorage.getItem('gaskia-persona') || 'commandement';
 
     // Demo recommendations based on persona
     const recommendations = {
-        'business_executive': [
-            { icon: 'scale', title: 'Conformité AI Act', desc: 'Votre score de conformité est à 78%. Préparez les preuves pour l\'audit Q1.', action: '/pillars/compliance', priority: 'high' },
+        'commandement': [
+            { icon: 'scale', title: 'Conformité AI Act', desc: 'Votre score de conformité est à 78%. Préparez les preuves pour l\'audit T1.', action: '/pillars/compliance', priority: 'high' },
             { icon: 'trending-up', title: 'Efficacité Opérationnelle en amélioration', desc: 'Le coût par inférence a baissé de 12% ce mois.', action: '/pillars/performance', priority: 'low' }
         ],
         'tech_ml_engineer': [
-            { icon: 'git-merge', title: 'Dérive détectée', desc: 'Le modèle fraud-detection montre une dérive conceptuelle. Réévaluez le seuil.', action: '/pillars/reliability#drift', priority: 'high' },
-            { icon: 'lightbulb', title: 'Explicabilité insuffisante', desc: 'Ajoutez des importances de variables au modèle pricing.', action: '/pillars/explainability', priority: 'medium' }
+            { icon: 'git-merge', title: 'Dérive détectée', desc: 'Le modèle detection-intrusion montre une dérive conceptuelle. Réévaluez le seuil.', action: '/pillars/reliability#drift', priority: 'high' },
+            { icon: 'lightbulb', title: 'Explicabilité insuffisante', desc: 'Ajoutez des importances de variables au modèle d'évaluation.', action: '/pillars/explainability', priority: 'medium' }
         ],
         'security_soc': [
             { icon: 'alert-triangle', title: 'Tentatives d\'injection', desc: '12 tentatives de prompt injection bloquées cette semaine.', action: '/pillars/security#injection', priority: 'high' },
@@ -462,7 +462,7 @@ async function loadRecommendations() {
         ]
     };
 
-    const items = recommendations[persona] || recommendations['business_executive'];
+    const items = recommendations[persona] || recommendations['commandement'];
 
     container.innerHTML = items.map(item => `
         <a href="${item.action}" class="flex items-center gap-4 p-4 hover:bg-secondary rounded-lg transition-colors" style="text-decoration: none; color: inherit; border-bottom: 1px solid var(--border-color);">
