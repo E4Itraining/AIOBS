@@ -688,18 +688,43 @@
     (function() {
         const REFRESH_INTERVAL = 5000;
 
+        // === CHART.JS GLOBAL DEFAULTS (Grafana-like) ===
+        Chart.defaults.font.family = "'Inter', sans-serif";
+        Chart.defaults.font.size = 11;
+        Chart.defaults.color = '#94a3b8';
+        Chart.defaults.plugins.legend.labels.boxWidth = 10;
+        Chart.defaults.plugins.legend.labels.padding = 12;
+        Chart.defaults.plugins.tooltip.backgroundColor = 'rgba(15, 23, 42, 0.95)';
+        Chart.defaults.plugins.tooltip.titleFont = { size: 12, weight: '600' };
+        Chart.defaults.plugins.tooltip.bodyFont = { size: 11 };
+        Chart.defaults.plugins.tooltip.padding = 10;
+        Chart.defaults.plugins.tooltip.cornerRadius = 6;
+        Chart.defaults.plugins.tooltip.displayColors = true;
+        Chart.defaults.plugins.tooltip.mode = 'index';
+        Chart.defaults.plugins.tooltip.intersect = false;
+        Chart.defaults.elements.line.borderWidth = 2;
+        Chart.defaults.elements.line.tension = 0.3;
+        Chart.defaults.elements.point.radius = 0;
+        Chart.defaults.elements.point.hoverRadius = 4;
+        Chart.defaults.elements.bar.borderRadius = 3;
+        Chart.defaults.scale.grid = { color: 'rgba(148, 163, 184, 0.08)' };
+        Chart.defaults.interaction = { mode: 'index', intersect: false };
+        Chart.defaults.animation = { duration: 400 };
+
         // === CHART REGISTRY ===
-        // Stores Chart.js instances by canvas ID for destroy/recreate
         window._charts = {};
 
         window.createChart = function(canvasId, config) {
-            // Destroy existing chart on same canvas
             if (window._charts[canvasId]) {
                 window._charts[canvasId].destroy();
                 delete window._charts[canvasId];
             }
             const ctx = document.getElementById(canvasId);
             if (!ctx) return null;
+            // Apply Grafana-like crosshair
+            if (!config.options) config.options = {};
+            if (!config.options.plugins) config.options.plugins = {};
+            config.options.animation = { duration: 300 };
             const chart = new Chart(ctx.getContext('2d'), config);
             window._charts[canvasId] = chart;
             return chart;
@@ -714,36 +739,46 @@
 
         // === AUTO-REFRESH ===
         window._refreshFunctions = [];
+        window._refreshTimer = null;
 
         window.startAutoRefresh = function(loadFunctions) {
             window._refreshFunctions = loadFunctions;
-            setInterval(() => {
+            if (window._refreshTimer) clearInterval(window._refreshTimer);
+            window._refreshTimer = setInterval(() => {
                 loadFunctions.forEach(fn => {
                     if (typeof fn === 'function') {
                         try { fn(); } catch(e) { console.warn('Refresh error:', e); }
                     }
                 });
-                // Flash the live indicator
                 const ind = document.getElementById('refreshIndicator');
                 if (ind) {
-                    ind.style.opacity = '1';
-                    setTimeout(() => ind.style.opacity = '0.7', 300);
+                    ind.classList.add('flash');
+                    setTimeout(() => ind.classList.remove('flash'), 500);
                 }
             }, REFRESH_INTERVAL);
         };
 
         // === INIT ===
         document.addEventListener('DOMContentLoaded', () => {
-            // Live indicator
+            // Live indicator (Grafana-style)
             const indicator = document.createElement('div');
             indicator.id = 'refreshIndicator';
-            indicator.innerHTML = '<span style="width:8px;height:8px;background:#fff;border-radius:50%;display:inline-block;animation:pulse 2s infinite;"></span> <span>Live · 5s</span>';
-            indicator.style.cssText = 'position:fixed;bottom:16px;right:16px;background:var(--color-success);color:#fff;padding:6px 14px;border-radius:20px;font-size:0.72rem;display:flex;align-items:center;gap:8px;z-index:1000;opacity:0.7;transition:opacity 0.3s;';
+            indicator.innerHTML = '<span class="live-dot"></span> <span>LIVE</span> <span class="live-interval">5s</span>';
+            indicator.style.cssText = 'position:fixed;bottom:16px;right:16px;background:rgba(15,23,42,0.9);color:#10b981;padding:6px 14px;border-radius:6px;font-size:0.7rem;display:flex;align-items:center;gap:6px;z-index:1000;font-weight:600;letter-spacing:0.05em;border:1px solid rgba(16,185,129,0.3);backdrop-filter:blur(8px);';
             document.body.appendChild(indicator);
 
-            // Pulse animation
             const style = document.createElement('style');
-            style.textContent = '@keyframes pulse{0%,100%{opacity:1}50%{opacity:0.3}} .time-range-selector{display:flex;gap:4px;align-items:center;} .time-btn{min-width:36px;padding:4px 8px !important;font-size:0.75rem !important;} .time-btn.active{background:var(--gradient-primary) !important;color:#fff !important;border-color:transparent !important;}';
+            style.textContent = `
+                @keyframes pulse{0%,100%{opacity:1}50%{opacity:0.3}}
+                .live-dot{width:7px;height:7px;background:#10b981;border-radius:50%;display:inline-block;animation:pulse 2s infinite;box-shadow:0 0 6px #10b981;}
+                .live-interval{color:#64748b;font-weight:400;}
+                #refreshIndicator.flash{border-color:#10b981;box-shadow:0 0 12px rgba(16,185,129,0.3);}
+                .time-range-selector{display:flex;gap:3px;align-items:center;background:var(--bg-secondary);border-radius:6px;padding:2px;}
+                .time-btn{min-width:34px;padding:4px 8px !important;font-size:0.72rem !important;border-radius:4px !important;border:none !important;background:transparent !important;color:var(--text-secondary) !important;font-weight:500 !important;cursor:pointer;transition:all 0.15s;}
+                .time-btn:hover{background:var(--bg-tertiary) !important;color:var(--text-primary) !important;}
+                .time-btn.active{background:var(--gradient-primary) !important;color:#fff !important;box-shadow:0 1px 3px rgba(0,0,0,0.2);}
+                .chart-container{position:relative;}
+            `;
             document.head.appendChild(style);
 
             // Time range buttons
@@ -752,7 +787,6 @@
                     document.querySelectorAll('.time-btn').forEach(b => b.classList.remove('active'));
                     this.classList.add('active');
                     window._timeRangeHours = parseInt(this.dataset.hours);
-                    // Reload all registered functions with new time range
                     window._refreshFunctions.forEach(fn => {
                         if (typeof fn === 'function') {
                             try { fn(); } catch(e) {}

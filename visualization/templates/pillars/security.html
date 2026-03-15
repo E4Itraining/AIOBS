@@ -387,8 +387,13 @@ async function loadIncidents() {
             data: {
                 labels: hrs,
                 datasets: [
-                    { label: 'Requêtes/min', data: anomalyData, borderColor: '#3b82f6', tension: 0.4, borderWidth: 2, pointRadius: 0, fill: true, backgroundColor: 'rgba(59, 130, 246, 0.1)' },
-                    { label: 'Baseline', data: Array(24).fill(baseline), borderColor: '#94a3b8', borderDash: [5, 5], borderWidth: 1, pointRadius: 0 }
+                    { label: 'Requêtes/min', data: anomalyData, borderColor: '#3b82f6',
+                      backgroundColor: (ctx) => {
+                          const g = ctx.chart.ctx.createLinearGradient(0, 0, 0, ctx.chart.height);
+                          g.addColorStop(0, 'rgba(59,130,246,0.2)'); g.addColorStop(1, 'rgba(59,130,246,0.01)');
+                          return g;
+                      }, fill: true, pointRadius: 0 },
+                    { label: 'Baseline', data: Array(24).fill(baseline), borderColor: '#ef4444', borderDash: [6, 3], borderWidth: 1, pointRadius: 0 }
                 ]
             },
             options: {

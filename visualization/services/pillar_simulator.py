@@ -85,11 +85,11 @@ class PillarSimulator:
             "models_monitored": 12,
             "trend": "up",
         }
-        self.reliability_history = deque(maxlen=720)  # 720 data points
+        self.reliability_history = deque(maxlen=2160)  # 3 points/hour × 720h = 30 days
         self.drift_history = {
-            "data": deque(maxlen=720),
-            "concept": deque(maxlen=720),
-            "feature": deque(maxlen=720),
+            "data": deque(maxlen=2160),
+            "concept": deque(maxlen=2160),
+            "feature": deque(maxlen=2160),
         }
         self.models = [
             {"name": "fraud-detection-v3", "precision": 0.942, "recall": 0.918,
@@ -167,7 +167,7 @@ class PillarSimulator:
             {"name": "failed_attempts", "importance": 0.03},
             {"name": "new_device", "importance": 0.01},
         ]
-        self.confidence_history = deque(maxlen=720)
+        self.confidence_history = deque(maxlen=2160)
 
         # === PERFORMANCE STATE ===
         self.performance = {
@@ -179,9 +179,9 @@ class PillarSimulator:
             },
         }
         self.latency_history = {
-            "p50": deque(maxlen=720),
-            "p95": deque(maxlen=720),
-            "p99": deque(maxlen=720),
+            "p50": deque(maxlen=2160),
+            "p95": deque(maxlen=2160),
+            "p99": deque(maxlen=2160),
         }
         self.cost_history = deque(maxlen=30)  # 30 days
         self.cost_breakdown = {
@@ -205,45 +205,71 @@ class PillarSimulator:
         # Seed initial history
         self._seed_history()
 
-    def _seed_history(self):
-        """Populate rich initial history simulating 7 days of activity."""
-        now = datetime.utcnow()
+    # Points-per-hour for history (3 pts/h × 720h = 2160 for 30 days)
+    POINTS_PER_HOUR = 3
+    TOTAL_SEED_HOURS = 720  # 30 days
+    TOTAL_SEED_POINTS = POINTS_PER_HOUR * TOTAL_SEED_HOURS  # 2160
 
-        # --- 720 data points = ~24h at 2s intervals, but we simulate 7 days worth ---
-        for i in range(720):
-            # Simulate hour-of-day patterns over 7 days
-            hour = (i / 30) % 24  # 30 points per simulated hour
-            day_phase = math.sin((hour - 6) * math.pi / 12)  # peak at noon
+    def _points_for_hours(self, hours: int) -> int:
+        """Convert hours to number of data points, min 60."""
+        return max(60, min(self.POINTS_PER_HOUR * hours, len(self.reliability_history)))
+
+    def _downsample(self, data: list, target: int) -> list:
+        """Downsample a list to target length by picking evenly spaced items."""
+        if len(data) <= target:
+            return data
+        step = len(data) / target
+        return [data[int(i * step)] for i in range(target)]
+
+    def _seed_history(self):
+        """Populate rich initial history simulating 30 days of activity."""
+        now = datetime.utcnow()
+        N = self.TOTAL_SEED_POINTS  # 2160
+
+        for i in range(N):
+            # Map index to hour-of-day over 30 days
+            sim_hour = i / self.POINTS_PER_HOUR  # 0..720
+            hour_of_day = sim_hour % 24
+            day_index = int(sim_hour / 24)  # 0..29
+            day_phase = math.sin((hour_of_day - 6) * math.pi / 12)
             daily_factor = 0.7 + 0.3 * max(0, day_phase)
 
-            # Reliability: gradual improvement with a dip around point 400
-            dip = 0.04 * math.exp(-((i - 400) ** 2) / 5000) if 350 < i < 450 else 0
+            # Reliability: gradual improvement + 2 incident dips
+            trend = 0.02 * (i / N)
+            dip1 = 0.05 * math.exp(-((i - int(N * 0.4)) ** 2) / (N * 3)) if abs(i - int(N * 0.4)) < N * 0.05 else 0
+            dip2 = 0.03 * math.exp(-((i - int(N * 0.7)) ** 2) / (N * 2)) if abs(i - int(N * 0.7)) < N * 0.03 else 0
             self.reliability_history.append(
-                self._clamp(0.86 + 0.02 * (i / 720) - dip + random.gauss(0, 0.004), 0.75, 0.95))
+                self._clamp(0.84 + trend - dip1 - dip2 + random.gauss(0, 0.005), 0.72, 0.96))
 
-            # Drift: concept drift spikes around point 380-420
-            dd = 0.02 + 0.005 * math.sin(i * 0.05) + random.gauss(0, 0.002)
-            cd_spike = 0.08 * math.exp(-((i - 400) ** 2) / 3000) if 350 < i < 450 else 0
-            cd = 0.05 + cd_spike + 0.003 * math.sin(i * 0.03) + random.gauss(0, 0.005)
-            fd = 0.012 + 0.002 * math.sin(i * 0.02) + random.gauss(0, 0.001)
-            self.drift_history["data"].append(self._clamp(dd, 0, 0.15))
-            self.drift_history["concept"].append(self._clamp(cd, 0, 0.25))
-            self.drift_history["feature"].append(self._clamp(fd, 0, 0.08))
+            # Drift: multiple spikes over 30 days
+            dd = 0.02 + 0.008 * math.sin(i * 0.02) + random.gauss(0, 0.003)
+            cd_base = 0.04 + 0.003 * math.sin(i * 0.015)
+            # 3 drift spikes
+            for spike_pos in [int(N * 0.3), int(N * 0.55), int(N * 0.8)]:
+                cd_base += 0.10 * math.exp(-((i - spike_pos) ** 2) / (N * 1.5))
+            cd = cd_base + random.gauss(0, 0.006)
+            fd = 0.012 + 0.003 * math.sin(i * 0.01) + random.gauss(0, 0.002)
+            self.drift_history["data"].append(self._clamp(dd, 0, 0.20))
+            self.drift_history["concept"].append(self._clamp(cd, 0, 0.30))
+            self.drift_history["feature"].append(self._clamp(fd, 0, 0.10))
 
-            # Confidence: stable with slight daily variation
+            # Confidence: diurnal + weekly pattern
+            weekly_factor = 0.98 if day_index % 7 < 5 else 0.92
             self.confidence_history.append(
-                self._clamp(0.85 + 0.03 * daily_factor + random.gauss(0, 0.015), 0.7, 0.95))
+                self._clamp(0.83 + 0.05 * daily_factor * weekly_factor + random.gauss(0, 0.015), 0.68, 0.96))
 
-            # Latency: strong diurnal pattern
-            lat_base = 35 + 20 * daily_factor
-            # Spike around point 500
-            lat_spike = 80 * math.exp(-((i - 500) ** 2) / 1000) if 480 < i < 520 else 0
+            # Latency: strong diurnal + load spikes
+            lat_base = 30 + 25 * daily_factor
+            # Several latency spikes over 30 days
+            lat_spike = 0
+            for spike_pos in [int(N * 0.25), int(N * 0.5), int(N * 0.75), int(N * 0.9)]:
+                lat_spike += 100 * math.exp(-((i - spike_pos) ** 2) / (N * 0.8))
             self.latency_history["p50"].append(
-                max(15, int(lat_base + lat_spike * 0.3 + random.gauss(0, 3))))
+                max(15, int(lat_base + lat_spike * 0.2 + random.gauss(0, 4))))
             self.latency_history["p95"].append(
-                max(50, int(lat_base * 2.5 + lat_spike * 0.7 + random.gauss(0, 8))))
+                max(50, int(lat_base * 2.5 + lat_spike * 0.6 + random.gauss(0, 10))))
             self.latency_history["p99"].append(
-                max(70, int(lat_base * 3.2 + lat_spike + random.gauss(0, 12))))
+                max(70, int(lat_base * 3.2 + lat_spike * 1.0 + random.gauss(0, 15))))
 
         # --- 30 days of cost data ---
         for i in range(30):
@@ -267,8 +293,8 @@ class PillarSimulator:
             "Prompt leaking détecté — réponse sanitisée",
         ]
 
-        for i in range(80):  # 80 events over 7 days
-            hours_ago = random.randint(1, 168)
+        for i in range(200):  # 200 events over 30 days
+            hours_ago = random.randint(1, 720)
             ts = (now - timedelta(hours=hours_ago)).isoformat()
             atype = random.choice(attack_types)
             sev = random.choices(["low", "medium", "high", "critical"],
@@ -367,8 +393,8 @@ class PillarSimulator:
                     2 * m["precision"] * m["recall"] / (m["precision"] + m["recall"]), 0.8, 0.99)
                 m["inferences_24h"] += random.randint(-50, 100)
 
-            # === SECURITY: occasional baseline events ===
-            if random.random() < 0.03:  # ~3% chance per tick
+            # === SECURITY: frequent baseline events for visible activity ===
+            if random.random() < 0.08:  # ~8% chance per tick (~1 every 25s)
                 self._generate_baseline_threat()
 
             # Threat level based on recent events
@@ -436,9 +462,9 @@ class PillarSimulator:
             status="blocked",
         )
         self.security_events.append(event)
-        # Keep only last 100 events
-        if len(self.security_events) > 100:
-            self.security_events = self.security_events[-100:]
+        # Keep only last 500 events for richer threat history
+        if len(self.security_events) > 500:
+            self.security_events = self.security_events[-500:]
 
         # Update counters
         inj = self.security["injection_attempts"]
@@ -633,7 +659,10 @@ class PillarSimulator:
 
     def get_reliability(self, hours: int = 24) -> Dict:
         with self._state_lock:
-            n = min(hours, len(self.reliability_history))
+            n = self._points_for_hours(hours)
+            raw = list(self.reliability_history)[-n:]
+            # Downsample to max 200 points for chart readability
+            trend = self._downsample([round(v, 4) for v in raw], min(200, len(raw)))
             return {
                 "score": round(self.scores["reliability"], 4),
                 "precision": round(self.reliability["precision"], 4),
@@ -643,29 +672,33 @@ class PillarSimulator:
                           for k, v in self.reliability["drift"].items()},
                 "trend": self.reliability["trend"],
                 "models_monitored": self.reliability["models_monitored"],
-                "quality_trend": [round(v, 4) for v in list(self.reliability_history)[-n:]],
+                "quality_trend": trend,
             }
 
     def get_reliability_drift(self, hours: int = 24) -> Dict:
         with self._state_lock:
             drift = self.reliability["drift"]
-            n = min(hours, len(self.drift_history["data"]))
+            n = self._points_for_hours(hours)
+            max_pts = 200
+            dd_raw = [round(v, 4) for v in list(self.drift_history["data"])[-n:]]
+            cd_raw = [round(v, 4) for v in list(self.drift_history["concept"])[-n:]]
+            fd_raw = [round(v, 4) for v in list(self.drift_history["feature"])[-n:]]
             return {
                 "model_id": "all",
                 "data_drift": {
                     "current": round(drift["data_drift"], 4),
                     "threshold": 0.10,
-                    "trend": [round(v, 4) for v in list(self.drift_history["data"])[-n:]],
+                    "trend": self._downsample(dd_raw, min(max_pts, len(dd_raw))),
                 },
                 "concept_drift": {
                     "current": round(drift["concept_drift"], 4),
                     "threshold": 0.15,
-                    "trend": [round(v, 4) for v in list(self.drift_history["concept"])[-n:]],
+                    "trend": self._downsample(cd_raw, min(max_pts, len(cd_raw))),
                 },
                 "feature_drift": {
                     "current": round(drift["feature_drift"], 4),
                     "threshold": 0.05,
-                    "trend": [round(v, 4) for v in list(self.drift_history["feature"])[-n:]],
+                    "trend": self._downsample(fd_raw, min(max_pts, len(fd_raw))),
                 },
                 "alerts": [],
             }
@@ -700,7 +733,7 @@ class PillarSimulator:
             threats = [
                 {"id": f"threat_{i}", "type": e.event_type, "severity": e.severity,
                  "timestamp": e.timestamp, "status": e.status, "model": e.model}
-                for i, e in enumerate(reversed(self.security_events[-20:]))
+                for i, e in enumerate(reversed(self.security_events[-50:]))
             ]
             return {"threats": threats}
 
@@ -784,7 +817,8 @@ class PillarSimulator:
     def get_explainability_confidence(self, hours: int = 24) -> Dict:
         with self._state_lock:
             avg = self.explainability["avg_confidence"]
-            n = min(hours, len(self.confidence_history))
+            n = self._points_for_hours(hours)
+            raw = [round(v, 4) for v in list(self.confidence_history)[-n:]]
             return {
                 "model_id": "all",
                 "avg_confidence": round(avg, 4),
@@ -794,7 +828,7 @@ class PillarSimulator:
                     "50_to_70": round(max(0.03, (1 - avg) * 0.3), 3),
                     "below_50": round(max(0.005, (1 - avg) * 0.05), 3),
                 },
-                "trend": [round(v, 4) for v in list(self.confidence_history)[-n:]],
+                "trend": self._downsample(raw, min(200, len(raw))),
                 "low_confidence_alerts": random.randint(1, 5),
                 "timestamp": datetime.utcnow().isoformat(),
             }
@@ -812,11 +846,15 @@ class PillarSimulator:
 
     def get_performance_latency(self, hours: int = 24) -> Dict:
         with self._state_lock:
-            n = min(hours, len(self.latency_history["p50"]))
+            n = self._points_for_hours(hours)
+            max_pts = 200
+            p50_raw = list(self.latency_history["p50"])[-n:]
+            p95_raw = list(self.latency_history["p95"])[-n:]
+            p99_raw = list(self.latency_history["p99"])[-n:]
             return {
-                "p50_trend": list(self.latency_history["p50"])[-n:],
-                "p95_trend": list(self.latency_history["p95"])[-n:],
-                "p99_trend": list(self.latency_history["p99"])[-n:],
+                "p50_trend": self._downsample(p50_raw, min(max_pts, len(p50_raw))),
+                "p95_trend": self._downsample(p95_raw, min(max_pts, len(p95_raw))),
+                "p99_trend": self._downsample(p99_raw, min(max_pts, len(p99_raw))),
                 "by_model": [
                     {"model": "fraud-detection", "p50": 42, "p95": 98, "p99": 118},
                     {"model": "recommendation", "p50": 55, "p95": 125, "p99": 145},
