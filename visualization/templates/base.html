@@ -3,8 +3,8 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>{{ title }} | GASKIA</title>
-    <meta name="description" content="GASKIA - Voir. Prouver. Maîtriser. Plateforme de Cyberdéfense IA Souveraine - Ministère des Armées.">
+    <title>{{ title }} | SKOPHIA</title>
+    <meta name="description" content="SKOPHIA - Voir. Prouver. Maîtriser. Plateforme de Cyberdéfense IA Souveraine - Ministère des Armées.">
 
     <!-- Favicon -->
     <link rel="icon" type="image/svg+xml" href="/static/images/favicons/favicon.svg">
@@ -29,12 +29,12 @@
 
     <!-- i18n Setup -->
     <script>
-        window.GASKIA = window.GASKIA || {};
-        window.GASKIA.lang = '{{ lang|default("en") }}';
-        window.GASKIA.isRtl = {{ is_rtl|default(false)|lower }};
-        window.GASKIA.translations = {{ translations|tojson|safe }};
+        window.SKOPHIA = window.SKOPHIA || {};
+        window.SKOPHIA.lang = '{{ lang|default("en") }}';
+        window.SKOPHIA.isRtl = {{ is_rtl|default(false)|lower }};
+        window.SKOPHIA.translations = {{ translations|tojson|safe }};
         // Alias for compatibility
-        window.AIOBS = window.GASKIA;
+        window.AIOBS = window.SKOPHIA;
 
         window.t = function(key, params) {
             const keys = key.split('.');
@@ -68,10 +68,10 @@
             <div class="sidebar-header">
                 <div class="logo">
                     <div class="logo-icon">
-                        <img src="/static/images/logos/gaskia-icon.svg" alt="GASKIA Eye Icon" width="44" height="44">
+                        <img src="/static/images/logos/skophia-icon.svg" alt="SKOPHIA Eye Icon" width="44" height="44">
                     </div>
                     <div class="logo-content">
-                        <span class="logo-text">GASKIA</span>
+                        <span class="logo-text">SKOPHIA</span>
                         <span class="logo-tagline">Cyberdéfense IA Souveraine</span>
                     </div>
                 </div>
@@ -444,7 +444,7 @@
                         <i data-lucide="sparkles"></i>
                     </div>
                     <h4>{{ t('chatbot.welcome_title') or 'Hello! How can I help you?' }}</h4>
-                    <p>{{ t('chatbot.welcome_desc') or 'Ask me anything about your AI systems, metrics, or how to use GASKIA.' }}</p>
+                    <p>{{ t('chatbot.welcome_desc') or 'Ask me anything about your AI systems, metrics, or how to use SKOPHIA.' }}</p>
                 </div>
                 <div class="chatbot-suggestions" id="chatbotSuggestions">
                     <span class="suggestion-label">{{ t('chatbot.suggestions') or 'Quick questions:' }}</span>
@@ -538,7 +538,7 @@
             const current = html.getAttribute('data-theme');
             const next = current === 'light' ? 'dark' : 'light';
             html.setAttribute('data-theme', next);
-            localStorage.setItem('gaskia-theme', next);
+            localStorage.setItem('skophia-theme', next);
             // Save to server for persistence across sessions/devices
             saveThemeToServer(next);
             lucide.createIcons();
@@ -547,7 +547,7 @@
         // Load saved theme from server first, then localStorage as fallback
         (async function() {
             // Apply localStorage immediately for fast initial render
-            const localSaved = localStorage.getItem('gaskia-theme') || localStorage.getItem('aiobs-theme');
+            const localSaved = localStorage.getItem('skophia-theme') || localStorage.getItem('aiobs-theme');
             if (localSaved) {
                 document.documentElement.setAttribute('data-theme', localSaved);
             } else if (window.matchMedia('(prefers-color-scheme: dark)').matches) {
@@ -561,7 +561,7 @@
                     const config = await response.json();
                     if (config.configured && config.theme) {
                         document.documentElement.setAttribute('data-theme', config.theme);
-                        localStorage.setItem('gaskia-theme', config.theme);
+                        localStorage.setItem('skophia-theme', config.theme);
                         lucide.createIcons();
                     }
                 }
@@ -759,7 +759,7 @@
         ];
 
         // Accordion state
-        let accordionState = JSON.parse(localStorage.getItem('gaskia-accordion-state') || '{}');
+        let accordionState = JSON.parse(localStorage.getItem('skophia-accordion-state') || '{}');
 
         // Toggle accordion
         function toggleAccordion(id) {
@@ -771,7 +771,7 @@
 
             // Save state
             accordionState[id] = !isOpen;
-            localStorage.setItem('gaskia-accordion-state', JSON.stringify(accordionState));
+            localStorage.setItem('skophia-accordion-state', JSON.stringify(accordionState));
 
             lucide.createIcons();
         }
@@ -798,7 +798,7 @@
 
         // Load and apply current persona
         function loadCurrentPersona() {
-            const savedPersona = localStorage.getItem('gaskia-persona') || localStorage.getItem('aiobs-persona');
+            const savedPersona = localStorage.getItem('skophia-persona') || localStorage.getItem('aiobs-persona');
             const personaNameEl = document.getElementById('currentPersonaName');
             const essentialsList = document.getElementById('essentialsList');
             const personaIndicator = document.getElementById('personaIndicator');
@@ -849,7 +849,7 @@
 
         // Set persona (called from personas page)
         function setPersona(personaId) {
-            localStorage.setItem('gaskia-persona', personaId);
+            localStorage.setItem('skophia-persona', personaId);
             loadCurrentPersona();
         }
 
@@ -1045,7 +1045,7 @@
         function endTour() {
             tourState.active = false;
             document.getElementById('tourOverlay').classList.remove('active');
-            localStorage.setItem('gaskia-tour-completed', 'true');
+            localStorage.setItem('skophia-tour-completed', 'true');
         }
 
         // Keyboard shortcuts
@@ -1063,7 +1063,7 @@
 
         // Check for first visit - show subtle prompt instead of redirect
         document.addEventListener('DOMContentLoaded', () => {
-            const hasPersona = localStorage.getItem('gaskia-persona') || localStorage.getItem('aiobs-persona');
+            const hasPersona = localStorage.getItem('skophia-persona') || localStorage.getItem('aiobs-persona');
             const currentPath = window.location.pathname;
             const excludedPaths = ['/onboarding', '/personas', '/welcome', '/api/', '/static/', '/health', '/settings'];
 
@@ -1128,7 +1128,7 @@
                 const response = await fetch('/api/assistant/query', {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({ query: message, context: { history: chatHistory.slice(-6) }, language: window.GASKIA.lang })
+                    body: JSON.stringify({ query: message, context: { history: chatHistory.slice(-6) }, language: window.SKOPHIA.lang })
                 });
 
                 // Remove typing indicator

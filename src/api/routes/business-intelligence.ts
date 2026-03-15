@@ -6,6 +6,7 @@
  */
 
 import { Router, Request, Response } from 'express';
+import { v4 as uuidv4 } from 'uuid';
 import { biEngine } from '../../core/business-intelligence/bi-engine';
 
 const router = Router();
@@ -234,7 +235,7 @@ router.post('/simulate', async (req: Request, res: Response) => {
     }
 
     const result = await biEngine.runImpactSimulation({
-      id: require('uuid').v4(),
+      id: uuidv4(),
       type,
       scenario,
       targets,

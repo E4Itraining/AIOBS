@@ -1,13 +1,13 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <svg width="200" height="50" viewBox="0 0 200 50" fill="none" xmlns="http://www.w3.org/2000/svg">
-  <title>GASKIA Logo - Light Background</title>
+  <title>SKOPHIA Logo - Dark Background</title>
   <defs>
     <!-- Gradient Blue to Cyan -->
-    <linearGradient id="eyeGradientLight" x1="0%" y1="0%" x2="100%" y2="100%">
+    <linearGradient id="eyeGradientDark" x1="0%" y1="0%" x2="100%" y2="100%">
       <stop offset="0%" stop-color="#2563EB"/>
       <stop offset="100%" stop-color="#0891B2"/>
     </linearGradient>
-    <linearGradient id="eyeGradientVerticalLight" x1="0%" y1="0%" x2="0%" y2="100%">
+    <linearGradient id="eyeGradientVerticalDark" x1="0%" y1="0%" x2="0%" y2="100%">
       <stop offset="0%" stop-color="#2563EB"/>
       <stop offset="50%" stop-color="#0EA5E9"/>
       <stop offset="100%" stop-color="#0891B2"/>
@@ -19,20 +19,20 @@
     <!-- Forme extérieure de l'oeil (amande) -->
     <path d="M8 25 Q22 8, 38 25 Q22 42, 8 25 Z"
           fill="none"
-          stroke="url(#eyeGradientLight)"
+          stroke="url(#eyeGradientDark)"
           stroke-width="3"
           stroke-linecap="round"/>
     <!-- Iris/Pupille centrale -->
-    <circle cx="23" cy="25" r="7" fill="url(#eyeGradientVerticalLight)"/>
+    <circle cx="23" cy="25" r="7" fill="url(#eyeGradientVerticalDark)"/>
     <!-- Reflet -->
-    <circle cx="21" cy="23" r="2" fill="#FFFFFF" opacity="0.6"/>
+    <circle cx="21" cy="23" r="2" fill="#F5F5F0" opacity="0.6"/>
   </g>
 
-  <!-- Texte GASKIA - Slate Dark pour fond clair -->
+  <!-- Texte SKOPHIA - Blanc Chaud pour fond sombre -->
   <text x="52" y="33"
         font-family="'Space Grotesk', sans-serif"
         font-weight="700"
         font-size="26"
         letter-spacing="1.5"
-        fill="#1E293B">GASKIA</text>
+        fill="#F5F5F0">SKOPHIA</text>
 </svg>

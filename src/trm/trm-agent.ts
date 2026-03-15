@@ -21,7 +21,7 @@ export interface TRMAgentConfig {
   agentId: string;
   /** Agent name for display */
   agentName: string;
-  /** Upstream Gaskia endpoint for sync */
+  /** Upstream Skophia endpoint for sync */
   upstreamUrl: string;
   /** Model to run locally */
   modelConfig: TRMModelConfig;

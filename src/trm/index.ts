@@ -15,7 +15,7 @@ export type {
 export { TRMOfflineBuffer } from './offline-buffer';
 export type {
   BufferedEntry,
-  GaskiaEndpoint,
+  SkophiaEndpoint,
   SyncResult,
   BufferStats,
   TRMOfflineBufferConfig,

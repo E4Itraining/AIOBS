@@ -1,5 +1,5 @@
 /* ========================================
-   GASKIA Design System v3.0
+   SKOPHIA Design System v3.0
    "Voir. Prouver. Maitriser."
    Trust Control Layer for AI Systems
    Modern Bordeaux / Navy / Blue
@@ -7,7 +7,7 @@
 
 /* ========== CSS Variables / Design Tokens ========== */
 :root {
-    /* GASKIA Brand Colors - Bordeaux & Navy Palette */
+    /* SKOPHIA Brand Colors - Bordeaux & Navy Palette */
     --color-deep-blue: #1B2A4A;        /* Primary Navy */
     --color-slate-dark: #0F1729;       /* Deep Background */
     --color-slate-light: #F4F6F9;      /* Cool Gray */
@@ -171,7 +171,7 @@ body {
     min-height: 100vh;
 }
 
-/* GASKIA Typography */
+/* SKOPHIA Typography */
 h1, h2, h3, h4, h5, h6,
 .heading {
     font-family: var(--font-heading);

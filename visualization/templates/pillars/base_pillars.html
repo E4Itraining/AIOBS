@@ -3,8 +3,8 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>{{ title }} | GASKIA</title>
-    <meta name="description" content="GASKIA - Les 5 Piliers de la Confiance IA: Fiabilité, Sécurité, Conformité, Explicabilité, Performance">
+    <title>{{ title }} | SKOPHIA</title>
+    <meta name="description" content="SKOPHIA - Les 5 Piliers de la Confiance IA: Fiabilité, Sécurité, Conformité, Explicabilité, Performance">
 
     <!-- Favicon -->
     <link rel="icon" type="image/svg+xml" href="/static/images/favicons/favicon.svg">
@@ -28,11 +28,11 @@
 
     <!-- i18n Setup -->
     <script>
-        window.GASKIA = window.GASKIA || {};
-        window.GASKIA.lang = '{{ lang|default("en") }}';
-        window.GASKIA.isRtl = {{ is_rtl|default(false)|lower }};
-        window.GASKIA.translations = {{ translations|tojson|safe }};
-        window.AIOBS = window.GASKIA;
+        window.SKOPHIA = window.SKOPHIA || {};
+        window.SKOPHIA.lang = '{{ lang|default("en") }}';
+        window.SKOPHIA.isRtl = {{ is_rtl|default(false)|lower }};
+        window.SKOPHIA.translations = {{ translations|tojson|safe }};
+        window.AIOBS = window.SKOPHIA;
 
         window.t = function(key, params) {
             const keys = key.split('.');
@@ -65,10 +65,10 @@
             <div class="sidebar-header">
                 <div class="logo">
                     <div class="logo-icon">
-                        <img src="/static/images/logos/gaskia-icon.svg" alt="GASKIA Eye Icon" width="44" height="44">
+                        <img src="/static/images/logos/skophia-icon.svg" alt="SKOPHIA Eye Icon" width="44" height="44">
                     </div>
                     <div class="logo-content">
-                        <span class="logo-text">GASKIA</span>
+                        <span class="logo-text">SKOPHIA</span>
                         <span class="logo-tagline">5 Piliers de Confiance</span>
                     </div>
                 </div>
@@ -120,7 +120,7 @@
                                 <span class="pillar-name">{{ t('pillars.reliability.name') or 'Fiabilité' }}</span>
                                 <span class="pillar-question">{{ t('pillars.reliability.question') or 'Résultats corrects ?' }}</span>
                             </div>
-                            <div class="pillar-score" id="reliabilityScore">--</div>
+                            <div class="pillar-score" id="sidebarReliabilityScore">--</div>
                         </a>
                         <div class="pillar-submenu">
                             <a href="/pillars/reliability#accuracy" class="pillar-sublink">
@@ -148,7 +148,7 @@
                                 <span class="pillar-name">{{ t('pillars.security.name') or 'Sécurité' }}</span>
                                 <span class="pillar-question">{{ t('pillars.security.question') or 'Modèle protégé ?' }}</span>
                             </div>
-                            <div class="pillar-score" id="securityScore">--</div>
+                            <div class="pillar-score" id="sidebarSecurityScore">--</div>
                         </a>
                         <div class="pillar-submenu">
                             <a href="/pillars/security#injection" class="pillar-sublink">
@@ -180,7 +180,7 @@
                                 <span class="pillar-name">{{ t('pillars.compliance.name') or 'Conformité' }}</span>
                                 <span class="pillar-question">{{ t('pillars.compliance.question') or 'Preuves disponibles ?' }}</span>
                             </div>
-                            <div class="pillar-score" id="complianceScore">--</div>
+                            <div class="pillar-score" id="sidebarComplianceScore">--</div>
                         </a>
                         <div class="pillar-submenu">
                             <a href="/pillars/compliance#traceability" class="pillar-sublink">
@@ -212,7 +212,7 @@
                                 <span class="pillar-name">{{ t('pillars.explainability.name') or 'Explicabilité' }}</span>
                                 <span class="pillar-question">{{ t('pillars.explainability.question') or 'Pourquoi cette décision ?' }}</span>
                             </div>
-                            <div class="pillar-score" id="explainabilityScore">--</div>
+                            <div class="pillar-score" id="sidebarExplainabilityScore">--</div>
                         </a>
                         <div class="pillar-submenu">
                             <a href="/pillars/explainability#features" class="pillar-sublink">
@@ -244,7 +244,7 @@
                                 <span class="pillar-name">{{ t('pillars.performance.name') or 'Performance' }}</span>
                                 <span class="pillar-question">{{ t('pillars.performance.question') or 'À quel coût ?' }}</span>
                             </div>
-                            <div class="pillar-score" id="performanceScore">--</div>
+                            <div class="pillar-score" id="sidebarPerformanceScore">--</div>
                         </a>
                         <div class="pillar-submenu">
                             <a href="/pillars/performance#latency" class="pillar-sublink">
@@ -427,9 +427,108 @@
     <!-- Scripts -->
     <script src="/static/js/dashboard.js"></script>
     <script src="/static/js/ux-enhancements.js"></script>
+    <script src="/static/js/chatbot.js"></script>
     <script src="/static/js/pillars.js"></script>
     <script>
         lucide.createIcons();
+
+        // ============================================================
+        // Global Search (pillar-specific search index)
+        // ============================================================
+        const searchIndex = [
+            { type: 'pillar', title: 'Fiabilité', url: '/pillars/reliability', icon: 'check-circle', keywords: ['fiabilité', 'reliability', 'precision', 'recall', 'f1', 'drift'] },
+            { type: 'pillar', title: 'Sécurité', url: '/pillars/security', icon: 'shield', keywords: ['sécurité', 'security', 'injection', 'adversarial', 'threat'] },
+            { type: 'pillar', title: 'Conformité', url: '/pillars/compliance', icon: 'scale', keywords: ['conformité', 'compliance', 'audit', 'ai act', 'traçabilité'] },
+            { type: 'pillar', title: 'Explicabilité', url: '/pillars/explainability', icon: 'lightbulb', keywords: ['explicabilité', 'explainability', 'feature', 'confiance', 'éthique'] },
+            { type: 'pillar', title: 'Performance', url: '/pillars/performance', icon: 'zap', keywords: ['performance', 'latence', 'coût', 'gpu', 'throughput'] },
+            { type: 'page', title: 'Vue d\'ensemble Piliers', url: '/pillars', icon: 'home', keywords: ['overview', 'vue', 'ensemble', 'pentagon'] },
+            { type: 'page', title: 'Monitoring Live', url: '/monitoring', icon: 'activity', keywords: ['monitoring', 'live', 'temps réel'] },
+            { type: 'page', title: 'Analyse Causale', url: '/causal', icon: 'git-branch', keywords: ['causal', 'analyse', 'root cause'] },
+            { type: 'page', title: 'Vue Executive', url: '/executive', icon: 'briefcase', keywords: ['executive', 'dirigeant', 'résumé'] },
+            { type: 'page', title: 'Dashboard', url: '/dashboard', icon: 'layout-dashboard', keywords: ['dashboard', 'tableau de bord'] },
+        ];
+
+        let searchResultsVisible = false;
+
+        function handleGlobalSearch(event) {
+            const query = event.target.value.toLowerCase().trim();
+            const resultsContainer = document.getElementById('searchResultsContent');
+
+            if (query.length < 1) {
+                showDefaultSearchResults();
+                return;
+            }
+
+            const results = searchIndex.filter(item => {
+                return item.title.toLowerCase().includes(query) ||
+                       item.keywords.some(k => k.includes(query));
+            }).slice(0, 8);
+
+            if (results.length === 0) {
+                resultsContainer.innerHTML = `
+                    <div class="search-empty">
+                        <i data-lucide="search-x"></i>
+                        <span>${window.t('search.no_results') || 'Aucun résultat'}</span>
+                    </div>
+                `;
+            } else {
+                resultsContainer.innerHTML = results.map(item => `
+                    <a href="${item.url}" class="search-result-item">
+                        <div class="search-result-icon">
+                            <i data-lucide="${item.icon}"></i>
+                        </div>
+                        <div class="search-result-info">
+                            <span class="search-result-title">${item.title}</span>
+                            <span class="search-result-type">${item.type}</span>
+                        </div>
+                        <i data-lucide="arrow-right" class="search-result-arrow"></i>
+                    </a>
+                `).join('');
+            }
+            lucide.createIcons();
+        }
+
+        function showDefaultSearchResults() {
+            const resultsContainer = document.getElementById('searchResultsContent');
+            const recentPages = searchIndex.filter(i => i.type === 'pillar').slice(0, 5);
+            resultsContainer.innerHTML = recentPages.map(item => `
+                <a href="${item.url}" class="search-result-item">
+                    <div class="search-result-icon">
+                        <i data-lucide="${item.icon}"></i>
+                    </div>
+                    <div class="search-result-info">
+                        <span class="search-result-title">${item.title}</span>
+                        <span class="search-result-type">${item.type}</span>
+                    </div>
+                    <i data-lucide="arrow-right" class="search-result-arrow"></i>
+                </a>
+            `).join('');
+            lucide.createIcons();
+        }
+
+        function showSearchResults() {
+            const searchResults = document.getElementById('searchResults');
+            searchResults.classList.add('active');
+            searchResultsVisible = true;
+            showDefaultSearchResults();
+        }
+
+        function hideSearchResults() {
+            const searchResults = document.getElementById('searchResults');
+            searchResults.classList.remove('active');
+            searchResultsVisible = false;
+        }
+
+        // Toast Notifications
+        function showToast(message, type = 'info', duration = 5000) {
+            const container = document.getElementById('toastContainer');
+            if (!container) return;
+            const toast = document.createElement('div');
+            toast.className = `toast toast-${type}`;
+            toast.innerHTML = `<span>${message}</span>`;
+            container.appendChild(toast);
+            setTimeout(() => toast.remove(), duration);
+        }
 
         // Theme Management
         function toggleTheme() {
@@ -437,13 +536,13 @@
             const current = html.getAttribute('data-theme');
             const next = current === 'light' ? 'dark' : 'light';
             html.setAttribute('data-theme', next);
-            localStorage.setItem('gaskia-theme', next);
+            localStorage.setItem('skophia-theme', next);
             lucide.createIcons();
         }
 
         // Load saved theme
         (function() {
-            const saved = localStorage.getItem('gaskia-theme');
+            const saved = localStorage.getItem('skophia-theme');
             if (saved) {
                 document.documentElement.setAttribute('data-theme', saved);
             } else if (window.matchMedia('(prefers-color-scheme: dark)').matches) {
@@ -474,7 +573,27 @@
         overlay?.addEventListener('click', closeSidebar);
 
         document.addEventListener('keydown', (e) => {
-            if (e.key === 'Escape') closeSidebar();
+            if (e.key === 'Escape') {
+                closeSidebar();
+                hideSearchResults();
+            }
+            // Cmd/Ctrl + K for search
+            if ((e.metaKey || e.ctrlKey) && e.key === 'k') {
+                e.preventDefault();
+                const searchInput = document.getElementById('globalSearchInput');
+                if (searchInput) {
+                    searchInput.focus();
+                    showSearchResults();
+                }
+            }
+        });
+
+        // Close search results on click outside
+        document.addEventListener('click', (e) => {
+            const globalSearch = document.getElementById('globalSearch');
+            if (globalSearch && !globalSearch.contains(e.target) && searchResultsVisible) {
+                hideSearchResults();
+            }
         });
 
         // Language Selector
@@ -514,7 +633,7 @@
         }
 
         function selectPersona(personaId) {
-            localStorage.setItem('gaskia-persona', personaId);
+            localStorage.setItem('skophia-persona', personaId);
             document.getElementById('personaDropdown').classList.remove('open');
             // Optionally reload or update UI
             location.reload();
@@ -539,11 +658,11 @@
                 const response = await fetch('/api/pillars/scores');
                 const data = await response.json();
                 if (data.success) {
-                    document.getElementById('reliabilityScore').textContent = Math.round(data.data.reliability * 100) + '%';
-                    document.getElementById('securityScore').textContent = Math.round(data.data.security * 100) + '%';
-                    document.getElementById('complianceScore').textContent = Math.round(data.data.compliance * 100) + '%';
-                    document.getElementById('explainabilityScore').textContent = Math.round(data.data.explainability * 100) + '%';
-                    document.getElementById('performanceScore').textContent = Math.round(data.data.performance * 100) + '%';
+                    document.getElementById('sidebarReliabilityScore').textContent = Math.round(data.data.reliability * 100) + '%';
+                    document.getElementById('sidebarSecurityScore').textContent = Math.round(data.data.security * 100) + '%';
+                    document.getElementById('sidebarComplianceScore').textContent = Math.round(data.data.compliance * 100) + '%';
+                    document.getElementById('sidebarExplainabilityScore').textContent = Math.round(data.data.explainability * 100) + '%';
+                    document.getElementById('sidebarPerformanceScore').textContent = Math.round(data.data.performance * 100) + '%';
                 }
             } catch (error) {
                 console.log('Pillar scores not available');

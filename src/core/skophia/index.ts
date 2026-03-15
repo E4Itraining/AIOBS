@@ -1,5 +1,5 @@
 /**
- * Gaskia — AI Governance & Telemetry Layer
+ * Skophia — AI Governance & Telemetry Layer
  * Sovereign OTel ingestion and storage routing
  */
 

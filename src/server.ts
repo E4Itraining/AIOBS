@@ -40,8 +40,9 @@ const VERSION = '1.0.0';
 const app: Application = express();
 
 // Middleware
+const CORS_ORIGINS = (process.env.CORS_ORIGINS || 'http://localhost:8000,http://localhost:3000,http://127.0.0.1:8000').split(',');
 app.use(cors({
-  origin: '*',
+  origin: CORS_ORIGINS,
   methods: ['GET', 'POST', 'PUT', 'DELETE', 'PATCH', 'OPTIONS'],
   allowedHeaders: ['Content-Type', 'Authorization', 'X-API-Key', 'X-Request-ID'],
 }));

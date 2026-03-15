@@ -65,7 +65,7 @@
         window.askQuestion = askQuestion;
         window.handleChatKeypress = handleChatKeypress;
 
-        console.log('GASKIA Chatbot initialized');
+        console.log('SKOPHIA Chatbot initialized');
     }
 
     /**
@@ -199,7 +199,7 @@
             body: JSON.stringify({
                 query: message,
                 session_id: state.sessionId,
-                language: window.GASKIA?.lang || 'en',
+                language: window.SKOPHIA?.lang || 'en',
                 context: { history: state.chatHistory.slice(-6) }
             })
         });
@@ -268,7 +268,7 @@
             state.ws.send(JSON.stringify({
                 query: message,
                 session_id: state.sessionId,
-                language: window.GASKIA?.lang || 'en',
+                language: window.SKOPHIA?.lang || 'en',
                 context: { history: state.chatHistory.slice(-6) }
             }));
         }
@@ -483,7 +483,7 @@
      * Get localized error message
      */
     function getErrorMessage() {
-        const lang = window.GASKIA?.lang || 'en';
+        const lang = window.SKOPHIA?.lang || 'en';
         return lang === 'fr'
             ? 'Desolee, une erreur s\'est produite. Veuillez reessayer.'
             : 'Sorry, an error occurred. Please try again.';
@@ -516,7 +516,7 @@
 
         if (elements.statusText && data) {
             const providerInfo = data.provider !== 'mock' ? ` (${data.provider})` : '';
-            const lang = window.GASKIA?.lang || 'en';
+            const lang = window.SKOPHIA?.lang || 'en';
             const statusText = isOnline
                 ? (lang === 'fr' ? 'En ligne' : 'Online') + providerInfo
                 : (lang === 'fr' ? 'Hors ligne' : 'Offline');
@@ -534,7 +534,7 @@
      */
     function loadSession() {
         try {
-            const saved = localStorage.getItem('gaskia-chat-session');
+            const saved = localStorage.getItem('skophia-chat-session');
             if (saved) {
                 const data = JSON.parse(saved);
                 state.sessionId = data.sessionId;
@@ -555,7 +555,7 @@
      */
     function saveSession() {
         try {
-            localStorage.setItem('gaskia-chat-session', JSON.stringify({
+            localStorage.setItem('skophia-chat-session', JSON.stringify({
                 sessionId: state.sessionId,
                 lastUpdated: Date.now()
             }));

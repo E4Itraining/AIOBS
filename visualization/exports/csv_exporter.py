@@ -20,7 +20,7 @@ class CSVExporter:
     """Export data to CSV and Excel formats"""
 
     def __init__(self):
-        # GASKIA brand colors for Excel
+        # SKOPHIA brand colors for Excel
         self.header_fill = PatternFill(start_color="1A1A2E", end_color="1A1A2E", fill_type="solid")
         self.header_font = Font(color="FFFFFF", bold=True, size=11)
         self.accent_fill = PatternFill(start_color="D4A017", end_color="D4A017", fill_type="solid")
@@ -80,7 +80,7 @@ class CSVExporter:
         title: Optional[str] = None,
     ) -> bytes:
         """
-        Export data to Excel format with GASKIA styling.
+        Export data to Excel format with SKOPHIA styling.
 
         Args:
             data: List of dictionaries to export

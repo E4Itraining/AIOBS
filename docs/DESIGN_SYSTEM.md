@@ -1,4 +1,4 @@
-# GASKIA Design System v1.0
+# SKOPHIA Design System v1.0
 
 **Tagline:** *Voir. Prouver. Maîtriser.*
 
@@ -9,7 +9,7 @@ Trust Control Layer for AI Systems
 ## 1. Brand Identity
 
 ### Brand Name
-**GASKIA** - Signifie "vérité" en Haoussa, reflétant notre engagement envers la transparence et la confiance dans les systèmes IA.
+**SKOPHIA** - Signifie "vérité" en Haoussa, reflétant notre engagement envers la transparence et la confiance dans les systèmes IA.
 
 ### Tagline
 > Voir. Prouver. Maîtriser.
@@ -41,7 +41,7 @@ Cette tagline capture notre mission en trois actions:
 
 ```css
 :root {
-    /* GASKIA Brand Colors */
+    /* SKOPHIA Brand Colors */
     --color-or-sahel: #D4A017;
     --color-bleu-nuit: #1A1A2E;
     --color-blanc-chaud: #F5F5F0;
@@ -123,15 +123,15 @@ Excellente lisibilité à toutes tailles.
 
 | Fichier | Usage |
 |---------|-------|
-| `gaskia-logo.svg` | Logo complet (icône + texte) |
-| `gaskia-logo-dark.svg` | Pour fonds sombres |
-| `gaskia-logo-light.svg` | Pour fonds clairs |
-| `gaskia-icon.svg` | Icône seule (sans texte) |
+| `skophia-logo.svg` | Logo complet (icône + texte) |
+| `skophia-logo-dark.svg` | Pour fonds sombres |
+| `skophia-logo-light.svg` | Pour fonds clairs |
+| `skophia-icon.svg` | Icône seule (sans texte) |
 | `favicon.svg` | Favicon pour navigateurs |
 
 ### Logotype
 
-**GASKIA**
+**SKOPHIA**
 - Police: Space Grotesk Bold
 - Lettres capitales
 - Letter-spacing: +5% (0.05em)
@@ -262,10 +262,10 @@ visualization/static/
 │   └── dashboard.css       # Design system complet
 ├── images/
 │   ├── logos/
-│   │   ├── gaskia-logo.svg
-│   │   ├── gaskia-logo-dark.svg
-│   │   ├── gaskia-logo-light.svg
-│   │   └── gaskia-icon.svg
+│   │   ├── skophia-logo.svg
+│   │   ├── skophia-logo-dark.svg
+│   │   ├── skophia-logo-light.svg
+│   │   └── skophia-icon.svg
 │   └── favicons/
 │       └── favicon.svg
 └── js/
@@ -290,4 +290,4 @@ visualization/static/
 
 ---
 
-*GASKIA Design System v1.0 - Voir. Prouver. Maîtriser.*
+*SKOPHIA Design System v1.0 - Voir. Prouver. Maîtriser.*

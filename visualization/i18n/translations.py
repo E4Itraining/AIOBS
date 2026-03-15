@@ -8,7 +8,7 @@ import os
 from pathlib import Path
 from typing import Any, Dict, Optional
 
-# Supported languages with metadata (Limited to EN/FR/NL/DE for Gaskia)
+# Supported languages with metadata (Limited to EN/FR/NL/DE for Skophia)
 SUPPORTED_LANGUAGES = {
     "en": {"name": "English", "native": "English", "flag": "🇬🇧", "rtl": False},
     "fr": {"name": "French", "native": "Français", "flag": "🇫🇷", "rtl": False},
@@ -513,7 +513,7 @@ TRANSLATIONS = {
             "info_message": "Information:",
         },
         "hub": {
-            "title": "GASKIA Control Center",
+            "title": "SKOPHIA Control Center",
             "health_score": "Overall Health Score",
             "welcome": "Your AI systems at a glance",
             "loading": "Loading data...",
@@ -933,7 +933,7 @@ TRANSLATIONS = {
             "info_message": "Information :",
         },
         "hub": {
-            "title": "Centre de Contrôle GASKIA",
+            "title": "Centre de Contrôle SKOPHIA",
             "health_score": "Score de Santé Global",
             "welcome": "Vos systèmes IA en un coup d'œil",
             "loading": "Chargement des données...",
@@ -1181,7 +1181,7 @@ TRANSLATIONS = {
             "info_message": "Informatie:",
         },
         "hub": {
-            "title": "GASKIA Controlecentrum",
+            "title": "SKOPHIA Controlecentrum",
             "health_score": "Algemene Gezondheidsscore",
             "welcome": "Uw AI-systemen in één oogopslag",
             "loading": "Gegevens laden...",
@@ -1206,7 +1206,7 @@ TRANSLATIONS = {
             "see_details": "Volledig dashboard bekijken",
         },
     },
-    # Note: Sections "es", "pt", "it", "zh", "ja", "ko", "ar" removed - only EN/FR/NL/DE supported for Gaskia
+    # Note: Sections "es", "pt", "it", "zh", "ja", "ko", "ar" removed - only EN/FR/NL/DE supported for Skophia
     "de": {
         "app": {
             "name": "AIOBS",
@@ -1377,7 +1377,7 @@ TRANSLATIONS = {
             "confirm_delete": "Möchten Sie wirklich löschen?",
         },
         "hub": {
-            "title": "GASKIA Kontrollzentrum",
+            "title": "SKOPHIA Kontrollzentrum",
             "health_score": "Gesamter Gesundheitswert",
             "welcome": "Ihre KI-Systeme auf einen Blick",
             "loading": "Daten werden geladen...",

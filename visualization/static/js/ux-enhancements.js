@@ -1,5 +1,5 @@
 /**
- * GASKIA UX Enhancements v2.0
+ * SKOPHIA UX Enhancements v2.0
  * Advanced Features for Enterprise AI Observability
  *
  * Features:
@@ -194,7 +194,7 @@
 
     // Load persona from localStorage
     function loadPersona() {
-        const saved = localStorage.getItem('gaskia-persona') || localStorage.getItem('aiobs-persona');
+        const saved = localStorage.getItem('skophia-persona') || localStorage.getItem('aiobs-persona');
         if (saved && PERSONAS[saved]) {
             state.currentPersona = PERSONAS[saved];
         }
@@ -204,7 +204,7 @@
     function setPersona(personaId) {
         if (PERSONAS[personaId]) {
             state.currentPersona = PERSONAS[personaId];
-            localStorage.setItem('gaskia-persona', personaId);
+            localStorage.setItem('skophia-persona', personaId);
             updateUIForPersona();
             showToast(`Profil changé : ${state.currentPersona.name}`, 'success');
         }
@@ -1104,7 +1104,7 @@
             });
         }, 100);
 
-        console.log('🚀 GASKIA UX Enhancements v2.0 loaded');
+        console.log('🚀 SKOPHIA UX Enhancements v2.0 loaded');
         console.log('♿ Accessibility: WCAG 2.1 AA compliant');
     }
 
@@ -1116,7 +1116,7 @@
     }
 
     // Expose to global scope
-    window.GASKIA_UX = {
+    window.SKOPHIA_UX = {
         setPersona,
         toggleCommandPalette,
         toggleQuickInsights,

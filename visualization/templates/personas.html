@@ -11,7 +11,7 @@
             </div>
             <h1>Choisissez Votre Parcours</h1>
             <p class="hero-subtitle">
-                GASKIA s'adapte à votre rôle. Sélectionnez votre profil pour une expérience personnalisée
+                SKOPHIA s'adapte à votre rôle. Sélectionnez votre profil pour une expérience personnalisée
                 avec les KPIs, vues et recommandations qui vous concernent.
             </p>
             <div class="hero-shortcuts">
@@ -374,7 +374,7 @@
                 </div>
                 <h4>Command Palette</h4>
                 <p>Navigation ultra-rapide avec <kbd>⌘</kbd><kbd>K</kbd>. Accédez à n'importe quelle page ou action en quelques frappes.</p>
-                <button class="feature-try" onclick="window.GASKIA_UX && window.GASKIA_UX.toggleCommandPalette()">
+                <button class="feature-try" onclick="window.SKOPHIA_UX && window.SKOPHIA_UX.toggleCommandPalette()">
                     Essayer
                 </button>
             </div>
@@ -384,7 +384,7 @@
                 </div>
                 <h4>Quick Insights</h4>
                 <p>Résumé exécutif en 30 secondes avec <kbd>I</kbd>. Comprenez l'état de vos systèmes IA instantanément.</p>
-                <button class="feature-try" onclick="window.GASKIA_UX && window.GASKIA_UX.toggleQuickInsights()">
+                <button class="feature-try" onclick="window.SKOPHIA_UX && window.SKOPHIA_UX.toggleQuickInsights()">
                     Essayer
                 </button>
             </div>
@@ -394,7 +394,7 @@
                 </div>
                 <h4>Recommandations IA</h4>
                 <p>Suggestions proactives personnalisées selon votre rôle pour optimiser coûts, performance et sécurité.</p>
-                <button class="feature-try" onclick="window.GASKIA_UX && window.GASKIA_UX.toggleQuickInsights()">
+                <button class="feature-try" onclick="window.SKOPHIA_UX && window.SKOPHIA_UX.toggleQuickInsights()">
                     Voir
                 </button>
             </div>
@@ -404,7 +404,7 @@
                 </div>
                 <h4>Raccourcis Clavier</h4>
                 <p>Productivité maximale avec les raccourcis <kbd>G</kbd>+<kbd>H</kbd>, <kbd>G</kbd>+<kbd>E</kbd>, etc. Tapez <kbd>?</kbd> pour voir tous.</p>
-                <button class="feature-try" onclick="window.GASKIA_UX && window.GASKIA_UX.toggleShortcutsModal()">
+                <button class="feature-try" onclick="window.SKOPHIA_UX && window.SKOPHIA_UX.toggleShortcutsModal()">
                     Voir tous
                 </button>
             </div>
@@ -885,8 +885,8 @@
 <script>
 function selectPersona(personaId) {
     // Save to localStorage
-    localStorage.setItem('gaskia-persona', personaId);
-    localStorage.setItem('gaskia-onboarding-complete', 'true');
+    localStorage.setItem('skophia-persona', personaId);
+    localStorage.setItem('skophia-onboarding-complete', 'true');
 
     // Get first page of journey based on persona - redirecting to new persona views
     const journeys = {

@@ -2,22 +2,22 @@
  * Federated Sync Manager
  *
  * Handles differential synchronization between TRM edge agents and the
- * central Gaskia platform. Supports intermittent connectivity, deduplication,
+ * central Skophia platform. Supports intermittent connectivity, deduplication,
  * and priority-based sync ordering.
  *
  * @cybersec Differential resync for air-gapped tactical deployments
  */
 
 import { v4 as uuidv4 } from 'uuid';
-import type { TRMOfflineBuffer, GaskiaEndpoint, SyncResult } from './offline-buffer';
+import type { TRMOfflineBuffer, SkophiaEndpoint, SyncResult } from './offline-buffer';
 
 // ============================================================================
 // Types
 // ============================================================================
 
 export interface FederatedSyncConfig {
-  /** Upstream Gaskia endpoint */
-  upstream: GaskiaEndpoint;
+  /** Upstream Skophia endpoint */
+  upstream: SkophiaEndpoint;
   /** Sync interval when online (ms) */
   syncIntervalMs: number;
   /** Maximum retries per sync attempt */
