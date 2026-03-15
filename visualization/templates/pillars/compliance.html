@@ -259,6 +259,7 @@ document.addEventListener('DOMContentLoaded', () => {
     loadAuditData();
     loadAiActData();
     lucide.createIcons();
+    startAutoRefresh([loadComplianceData]);
 });
 
 async function loadComplianceData() {

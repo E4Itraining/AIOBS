@@ -224,6 +224,7 @@ document.addEventListener('DOMContentLoaded', async () => {
     drawPentagon();
     loadRecommendations();
     lucide.createIcons();
+    startAutoRefresh([loadPillarData]);
 });
 
 async function loadPillarData() {

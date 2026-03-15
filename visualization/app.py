@@ -69,6 +69,7 @@ except Exception as e:
 from .routers.ingestion import shutdown as ingestion_shutdown
 from .routers.ingestion import startup as ingestion_startup
 from .routers.realtime import start_background_tasks, stop_background_tasks
+from .services.pillar_simulator import run_simulator_loop
 
 # Configure logging
 logger = logging.getLogger("aiobs.app")
@@ -193,6 +194,10 @@ async def startup_event():
 
     start_background_tasks()
     await ingestion_startup()
+
+    # Start pillar simulator background loop (ticks every 2s)
+    import asyncio
+    asyncio.create_task(run_simulator_loop())
 
 
 @app.on_event("shutdown")

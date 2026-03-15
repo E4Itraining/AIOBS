@@ -243,6 +243,8 @@ document.addEventListener('DOMContentLoaded', () => {
     loadDriftData();
     loadModelsData();
     lucide.createIcons();
+    // Auto-refresh KPIs every 5s (charts reload on data change)
+    startAutoRefresh([loadReliabilityData, loadModelsData]);
 });
 
 function generateLabels(count) {

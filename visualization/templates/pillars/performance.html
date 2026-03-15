@@ -304,6 +304,7 @@ document.addEventListener('DOMContentLoaded', () => {
     loadLatencyData();
     loadCostData();
     lucide.createIcons();
+    startAutoRefresh([loadPerformanceData]);
 });
 
 async function loadPerformanceData() {

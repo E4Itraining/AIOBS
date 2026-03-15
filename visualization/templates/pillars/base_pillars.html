@@ -670,6 +670,40 @@
         }
 
         document.addEventListener('DOMContentLoaded', loadPillarScores);
+
+        // Auto-refresh sidebar scores every 5 seconds
+        setInterval(loadPillarScores, 5000);
+    </script>
+
+    <!-- Auto-refresh engine for pillar sub-pages -->
+    <script>
+    (function() {
+        const REFRESH_INTERVAL = 5000; // 5 seconds
+
+        // Store chart instances for update
+        window._pillarCharts = window._pillarCharts || {};
+
+        // Generic auto-refresh: re-call the page's load functions
+        window.startAutoRefresh = function(loadFunctions) {
+            setInterval(() => {
+                loadFunctions.forEach(fn => {
+                    if (typeof fn === 'function') {
+                        try { fn(); } catch(e) { console.warn('Refresh error:', e); }
+                    }
+                });
+            }, REFRESH_INTERVAL);
+        };
+
+        // Refresh indicator
+        document.addEventListener('DOMContentLoaded', () => {
+            const indicator = document.createElement('div');
+            indicator.id = 'refreshIndicator';
+            indicator.innerHTML = '<i data-lucide="refresh-cw" style="width:14px;height:14px;"></i> <span>Live</span>';
+            indicator.style.cssText = 'position:fixed;bottom:16px;right:16px;background:var(--color-success);color:#fff;padding:6px 12px;border-radius:20px;font-size:0.75rem;display:flex;align-items:center;gap:6px;z-index:1000;opacity:0.85;';
+            document.body.appendChild(indicator);
+            if (typeof lucide !== 'undefined') lucide.createIcons();
+        });
+    })();
     </script>
     {% block scripts %}{% endblock %}
 </body>
