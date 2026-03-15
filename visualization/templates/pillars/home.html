@@ -36,20 +36,17 @@
 <div class="pillars-grid">
     <!-- 1. FIABILITÉ -->
     <a href="/pillars/reliability" class="pillar-card reliability">
-        <div class="pillar-card-header">
-            <div class="pillar-card-icon reliability">
+        <div class="pillar-card-banner">
+            <div class="pillar-card-icon">
                 <i data-lucide="check-circle"></i>
             </div>
-            <div class="pillar-card-title">
-                <h3>{{ t('pillars.reliability.name') or 'Fiabilité' }}</h3>
-                <span class="question">{{ t('pillars.reliability.question') or 'Le modèle produit-il des résultats corrects ?' }}</span>
-            </div>
             <div class="pillar-card-score">
-                <div class="score-value" id="reliabilityScoreCard">--</div>
-                <div class="score-label">Score</div>
+                <span class="score-value" id="reliabilityScoreCard">--</span>
             </div>
         </div>
         <div class="pillar-card-body">
+            <h3>{{ t('pillars.reliability.name') or 'Fiabilité' }}</h3>
+            <span class="question">{{ t('pillars.reliability.question') or 'Le modèle produit-il des résultats corrects ?' }}</span>
             <p>{{ t('pillars.reliability.desc') or 'Surveillez la précision, le rappel, le F1-score. Détectez les dérives de modèles et suivez la qualité dans le temps.' }}</p>
             <div class="pillar-metrics">
                 <span class="pillar-metric"><i data-lucide="target"></i> Précision</span>
@@ -67,20 +64,17 @@
 
     <!-- 2. SÉCURITÉ -->
     <a href="/pillars/security" class="pillar-card security">
-        <div class="pillar-card-header">
-            <div class="pillar-card-icon security">
+        <div class="pillar-card-banner">
+            <div class="pillar-card-icon">
                 <i data-lucide="shield"></i>
             </div>
-            <div class="pillar-card-title">
-                <h3>{{ t('pillars.security.name') or 'Sécurité' }}</h3>
-                <span class="question">{{ t('pillars.security.question') or 'Le modèle est-il protégé ?' }}</span>
-            </div>
             <div class="pillar-card-score">
-                <div class="score-value" id="securityScoreCard">--</div>
-                <div class="score-label">Score</div>
+                <span class="score-value" id="securityScoreCard">--</span>
             </div>
         </div>
         <div class="pillar-card-body">
+            <h3>{{ t('pillars.security.name') or 'Sécurité' }}</h3>
+            <span class="question">{{ t('pillars.security.question') or 'Le modèle est-il protégé ?' }}</span>
             <p>{{ t('pillars.security.desc') or 'Protégez contre les injections de prompts, les attaques adversariales, l\'extraction de données et les comportements anormaux.' }}</p>
             <div class="pillar-metrics">
                 <span class="pillar-metric"><i data-lucide="syringe"></i> Injection</span>
@@ -98,20 +92,17 @@
 
     <!-- 3. CONFORMITÉ -->
     <a href="/pillars/compliance" class="pillar-card compliance">
-        <div class="pillar-card-header">
-            <div class="pillar-card-icon compliance">
+        <div class="pillar-card-banner">
+            <div class="pillar-card-icon">
                 <i data-lucide="scale"></i>
             </div>
-            <div class="pillar-card-title">
-                <h3>{{ t('pillars.compliance.name') or 'Conformité' }}</h3>
-                <span class="question">{{ t('pillars.compliance.question') or 'Peut-il prouver ce qu\'il fait ?' }}</span>
-            </div>
             <div class="pillar-card-score">
-                <div class="score-value" id="complianceScoreCard">--</div>
-                <div class="score-label">Score</div>
+                <span class="score-value" id="complianceScoreCard">--</span>
             </div>
         </div>
         <div class="pillar-card-body">
+            <h3>{{ t('pillars.compliance.name') or 'Conformité' }}</h3>
+            <span class="question">{{ t('pillars.compliance.question') or 'Peut-il prouver ce qu\'il fait ?' }}</span>
             <p>{{ t('pillars.compliance.desc') or 'Traçabilité des inférences, versioning des modèles, lignage des données et preuves pour l\'AI Act européen.' }}</p>
             <div class="pillar-metrics">
                 <span class="pillar-metric"><i data-lucide="git-branch"></i> Traçabilité</span>
@@ -129,20 +120,17 @@
 
     <!-- 4. EXPLICABILITÉ -->
     <a href="/pillars/explainability" class="pillar-card explainability">
-        <div class="pillar-card-header">
-            <div class="pillar-card-icon explainability">
+        <div class="pillar-card-banner">
+            <div class="pillar-card-icon">
                 <i data-lucide="lightbulb"></i>
             </div>
-            <div class="pillar-card-title">
-                <h3>{{ t('pillars.explainability.name') or 'Explicabilité' }}</h3>
-                <span class="question">{{ t('pillars.explainability.question') or 'Pourquoi cette décision ?' }}</span>
-            </div>
             <div class="pillar-card-score">
-                <div class="score-value" id="explainabilityScoreCard">--</div>
-                <div class="score-label">Score</div>
+                <span class="score-value" id="explainabilityScoreCard">--</span>
             </div>
         </div>
         <div class="pillar-card-body">
+            <h3>{{ t('pillars.explainability.name') or 'Explicabilité' }}</h3>
+            <span class="question">{{ t('pillars.explainability.question') or 'Pourquoi cette décision ?' }}</span>
             <p>{{ t('pillars.explainability.desc') or 'Feature importance, scores de confiance, alternatives écartées. Répondez aux obligations légales et éthiques.' }}</p>
             <div class="pillar-metrics">
                 <span class="pillar-metric"><i data-lucide="list-ordered"></i> Features</span>
@@ -160,20 +148,17 @@
 
     <!-- 5. PERFORMANCE -->
     <a href="/pillars/performance" class="pillar-card performance">
-        <div class="pillar-card-header">
-            <div class="pillar-card-icon performance">
+        <div class="pillar-card-banner">
+            <div class="pillar-card-icon">
                 <i data-lucide="zap"></i>
             </div>
-            <div class="pillar-card-title">
-                <h3>{{ t('pillars.performance.name') or 'Performance' }}</h3>
-                <span class="question">{{ t('pillars.performance.question') or 'À quel coût ?' }}</span>
-            </div>
             <div class="pillar-card-score">
-                <div class="score-value" id="performanceScoreCard">--</div>
-                <div class="score-label">Score</div>
+                <span class="score-value" id="performanceScoreCard">--</span>
             </div>
         </div>
         <div class="pillar-card-body">
+            <h3>{{ t('pillars.performance.name') or 'Performance' }}</h3>
+            <span class="question">{{ t('pillars.performance.question') or 'À quel coût ?' }}</span>
             <p>{{ t('pillars.performance.desc') or 'Latence, débit, coût par inférence, utilisation GPU. Optimisez le trade-off qualité/vitesse.' }}</p>
             <div class="pillar-metrics">
                 <span class="pillar-metric"><i data-lucide="clock"></i> Latence</span>

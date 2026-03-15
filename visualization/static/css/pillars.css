@@ -277,7 +277,7 @@
 /* 5 Pillar Cards on home */
 .pillars-grid {
     display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+    grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
     gap: 24px;
     margin-bottom: 40px;
 }
@@ -293,107 +293,99 @@
     color: inherit;
     display: flex;
     flex-direction: column;
-    position: relative;
     overflow: hidden;
 }
 
-.pillar-card::before {
-    content: '';
-    position: absolute;
-    top: 0;
-    left: 0;
-    right: 0;
-    height: 4px;
-}
-
-.pillar-card.reliability::before { background: var(--gradient-reliability); }
-.pillar-card.security::before { background: var(--gradient-security); }
-.pillar-card.compliance::before { background: var(--gradient-compliance); }
-.pillar-card.explainability::before { background: var(--gradient-explainability); }
-.pillar-card.performance::before { background: var(--gradient-performance); }
-
 .pillar-card:hover {
     transform: translateY(-4px);
-    box-shadow: var(--shadow-lg);
     border-color: transparent;
 }
 
-.pillar-card.reliability:hover { box-shadow: 0 12px 32px var(--pillar-reliability-glow); }
-.pillar-card.security:hover { box-shadow: 0 12px 32px var(--pillar-security-glow); }
-.pillar-card.compliance:hover { box-shadow: 0 12px 32px var(--pillar-compliance-glow); }
-.pillar-card.explainability:hover { box-shadow: 0 12px 32px var(--pillar-explainability-glow); }
-.pillar-card.performance:hover { box-shadow: 0 12px 32px var(--pillar-performance-glow); }
+.pillar-card.reliability:hover { box-shadow: 0 12px 40px var(--pillar-reliability-glow); }
+.pillar-card.security:hover { box-shadow: 0 12px 40px var(--pillar-security-glow); }
+.pillar-card.compliance:hover { box-shadow: 0 12px 40px var(--pillar-compliance-glow); }
+.pillar-card.explainability:hover { box-shadow: 0 12px 40px var(--pillar-explainability-glow); }
+.pillar-card.performance:hover { box-shadow: 0 12px 40px var(--pillar-performance-glow); }
 
-.pillar-card-header {
+/* Colored banner at top of each card */
+.pillar-card-banner {
     display: flex;
     align-items: center;
-    gap: 16px;
-    padding: 24px 24px 0;
+    justify-content: space-between;
+    padding: 20px 24px;
+    position: relative;
 }
 
-.pillar-card-icon {
-    width: 52px;
-    height: 52px;
-    border-radius: 14px;
+.pillar-card.reliability .pillar-card-banner { background: var(--gradient-reliability); }
+.pillar-card.security .pillar-card-banner { background: var(--gradient-security); }
+.pillar-card.compliance .pillar-card-banner { background: var(--gradient-compliance); }
+.pillar-card.explainability .pillar-card-banner { background: var(--gradient-explainability); }
+.pillar-card.performance .pillar-card-banner { background: var(--gradient-performance); }
+
+/* Subtle pattern on banner */
+.pillar-card-banner::after {
+    content: '';
+    position: absolute;
+    top: 0;
+    right: 0;
+    bottom: 0;
+    width: 50%;
+    background: radial-gradient(circle at 80% 50%, rgba(255,255,255,0.12) 0%, transparent 70%);
+    pointer-events: none;
+}
+
+.pillar-card-banner .pillar-card-icon {
+    width: 44px;
+    height: 44px;
+    border-radius: 12px;
     display: flex;
     align-items: center;
     justify-content: center;
+    background: rgba(255, 255, 255, 0.2);
+    backdrop-filter: blur(4px);
     color: white;
     flex-shrink: 0;
+    z-index: 1;
 }
 
-.pillar-card-icon.reliability { background: var(--gradient-reliability); }
-.pillar-card-icon.security { background: var(--gradient-security); }
-.pillar-card-icon.compliance { background: var(--gradient-compliance); }
-.pillar-card-icon.explainability { background: var(--gradient-explainability); }
-.pillar-card-icon.performance { background: var(--gradient-performance); }
+.pillar-card-banner .pillar-card-icon i { width: 22px; height: 22px; }
 
-.pillar-card-icon i { width: 26px; height: 26px; }
+.pillar-card-score {
+    z-index: 1;
+}
 
-.pillar-card-title { flex: 1; min-width: 0; }
+.pillar-card-score .score-value {
+    font-size: 2.4rem;
+    font-weight: 800;
+    font-family: 'Space Grotesk', sans-serif;
+    color: white;
+    line-height: 1;
+}
 
-.pillar-card-title h3 {
+.pillar-card-body {
+    padding: 20px 24px 16px;
+    flex: 1;
+}
+
+.pillar-card-body h3 {
     font-size: 1.15rem;
     font-weight: 700;
-    margin-bottom: 2px;
+    margin-bottom: 4px;
+    color: var(--text-primary);
 }
 
-.pillar-card-title .question {
+.pillar-card-body .question {
+    display: block;
     font-size: 0.82rem;
     color: var(--text-muted);
     font-style: italic;
-}
-
-.pillar-card-score { text-align: center; flex-shrink: 0; }
-
-.pillar-card-score .score-value {
-    font-size: 1.8rem;
-    font-weight: 800;
-    font-family: 'Space Grotesk', sans-serif;
-}
-
-.pillar-card-score .score-label {
-    font-size: 0.65rem;
-    color: var(--text-muted);
-    text-transform: uppercase;
-    letter-spacing: 0.06em;
-}
-
-.pillar-card.reliability .score-value { color: var(--pillar-reliability); }
-.pillar-card.security .score-value { color: var(--pillar-security); }
-.pillar-card.compliance .score-value { color: var(--pillar-compliance); }
-.pillar-card.explainability .score-value { color: var(--pillar-explainability); }
-.pillar-card.performance .score-value { color: var(--pillar-performance); }
-
-.pillar-card-body {
-    padding: 16px 24px;
-    flex: 1;
+    margin-bottom: 10px;
 }
 
 .pillar-card-body p {
     color: var(--text-secondary);
     line-height: 1.6;
-    font-size: 0.88rem;
+    font-size: 0.86rem;
     margin-bottom: 12px;
 }
 
@@ -1271,6 +1263,7 @@ body.pillar-performance,
     .pillars-content { padding: 16px; }
     .pillars-hero h1 { font-size: 1.5rem; }
     .pillars-grid { grid-template-columns: 1fr; }
+    .pillar-card-score .score-value { font-size: 1.8rem; }
 
     .pillar-header {
         flex-direction: column;
