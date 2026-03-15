@@ -1,0 +1,688 @@
+{% extends "pillars/base_pillars.html" %}
+
+{% set active_pillar = 'semantic_drift' %}
+
+{% block page_title %}Dérive Sémantique{% endblock %}
+
+{% block content %}
+<!-- Pillar Header -->
+<div class="pillar-header">
+    <div class="pillar-header-info">
+        <div class="pillar-header-icon" style="background: linear-gradient(135deg, #dc2626 0%, #991b1b 100%);">
+            <i data-lucide="brain"></i>
+        </div>
+        <div class="pillar-header-text">
+            <h1>Dérive Sémantique</h1>
+            <span class="question">Le sens des sorties IA a-t-il été manipulé ?</span>
+        </div>
+    </div>
+    <div class="pillar-header-score">
+        <div class="score-value" id="driftGlobalScore">--</div>
+        <div class="score-label">Intégrité Sémantique</div>
+        <div class="score-trend stable" id="driftGlobalTrend">
+            <i data-lucide="minus"></i>
+            <span>Stable</span>
+        </div>
+    </div>
+</div>
+
+<!-- KPI Grid -->
+<div class="pillar-kpi-grid">
+    <div class="pillar-kpi-card">
+        <div class="pillar-kpi-header">
+            <span class="pillar-kpi-label">Alertes Sémantiques (24h)</span>
+            <i data-lucide="alert-octagon"></i>
+        </div>
+        <div class="pillar-kpi-value" id="semanticAlerts">0</div>
+        <div class="pillar-kpi-trend stable" id="alertsTrend">
+            <i data-lucide="minus"></i> Aucune alerte
+        </div>
+    </div>
+
+    <div class="pillar-kpi-card">
+        <div class="pillar-kpi-header">
+            <span class="pillar-kpi-label">Score Isolation Forest</span>
+            <i data-lucide="scan-search"></i>
+        </div>
+        <div class="pillar-kpi-value" id="isoForestScore">0.12</div>
+        <div class="pillar-kpi-trend stable">
+            <i data-lucide="check"></i> Normal (seuil: 0.45)
+        </div>
+    </div>
+
+    <div class="pillar-kpi-card">
+        <div class="pillar-kpi-header">
+            <span class="pillar-kpi-label">Erreur Reconstruction VAE</span>
+            <i data-lucide="waypoints"></i>
+        </div>
+        <div class="pillar-kpi-value" id="vaeError">0.08</div>
+        <div class="pillar-kpi-trend stable">
+            <i data-lucide="check"></i> Normal (seuil: 0.35)
+        </div>
+    </div>
+
+    <div class="pillar-kpi-card">
+        <div class="pillar-kpi-header">
+            <span class="pillar-kpi-label">Cohérence Contextuelle</span>
+            <i data-lucide="link-2"></i>
+        </div>
+        <div class="pillar-kpi-value" id="contextCoherence" style="color: var(--color-success);">0.94</div>
+        <div class="pillar-kpi-trend up" style="color: var(--color-success);">
+            <i data-lucide="trending-up"></i> +0.02
+        </div>
+    </div>
+</div>
+
+<!-- Architecture du moteur de détection -->
+<div class="pillar-section" id="engine">
+    <div class="pillar-section-header">
+        <h2 class="pillar-section-title">
+            <i data-lucide="cpu"></i>
+            Moteur de Détection — Architecture Tri-Couche
+        </h2>
+        <span class="badge badge-healthy">Opérationnel</span>
+    </div>
+
+    <div class="grid grid-3 gap-4 mb-4">
+        <div class="card" style="border-top: 3px solid #ef4444;">
+            <div style="display:flex;align-items:center;gap:8px;margin-bottom:12px;">
+                <div class="kpi-icon" style="background:rgba(239,68,68,0.12);"><i data-lucide="scan-search" style="color:#ef4444;"></i></div>
+                <div>
+                    <div style="font-weight:600;">Isolation Forest</div>
+                    <div class="text-sm text-muted">Poids: 30%</div>
+                </div>
+            </div>
+            <div style="text-align:center;margin:16px 0;">
+                <div style="font-size:2rem;font-weight:700;color:#ef4444;" id="isoForestValue">0.12</div>
+                <div class="text-sm text-muted">Score d'anomalie</div>
+            </div>
+            <div class="chart-container" style="height:120px;">
+                <canvas id="isoForestChart"></canvas>
+            </div>
+            <div class="text-sm text-muted" style="margin-top:8px;">
+                Détecte les outliers dans l'espace de représentation des sorties IA.
+                Sensible aux manipulations subtiles non captées par les tests statistiques.
+            </div>
+        </div>
+
+        <div class="card" style="border-top: 3px solid #8b5cf6;">
+            <div style="display:flex;align-items:center;gap:8px;margin-bottom:12px;">
+                <div class="kpi-icon" style="background:rgba(139,92,246,0.12);"><i data-lucide="waypoints" style="color:#8b5cf6;"></i></div>
+                <div>
+                    <div style="font-weight:600;">Auto-Encodeur Variationnel (VAE)</div>
+                    <div class="text-sm text-muted">Poids: 30%</div>
+                </div>
+            </div>
+            <div style="text-align:center;margin:16px 0;">
+                <div style="font-size:2rem;font-weight:700;color:#8b5cf6;" id="vaeValue">0.08</div>
+                <div class="text-sm text-muted">Erreur de reconstruction</div>
+            </div>
+            <div class="chart-container" style="height:120px;">
+                <canvas id="vaeChart"></canvas>
+            </div>
+            <div class="text-sm text-muted" style="margin-top:8px;">
+                Reconstruit l'espace latent des sorties. Une erreur élevée signale
+                un écart par rapport à la distribution apprise.
+            </div>
+        </div>
+
+        <div class="card" style="border-top: 3px solid #0ea5e9;">
+            <div style="display:flex;align-items:center;gap:8px;margin-bottom:12px;">
+                <div class="kpi-icon" style="background:rgba(14,165,233,0.12);"><i data-lucide="link-2" style="color:#0ea5e9;"></i></div>
+                <div>
+                    <div style="font-weight:600;">Analyseur de Contexte</div>
+                    <div class="text-sm text-muted">Poids: 40%</div>
+                </div>
+            </div>
+            <div style="text-align:center;margin:16px 0;">
+                <div style="font-size:2rem;font-weight:700;color:#0ea5e9;" id="contextValue">0.94</div>
+                <div class="text-sm text-muted">Cohérence sémantique</div>
+            </div>
+            <div class="chart-container" style="height:120px;">
+                <canvas id="contextChart"></canvas>
+            </div>
+            <div class="text-sm text-muted" style="margin-top:8px;">
+                Compare le sens opérationnel des sorties avec les missions attendues.
+                Composante différenciatrice de SKOPHIA.
+            </div>
+        </div>
+    </div>
+
+    <!-- Score composite -->
+    <div class="card" style="background:linear-gradient(135deg, rgba(220,38,38,0.04) 0%, rgba(139,92,246,0.04) 50%, rgba(14,165,233,0.04) 100%); border:1px solid var(--border-primary);">
+        <div style="display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:16px;">
+            <div>
+                <div style="font-weight:700;font-size:1.1rem;">Score Composite de Dérive Sémantique</div>
+                <div class="text-sm text-muted">= 0.30 × Isolation Forest + 0.30 × VAE + 0.40 × (1 - Contexte)</div>
+            </div>
+            <div style="text-align:center;">
+                <div style="font-size:2.5rem;font-weight:700;" id="compositeScore">0.07</div>
+                <div class="text-sm text-muted">Seuil d'alerte: 0.40</div>
+            </div>
+            <div>
+                <div class="chart-container" style="height:80px;width:200px;">
+                    <canvas id="compositeGauge"></canvas>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- 6 Types de Dérive Sémantique -->
+<div class="pillar-section" id="drift-types">
+    <div class="pillar-section-header">
+        <h2 class="pillar-section-title">
+            <i data-lucide="layers"></i>
+            Les 6 Types de Dérive Sémantique
+        </h2>
+        <span class="text-sm text-muted">Surveillance continue — tous modèles</span>
+    </div>
+
+    <div class="grid grid-2 gap-4 mb-4">
+        <!-- 1. Meaning Inversion -->
+        <div class="card" id="type-meaning-inversion" style="border-left:4px solid #ef4444;">
+            <div style="display:flex;align-items:flex-start;gap:12px;">
+                <div class="kpi-icon" style="background:rgba(239,68,68,0.12);flex-shrink:0;">
+                    <i data-lucide="arrow-down-up" style="color:#ef4444;"></i>
+                </div>
+                <div style="flex:1;">
+                    <div style="display:flex;align-items:center;justify-content:space-between;">
+                        <div style="font-weight:700;color:#ef4444;">1. Inversion de Sens</div>
+                        <span class="badge badge-healthy" id="badge-meaning">Normal</span>
+                    </div>
+                    <div class="text-sm text-muted" style="margin:6px 0;">
+                        <code>meaning_inversion</code> — Les labels restent valides mais le sens s'inverse.
+                        Ex: un modèle continue de classifier "menace"/"sûr" mais les décisions
+                        sont inversées de manière imperceptible.
+                    </div>
+                    <div style="display:flex;gap:12px;margin-top:8px;">
+                        <div>
+                            <div class="text-sm text-muted">Score actuel</div>
+                            <div style="font-weight:700;font-size:1.2rem;" id="score-meaning">0.03</div>
+                        </div>
+                        <div>
+                            <div class="text-sm text-muted">Seuil</div>
+                            <div style="font-weight:500;font-size:1.2rem;color:var(--text-secondary);">0.25</div>
+                        </div>
+                        <div>
+                            <div class="text-sm text-muted">MITRE</div>
+                            <div style="font-weight:500;font-size:0.85rem;color:#ef4444;">T0856</div>
+                        </div>
+                    </div>
+                    <div class="chart-container" style="height:80px;margin-top:8px;">
+                        <canvas id="chart-meaning"></canvas>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- 2. Context Displacement -->
+        <div class="card" id="type-context-displacement" style="border-left:4px solid #f59e0b;">
+            <div style="display:flex;align-items:flex-start;gap:12px;">
+                <div class="kpi-icon" style="background:rgba(245,158,11,0.12);flex-shrink:0;">
+                    <i data-lucide="map-pin-off" style="color:#f59e0b;"></i>
+                </div>
+                <div style="flex:1;">
+                    <div style="display:flex;align-items:center;justify-content:space-between;">
+                        <div style="font-weight:700;color:#f59e0b;">2. Déplacement Contextuel</div>
+                        <span class="badge badge-healthy" id="badge-context">Normal</span>
+                    </div>
+                    <div class="text-sm text-muted" style="margin:6px 0;">
+                        <code>context_displacement</code> — Sorties correctes dans le mauvais contexte opérationnel.
+                        Ex: une classification Terre appliquée à un théâtre Mer — résultat techniquement valide
+                        mais opérationnellement dangereux.
+                    </div>
+                    <div style="display:flex;gap:12px;margin-top:8px;">
+                        <div>
+                            <div class="text-sm text-muted">Score actuel</div>
+                            <div style="font-weight:700;font-size:1.2rem;" id="score-context">0.05</div>
+                        </div>
+                        <div>
+                            <div class="text-sm text-muted">Seuil</div>
+                            <div style="font-weight:500;font-size:1.2rem;color:var(--text-secondary);">0.30</div>
+                        </div>
+                        <div>
+                            <div class="text-sm text-muted">MITRE</div>
+                            <div style="font-weight:500;font-size:0.85rem;color:#f59e0b;">T0856</div>
+                        </div>
+                    </div>
+                    <div class="chart-container" style="height:80px;margin-top:8px;">
+                        <canvas id="chart-context"></canvas>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- 3. Confidence Manipulation -->
+        <div class="card" id="type-confidence-manipulation" style="border-left:4px solid #8b5cf6;">
+            <div style="display:flex;align-items:flex-start;gap:12px;">
+                <div class="kpi-icon" style="background:rgba(139,92,246,0.12);flex-shrink:0;">
+                    <i data-lucide="gauge" style="color:#8b5cf6;"></i>
+                </div>
+                <div style="flex:1;">
+                    <div style="display:flex;align-items:center;justify-content:space-between;">
+                        <div style="font-weight:700;color:#8b5cf6;">3. Manipulation de Confiance</div>
+                        <span class="badge badge-healthy" id="badge-confidence">Normal</span>
+                    </div>
+                    <div class="text-sm text-muted" style="margin:6px 0;">
+                        <code>confidence_manipulation</code> — Scores de confiance artificiellement gonflés ou dégonflés.
+                        Ex: un adversaire force le modèle à afficher 98% de confiance sur des prédictions
+                        erronées, trompant les opérateurs.
+                    </div>
+                    <div style="display:flex;gap:12px;margin-top:8px;">
+                        <div>
+                            <div class="text-sm text-muted">Score actuel</div>
+                            <div style="font-weight:700;font-size:1.2rem;" id="score-confidence">0.02</div>
+                        </div>
+                        <div>
+                            <div class="text-sm text-muted">Seuil</div>
+                            <div style="font-weight:500;font-size:1.2rem;color:var(--text-secondary);">0.20</div>
+                        </div>
+                        <div>
+                            <div class="text-sm text-muted">MITRE</div>
+                            <div style="font-weight:500;font-size:0.85rem;color:#8b5cf6;">T0831</div>
+                        </div>
+                    </div>
+                    <div class="chart-container" style="height:80px;margin-top:8px;">
+                        <canvas id="chart-confidence"></canvas>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- 4. Boundary Erosion -->
+        <div class="card" id="type-boundary-erosion" style="border-left:4px solid #0ea5e9;">
+            <div style="display:flex;align-items:flex-start;gap:12px;">
+                <div class="kpi-icon" style="background:rgba(14,165,233,0.12);flex-shrink:0;">
+                    <i data-lucide="move-diagonal" style="color:#0ea5e9;"></i>
+                </div>
+                <div style="flex:1;">
+                    <div style="display:flex;align-items:center;justify-content:space-between;">
+                        <div style="font-weight:700;color:#0ea5e9;">4. Érosion de Frontières</div>
+                        <span class="badge badge-healthy" id="badge-boundary">Normal</span>
+                    </div>
+                    <div class="text-sm text-muted" style="margin:6px 0;">
+                        <code>boundary_erosion</code> — Frontières de décision qui glissent progressivement
+                        sans déclencher les seuils statistiques.
+                        Ex: le périmètre "haute menace" se réduit de 0.1% par jour — invisible
+                        sur une semaine, critique sur un trimestre.
+                    </div>
+                    <div style="display:flex;gap:12px;margin-top:8px;">
+                        <div>
+                            <div class="text-sm text-muted">Score actuel</div>
+                            <div style="font-weight:700;font-size:1.2rem;" id="score-boundary">0.04</div>
+                        </div>
+                        <div>
+                            <div class="text-sm text-muted">Seuil</div>
+                            <div style="font-weight:500;font-size:1.2rem;color:var(--text-secondary);">0.20</div>
+                        </div>
+                        <div>
+                            <div class="text-sm text-muted">MITRE</div>
+                            <div style="font-weight:500;font-size:0.85rem;color:#0ea5e9;">T0831</div>
+                        </div>
+                    </div>
+                    <div class="chart-container" style="height:80px;margin-top:8px;">
+                        <canvas id="chart-boundary"></canvas>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- 5. Label Semantic Drift -->
+        <div class="card" id="type-label-drift" style="border-left:4px solid #10b981;">
+            <div style="display:flex;align-items:flex-start;gap:12px;">
+                <div class="kpi-icon" style="background:rgba(16,185,129,0.12);flex-shrink:0;">
+                    <i data-lucide="tag" style="color:#10b981;"></i>
+                </div>
+                <div style="flex:1;">
+                    <div style="display:flex;align-items:center;justify-content:space-between;">
+                        <div style="font-weight:700;color:#10b981;">5. Dérive Sémantique des Labels</div>
+                        <span class="badge badge-healthy" id="badge-label">Normal</span>
+                    </div>
+                    <div class="text-sm text-muted" style="margin:6px 0;">
+                        <code>label_semantic_drift</code> — Le sens des labels évolue tandis que les
+                        distributions statistiques restent stables.
+                        Ex: "menace niveau 3" correspondait à une alerte critique il y a 6 mois,
+                        aujourd'hui c'est traité comme une alerte mineure — les stats KS/PSI ne voient rien.
+                    </div>
+                    <div style="display:flex;gap:12px;margin-top:8px;">
+                        <div>
+                            <div class="text-sm text-muted">Score actuel</div>
+                            <div style="font-weight:700;font-size:1.2rem;" id="score-label">0.06</div>
+                        </div>
+                        <div>
+                            <div class="text-sm text-muted">Seuil</div>
+                            <div style="font-weight:500;font-size:1.2rem;color:var(--text-secondary);">0.25</div>
+                        </div>
+                        <div>
+                            <div class="text-sm text-muted">MITRE</div>
+                            <div style="font-weight:500;font-size:0.85rem;color:#10b981;">T0856</div>
+                        </div>
+                    </div>
+                    <div class="chart-container" style="height:80px;margin-top:8px;">
+                        <canvas id="chart-label"></canvas>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- 6. Operational Decorrelation -->
+        <div class="card" id="type-decorrelation" style="border-left:4px solid #f43f5e;">
+            <div style="display:flex;align-items:flex-start;gap:12px;">
+                <div class="kpi-icon" style="background:rgba(244,63,94,0.12);flex-shrink:0;">
+                    <i data-lucide="unlink" style="color:#f43f5e;"></i>
+                </div>
+                <div style="flex:1;">
+                    <div style="display:flex;align-items:center;justify-content:space-between;">
+                        <div style="font-weight:700;color:#f43f5e;">6. Décorrélation Opérationnelle</div>
+                        <span class="badge badge-healthy" id="badge-decorrelation">Normal</span>
+                    </div>
+                    <div class="text-sm text-muted" style="margin:6px 0;">
+                        <code>operational_decorrelation</code> — Les sorties du modèle se décorrèlent
+                        des résultats opérationnels réels.
+                        Ex: le ThreatDetector maintient 95% de précision sur les tests mais les
+                        incidents terrain augmentent de 40% — le modèle "a raison" mais n'est plus utile.
+                    </div>
+                    <div style="display:flex;gap:12px;margin-top:8px;">
+                        <div>
+                            <div class="text-sm text-muted">Score actuel</div>
+                            <div style="font-weight:700;font-size:1.2rem;" id="score-decorrelation">0.07</div>
+                        </div>
+                        <div>
+                            <div class="text-sm text-muted">Seuil</div>
+                            <div style="font-weight:500;font-size:1.2rem;color:var(--text-secondary);">0.30</div>
+                        </div>
+                        <div>
+                            <div class="text-sm text-muted">MITRE</div>
+                            <div style="font-weight:500;font-size:0.85rem;color:#f43f5e;">T0856</div>
+                        </div>
+                    </div>
+                    <div class="chart-container" style="height:80px;margin-top:8px;">
+                        <canvas id="chart-decorrelation"></canvas>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Différenciateur vs MLOps classique -->
+<div class="pillar-section" id="differentiator">
+    <div class="pillar-section-header">
+        <h2 class="pillar-section-title">
+            <i data-lucide="sparkles"></i>
+            Différenciateur SKOPHIA vs MLOps Classique
+        </h2>
+    </div>
+
+    <div class="card" style="overflow:hidden;">
+        <table class="table">
+            <thead>
+                <tr>
+                    <th>Capacité</th>
+                    <th style="text-align:center;">MLOps Classique<br><span class="text-sm text-muted">(KS, PSI, JSD)</span></th>
+                    <th style="text-align:center;">SKOPHIA<br><span class="text-sm text-muted">(Sémantique + Statistique)</span></th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td><strong>Dérive distributionnelle</strong><br><span class="text-sm text-muted">Changement de distribution des données</span></td>
+                    <td style="text-align:center;"><span class="badge badge-healthy">Détecté</span></td>
+                    <td style="text-align:center;"><span class="badge badge-healthy">Détecté</span></td>
+                </tr>
+                <tr>
+                    <td><strong>Inversion de sens (stats normales)</strong><br><span class="text-sm text-muted">Labels corrects, sens inversé</span></td>
+                    <td style="text-align:center;"><span class="badge badge-danger">Invisible</span></td>
+                    <td style="text-align:center;"><span class="badge badge-healthy">Détecté</span></td>
+                </tr>
+                <tr>
+                    <td><strong>Déplacement contextuel</strong><br><span class="text-sm text-muted">Bon résultat, mauvais théâtre</span></td>
+                    <td style="text-align:center;"><span class="badge badge-danger">Invisible</span></td>
+                    <td style="text-align:center;"><span class="badge badge-healthy">Détecté</span></td>
+                </tr>
+                <tr>
+                    <td><strong>Manipulation de confiance</strong><br><span class="text-sm text-muted">Scores artificiellement gonflés</span></td>
+                    <td style="text-align:center;"><span class="badge badge-warning">Partiel</span></td>
+                    <td style="text-align:center;"><span class="badge badge-healthy">Détecté</span></td>
+                </tr>
+                <tr>
+                    <td><strong>Érosion de frontières (lent)</strong><br><span class="text-sm text-muted">Glissement infra-seuil sur longue période</span></td>
+                    <td style="text-align:center;"><span class="badge badge-danger">Invisible</span></td>
+                    <td style="text-align:center;"><span class="badge badge-healthy">Détecté</span></td>
+                </tr>
+                <tr>
+                    <td><strong>Décorrélation opérationnelle</strong><br><span class="text-sm text-muted">Modèle "exact" mais inutile</span></td>
+                    <td style="text-align:center;"><span class="badge badge-danger">Invisible</span></td>
+                    <td style="text-align:center;"><span class="badge badge-healthy">Détecté</span></td>
+                </tr>
+                <tr>
+                    <td><strong>Mapping MITRE ATT&CK ICS</strong><br><span class="text-sm text-muted">Corrélation avec tactiques adversaires</span></td>
+                    <td style="text-align:center;"><span class="badge badge-danger">Non</span></td>
+                    <td style="text-align:center;"><span class="badge badge-healthy">T0831, T0856</span></td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+</div>
+
+<!-- MITRE Mapping -->
+<div class="pillar-section" id="mitre">
+    <div class="pillar-section-header">
+        <h2 class="pillar-section-title">
+            <i data-lucide="shield-alert"></i>
+            Mapping MITRE ATT&CK ICS
+        </h2>
+    </div>
+
+    <div class="grid grid-2 gap-4">
+        <div class="card">
+            <h4 class="text-sm text-muted mb-3">Techniques Couvertes</h4>
+            <div class="protection-item">
+                <span class="protection-label"><i data-lucide="crosshair"></i> T0856 — Spoof Reporting Message</span>
+                <span class="badge badge-healthy">Actif</span>
+            </div>
+            <div class="protection-item">
+                <span class="protection-label"><i data-lucide="crosshair"></i> T0831 — Manipulation of Control</span>
+                <span class="badge badge-healthy">Actif</span>
+            </div>
+            <div class="protection-item">
+                <span class="protection-label"><i data-lucide="crosshair"></i> T0836 — Modify Parameter</span>
+                <span class="badge badge-healthy">Actif</span>
+            </div>
+            <div class="protection-item">
+                <span class="protection-label"><i data-lucide="crosshair"></i> T0882 — Theft of Operational Info</span>
+                <span class="badge badge-healthy">Actif</span>
+            </div>
+        </div>
+        <div class="card">
+            <h4 class="text-sm text-muted mb-3">Patterns d'Attaque AIOBS</h4>
+            <div class="protection-item">
+                <span class="protection-label"><i data-lucide="alert-triangle"></i> AIOBS-AP-001 — AI Model Semantic Poisoning</span>
+                <span class="badge badge-warning">Surveillance</span>
+            </div>
+            <div class="protection-item">
+                <span class="protection-label"><i data-lucide="alert-triangle"></i> AIOBS-AP-002 — OT Sensor Data Manipulation</span>
+                <span class="badge badge-healthy">Normal</span>
+            </div>
+            <div class="protection-item">
+                <span class="protection-label"><i data-lucide="alert-triangle"></i> AIOBS-AP-004 — Confidence Score Manipulation</span>
+                <span class="badge badge-healthy">Normal</span>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Alertes récentes -->
+<div class="pillar-section">
+    <div class="pillar-section-header">
+        <h2 class="pillar-section-title">
+            <i data-lucide="bell"></i>
+            Alertes Sémantiques Récentes
+        </h2>
+    </div>
+    <div id="semanticAlertsList">
+        <div class="pillar-alert-item">
+            <span class="badge badge-info"><span class="badge-dot"></span>Info</span>
+            <div class="alert-body">
+                <strong>Vérification sémantique périodique complète</strong>
+                <div class="text-sm">Tous modèles — score composite: 0.07 — aucune anomalie — il y a 15min</div>
+            </div>
+            <button class="btn btn-secondary btn-sm">
+                <i data-lucide="file-text"></i>
+                Rapport
+            </button>
+        </div>
+        <div class="pillar-alert-item" style="background:rgba(245,158,11,0.06);">
+            <span class="badge badge-warning"><span class="badge-dot"></span>Attention</span>
+            <div class="alert-body">
+                <strong>Micro-érosion de frontière détectée sur AnomalyClassifier-v2</strong>
+                <div class="text-sm">boundary_erosion: 0.04 → progression +0.003/jour — tendance à surveiller — il y a 3h</div>
+            </div>
+            <button class="btn btn-warning btn-sm">
+                <i data-lucide="search"></i>
+                Investiguer
+            </button>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script>
+document.addEventListener('DOMContentLoaded', () => {
+    loadSemanticDriftData();
+    lucide.createIcons();
+    startAutoRefresh([loadSemanticDriftData]);
+});
+
+function makeLabels(count, hours) {
+    const labels = [];
+    const now = new Date();
+    const step = (hours * 3600000) / count;
+    for (let i = count - 1; i >= 0; i--) {
+        const d = new Date(now - i * step);
+        labels.push(hours > 48
+            ? d.toLocaleDateString('fr', { day: '2-digit', month: 'short' })
+            : d.toLocaleTimeString('fr', { hour: '2-digit', minute: '2-digit' }));
+    }
+    return labels;
+}
+
+async function loadSemanticDriftData() {
+    try {
+        const hours = getTimeRange();
+        const response = await fetch(`/api/pillars/semantic-drift?hours=${hours}`);
+        const data = await response.json();
+        if (!data.success) return;
+        const d = data.data;
+
+        // Global score
+        document.getElementById('driftGlobalScore').textContent = (d.semantic_integrity * 100).toFixed(0) + '%';
+        document.getElementById('isoForestScore').textContent = d.isolation_forest.toFixed(2);
+        document.getElementById('isoForestValue').textContent = d.isolation_forest.toFixed(2);
+        document.getElementById('vaeError').textContent = d.vae_error.toFixed(2);
+        document.getElementById('vaeValue').textContent = d.vae_error.toFixed(2);
+        document.getElementById('contextCoherence').textContent = d.context_coherence.toFixed(2);
+        document.getElementById('contextValue').textContent = d.context_coherence.toFixed(2);
+        document.getElementById('compositeScore').textContent = d.composite_score.toFixed(2);
+        document.getElementById('semanticAlerts').textContent = d.alerts_24h;
+
+        // Engine trend charts
+        const labels = makeLabels(d.iso_trend.length, hours);
+        const miniOpts = {
+            responsive: true, maintainAspectRatio: false,
+            plugins: { legend: { display: false } },
+            scales: { x: { display: false }, y: { display: false } }
+        };
+
+        createChart('isoForestChart', {
+            type: 'line', data: { labels, datasets: [{
+                data: d.iso_trend, borderColor: '#ef4444', backgroundColor: 'rgba(239,68,68,0.1)', fill: true, pointRadius: 0
+            }]}, options: miniOpts
+        });
+
+        createChart('vaeChart', {
+            type: 'line', data: { labels, datasets: [{
+                data: d.vae_trend, borderColor: '#8b5cf6', backgroundColor: 'rgba(139,92,246,0.1)', fill: true, pointRadius: 0
+            }]}, options: miniOpts
+        });
+
+        createChart('contextChart', {
+            type: 'line', data: { labels, datasets: [{
+                data: d.context_trend, borderColor: '#0ea5e9', backgroundColor: 'rgba(14,165,233,0.1)', fill: true, pointRadius: 0
+            }]}, options: miniOpts
+        });
+
+        // Composite gauge
+        const gaugeVal = Math.min(100, d.composite_score / 0.40 * 100);
+        const gaugeColor = gaugeVal < 50 ? '#10b981' : gaugeVal < 75 ? '#f59e0b' : '#ef4444';
+        createChart('compositeGauge', {
+            type: 'doughnut',
+            data: { labels: ['Score', 'Marge'], datasets: [{
+                data: [gaugeVal, 100 - gaugeVal],
+                backgroundColor: [gaugeColor, '#e2e8f0'],
+                borderWidth: 0, circumference: 180, rotation: 270
+            }]},
+            options: { responsive: true, maintainAspectRatio: false, cutout: '75%',
+                       plugins: { legend: { display: false }, tooltip: { enabled: false } } }
+        });
+
+        // 6 drift type charts
+        const types = d.drift_types;
+        const colors = {
+            meaning_inversion: '#ef4444', context_displacement: '#f59e0b',
+            confidence_manipulation: '#8b5cf6', boundary_erosion: '#0ea5e9',
+            label_semantic_drift: '#10b981', operational_decorrelation: '#f43f5e'
+        };
+        const chartIds = {
+            meaning_inversion: 'chart-meaning', context_displacement: 'chart-context',
+            confidence_manipulation: 'chart-confidence', boundary_erosion: 'chart-boundary',
+            label_semantic_drift: 'chart-label', operational_decorrelation: 'chart-decorrelation'
+        };
+        const scoreIds = {
+            meaning_inversion: 'score-meaning', context_displacement: 'score-context',
+            confidence_manipulation: 'score-confidence', boundary_erosion: 'score-boundary',
+            label_semantic_drift: 'score-label', operational_decorrelation: 'score-decorrelation'
+        };
+        const badgeIds = {
+            meaning_inversion: 'badge-meaning', context_displacement: 'badge-context',
+            confidence_manipulation: 'badge-confidence', boundary_erosion: 'badge-boundary',
+            label_semantic_drift: 'badge-label', operational_decorrelation: 'badge-decorrelation'
+        };
+
+        for (const [key, info] of Object.entries(types)) {
+            const scoreEl = document.getElementById(scoreIds[key]);
+            if (scoreEl) scoreEl.textContent = info.current.toFixed(2);
+
+            const badgeEl = document.getElementById(badgeIds[key]);
+            if (badgeEl) {
+                if (info.current >= info.threshold) {
+                    badgeEl.className = 'badge badge-danger';
+                    badgeEl.textContent = 'ALERTE';
+                } else if (info.current >= info.threshold * 0.6) {
+                    badgeEl.className = 'badge badge-warning';
+                    badgeEl.textContent = 'Attention';
+                } else {
+                    badgeEl.className = 'badge badge-healthy';
+                    badgeEl.textContent = 'Normal';
+                }
+            }
+
+            const chartLabels = makeLabels(info.trend.length, hours);
+            createChart(chartIds[key], {
+                type: 'line',
+                data: { labels: chartLabels, datasets: [
+                    { data: info.trend, borderColor: colors[key], backgroundColor: colors[key] + '15', fill: true, pointRadius: 0, borderWidth: 1.5 },
+                    { data: Array(info.trend.length).fill(info.threshold), borderColor: '#ef4444', borderDash: [4, 2], borderWidth: 1, pointRadius: 0, fill: false }
+                ]},
+                options: miniOpts
+            });
+        }
+
+    } catch (error) {
+        console.error('Semantic Drift API error:', error);
+        document.getElementById('driftGlobalScore').textContent = '93%';
+    }
+}
+</script>
+{% endblock %}

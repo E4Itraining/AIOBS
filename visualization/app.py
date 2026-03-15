@@ -801,6 +801,38 @@ async def pillars_performance(request: Request):
     )
 
 
+@app.get("/pillars/semantic-drift", response_class=HTMLResponse)
+async def pillars_semantic_drift(request: Request):
+    """Semantic Drift - 6 drift types, tri-layer engine, MITRE mapping"""
+    i18n = create_i18n_context(request)
+    return templates.TemplateResponse(
+        "pillars/semantic_drift.html",
+        {
+            "request": request,
+            "title": "Dérive Sémantique - Modules Défense",
+            "active_pillar": "semantic_drift",
+            "personas": PILLAR_PERSONAS,
+            **i18n,
+        },
+    )
+
+
+@app.get("/pillars/homologation", response_class=HTMLResponse)
+async def pillars_homologation(request: Request):
+    """Homologation - DSSI, EBIOS RM, Pentest, ANSSI qualification"""
+    i18n = create_i18n_context(request)
+    return templates.TemplateResponse(
+        "pillars/homologation.html",
+        {
+            "request": request,
+            "title": "Homologation Défense - Modules Défense",
+            "active_pillar": "homologation",
+            "personas": PILLAR_PERSONAS,
+            **i18n,
+        },
+    )
+
+
 # ============================================================================
 # Request tracking middleware
 # ============================================================================

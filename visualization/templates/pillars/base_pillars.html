@@ -269,6 +269,76 @@
 
                 <div class="nav-divider"></div>
 
+                <!-- DEFENSE MODULES -->
+                <div class="pillars-section">
+                    <span class="pillars-section-title">
+                        <i data-lucide="sword"></i>
+                        Modules Défense
+                    </span>
+
+                    <!-- DÉRIVE SÉMANTIQUE -->
+                    <div class="pillar-nav-item {% if active_pillar == 'semantic_drift' %}active{% endif %}" data-pillar="semantic_drift">
+                        <a href="/pillars/semantic-drift" class="pillar-link">
+                            <div class="pillar-icon" style="background:linear-gradient(135deg, #dc2626 0%, #991b1b 100%);">
+                                <i data-lucide="brain"></i>
+                            </div>
+                            <div class="pillar-info">
+                                <span class="pillar-name">Dérive Sémantique</span>
+                                <span class="pillar-question">Sens manipulé ?</span>
+                            </div>
+                            <div class="pillar-score" id="sidebarSemanticDriftScore">--</div>
+                        </a>
+                        <div class="pillar-submenu">
+                            <a href="/pillars/semantic-drift#engine" class="pillar-sublink">
+                                <i data-lucide="cpu"></i>
+                                Moteur Tri-Couche
+                            </a>
+                            <a href="/pillars/semantic-drift#drift-types" class="pillar-sublink">
+                                <i data-lucide="layers"></i>
+                                6 Types de Dérive
+                            </a>
+                            <a href="/pillars/semantic-drift#mitre" class="pillar-sublink">
+                                <i data-lucide="shield-alert"></i>
+                                Mapping MITRE
+                            </a>
+                        </div>
+                    </div>
+
+                    <!-- HOMOLOGATION -->
+                    <div class="pillar-nav-item {% if active_pillar == 'homologation' %}active{% endif %}" data-pillar="homologation">
+                        <a href="/pillars/homologation" class="pillar-link">
+                            <div class="pillar-icon" style="background:linear-gradient(135deg, #1B2A4A 0%, #0f172a 100%);">
+                                <i data-lucide="stamp"></i>
+                            </div>
+                            <div class="pillar-info">
+                                <span class="pillar-name">Homologation</span>
+                                <span class="pillar-question">Autorisé à opérer ?</span>
+                            </div>
+                            <div class="pillar-score" id="sidebarHomologationScore">--</div>
+                        </a>
+                        <div class="pillar-submenu">
+                            <a href="/pillars/homologation#dssi" class="pillar-sublink">
+                                <i data-lucide="file-check"></i>
+                                Dossier DSSI
+                            </a>
+                            <a href="/pillars/homologation#ebios" class="pillar-sublink">
+                                <i data-lucide="shield-alert"></i>
+                                EBIOS RM
+                            </a>
+                            <a href="/pillars/homologation#pentest" class="pillar-sublink">
+                                <i data-lucide="scan"></i>
+                                Tests de Pénétration
+                            </a>
+                            <a href="/pillars/homologation#anssi" class="pillar-sublink">
+                                <i data-lucide="award"></i>
+                                Qualification ANSSI
+                            </a>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="nav-divider"></div>
+
                 <!-- Quick Access -->
                 <div class="quick-access-section">
                     <span class="section-title">
@@ -344,6 +414,10 @@
                         <i data-lucide="lightbulb"></i> Explicabilité
                         {% elif active_pillar == 'performance' %}
                         <i data-lucide="zap"></i> Performance
+                        {% elif active_pillar == 'semantic_drift' %}
+                        <i data-lucide="brain"></i> Dérive Sémantique
+                        {% elif active_pillar == 'homologation' %}
+                        <i data-lucide="stamp"></i> Homologation
                         {% endif %}
                     </span>
                     {% endif %}
@@ -449,6 +523,8 @@
             { type: 'pillar', title: 'Conformité', url: '/pillars/compliance', icon: 'scale', keywords: ['conformité', 'compliance', 'audit', 'ai act', 'traçabilité'] },
             { type: 'pillar', title: 'Explicabilité', url: '/pillars/explainability', icon: 'lightbulb', keywords: ['explicabilité', 'explainability', 'feature', 'confiance', 'éthique'] },
             { type: 'pillar', title: 'Performance', url: '/pillars/performance', icon: 'zap', keywords: ['performance', 'latence', 'coût', 'gpu', 'throughput'] },
+            { type: 'defense', title: 'Dérive Sémantique', url: '/pillars/semantic-drift', icon: 'brain', keywords: ['dérive', 'sémantique', 'drift', 'semantic', 'inversion', 'manipulation', 'adversariale'] },
+            { type: 'defense', title: 'Homologation Défense', url: '/pillars/homologation', icon: 'stamp', keywords: ['homologation', 'dssi', 'ebios', 'anssi', 'pentest', 'certification', 'rgs', 'igi'] },
             { type: 'page', title: 'Vue d\'ensemble Piliers', url: '/pillars', icon: 'home', keywords: ['overview', 'vue', 'ensemble', 'pentagon'] },
             { type: 'page', title: 'Monitoring Live', url: '/monitoring', icon: 'activity', keywords: ['monitoring', 'live', 'temps réel'] },
             { type: 'page', title: 'Analyse Causale', url: '/causal', icon: 'git-branch', keywords: ['causal', 'analyse', 'root cause'] },

@@ -874,6 +874,105 @@ class PillarSimulator:
                 "by_model": [m.copy() for m in self.cost_by_model],
             }
 
+    def get_semantic_drift(self, hours: int = 24) -> Dict:
+        """Get semantic drift detection data with 6 drift types."""
+        with self._state_lock:
+            n = self._points_for_hours(hours)
+            max_pts = 150
+
+            # Engine scores (evolve from drift state)
+            base_iso = 0.10 + self.reliability["drift"]["concept_drift"] * 0.3
+            base_vae = 0.06 + self.reliability["drift"]["data_drift"] * 0.4
+            base_ctx = 0.96 - self.reliability["drift"]["concept_drift"] * 0.5
+
+            iso_forest = self._clamp(base_iso + random.gauss(0, 0.01), 0.02, 0.80)
+            vae_error = self._clamp(base_vae + random.gauss(0, 0.008), 0.01, 0.70)
+            context_coherence = self._clamp(base_ctx + random.gauss(0, 0.01), 0.50, 0.99)
+
+            composite = 0.30 * iso_forest + 0.30 * vae_error + 0.40 * (1 - context_coherence)
+
+            # Generate trend data from drift history
+            dd_raw = list(self.drift_history["data"])[-n:]
+            cd_raw = list(self.drift_history["concept"])[-n:]
+            fd_raw = list(self.drift_history["feature"])[-n:]
+
+            iso_trend = self._downsample(
+                [self._clamp(0.10 + v * 0.3 + random.gauss(0, 0.005), 0.02, 0.8) for v in cd_raw],
+                min(max_pts, len(cd_raw)))
+            vae_trend = self._downsample(
+                [self._clamp(0.06 + v * 0.4 + random.gauss(0, 0.004), 0.01, 0.7) for v in dd_raw],
+                min(max_pts, len(dd_raw)))
+            context_trend = self._downsample(
+                [self._clamp(0.96 - v * 0.5 + random.gauss(0, 0.005), 0.5, 0.99) for v in cd_raw],
+                min(max_pts, len(cd_raw)))
+
+            # 6 drift types with individual scores and trends
+            drift_configs = {
+                "meaning_inversion": {"base": 0.03, "threshold": 0.25, "factor": 0.15, "noise": 0.004},
+                "context_displacement": {"base": 0.05, "threshold": 0.30, "factor": 0.12, "noise": 0.005},
+                "confidence_manipulation": {"base": 0.02, "threshold": 0.20, "factor": 0.10, "noise": 0.003},
+                "boundary_erosion": {"base": 0.04, "threshold": 0.20, "factor": 0.18, "noise": 0.004},
+                "label_semantic_drift": {"base": 0.06, "threshold": 0.25, "factor": 0.20, "noise": 0.005},
+                "operational_decorrelation": {"base": 0.07, "threshold": 0.30, "factor": 0.14, "noise": 0.006},
+            }
+
+            drift_types = {}
+            for key, cfg in drift_configs.items():
+                current = self._clamp(
+                    cfg["base"] + self.reliability["drift"]["concept_drift"] * cfg["factor"]
+                    + random.gauss(0, cfg["noise"]), 0.0, cfg["threshold"] * 1.5)
+                trend = self._downsample(
+                    [self._clamp(cfg["base"] + v * cfg["factor"] + random.gauss(0, cfg["noise"] * 0.5),
+                                 0.0, cfg["threshold"] * 1.5) for v in cd_raw],
+                    min(max_pts, len(cd_raw)))
+                drift_types[key] = {
+                    "current": round(current, 4),
+                    "threshold": cfg["threshold"],
+                    "trend": [round(v, 4) for v in trend],
+                }
+
+            # Count alerts
+            alerts_24h = sum(1 for dt in drift_types.values() if dt["current"] >= dt["threshold"] * 0.6)
+
+            return {
+                "semantic_integrity": round(1 - composite, 4),
+                "isolation_forest": round(iso_forest, 4),
+                "vae_error": round(vae_error, 4),
+                "context_coherence": round(context_coherence, 4),
+                "composite_score": round(composite, 4),
+                "alerts_24h": alerts_24h,
+                "iso_trend": [round(v, 4) for v in iso_trend],
+                "vae_trend": [round(v, 4) for v in vae_trend],
+                "context_trend": [round(v, 4) for v in context_trend],
+                "drift_types": drift_types,
+                "timestamp": datetime.utcnow().isoformat(),
+            }
+
+    def get_homologation(self) -> Dict:
+        """Get homologation/certification progress data."""
+        with self._state_lock:
+            dssi_progress = [100, 100, 100, 65, 67, 10, 15]
+            progress = int(sum(dssi_progress) / len(dssi_progress))
+
+            risk_scenarios = [
+                {"name": "Empoisonnement sémantique", "likelihood": 3, "impact": 4.5, "risk_level": 4},
+                {"name": "Compromission noeud edge", "likelihood": 3, "impact": 4, "risk_level": 3},
+                {"name": "Exfiltration données entraînement", "likelihood": 1.5, "impact": 4.5, "risk_level": 2},
+                {"name": "Manipulation scores confiance", "likelihood": 2.5, "impact": 3, "risk_level": 2},
+                {"name": "DoS connecteurs IT/OT", "likelihood": 2, "impact": 3, "risk_level": 1},
+            ]
+
+            return {
+                "progress": progress,
+                "dssi_progress": dssi_progress,
+                "ebios_complete": True,
+                "pentest_campaigns": {"completed": 2, "total": 3},
+                "anssi_status": "preparation",
+                "risk_scenarios": risk_scenarios,
+                "referentiels_compliance": [85, 72, 90, 88, 78, 35],
+                "timestamp": datetime.utcnow().isoformat(),
+            }
+
     def get_status(self) -> Dict:
         """Return simulator status for monitoring."""
         with self._state_lock:

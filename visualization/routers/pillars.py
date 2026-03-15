@@ -132,6 +132,26 @@ async def get_performance_cost(days: int = Query(30, ge=1, le=365)) -> APIRespon
 
 
 # ============================================================================
+# 6. SEMANTIC DRIFT (Differentiating Feature)
+# ============================================================================
+
+
+@router.get("/semantic-drift")
+async def get_semantic_drift_data(hours: int = Query(24, ge=1, le=720)) -> APIResponse:
+    return APIResponse(success=True, data=get_simulator().get_semantic_drift(hours))
+
+
+# ============================================================================
+# 7. HOMOLOGATION (Defense Certification)
+# ============================================================================
+
+
+@router.get("/homologation")
+async def get_homologation_data() -> APIResponse:
+    return APIResponse(success=True, data=get_simulator().get_homologation())
+
+
+# ============================================================================
 # SIMULATOR CONTROL ENDPOINTS
 # ============================================================================
 
