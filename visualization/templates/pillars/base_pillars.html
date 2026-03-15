@@ -41,10 +41,10 @@
                 if (value && typeof value === 'object') {
                     value = value[k];
                 } else {
-                    return key;
+                    return '';
                 }
             }
-            if (typeof value !== 'string') return key;
+            if (typeof value !== 'string') return '';
             if (params) {
                 Object.keys(params).forEach(param => {
                     value = value.replace(new RegExp(`{${param}}`, 'g'), params[param]);

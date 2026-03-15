@@ -83,9 +83,9 @@ class TranslationManager:
         if translation is None and lang != DEFAULT_LANGUAGE:
             return self.get(key, DEFAULT_LANGUAGE, **kwargs)
 
-        # Return key if not found
+        # Return empty string if not found (allows Jinja2 `or` fallback)
         if translation is None:
-            return key
+            return ""
 
         # Interpolate variables
         if kwargs:
