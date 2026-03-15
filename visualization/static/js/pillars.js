@@ -1,5 +1,5 @@
 /**
- * GASKIA - 5 Pillars JavaScript Module
+ * SKOPHIA - 5 Pillars JavaScript Module
  * Handles pillar-specific interactions, data loading, and visualizations
  */
 
@@ -60,43 +60,43 @@
         }
     };
 
-    // Persona configurations with pillar priorities
+    // Persona configurations with pillar priorities (aligned with backend PILLAR_PERSONAS)
     const PERSONAS = {
-        business_executive: {
-            name: 'Dirigeant',
-            icon: 'briefcase',
+        etat_major: {
+            name: 'État-Major',
+            icon: 'landmark',
             pillarPriority: ['compliance', 'performance', 'reliability', 'security', 'explainability'],
             quickLinks: ['/pillars/compliance', '/pillars/performance', '/executive']
         },
+        defense_soc: {
+            name: 'SOC Défense',
+            icon: 'shield',
+            pillarPriority: ['security', 'compliance', 'reliability', 'performance', 'explainability'],
+            quickLinks: ['/pillars/security', '/pillars/compliance', '/defense-soc']
+        },
+        officier_cyber: {
+            name: 'Officier Cyber',
+            icon: 'sword',
+            pillarPriority: ['security', 'reliability', 'compliance', 'performance', 'explainability'],
+            quickLinks: ['/pillars/security', '/pillars/reliability', '/monitoring']
+        },
+        ossi: {
+            name: 'OSSI/RSSI',
+            icon: 'shield-alert',
+            pillarPriority: ['security', 'compliance', 'explainability', 'reliability', 'performance'],
+            quickLinks: ['/pillars/security', '/pillars/compliance', '/security']
+        },
         tech_ml_engineer: {
-            name: 'ML Engineer',
-            icon: 'cpu',
+            name: 'Ingénieur IA',
+            icon: 'brain',
             pillarPriority: ['reliability', 'explainability', 'performance', 'security', 'compliance'],
             quickLinks: ['/pillars/reliability', '/pillars/explainability', '/causal']
         },
-        tech_devops: {
-            name: 'DevOps Engineer',
-            icon: 'terminal',
-            pillarPriority: ['performance', 'reliability', 'security', 'compliance', 'explainability'],
-            quickLinks: ['/pillars/performance', '/pillars/reliability', '/monitoring']
-        },
-        security_soc: {
-            name: 'Security SOC',
-            icon: 'shield',
-            pillarPriority: ['security', 'compliance', 'reliability', 'performance', 'explainability'],
-            quickLinks: ['/pillars/security', '/pillars/compliance', '/security']
-        },
         compliance_legal: {
-            name: 'Compliance Officer',
+            name: 'Juriste',
             icon: 'scale',
             pillarPriority: ['compliance', 'explainability', 'security', 'reliability', 'performance'],
             quickLinks: ['/pillars/compliance', '/pillars/explainability', '/compliance']
-        },
-        sustainability_esg: {
-            name: 'ESG Manager',
-            icon: 'leaf',
-            pillarPriority: ['performance', 'compliance', 'reliability', 'security', 'explainability'],
-            quickLinks: ['/pillars/performance', '/greenops', '/pillars/compliance']
         }
     };
 
@@ -105,7 +105,7 @@
      */
     class PillarsManager {
         constructor() {
-            this.currentPersona = localStorage.getItem('gaskia-persona') || 'business_executive';
+            this.currentPersona = localStorage.getItem('skophia-persona') || 'etat_major';
             this.scores = {};
             this.init();
         }
@@ -140,9 +140,15 @@
 
         updateScoreDisplays() {
             Object.keys(this.scores).forEach(pillar => {
-                const scoreEl = document.getElementById(`${pillar}Score`);
-                if (scoreEl) {
-                    scoreEl.textContent = Math.round(this.scores[pillar] * 100) + '%';
+                // Update sidebar scores
+                const sidebarEl = document.getElementById(`sidebar${pillar.charAt(0).toUpperCase() + pillar.slice(1)}Score`);
+                if (sidebarEl) {
+                    sidebarEl.textContent = Math.round(this.scores[pillar] * 100) + '%';
+                }
+                // Update page content scores (if present)
+                const pageEl = document.getElementById(`${pillar}Score`);
+                if (pageEl) {
+                    pageEl.textContent = Math.round(this.scores[pillar] * 100) + '%';
                 }
             });
         }
@@ -332,8 +338,8 @@
     }
 
     // Export to global namespace
-    window.GASKIA = window.GASKIA || {};
-    window.GASKIA.pillars = {
+    window.SKOPHIA = window.SKOPHIA || {};
+    window.SKOPHIA.pillars = {
         PILLARS,
         PERSONAS,
         PillarsManager,
@@ -342,7 +348,7 @@
 
     // Auto-initialize on DOM ready
     document.addEventListener('DOMContentLoaded', () => {
-        window.GASKIA.pillarsManager = new PillarsManager();
+        window.SKOPHIA.pillarsManager = new PillarsManager();
     });
 
 })();

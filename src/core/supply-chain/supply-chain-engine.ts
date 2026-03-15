@@ -51,7 +51,7 @@ export class SupplyChainEngine {
       generator: {
         name: 'AIOBS Supply Chain Engine',
         version: '1.0.0',
-        vendor: 'GASKIA',
+        vendor: 'SKOPHIA',
       },
       model: {
         id: modelId,
@@ -362,7 +362,7 @@ export class SupplyChainEngine {
       origin: {
         type: 'trained',
         creator: { id: 'creator-1', name: 'ML Team', verified: true },
-        organization: { id: 'org-1', name: 'GASKIA', verified: true },
+        organization: { id: 'org-1', name: 'SKOPHIA', verified: true },
         repository: { type: 'git', url: 'https://github.com/org/model', commit: 'abc123' },
       },
       trainingRuns: [

@@ -344,7 +344,7 @@ if (!onboardingComplete && !hasPersona && !isExcludedPath) {
 - `app.py` - 12 profils dans PROFILE_META (ajout: governance_dsi, governance_rsi, privacy_dpo, legal_counsel)
 - `templates/dashboard.html` - PROFILE_CONFIG étendu avec 12 profils complets
   - Chaque profil a: narrative, features, tips, journey personnalisés
-  - Couleurs et icônes cohérentes avec le design system GASKIA
+  - Couleurs et icônes cohérentes avec le design system SKOPHIA
 
 #### 5.5.3 Données Démo Partout
 **Problème:** Toutes les métriques utilisent `generateDemoData()` au lieu d'API réelles
@@ -439,7 +439,7 @@ if (!onboardingComplete && !hasPersona && !isExcludedPath) {
 
 ---
 
-### 5.10 DESIGN SYSTEM (GASKIA)
+### 5.10 DESIGN SYSTEM (SKOPHIA)
 
 #### Couleurs Brand
 | Nom | Hex | Usage |
@@ -627,7 +627,7 @@ if (!onboardingComplete && !hasPersona && !isExcludedPath) {
 
 ### Forces du Projet
 - ✅ **Architecture multi-persona** bien pensée (12 personas, parcours définis)
-- ✅ **Design system** cohérent (GASKIA brand)
+- ✅ **Design system** cohérent (SKOPHIA brand)
 - ✅ **i18n** robuste (8 langues)
 - ✅ **Documentation** excellente
 - ✅ **Infrastructure Docker** production-ready

@@ -1,4 +1,4 @@
-# Audit & Analyse AIOBS - GASKIA Platform
+# Audit & Analyse AIOBS - SKOPHIA Platform
 
 **Date:** 21 décembre 2025
 **Version analysée:** 1.0
@@ -8,7 +8,7 @@
 
 ## Sommaire Exécutif
 
-AIOBS (AI Observability Hub), sous la marque **GASKIA** ("Voir. Prouver. Maîtriser."), est une plateforme de gouvernance et d'observabilité pour systèmes d'IA. L'audit révèle une solution **innovante et différenciante** avec un positionnement unique sur le marché, mais avec des axes d'amélioration pour atteindre la maturité production.
+AIOBS (AI Observability Hub), sous la marque **SKOPHIA** ("Voir. Prouver. Maîtriser."), est une plateforme de gouvernance et d'observabilité pour systèmes d'IA. L'audit révèle une solution **innovante et différenciante** avec un positionnement unique sur le marché, mais avec des axes d'amélioration pour atteindre la maturité production.
 
 ---
 
@@ -60,7 +60,7 @@ AIOBS (AI Observability Hub), sous la marque **GASKIA** ("Voir. Prouver. Maîtri
 
 ### 1.5 Design UI/UX
 
-- **Brand cohérent** : Palette GASKIA (Or Sahel, Bleu Nuit, Blanc Chaud)
+- **Brand cohérent** : Palette SKOPHIA (Or Sahel, Bleu Nuit, Blanc Chaud)
 - **Typographie professionnelle** : Space Grotesk (headings) + Inter (body)
 - **Accessibilité** : Skip-to-content, ARIA labels, contraste respecté
 - **Responsive** : Sidebar collapsible, mobile overlay
@@ -217,7 +217,7 @@ AIOBS Evolution Roadmap:
                     Gouvernance IA
                          ▲
                          │
-    AIOBS/GASKIA ────────┼──────────► Observabilité IA
+    AIOBS/SKOPHIA ────────┼──────────► Observabilité IA
          ★               │
                          │
     ┌────────────────────┴────────────────────┐
@@ -268,7 +268,7 @@ Prix (indicatif marché)
   │                └─────────┘
   │
   │ Mid-Market     ┌─────────┐   ┌─────────────┐
-  │ ($15-50k/an)   │ Fiddler │   │ AIOBS/GASKIA│
+  │ ($15-50k/an)   │ Fiddler │   │ AIOBS/SKOPHIA│
   │                │         │   │  (cible)    │
   │                └─────────┘   └─────────────┘
   │
@@ -288,7 +288,7 @@ Prix (indicatif marché)
 - Organisations soumises à l'AI Act
 
 **Proposition de Valeur:**
-> "GASKIA: La seule plateforme de Trust Control pour l'IA qui combine observabilité cognitive, analyse causale, et conformité AI Act dans un cadre de gouvernance unifié."
+> "SKOPHIA: La seule plateforme de Trust Control pour l'IA qui combine observabilité cognitive, analyse causale, et conformité AI Act dans un cadre de gouvernance unifié."
 
 **Messages Clés:**
 1. **Voir** - Observabilité complète au-delà des métriques classiques
@@ -333,7 +333,7 @@ Sprint 3 (2 semaines):
 
 ### 5.3 Conclusion
 
-**AIOBS/GASKIA** présente un **potentiel de disruption significatif** sur le marché de l'observabilité IA. La vision stratégique est solide, l'architecture moderne, et le positionnement différenciant.
+**AIOBS/SKOPHIA** présente un **potentiel de disruption significatif** sur le marché de l'observabilité IA. La vision stratégique est solide, l'architecture moderne, et le positionnement différenciant.
 
 Les priorités pour atteindre le **product-market fit** sont:
 1. Compléter le backend pour des déploiements réels
@@ -341,7 +341,7 @@ Les priorités pour atteindre le **product-market fit** sont:
 3. Développer les intégrations ecosystem (MLOps, Cloud)
 4. Créer des SDK clients pour faciliter l'adoption
 
-Avec ces améliorations, GASKIA peut se positionner comme le **leader européen** de la gouvernance IA trustée.
+Avec ces améliorations, SKOPHIA peut se positionner comme le **leader européen** de la gouvernance IA trustée.
 
 ---
 

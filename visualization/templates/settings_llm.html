@@ -13,7 +13,7 @@
                 <i data-lucide="cpu"></i>
                 {{ t('settings.llm_config') or 'Configuration de votre LLM' }}
             </h1>
-            <p>{{ t('settings.llm_desc') or 'Connectez GASKIA a votre propre fournisseur LLM pour l assistant IA et les analyses.' }}</p>
+            <p>{{ t('settings.llm_desc') or 'Connectez SKOPHIA a votre propre fournisseur LLM pour l assistant IA et les analyses.' }}</p>
         </div>
     </div>
 
@@ -859,7 +859,7 @@ document.getElementById('llmConfigForm').addEventListener('submit', async (e) =>
 
         if (result.success) {
             // Save provider to localStorage for UI consistency
-            localStorage.setItem('gaskia-llm-provider', provider);
+            localStorage.setItem('skophia-llm-provider', provider);
             showToast('Configuration sauvegardee avec succes!', 'success');
             // Update status
             testConnection();
@@ -899,12 +899,12 @@ async function loadSavedConfig() {
             }
 
             // Also save to localStorage for UI consistency
-            localStorage.setItem('gaskia-llm-provider', config.provider);
+            localStorage.setItem('skophia-llm-provider', config.provider);
         }
     } catch (error) {
         console.log('No saved LLM config found, using defaults');
         // Fallback to localStorage
-        const savedProvider = localStorage.getItem('gaskia-llm-provider');
+        const savedProvider = localStorage.getItem('skophia-llm-provider');
         if (savedProvider) {
             const radio = document.querySelector(`input[name="llm_provider"][value="${savedProvider}"]`);
             if (radio) {

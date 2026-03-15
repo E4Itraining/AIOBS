@@ -440,21 +440,29 @@ function initCharts() {
 
 async function loadRecommendations() {
     const container = document.getElementById('personaRecommendations');
-    const persona = localStorage.getItem('gaskia-persona') || 'business_executive';
+    const persona = localStorage.getItem('skophia-persona') || 'etat_major';
 
     // Demo recommendations based on persona
     const recommendations = {
-        'business_executive': [
+        'etat_major': [
             { icon: 'scale', title: 'Conformité AI Act', desc: 'Votre score de conformité est à 78%. Préparez les preuves pour l\'audit Q1.', action: '/pillars/compliance', priority: 'high' },
             { icon: 'trending-up', title: 'ROI en amélioration', desc: 'Le coût par inférence a baissé de 12% ce mois.', action: '/pillars/performance', priority: 'low' }
+        ],
+        'defense_soc': [
+            { icon: 'alert-triangle', title: 'Tentatives d\'injection', desc: '12 tentatives de prompt injection bloquées cette semaine.', action: '/pillars/security#injection', priority: 'high' },
+            { icon: 'shield', title: 'Score sécurité stable', desc: 'Votre posture de sécurité est stable à 82%.', action: '/pillars/security', priority: 'low' }
+        ],
+        'officier_cyber': [
+            { icon: 'alert-triangle', title: 'Attaques adversariales', desc: '8 attaques adversariales détectées et bloquées cette semaine.', action: '/pillars/security#adversarial', priority: 'high' },
+            { icon: 'check-circle', title: 'Fiabilité des modèles', desc: 'Tous les modèles critiques maintiennent un F1-Score > 90%.', action: '/pillars/reliability', priority: 'low' }
+        ],
+        'ossi': [
+            { icon: 'shield', title: 'Posture sécurité', desc: '5 protections actives. Score sécurité global à 82%.', action: '/pillars/security', priority: 'high' },
+            { icon: 'file-check', title: 'Conformité NIS2', desc: 'Préparez la documentation pour l\'audit de conformité NIS2.', action: '/pillars/compliance#aiact', priority: 'medium' }
         ],
         'tech_ml_engineer': [
             { icon: 'git-merge', title: 'Drift détecté', desc: 'Le modèle fraud-detection montre un concept drift. Réévaluez le seuil.', action: '/pillars/reliability#drift', priority: 'high' },
             { icon: 'lightbulb', title: 'Explicabilité insuffisante', desc: 'Ajoutez des feature importances au modèle pricing.', action: '/pillars/explainability', priority: 'medium' }
-        ],
-        'security_soc': [
-            { icon: 'alert-triangle', title: 'Tentatives d\'injection', desc: '12 tentatives de prompt injection bloquées cette semaine.', action: '/pillars/security#injection', priority: 'high' },
-            { icon: 'shield', title: 'Score sécurité stable', desc: 'Votre posture de sécurité est stable à 82%.', action: '/pillars/security', priority: 'low' }
         ],
         'compliance_legal': [
             { icon: 'file-check', title: 'Documentation AI Act', desc: '3 modèles nécessitent une mise à jour de leur documentation.', action: '/pillars/compliance#aiact', priority: 'high' },
@@ -462,7 +470,7 @@ async function loadRecommendations() {
         ]
     };
 
-    const items = recommendations[persona] || recommendations['business_executive'];
+    const items = recommendations[persona] || recommendations['etat_major'];
 
     container.innerHTML = items.map(item => `
         <a href="${item.action}" class="flex items-center gap-4 p-4 hover:bg-secondary rounded-lg transition-colors" style="text-decoration: none; color: inherit; border-bottom: 1px solid var(--border-color);">

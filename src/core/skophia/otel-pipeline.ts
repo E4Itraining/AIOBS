@@ -108,7 +108,7 @@ export interface OTelPipelineConfig {
 // ============================================================================
 
 /**
- * Unified OTel ingestion pipeline for Gaskia
+ * Unified OTel ingestion pipeline for Skophia
  *
  * @cybersec Routes all telemetry to sovereign storage — no external egress
  */

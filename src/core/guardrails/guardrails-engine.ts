@@ -561,9 +561,10 @@ export class GuardrailsEngine {
 
   private maskValue(value: string, type: PIIType): string {
     switch (type) {
-      case 'email':
+      case 'email': {
         const [local, domain] = value.split('@');
         return `${local[0]}***@${domain}`;
+      }
       case 'phone':
         return value.replace(/\d(?=\d{4})/g, '*');
       case 'ssn':

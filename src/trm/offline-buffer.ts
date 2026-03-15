@@ -26,7 +26,7 @@ export interface BufferedEntry {
   checksum: string;
 }
 
-export interface GaskiaEndpoint {
+export interface SkophiaEndpoint {
   url: string;
   authToken: string;
   organization: string;
@@ -135,10 +135,10 @@ export class TRMOfflineBuffer {
   }
 
   /**
-   * Flush buffer to upstream Gaskia endpoint with deduplication
+   * Flush buffer to upstream Skophia endpoint with deduplication
    * @cybersec Resyncs with deduplication when connectivity restores
    */
-  async flush(upstream: GaskiaEndpoint): Promise<SyncResult> {
+  async flush(upstream: SkophiaEndpoint): Promise<SyncResult> {
     const start = Date.now();
     let syncedCount = 0;
     let failedCount = 0;

@@ -109,28 +109,8 @@
                     <th>{{ t('table.status') or 'Statut' }}</th>
                 </tr>
             </thead>
-            <tbody>
-                <tr>
-                    <td>2024-12-26 14:32:15</td>
-                    <td>Jailbreak Attempt</td>
-                    <td>chatbot-assistant</td>
-                    <td><span class="badge badge-danger">High</span></td>
-                    <td><span class="badge badge-healthy">Bloqué</span></td>
-                </tr>
-                <tr>
-                    <td>2024-12-26 11:18:42</td>
-                    <td>Prompt Leaking</td>
-                    <td>code-generator</td>
-                    <td><span class="badge badge-warning">Medium</span></td>
-                    <td><span class="badge badge-healthy">Bloqué</span></td>
-                </tr>
-                <tr>
-                    <td>2024-12-25 22:45:03</td>
-                    <td>Role Manipulation</td>
-                    <td>customer-support</td>
-                    <td><span class="badge badge-warning">Medium</span></td>
-                    <td><span class="badge badge-healthy">Bloqué</span></td>
-                </tr>
+            <tbody id="injectionEventsTable">
+                <!-- Populated dynamically -->
             </tbody>
         </table>
     </div>
@@ -260,9 +240,44 @@ async function loadSecurityData() {
         const data = await response.json();
         if (data.success) {
             document.getElementById('securityScore').textContent = Math.round(data.data.score * 100) + '%';
+            if (data.data.injection_attempts) {
+                document.getElementById('injectionsBlocked').textContent = data.data.injection_attempts.blocked;
+            }
+            if (data.data.adversarial_attacks) {
+                document.getElementById('adversarialCount').textContent = data.data.adversarial_attacks.detected;
+            }
+            document.getElementById('extractionAttempts').textContent = data.data.data_extraction_attempts || '3';
+            document.getElementById('anomalyCount').textContent = data.data.anomalies || '2';
         }
     } catch (error) {
         document.getElementById('securityScore').textContent = '82%';
+    }
+    // Load recent threats for the table
+    loadRecentThreats();
+}
+
+async function loadRecentThreats() {
+    const tbody = document.getElementById('injectionEventsTable');
+    try {
+        const response = await fetch('/api/pillars/security/threats?hours=168');
+        const data = await response.json();
+        if (data.success && data.data.threats) {
+            tbody.innerHTML = data.data.threats.map(t => {
+                const date = new Date(t.timestamp);
+                const formatted = date.toLocaleString('fr-FR', { year: 'numeric', month: '2-digit', day: '2-digit', hour: '2-digit', minute: '2-digit', second: '2-digit' });
+                const severityClass = t.severity === 'high' ? 'badge-danger' : t.severity === 'medium' ? 'badge-warning' : 'badge-info';
+                const typeLabels = { injection: 'Prompt Injection', adversarial: 'Adversarial Attack', anomaly: 'Anomaly' };
+                return `<tr>
+                    <td>${formatted}</td>
+                    <td>${typeLabels[t.type] || t.type}</td>
+                    <td>${t.model}</td>
+                    <td><span class="badge ${severityClass}">${t.severity.charAt(0).toUpperCase() + t.severity.slice(1)}</span></td>
+                    <td><span class="badge badge-healthy">Bloqué</span></td>
+                </tr>`;
+            }).join('');
+        }
+    } catch (error) {
+        tbody.innerHTML = '<tr><td colspan="5" class="text-center text-muted">Données non disponibles</td></tr>';
     }
 }
 

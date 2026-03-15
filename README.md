@@ -10,7 +10,7 @@ Skophia is a sovereign AI cybersecurity platform purpose-built for defense envir
 
 ## Three Pillars
 
-### Gaskia — AI Governance & Telemetry
+### Skophia — AI Governance & Telemetry
 
 OpenTelemetry-native collection layer with sovereign storage. Ingests inference streams, model metrics, and operational telemetry into VictoriaMetrics (time-series) and OpenObserve (logs/traces/audit). Provides the data foundation for all detection and compliance workflows.
 
@@ -53,7 +53,7 @@ Lightweight AI agents designed for tactical networks with intermittent satellite
 ├────────┴──────────────┴──────────────┴───────────────────┴──────────────┤
 │                               CORE LAYER                                    │
 │  ┌────────────────┐  ┌──────────────┐  ┌──────────────┐  ┌────────────┐   │
-│  │   Synapsix     │  │   Gaskia     │  │  Governance  │  │  Causal    │   │
+│  │   Synapsix     │  │   Skophia     │  │  Governance  │  │  Causal    │   │
 │  │  Semantic Drift│  │  OTel Ingest │  │  AI Act Pack │  │  Analysis  │   │
 │  │  MITRE ICS     │  │  Cognitive   │  │  Audit Trail │  │  Root Cause│   │
 │  │  IT/OT Correl. │  │  Metrics     │  │  Hash Chain  │  │  Impact    │   │
@@ -80,7 +80,7 @@ Lightweight AI agents designed for tactical networks with intermittent satellite
 skophia/
 ├── src/
 │   ├── core/
-│   │   ├── gaskia/                    # Gaskia — Telemetry & Storage
+│   │   ├── skophia/                    # Skophia — Telemetry & Storage
 │   │   │   ├── otel-pipeline.ts       # Unified OTel ingestion
 │   │   │   ├── victoriametrics-connector.ts
 │   │   │   └── openobserve-connector.ts

@@ -1,9 +1,9 @@
 #!/bin/bash
 # =============================================================================
-# GASKIA UX Enhancements Deployment Script
+# SKOPHIA UX Enhancements Deployment Script
 # =============================================================================
 
-echo "🚀 Déploiement des améliorations UX GASKIA..."
+echo "🚀 Déploiement des améliorations UX SKOPHIA..."
 echo ""
 
 # Colors

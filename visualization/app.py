@@ -74,11 +74,11 @@ from .routers.realtime import start_background_tasks, stop_background_tasks
 logger = logging.getLogger("aiobs.app")
 
 # Application metadata
-APP_TITLE = "GASKIA - Cyberdéfense IA Souveraine"
+APP_TITLE = "SKOPHIA - Cyberdéfense IA Souveraine"
 APP_DESCRIPTION = """
 ## Plateforme de Supervision IA - Ministère des Armées
 
-GASKIA fournit une supervision souveraine des systèmes d'IA pour la Défense :
+SKOPHIA fournit une supervision souveraine des systèmes d'IA pour la Défense :
 
 - **Détection de menaces IA** : Drift, adversarial, injection de prompts
 - **Corrélation IT/OT** : Chaînes causales, analyse d'impact opérationnel
@@ -807,7 +807,7 @@ async def track_requests(request: Request, call_next):
 @app.get("/health")
 async def health_check():
     """Health check endpoint"""
-    return {"status": "healthy", "version": APP_VERSION, "service": "gaskia-defense"}
+    return {"status": "healthy", "version": APP_VERSION, "service": "skophia-defense"}
 
 
 # ============================================================================

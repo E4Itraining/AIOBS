@@ -77,10 +77,11 @@ export class HealingEngine {
           case 'eq':
             conditionMet = metricValue === condition.threshold;
             break;
-          case 'between':
+          case 'between': {
             const [min, max] = condition.threshold as [number, number];
             conditionMet = metricValue >= min && metricValue <= max;
             break;
+          }
         }
 
         if (!conditionMet) {

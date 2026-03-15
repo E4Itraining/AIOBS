@@ -1,7 +1,7 @@
 /**
  * Skophia — Sovereign AI Cybersecurity Platform
  *
- * Three pillars: Gaskia (Telemetry) / Synapsix (Detection) / TRM (Edge AI)
+ * Three pillars: Skophia (Telemetry) / Synapsix (Detection) / TRM (Edge AI)
  *
  * @packageDocumentation
  */
@@ -32,7 +32,7 @@ export * from './edge-mode';
 export * from './security/mitre';
 
 // Skophia Pillars
-export * from './core/gaskia';
+export * from './core/skophia';
 export * from './synapsix';
 export * from './trm';
 export * from './connectors/it';

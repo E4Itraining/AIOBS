@@ -123,6 +123,50 @@ async def get_reliability_drift(
     )
 
 
+@router.get("/reliability/metrics")
+async def get_reliability_metrics(
+    model_id: Optional[str] = None,
+    hours: int = Query(24, ge=1, le=720)
+) -> APIResponse:
+    """Get detailed reliability metrics for a specific model or all models."""
+    models = [
+        {
+            "name": "fraud-detection-v3",
+            "precision": round(random.uniform(0.92, 0.96), 3),
+            "recall": round(random.uniform(0.90, 0.94), 3),
+            "f1_score": round(random.uniform(0.91, 0.95), 3),
+            "drift_status": "stable",
+            "inferences_24h": random.randint(40000, 50000),
+        },
+        {
+            "name": "recommendation-engine",
+            "precision": round(random.uniform(0.87, 0.91), 3),
+            "recall": round(random.uniform(0.84, 0.88), 3),
+            "f1_score": round(random.uniform(0.85, 0.89), 3),
+            "drift_status": "warning",
+            "inferences_24h": random.randint(100000, 140000),
+        },
+        {
+            "name": "chatbot-assistant",
+            "precision": round(random.uniform(0.88, 0.92), 3),
+            "recall": round(random.uniform(0.85, 0.90), 3),
+            "f1_score": round(random.uniform(0.86, 0.91), 3),
+            "drift_status": "stable",
+            "inferences_24h": random.randint(20000, 30000),
+        },
+    ]
+    if model_id:
+        models = [m for m in models if m["name"] == model_id] or models[:1]
+    return APIResponse(
+        success=True,
+        data={
+            "models": models,
+            "quality_trend": generate_time_series(hours, 0.90, 0.02),
+            "timestamp": datetime.utcnow().isoformat(),
+        },
+    )
+
+
 # ============================================================================
 # 2. SECURITY Pillar Endpoints
 # ============================================================================
@@ -180,6 +224,37 @@ async def get_security_threats(
             "model": random.choice(["chatbot-assistant", "code-generator", "customer-support"]),
         })
     return APIResponse(success=True, data={"threats": threats})
+
+
+@router.get("/security/incidents")
+async def get_security_incidents(
+    hours: int = Query(168, ge=1, le=720)
+) -> APIResponse:
+    """Get security incident history."""
+    incidents = []
+    for i in range(random.randint(2, 6)):
+        incidents.append({
+            "id": f"incident_{i}",
+            "type": random.choice(["prompt_injection", "data_extraction", "adversarial_attack", "anomaly"]),
+            "severity": random.choice(["low", "medium", "high", "critical"]),
+            "timestamp": (datetime.utcnow() - timedelta(hours=random.randint(1, hours))).isoformat(),
+            "status": random.choice(["blocked", "mitigated", "investigating"]),
+            "model": random.choice(["chatbot-assistant", "code-generator", "customer-support"]),
+            "description": random.choice([
+                "Tentative de jailbreak détectée et bloquée",
+                "Extraction de données sensibles bloquée",
+                "Perturbation adversariale sur l'entrée image",
+                "Pic de requêtes anormal détecté",
+            ]),
+        })
+    return APIResponse(
+        success=True,
+        data={
+            "incidents": incidents,
+            "total_blocked_24h": random.randint(80, 150),
+            "response_time_avg_ms": random.randint(5, 25),
+        },
+    )
 
 
 # ============================================================================
@@ -250,6 +325,41 @@ async def get_compliance_audit(
     )
 
 
+@router.get("/compliance/aiact")
+async def get_compliance_aiact() -> APIResponse:
+    """Get AI Act compliance readiness details."""
+    return APIResponse(
+        success=True,
+        data={
+            "readiness_score": round(random.uniform(0.70, 0.85), 2),
+            "risk_classification": {
+                "minimal": 5,
+                "limited": 4,
+                "high": 3,
+                "unacceptable": 0,
+            },
+            "checklist": [
+                {"item": "Documentation technique", "status": "done", "category": "Article 11"},
+                {"item": "Évaluation des risques", "status": "done", "category": "Article 9"},
+                {"item": "Tests de robustesse", "status": "in_progress", "category": "Article 15"},
+                {"item": "Supervision humaine", "status": "in_progress", "category": "Article 14"},
+                {"item": "Journalisation automatique", "status": "done", "category": "Article 12"},
+                {"item": "Transparence & information", "status": "done", "category": "Article 13"},
+                {"item": "Audit externe", "status": "planned", "category": "Article 43"},
+                {"item": "Marquage CE", "status": "not_started", "category": "Article 49"},
+            ],
+            "models_by_risk": [
+                {"name": "fraud-detection-v3", "risk_level": "high", "compliant": True},
+                {"name": "recommendation-engine", "risk_level": "limited", "compliant": True},
+                {"name": "chatbot-assistant", "risk_level": "high", "compliant": False},
+                {"name": "pricing-model-v2", "risk_level": "limited", "compliant": True},
+            ],
+            "next_audit": "2026-06-15",
+            "last_updated": datetime.utcnow().isoformat(),
+        },
+    )
+
+
 # ============================================================================
 # 4. EXPLAINABILITY Pillar Endpoints
 # ============================================================================
@@ -299,6 +409,30 @@ async def get_explainability_features(
             "model_id": model_id or "fraud-detection-v3",
             "features": features,
             "last_updated": datetime.utcnow().isoformat(),
+        },
+    )
+
+
+@router.get("/explainability/confidence")
+async def get_explainability_confidence(
+    model_id: Optional[str] = None,
+    hours: int = Query(24, ge=1, le=720)
+) -> APIResponse:
+    """Get confidence score distribution and trends."""
+    return APIResponse(
+        success=True,
+        data={
+            "model_id": model_id or "all",
+            "avg_confidence": round(random.uniform(0.82, 0.90), 3),
+            "distribution": {
+                "above_90": round(random.uniform(0.55, 0.65), 3),
+                "70_to_90": round(random.uniform(0.25, 0.35), 3),
+                "50_to_70": round(random.uniform(0.05, 0.10), 3),
+                "below_50": round(random.uniform(0.01, 0.03), 3),
+            },
+            "trend": generate_time_series(hours, 0.85, 0.03),
+            "low_confidence_alerts": random.randint(2, 8),
+            "timestamp": datetime.utcnow().isoformat(),
         },
     )
 

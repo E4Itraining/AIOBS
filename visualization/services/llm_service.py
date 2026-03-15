@@ -160,7 +160,7 @@ class LLMService:
     def get_system_prompt(self, language: str = "en") -> str:
         """Get the system prompt for the AI assistant"""
         if language == "fr":
-            return """Tu es l'assistant IA de GASKIA, une plateforme d'observabilite pour les systemes IA.
+            return """Tu es l'assistant IA de SKOPHIA, une plateforme d'observabilite pour les systemes IA.
 
 Tu aides les utilisateurs a:
 - Comprendre les metriques de confiance (Trust Score, drift, fiabilite, hallucination)
@@ -178,7 +178,7 @@ Regles importantes:
 - Si tu ne connais pas une information specifique, dis-le clairement
 - Adapte ton niveau technique au contexte de la question"""
         else:
-            return """You are the AI assistant for GASKIA, an AI observability platform.
+            return """You are the AI assistant for SKOPHIA, an AI observability platform.
 
 You help users:
 - Understand trust metrics (Trust Score, drift, reliability, hallucination)
@@ -426,7 +426,7 @@ Important rules:
         elif any(word in query_lower for word in ["help", "aide", "comment", "how", "quoi", "navigate"]):
             if language == "fr":
                 return (
-                    "Bonjour! Je suis l'assistant IA de **GASKIA** et je peux vous aider avec:\n\n"
+                    "Bonjour! Je suis l'assistant IA de **SKOPHIA** et je peux vous aider avec:\n\n"
                     "**Analyses disponibles:**\n"
                     "- **Trust Score**: Etat de sante global de vos systemes IA\n"
                     "- **Drift Detection**: Surveillance des derives de donnees\n"
@@ -440,7 +440,7 @@ Important rules:
                     "- Recherche globale avec Ctrl+K"
                 )
             return (
-                "Hello! I'm the **GASKIA** AI assistant and I can help you with:\n\n"
+                "Hello! I'm the **SKOPHIA** AI assistant and I can help you with:\n\n"
                 "**Available analyses:**\n"
                 "- **Trust Score**: Overall health of your AI systems\n"
                 "- **Drift Detection**: Data drift monitoring\n"

@@ -1,11 +1,11 @@
 /**
- * Gaskia Module Tests
+ * Skophia Module Tests
  *
  * Tests for OTel Pipeline ingestion and routing.
  */
 
-import { OTelPipeline, createDefaultPipeline } from '../core/gaskia/otel-pipeline';
-import type { OTelMetric, OTelSpan, OTelLog, OTelResource } from '../core/gaskia/otel-pipeline';
+import { OTelPipeline, createDefaultPipeline } from '../core/skophia/otel-pipeline';
+import type { OTelMetric, OTelSpan, OTelLog, OTelResource } from '../core/skophia/otel-pipeline';
 
 describe('OTelPipeline', () => {
   let pipeline: OTelPipeline;

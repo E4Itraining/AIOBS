@@ -55,7 +55,7 @@ services:
 
   # ===========================================================================
   # Skophia Backend Platform (TypeScript/Node.js)
-  # Core Gaskia telemetry engine
+  # Core Skophia telemetry engine
   # ===========================================================================
   backend:
     build:

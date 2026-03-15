@@ -8,7 +8,7 @@
             <div class="hero-logo">
                 <i data-lucide="shield"></i>
             </div>
-            <h1>GASKIA - Cyberdéfense IA</h1>
+            <h1>SKOPHIA - Cyberdéfense IA</h1>
             <p class="hero-subtitle">
                 Sélectionnez votre poste pour une vue adaptée à votre mission.
                 <br>
@@ -513,8 +513,8 @@ const personaNames = {
 // Select a persona and navigate
 function selectPersona(personaId) {
     // Save to localStorage
-    localStorage.setItem('gaskia-persona', personaId);
-    localStorage.setItem('gaskia-persona-selected', 'true');
+    localStorage.setItem('skophia-persona', personaId);
+    localStorage.setItem('skophia-persona-selected', 'true');
 
     // Show feedback
     if (typeof showToast === 'function') {
@@ -530,7 +530,7 @@ function selectPersona(personaId) {
 
 // Skip persona selection
 function skipPersonaSelection() {
-    localStorage.setItem('gaskia-persona-skipped', 'true');
+    localStorage.setItem('skophia-persona-skipped', 'true');
     window.location.href = '/dashboard';
 }
 
@@ -566,8 +566,8 @@ document.addEventListener('DOMContentLoaded', () => {
     lucide.createIcons();
 
     // Check if user already has a persona selected
-    const existingPersona = localStorage.getItem('gaskia-persona');
-    if (existingPersona && localStorage.getItem('gaskia-persona-selected')) {
+    const existingPersona = localStorage.getItem('skophia-persona');
+    if (existingPersona && localStorage.getItem('skophia-persona-selected')) {
         // Show subtle indicator that they can continue or change
         const currentName = personaNames[existingPersona] || 'Personnalisé';
         const hint = document.querySelector('.hero-hint');
