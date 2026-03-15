@@ -34,11 +34,16 @@ from .routers import (
     cognitive_router,
     causal_router,
     defense_soc_router,
+    pillars_router,
+    llm_testing_router,
+    llm_config_router,
+    design_config_router,
+    guardrails_router,
+    healing_router,
+    business_intelligence_router,
+    multi_agent_router,
+    supply_chain_router,
 )
-from .routers.pillars import router as pillars_router
-from .routers.llm_testing import router as llm_testing_router
-from .routers.llm_config import router as llm_config_router
-from .routers.design_config import router as design_config_router
 
 # Import new module routers (optional - may fail due to dependencies)
 auth_router = None
@@ -164,6 +169,13 @@ app.include_router(llm_testing_router)
 app.include_router(llm_config_router)
 app.include_router(design_config_router)
 app.include_router(defense_soc_router)
+
+# New differentiating feature routers
+app.include_router(guardrails_router)
+app.include_router(healing_router)
+app.include_router(business_intelligence_router)
+app.include_router(multi_agent_router)
+app.include_router(supply_chain_router)
 
 # Optional routers (may not be available due to dependencies)
 if auth_router:
