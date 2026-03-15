@@ -118,21 +118,21 @@
             </thead>
             <tbody>
                 <tr>
-                    <td><strong>fraud-detection-v3</strong></td>
+                    <td><strong>ThreatDetector-v3</strong></td>
                     <td>45 230</td>
                     <td>100%</td>
                     <td>90 jours</td>
                     <td><span class="badge badge-healthy">{{ t('common.compliant') or 'Conforme' }}</span></td>
                 </tr>
                 <tr>
-                    <td><strong>recommendation-engine</strong></td>
+                    <td><strong>AnomalyClassifier-v2</strong></td>
                     <td>128 450</td>
                     <td>99.9%</td>
                     <td>30 jours</td>
                     <td><span class="badge badge-healthy">{{ t('common.compliant') or 'Conforme' }}</span></td>
                 </tr>
                 <tr>
-                    <td><strong>chatbot-assistant</strong></td>
+                    <td><strong>CyberSentinel-v1</strong></td>
                     <td>23 180</td>
                     <td>100%</td>
                     <td>365 jours</td>
@@ -326,7 +326,7 @@ async function loadComplianceData() {
         createChart('lineageFlowChart', {
             type: 'bar',
             data: {
-                labels: ['BDD Transactions', 'Logs Serveur', 'API Externes', 'Données Client', 'Capteurs IoT', 'Fichiers CSV', 'Streaming', 'Data Lake'],
+                labels: ['BDD Transactions', 'Logs Serveur', 'API Externes', 'Données Opérateur', 'Capteurs IoT', 'Fichiers CSV', 'Streaming', 'Data Lake'],
                 datasets: [
                     { label: 'Transformations', data: [4, 3, 2, 3, 1, 2, 2, 1], backgroundColor: 'rgba(27, 42, 74, 0.7)', borderRadius: 4 },
                     { label: 'Modèles alimentés', data: [3, 2, 1, 2, 1, 1, 2, 3], backgroundColor: 'rgba(37, 99, 235, 0.6)', borderRadius: 4 }

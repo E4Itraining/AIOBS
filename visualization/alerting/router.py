@@ -238,7 +238,7 @@ async def get_alert_history(
             "provider": "slack",
             "status": "sent",
             "sent_at": "2025-12-21T10:30:00Z",
-            "model_id": "fraud-detector-v1",
+            "model_id": "ThreatDetector-v3",
         },
         {
             "id": "alert-002",
@@ -247,7 +247,7 @@ async def get_alert_history(
             "provider": "slack",
             "status": "sent",
             "sent_at": "2025-12-21T09:15:00Z",
-            "service_id": "recommendation-v2",
+            "service_id": "AnomalyClassifier-v2",
         },
         {
             "id": "alert-003",
@@ -256,7 +256,7 @@ async def get_alert_history(
             "provider": "slack",
             "status": "sent",
             "sent_at": "2025-12-21T08:45:00Z",
-            "model_id": "sentiment-analyzer",
+            "model_id": "SignalAnalyzer-v2",
         },
     ]
 

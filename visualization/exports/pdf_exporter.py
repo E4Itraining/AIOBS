@@ -197,11 +197,11 @@ class PDFExporter:
         elements.append(Paragraph("AI Models Assessment", self.styles['SectionHeader']))
         models_data = [
             ['Model ID', 'Risk Level', 'Trust Score', 'Drift Status', 'Compliance'],
-            ['fraud-detector-v1', 'High', '0.87', 'Stable', 'Compliant'],
-            ['recommendation-v2', 'Limited', '0.92', 'Warning', 'Compliant'],
-            ['chatbot-assistant', 'High', '0.78', 'Stable', 'Review Required'],
-            ['sentiment-analyzer', 'Limited', '0.91', 'Stable', 'Compliant'],
-            ['image-classifier', 'Minimal', '0.95', 'Stable', 'Compliant'],
+            ['ThreatDetector-v3', 'High', '0.87', 'Stable', 'Compliant'],
+            ['AnomalyClassifier-v2', 'Limited', '0.92', 'Warning', 'Compliant'],
+            ['CyberSentinel-v1', 'High', '0.78', 'Stable', 'Review Required'],
+            ['SignalAnalyzer-v2', 'Limited', '0.91', 'Stable', 'Compliant'],
+            ['ReconVision-v1', 'Minimal', '0.95', 'Stable', 'Compliant'],
         ]
         elements.append(self._create_table(models_data))
         elements.append(Spacer(1, 30))

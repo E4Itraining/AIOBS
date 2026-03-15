@@ -82,9 +82,9 @@
         </h2>
         <select class="form-select" id="driftModelSelect" style="width: auto;">
             <option value="all">{{ t('common.all_models') or 'Tous les modèles' }}</option>
-            <option value="fraud-detection">fraud-detection</option>
-            <option value="recommendation-engine">recommendation-engine</option>
-            <option value="pricing-model">pricing-model</option>
+            <option value="ThreatDetector-v3">ThreatDetector-v3</option>
+            <option value="AnomalyClassifier-v2">AnomalyClassifier-v2</option>
+            <option value="LogisticPredictor-v2">LogisticPredictor-v2</option>
         </select>
     </div>
 
@@ -158,7 +158,7 @@
             </thead>
             <tbody id="modelsTable">
                 <tr>
-                    <td><strong>fraud-detection-v3</strong></td>
+                    <td><strong>ThreatDetector-v3</strong></td>
                     <td>94.2%</td>
                     <td>91.8%</td>
                     <td>93.0%</td>
@@ -166,7 +166,7 @@
                     <td><span class="badge badge-healthy"><span class="badge-dot"></span>Sain</span></td>
                 </tr>
                 <tr>
-                    <td><strong>recommendation-engine</strong></td>
+                    <td><strong>AnomalyClassifier-v2</strong></td>
                     <td>89.5%</td>
                     <td>85.2%</td>
                     <td>87.3%</td>
@@ -174,7 +174,7 @@
                     <td><span class="badge badge-warning"><span class="badge-dot"></span>Attention</span></td>
                 </tr>
                 <tr>
-                    <td><strong>pricing-model-v2</strong></td>
+                    <td><strong>LogisticPredictor-v2</strong></td>
                     <td>96.1%</td>
                     <td>94.5%</td>
                     <td>95.3%</td>
@@ -182,7 +182,7 @@
                     <td><span class="badge badge-healthy"><span class="badge-dot"></span>Sain</span></td>
                 </tr>
                 <tr>
-                    <td><strong>sentiment-analyzer</strong></td>
+                    <td><strong>SignalAnalyzer-v2</strong></td>
                     <td>88.7%</td>
                     <td>86.3%</td>
                     <td>87.5%</td>
@@ -207,7 +207,7 @@
         <div class="pillar-alert-item">
             <span class="badge badge-warning"><span class="badge-dot"></span>Warning</span>
             <div class="alert-body">
-                <strong>Concept drift détecté sur recommendation-engine</strong>
+                <strong>Concept drift détecté sur AnomalyClassifier-v2</strong>
                 <div class="text-sm">Le score PSI a atteint 0.08 (seuil: 0.15) - il y a 2h</div>
             </div>
             <button class="btn btn-secondary btn-sm">
@@ -219,7 +219,7 @@
             <span class="badge badge-info"><span class="badge-dot"></span>Info</span>
             <div class="alert-body">
                 <strong>Calibration automatique terminée</strong>
-                <div class="text-sm">fraud-detection-v3 recalibré avec succès - il y a 6h</div>
+                <div class="text-sm">ThreatDetector-v3 recalibré avec succès - il y a 6h</div>
             </div>
             <button class="btn btn-secondary btn-sm">
                 <i data-lucide="file-text"></i>

@@ -3,7 +3,7 @@
 {% set active_page = 'business-intelligence' %}
 
 {% block page_title %}BI{% endblock %}
-{% block page_subtitle %}<p class="text-muted">KPIs, revenue attribution, ROI analysis, and executive dashboards</p>{% endblock %}
+{% block page_subtitle %}<p class="text-muted">KPIs, impact opérationnel, analyse d'efficacité et tableaux de bord</p>{% endblock %}
 
 {% block topbar_actions %}
 <button class="btn btn-secondary" onclick="runSimulation()">
@@ -22,10 +22,10 @@
     <div class="kpi-cards-grid">
         <div class="kpi-card">
             <div class="kpi-header">
-                <span class="kpi-title">AI Revenue Impact</span>
+                <span class="kpi-title">Impact Opérationnel IA</span>
                 <span class="kpi-trend up"><i data-lucide="trending-up"></i> +12%</span>
             </div>
-            <span class="kpi-value">$2.4M</span>
+            <span class="kpi-value">€2.4M</span>
             <span class="kpi-period">This Quarter</span>
             <div class="kpi-chart">
                 <canvas id="revenueSparkline" height="40"></canvas>
@@ -38,7 +38,7 @@
                 <span class="kpi-trend up"><i data-lucide="trending-up"></i> +8%</span>
             </div>
             <span class="kpi-value">3.2x</span>
-            <span class="kpi-period">ROI Multiplier</span>
+            <span class="kpi-period">Multiplicateur d'Efficacité</span>
             <div class="kpi-chart">
                 <canvas id="roiSparkline" height="40"></canvas>
             </div>
@@ -49,7 +49,7 @@
                 <span class="kpi-title">Operational Savings</span>
                 <span class="kpi-trend up"><i data-lucide="trending-up"></i> +23%</span>
             </div>
-            <span class="kpi-value">$890K</span>
+            <span class="kpi-value">€890K</span>
             <span class="kpi-period">Annual Savings</span>
             <div class="kpi-chart">
                 <canvas id="savingsSparkline" height="40"></canvas>
@@ -70,31 +70,31 @@
     </div>
 </div>
 
-<!-- Revenue Attribution & Cost-Benefit -->
+<!-- Impact Opérationnel & Cost-Benefit -->
 <section class="mb-6">
     <div class="grid grid-2">
-        <!-- Revenue Attribution -->
+        <!-- Impact Opérationnel par Système -->
         <div class="card">
             <div class="card-header">
-                <h3 class="card-title">Revenue Attribution by Model</h3>
+                <h3 class="card-title">Impact Opérationnel par Système</h3>
             </div>
             <div class="chart-container" style="height: 250px;">
                 <canvas id="revenueAttribution"></canvas>
             </div>
             <div class="attribution-list">
                 <div class="attribution-item">
-                    <span class="attribution-model">Recommendation Engine</span>
-                    <span class="attribution-value">$1.2M</span>
+                    <span class="attribution-model">Classifieur Anomalies</span>
+                    <span class="attribution-value">€1.2M</span>
                     <span class="attribution-percent">50%</span>
                 </div>
                 <div class="attribution-item">
-                    <span class="attribution-model">Fraud Detection</span>
-                    <span class="attribution-value">$680K</span>
+                    <span class="attribution-model">Détection de Menaces</span>
+                    <span class="attribution-value">€680K</span>
                     <span class="attribution-percent">28%</span>
                 </div>
                 <div class="attribution-item">
-                    <span class="attribution-model">Customer Support AI</span>
-                    <span class="attribution-value">$520K</span>
+                    <span class="attribution-model">Support Opérateur IA</span>
+                    <span class="attribution-value">€520K</span>
                     <span class="attribution-percent">22%</span>
                 </div>
             </div>
@@ -108,15 +108,15 @@
             <div class="cost-benefit-summary">
                 <div class="cb-metric positive">
                     <span class="cb-label">Total Benefits</span>
-                    <span class="cb-value">$3.2M</span>
+                    <span class="cb-value">€3.2M</span>
                 </div>
                 <div class="cb-metric negative">
                     <span class="cb-label">Total Costs</span>
-                    <span class="cb-value">$980K</span>
+                    <span class="cb-value">€980K</span>
                 </div>
                 <div class="cb-metric net">
                     <span class="cb-label">Net Value</span>
-                    <span class="cb-value">$2.22M</span>
+                    <span class="cb-value">€2.22M</span>
                 </div>
             </div>
             <div class="chart-container" style="height: 180px;">
@@ -146,10 +146,10 @@
                     <span class="kpi-category">Financial</span>
                     <span class="kpi-status on-track">On Track</span>
                 </div>
-                <span class="kpi-tile-name">Customer Acquisition Cost</span>
+                <span class="kpi-tile-name">Coût d'Acquisition Opérateur</span>
                 <div class="kpi-tile-values">
-                    <span class="current">$45</span>
-                    <span class="target">Target: $50</span>
+                    <span class="current">€45</span>
+                    <span class="target">Target: €50</span>
                 </div>
                 <div class="kpi-progress">
                     <div class="progress-bar" style="width: 90%"></div>
@@ -176,7 +176,7 @@
                     <span class="kpi-category">Quality</span>
                     <span class="kpi-status at-risk">At Risk</span>
                 </div>
-                <span class="kpi-tile-name">Customer Satisfaction</span>
+                <span class="kpi-tile-name">Satisfaction Opérateur</span>
                 <div class="kpi-tile-values">
                     <span class="current">4.2</span>
                     <span class="target">Target: 4.5</span>
@@ -191,10 +191,10 @@
                     <span class="kpi-category">Financial</span>
                     <span class="kpi-status on-track">On Track</span>
                 </div>
-                <span class="kpi-tile-name">Revenue per Model</span>
+                <span class="kpi-tile-name">Impact par Système</span>
                 <div class="kpi-tile-values">
-                    <span class="current">$180K</span>
-                    <span class="target">Target: $150K</span>
+                    <span class="current">€180K</span>
+                    <span class="target">Target: €150K</span>
                 </div>
                 <div class="kpi-progress">
                     <div class="progress-bar" style="width: 100%"></div>
@@ -246,28 +246,28 @@
         </div>
         <div class="simulation-container">
             <div class="simulation-scenario">
-                <h4>Scenario: Scale Recommendation Engine</h4>
+                <h4>Scenario: Scale Classifieur Anomalies</h4>
                 <p>What if we increase the recommendation model capacity by 50%?</p>
             </div>
             <div class="simulation-results">
                 <div class="result-item positive">
                     <i data-lucide="trending-up"></i>
                     <div class="result-content">
-                        <span class="result-metric">Projected Revenue</span>
-                        <span class="result-value">+$450K/quarter</span>
+                        <span class="result-metric">Impact Opérationnel Projeté</span>
+                        <span class="result-value">+€450K/quarter</span>
                     </div>
                 </div>
                 <div class="result-item negative">
                     <i data-lucide="coins"></i>
                     <div class="result-content">
                         <span class="result-metric">Infrastructure Cost</span>
-                        <span class="result-value">+$85K/quarter</span>
+                        <span class="result-value">+€85K/quarter</span>
                     </div>
                 </div>
                 <div class="result-item positive">
                     <i data-lucide="percent"></i>
                     <div class="result-content">
-                        <span class="result-metric">Net ROI</span>
+                        <span class="result-metric">Efficacité Nette</span>
                         <span class="result-value">429%</span>
                     </div>
                 </div>
@@ -676,7 +676,7 @@ function initCharts() {
         new Chart(revenueCtx, {
             type: 'doughnut',
             data: {
-                labels: ['Recommendation', 'Fraud Detection', 'Support AI'],
+                labels: ['Recommendation', 'Détection de Menaces', 'Support AI'],
                 datasets: [{
                     data: [50, 28, 22],
                     backgroundColor: ['#6366f1', '#10b981', '#f59e0b'],

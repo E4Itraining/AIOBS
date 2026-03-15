@@ -137,12 +137,12 @@ async def ingest_metrics(
             {
                 "name": "model_latency_ms",
                 "value": 45.2,
-                "labels": {"model": "fraud-v1", "env": "prod"}
+                "labels": {"model": "ThreatDetector-v3", "env": "prod"}
             }
         ],
         "metadata": {
             "source": "ai_model",
-            "source_id": "fraud-detector-v1"
+            "source_id": "ThreatDetector-v3"
         },
         "compliance": {
             "data_category": "performance",
@@ -239,13 +239,13 @@ async def ingest_logs(request: LogIngestionRequest, source_id: str = Depends(ver
             {
                 "level": "info",
                 "message": "Model inference completed",
-                "context": {"model_id": "fraud-v1", "latency_ms": 45}
+                "context": {"model_id": "ThreatDetector-v3", "latency_ms": 45}
             }
         ],
         "stream": "aiobs-logs",
         "metadata": {
             "source": "ai_model",
-            "source_id": "fraud-detector-v1"
+            "source_id": "ThreatDetector-v3"
         },
         "compliance": {
             "data_category": "operational",
@@ -345,8 +345,8 @@ async def ingest_events(request: EventIngestionRequest, source_id: str = Depends
             {
                 "event_type": "drift_detected",
                 "severity": "warning",
-                "title": "Data drift detected in fraud model",
-                "source_service": "fraud-detector-v1",
+                "title": "Data drift detected in modèle ThreatDetector",
+                "source_service": "ThreatDetector-v3",
                 "payload": {"drift_score": 0.25}
             }
         ],
@@ -478,7 +478,7 @@ async def query_metrics(
     Query metrics using PromQL.
 
     **Example Queries:**
-    - `model_latency_ms{model="fraud-v1"}` - Instant query
+    - `model_latency_ms{model="ThreatDetector-v3"}` - Instant query
     - `rate(model_requests_total[5m])` - Rate of requests
     - `avg_over_time(trust_score[1h])` - Average trust score
     """

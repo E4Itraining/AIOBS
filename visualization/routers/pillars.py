@@ -153,7 +153,7 @@ async def inject_attack(
     attack_type: str = Body("injection"),
     severity: str = Body("high"),
     count: int = Body(1),
-    model: str = Body("chatbot-assistant"),
+    model: str = Body("CyberSentinel-v1"),
 ) -> APIResponse:
     """Inject a security attack into the simulation."""
     result = get_simulator().inject_attack(attack_type, severity, count, model)

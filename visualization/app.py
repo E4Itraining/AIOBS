@@ -232,7 +232,7 @@ async def home(request: Request):
         "hub.html",
         {
             "request": request,
-            "title": f"{APP_TITLE} - Hub",
+            "title": f"{APP_TITLE} - Centre Opérationnel",
             "active_page": "hub",
             **i18n,
         },

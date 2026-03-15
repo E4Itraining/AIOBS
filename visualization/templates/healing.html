@@ -2,13 +2,13 @@
 
 {% set active_page = 'healing' %}
 
-{% block page_title %}Autonomous Healing{% endblock %}
-{% block page_subtitle %}<p class="text-muted">Self-remediation, rollback management, and predictive healing</p>{% endblock %}
+{% block page_title %}Auto-Remédiation Autonome{% endblock %}
+{% block page_subtitle %}<p class="text-muted">Auto-remédiation, gestion des rollbacks et remédiation prédictive</p>{% endblock %}
 
 {% block topbar_actions %}
 <div class="live-indicator">
     <span class="live-dot"></span>
-    <span>Auto-Healing Active</span>
+    <span>Auto-Remédiation Active</span>
 </div>
 <button class="btn btn-secondary" onclick="viewPolicies()">
     <i data-lucide="settings"></i>
@@ -16,12 +16,12 @@
 </button>
 <button class="btn btn-primary" onclick="manualHeal()">
     <i data-lucide="heart-pulse"></i>
-    Manual Heal
+    Remédiation Manuelle
 </button>
 {% endblock %}
 
 {% block content %}
-<!-- Healing Overview -->
+<!-- Vue d'ensemble Auto-Remédiation -->
 <div class="healing-hero">
     <div class="healing-stats-grid">
         <div class="healing-stat-card">
@@ -30,7 +30,7 @@
             </div>
             <div class="stat-content">
                 <span class="stat-value">47</span>
-                <span class="stat-label">Auto-Heals (7d)</span>
+                <span class="stat-label">Auto-Remédiations (7j)</span>
             </div>
         </div>
         <div class="healing-stat-card">
@@ -39,7 +39,7 @@
             </div>
             <div class="stat-content">
                 <span class="stat-value">12</span>
-                <span class="stat-label">Rollbacks (7d)</span>
+                <span class="stat-label">Rollbacks (7j)</span>
             </div>
         </div>
         <div class="healing-stat-card">
@@ -67,7 +67,7 @@
 <section class="mb-6">
     <div class="card">
         <div class="card-header">
-            <h3 class="card-title">Active Healing Pipelines</h3>
+            <h3 class="card-title">Pipelines d'Auto-Remédiation Actifs</h3>
             <span class="badge badge-success">3 Active</span>
         </div>
         <div class="pipelines-grid">
@@ -137,13 +137,13 @@
     </div>
 </section>
 
-<!-- Recent Healing Events & Predictions -->
+<!-- Événements de Remédiation Récents & Prédictions -->
 <section class="mb-6">
     <div class="grid grid-2">
         <!-- Recent Healing Events -->
         <div class="card">
             <div class="card-header">
-                <h3 class="card-title">Recent Healing Events</h3>
+                <h3 class="card-title">Événements de Remédiation Récents</h3>
                 <span class="live-badge"><span class="live-dot"></span> Live</span>
             </div>
             <div class="healing-events-list" id="healingEventsList">
@@ -152,7 +152,7 @@
                         <i data-lucide="check-circle"></i>
                     </div>
                     <div class="event-content">
-                        <span class="event-action">Auto-scaled recommendation-v2</span>
+                        <span class="event-action">Auto-scaled AnomalyClassifier-v2</span>
                         <span class="event-trigger">Latency spike detected (723ms)</span>
                         <span class="event-result">Resolved in 12 seconds</span>
                         <span class="event-time">5 min ago</span>
@@ -163,7 +163,7 @@
                         <i data-lucide="rotate-ccw"></i>
                     </div>
                     <div class="event-content">
-                        <span class="event-action">Rollback llm-assistant to v2.3.1</span>
+                        <span class="event-action">Rollback CommandAssist-v1 to v2.3.1</span>
                         <span class="event-trigger">Accuracy drop to 89%</span>
                         <span class="event-result">Accuracy restored to 95%</span>
                         <span class="event-time">1 hour ago</span>
@@ -174,7 +174,7 @@
                         <i data-lucide="refresh-cw"></i>
                     </div>
                     <div class="event-content">
-                        <span class="event-action">Retrain triggered for fraud-detector</span>
+                        <span class="event-action">Retrain triggered for ThreatDetector</span>
                         <span class="event-trigger">Data drift exceeded threshold</span>
                         <span class="event-result">Training in progress (45%)</span>
                         <span class="event-time">2 hours ago</span>
@@ -186,13 +186,13 @@
         <!-- Predictive Healing -->
         <div class="card">
             <div class="card-header">
-                <h3 class="card-title">Predictive Healing Recommendations</h3>
+                <h3 class="card-title">Recommandations de Remédiation Prédictive</h3>
             </div>
             <div class="predictions-list">
                 <div class="prediction-item high">
                     <div class="prediction-probability">85%</div>
                     <div class="prediction-content">
-                        <span class="prediction-model">code-generator</span>
+                        <span class="prediction-model">CyberAssist-v1</span>
                         <span class="prediction-issue">Likely to require scaling in 2 hours</span>
                         <span class="prediction-reason">Traffic pattern analysis suggests peak load</span>
                     </div>
@@ -201,7 +201,7 @@
                 <div class="prediction-item medium">
                     <div class="prediction-probability">62%</div>
                     <div class="prediction-content">
-                        <span class="prediction-model">sentiment-analyzer</span>
+                        <span class="prediction-model">SignalAnalyzer-v2</span>
                         <span class="prediction-issue">Drift correction needed in ~4 hours</span>
                         <span class="prediction-reason">Gradual feature distribution shift</span>
                     </div>
@@ -210,7 +210,7 @@
                 <div class="prediction-item low">
                     <div class="prediction-probability">35%</div>
                     <div class="prediction-content">
-                        <span class="prediction-model">recommendation-v2</span>
+                        <span class="prediction-model">AnomalyClassifier-v2</span>
                         <span class="prediction-issue">May need attention tomorrow</span>
                         <span class="prediction-reason">Seasonal pattern detected</span>
                     </div>
@@ -241,7 +241,7 @@
             </thead>
             <tbody>
                 <tr>
-                    <td>llm-assistant</td>
+                    <td>CommandAssist-v1</td>
                     <td>v2.4.0</td>
                     <td>v2.3.1</td>
                     <td>Accuracy drop</td>
@@ -250,7 +250,7 @@
                     <td>Today, 14:32</td>
                 </tr>
                 <tr>
-                    <td>recommendation-v2</td>
+                    <td>AnomalyClassifier-v2</td>
                     <td>v3.1.0</td>
                     <td>v3.0.5</td>
                     <td>Latency spike</td>
@@ -259,7 +259,7 @@
                     <td>Yesterday, 09:15</td>
                 </tr>
                 <tr>
-                    <td>fraud-detector</td>
+                    <td>ThreatDetector</td>
                     <td>v1.2.0</td>
                     <td>v1.1.8</td>
                     <td>High error rate</td>
@@ -669,11 +669,11 @@ async function loadHealingData() {
 }
 
 function viewPolicies() {
-    showToast('Opening healing policies...', 'info');
+    showToast('Ouverture des politiques de remédiation...', 'info');
 }
 
 function manualHeal() {
-    showToast('Opening manual healing wizard...', 'info');
+    showToast('Ouverture de l\'assistant de remédiation manuelle...', 'info');
 }
 </script>
 {% endblock %}

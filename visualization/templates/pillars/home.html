@@ -449,7 +449,7 @@ async function loadRecommendations() {
     const recommendations = {
         'etat_major': [
             { icon: 'scale', title: 'Conformité AI Act', desc: 'Votre score de conformité est à 78%. Préparez les preuves pour l\'audit Q1.', action: '/pillars/compliance', priority: 'high' },
-            { icon: 'trending-up', title: 'ROI en amélioration', desc: 'Le coût par inférence a baissé de 12% ce mois.', action: '/pillars/performance', priority: 'low' }
+            { icon: 'trending-up', title: 'Efficacité en amélioration', desc: 'Le coût par inférence a baissé de 12% ce mois.', action: '/pillars/performance', priority: 'low' }
         ],
         'defense_soc': [
             { icon: 'alert-triangle', title: 'Tentatives d\'injection', desc: '12 tentatives de prompt injection bloquées cette semaine.', action: '/pillars/security#injection', priority: 'high' },
@@ -464,8 +464,8 @@ async function loadRecommendations() {
             { icon: 'file-check', title: 'Conformité NIS2', desc: 'Préparez la documentation pour l\'audit de conformité NIS2.', action: '/pillars/compliance#aiact', priority: 'medium' }
         ],
         'tech_ml_engineer': [
-            { icon: 'git-merge', title: 'Drift détecté', desc: 'Le modèle fraud-detection montre un concept drift. Réévaluez le seuil.', action: '/pillars/reliability#drift', priority: 'high' },
-            { icon: 'lightbulb', title: 'Explicabilité insuffisante', desc: 'Ajoutez des feature importances au modèle pricing.', action: '/pillars/explainability', priority: 'medium' }
+            { icon: 'git-merge', title: 'Drift détecté', desc: 'Le modèle ThreatDetector-v3 montre un concept drift. Réévaluez le seuil.', action: '/pillars/reliability#drift', priority: 'high' },
+            { icon: 'lightbulb', title: 'Explicabilité insuffisante', desc: 'Ajoutez des feature importances au modèle LogisticPredictor.', action: '/pillars/explainability', priority: 'medium' }
         ],
         'compliance_legal': [
             { icon: 'file-check', title: 'Documentation AI Act', desc: '3 modèles nécessitent une mise à jour de leur documentation.', action: '/pillars/compliance#aiact', priority: 'high' },

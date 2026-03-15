@@ -81,9 +81,9 @@
             {{ t('pillars.explainability.feature_importance') or 'Feature Importance' }}
         </h2>
         <select class="form-select" style="width: auto;">
-            <option value="fraud-detection">fraud-detection-v3</option>
-            <option value="recommendation">recommendation-engine</option>
-            <option value="pricing">pricing-model</option>
+            <option value="ThreatDetector-v3">ThreatDetector-v3</option>
+            <option value="recommendation">AnomalyClassifier-v2</option>
+            <option value="LogisticPredictor">LogisticPredictor-v2</option>
         </select>
     </div>
 
@@ -147,21 +147,21 @@
             </thead>
             <tbody>
                 <tr>
-                    <td><strong>fraud-detection-v3</strong></td>
+                    <td><strong>ThreatDetector-v3</strong></td>
                     <td>94.2%</td>
                     <td>62%</td>
                     <td>99.8%</td>
                     <td><span class="badge badge-healthy">1.2%</span></td>
                 </tr>
                 <tr>
-                    <td><strong>recommendation-engine</strong></td>
+                    <td><strong>AnomalyClassifier-v2</strong></td>
                     <td>82.5%</td>
                     <td>45%</td>
                     <td>98.5%</td>
                     <td><span class="badge badge-warning">4.8%</span></td>
                 </tr>
                 <tr>
-                    <td><strong>sentiment-analyzer</strong></td>
+                    <td><strong>SignalAnalyzer-v2</strong></td>
                     <td>88.1%</td>
                     <td>55%</td>
                     <td>99.2%</td>
@@ -201,17 +201,17 @@
         <div class="prediction-example">
             <div class="prediction-option chosen">
                 <div class="pred-label">{{ t('pillars.explainability.chosen') or 'Prédiction choisie' }}</div>
-                <div class="pred-value">{{ t('pillars.explainability.fraud_detected') or 'Fraude détectée' }}</div>
+                <div class="pred-value">{{ t('pillars.explainability.threat_detected') or 'Menace détectée' }}</div>
                 <div class="pred-confidence">93.2% confiance</div>
             </div>
             <div class="prediction-option">
                 <div class="pred-label">Alternative 1</div>
-                <div class="pred-value">{{ t('pillars.explainability.suspicious') or 'Transaction suspecte' }}</div>
+                <div class="pred-value">{{ t('pillars.explainability.suspicious') or 'Activité suspecte' }}</div>
                 <div class="pred-confidence">5.8%</div>
             </div>
             <div class="prediction-option">
                 <div class="pred-label">Alternative 2</div>
-                <div class="pred-value">{{ t('pillars.explainability.normal') or 'Transaction normale' }}</div>
+                <div class="pred-value">{{ t('pillars.explainability.normal') or 'Activité normale' }}</div>
                 <div class="pred-confidence">1.0%</div>
             </div>
         </div>
@@ -409,7 +409,7 @@ function initBiasChart() {
     createChart('biasChart', {
         type: 'radar',
         data: {
-            labels: ['Genre', 'Âge', 'Localisation', 'Revenu', 'Ethnicité'],
+            labels: ['Genre', 'Âge', 'Localisation', 'Grade', 'Ethnicité'],
             datasets: [{
                 label: 'Écart observé',
                 data: [0.02, 0.03, 0.01, 0.04, 0.01],

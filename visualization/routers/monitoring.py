@@ -37,7 +37,7 @@ async def get_api_health() -> APIResponse:
             "last_check": datetime.utcnow().isoformat(),
         },
         {
-            "endpoint": "/api/v1/predict/fraud",
+            "endpoint": "/api/v1/predict/threat-detect",
             "method": "POST",
             "status": "healthy",
             "latency_p50_ms": 85 + random.randint(-10, 10),
@@ -47,7 +47,7 @@ async def get_api_health() -> APIResponse:
             "last_check": datetime.utcnow().isoformat(),
         },
         {
-            "endpoint": "/api/v1/predict/churn",
+            "endpoint": "/api/v1/predict/intrusion-detect",
             "method": "POST",
             "status": "healthy",
             "latency_p50_ms": 35 + random.randint(-5, 5),
@@ -159,8 +159,8 @@ async def get_drift_metrics(
     """
     models = [
         {
-            "model_id": "recommendation-v2",
-            "model_name": "Recommendation Model v2",
+            "model_id": "AnomalyClassifier-v2",
+            "model_name": "Classifieur Anomalies v2 (Mer — Toulon)",
             "drift_scores": {
                 "data_drift": 0.12 + random.uniform(-0.02, 0.02),
                 "concept_drift": 0.08 + random.uniform(-0.01, 0.01),
@@ -171,16 +171,16 @@ async def get_drift_metrics(
             "threshold": 0.3,
             "last_check": datetime.utcnow().isoformat(),
             "feature_drifts": [
-                {"feature": "user_engagement_score", "drift": 0.21, "status": "monitor"},
-                {"feature": "purchase_frequency", "drift": 0.18, "status": "monitor"},
+                {"feature": "threat_score", "drift": 0.21, "status": "monitor"},
+                {"feature": "alert_frequency", "drift": 0.18, "status": "monitor"},
                 {"feature": "session_duration", "drift": 0.14, "status": "ok"},
-                {"feature": "click_through_rate", "drift": 0.09, "status": "ok"},
-                {"feature": "page_views", "drift": 0.06, "status": "ok"},
+                {"feature": "packet_entropy", "drift": 0.09, "status": "ok"},
+                {"feature": "connection_count", "drift": 0.06, "status": "ok"},
             ],
         },
         {
-            "model_id": "fraud-detector-v1",
-            "model_name": "Fraud Detection v1",
+            "model_id": "ThreatDetector-v3",
+            "model_name": "Détection de Menaces v3 (Terre — Balard)",
             "drift_scores": {
                 "data_drift": 0.28 + random.uniform(-0.03, 0.03),
                 "concept_drift": 0.15 + random.uniform(-0.02, 0.02),
@@ -191,16 +191,16 @@ async def get_drift_metrics(
             "threshold": 0.3,
             "last_check": datetime.utcnow().isoformat(),
             "feature_drifts": [
-                {"feature": "transaction_amount", "drift": 0.32, "status": "alert"},
-                {"feature": "transaction_frequency", "drift": 0.25, "status": "monitor"},
-                {"feature": "merchant_category", "drift": 0.18, "status": "monitor"},
+                {"feature": "payload_anomaly_score", "drift": 0.32, "status": "alert"},
+                {"feature": "request_frequency", "drift": 0.25, "status": "monitor"},
+                {"feature": "protocol_category", "drift": 0.18, "status": "monitor"},
                 {"feature": "time_of_day", "drift": 0.12, "status": "ok"},
-                {"feature": "device_type", "drift": 0.08, "status": "ok"},
+                {"feature": "source_type", "drift": 0.08, "status": "ok"},
             ],
         },
         {
-            "model_id": "churn-predictor",
-            "model_name": "Churn Predictor",
+            "model_id": "IntrusionPredictor-v1",
+            "model_name": "Prédicteur d'Intrusions v1 (Air — Mont-de-Marsan)",
             "drift_scores": {
                 "data_drift": 0.08 + random.uniform(-0.01, 0.01),
                 "concept_drift": 0.05 + random.uniform(-0.01, 0.01),
@@ -211,11 +211,11 @@ async def get_drift_metrics(
             "threshold": 0.3,
             "last_check": datetime.utcnow().isoformat(),
             "feature_drifts": [
-                {"feature": "usage_decline", "drift": 0.11, "status": "ok"},
-                {"feature": "support_tickets", "drift": 0.09, "status": "ok"},
-                {"feature": "payment_delays", "drift": 0.07, "status": "ok"},
-                {"feature": "feature_adoption", "drift": 0.05, "status": "ok"},
-                {"feature": "login_frequency", "drift": 0.04, "status": "ok"},
+                {"feature": "scan_frequency_decline", "drift": 0.11, "status": "ok"},
+                {"feature": "incident_tickets", "drift": 0.09, "status": "ok"},
+                {"feature": "response_delays", "drift": 0.07, "status": "ok"},
+                {"feature": "rule_adoption", "drift": 0.05, "status": "ok"},
+                {"feature": "auth_frequency", "drift": 0.04, "status": "ok"},
             ],
         },
     ]
@@ -320,7 +320,7 @@ async def get_security_metrics() -> APIResponse:
             },
             "models_security": [
                 {
-                    "model_id": "llm-assistant",
+                    "model_id": "CommandAssist-v1",
                     "status": "secure",
                     "guardrails": True,
                     "input_validation": True,
@@ -329,7 +329,7 @@ async def get_security_metrics() -> APIResponse:
                     "attacks_blocked_7d": 25,
                 },
                 {
-                    "model_id": "recommendation-v2",
+                    "model_id": "AnomalyClassifier-v2",
                     "status": "secure",
                     "guardrails": True,
                     "input_validation": True,
@@ -338,7 +338,7 @@ async def get_security_metrics() -> APIResponse:
                     "attacks_blocked_7d": 3,
                 },
                 {
-                    "model_id": "code-generator",
+                    "model_id": "CyberAssist-v1",
                     "status": "review",
                     "guardrails": "partial",
                     "input_validation": True,
@@ -353,7 +353,7 @@ async def get_security_metrics() -> APIResponse:
                     "type": "prompt_injection",
                     "severity": "high",
                     "status": "blocked",
-                    "target": "llm-assistant",
+                    "target": "CommandAssist-v1",
                     "pattern": "System prompt override",
                     "timestamp": (datetime.utcnow() - timedelta(minutes=2)).isoformat(),
                 },
@@ -362,7 +362,7 @@ async def get_security_metrics() -> APIResponse:
                     "type": "code_injection",
                     "severity": "high",
                     "status": "blocked",
-                    "target": "code-generator",
+                    "target": "CyberAssist-v1",
                     "pattern": "SQL injection in input",
                     "timestamp": (datetime.utcnow() - timedelta(minutes=8)).isoformat(),
                 },
@@ -371,7 +371,7 @@ async def get_security_metrics() -> APIResponse:
                     "type": "jailbreak",
                     "severity": "medium",
                     "status": "flagged",
-                    "target": "llm-assistant",
+                    "target": "CommandAssist-v1",
                     "pattern": "DAN prompt pattern",
                     "timestamp": (datetime.utcnow() - timedelta(minutes=15)).isoformat(),
                 },
@@ -380,7 +380,7 @@ async def get_security_metrics() -> APIResponse:
                     "type": "data_extraction",
                     "severity": "high",
                     "status": "blocked",
-                    "target": "llm-assistant",
+                    "target": "CommandAssist-v1",
                     "pattern": "PII extraction attempt",
                     "timestamp": (datetime.utcnow() - timedelta(minutes=32)).isoformat(),
                 },
@@ -469,9 +469,9 @@ async def get_prompt_injection_stats(hours: int = Query(24, ge=1, le=168)) -> AP
             "hourly_stats": hourly_stats,
             "patterns": patterns,
             "models_targeted": [
-                {"model": "llm-assistant", "attempts": 25},
-                {"model": "code-generator", "attempts": 12},
-                {"model": "chat-support", "attempts": 8},
+                {"model": "CommandAssist-v1", "attempts": 25},
+                {"model": "CyberAssist-v1", "attempts": 12},
+                {"model": "TacticalAdvisor-v1", "attempts": 8},
             ],
         },
     )

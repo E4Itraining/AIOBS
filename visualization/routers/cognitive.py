@@ -65,12 +65,12 @@ class APIResponse(BaseModel):
 
 # Demo models for backward compatibility
 DEMO_MODELS = [
-    {"id": "fraud-detector-v1", "name": "Fraud Detection Model v1", "type": "classification"},
-    {"id": "recommendation-v2", "name": "Recommendation Engine v2", "type": "ranking"},
-    {"id": "sentiment-analyzer", "name": "Sentiment Analyzer", "type": "nlp"},
-    {"id": "chatbot-assistant", "name": "ChatBot Assistant", "type": "genai"},
-    {"id": "image-classifier", "name": "Image Classifier", "type": "vision"},
-    {"id": "forecasting-model", "name": "Demand Forecasting", "type": "timeseries"},
+    {"id": "ThreatDetector-v3", "name": "Détection de Menaces IA v3", "type": "classification"},
+    {"id": "AnomalyClassifier-v2", "name": "Classifieur d'Anomalies v2", "type": "ranking"},
+    {"id": "SignalAnalyzer-v2", "name": "Analyseur de Signaux v2", "type": "nlp"},
+    {"id": "CyberSentinel-v1", "name": "CyberSentinel v1", "type": "genai"},
+    {"id": "ReconVision-v1", "name": "Reconnaissance Visuelle v1", "type": "vision"},
+    {"id": "ThreatForecaster-v1", "name": "Prévision de Menaces", "type": "timeseries"},
 ]
 
 
@@ -119,7 +119,7 @@ async def get_trust_score(
     """
     engine = get_engine()
 
-    target_model = model_id or "fraud-detector-v1"
+    target_model = model_id or "ThreatDetector-v3"
     trust = engine.compute_trust_score(target_model)
 
     return APIResponse(

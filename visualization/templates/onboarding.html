@@ -115,11 +115,11 @@
                 </div>
             </div>
 
-            <!-- Business Profiles -->
+            <!-- Commandement Profiles -->
             <div class="profile-category">
                 <div class="category-header">
-                    <span class="category-badge business">{{ t('onboarding.category_business') or 'Business' }}</span>
-                    <p class="category-desc">{{ t('onboarding.category_business_desc') or 'For executives and product leaders' }}</p>
+                    <span class="category-badge business">{{ t('onboarding.category_business') or 'Commandement' }}</span>
+                    <p class="category-desc">{{ t('onboarding.category_business_desc') or 'Pour les officiers et responsables opérationnels' }}</p>
                 </div>
                 <div class="profile-grid">
                     <div class="profile-card" data-profile="business_executive" onclick="selectProfile(this)">
@@ -127,10 +127,10 @@
                             <i data-lucide="briefcase"></i>
                         </div>
                         <h4>{{ t('profiles.executive') or 'Executive' }}</h4>
-                        <p>{{ t('onboarding.executive_desc') or 'High-level KPIs, business impact, strategic overview' }}</p>
+                        <p>{{ t('onboarding.executive_desc') or 'High-level KPIs, impact opérationnel, strategic overview' }}</p>
                         <div class="profile-focus">
                             <span class="tag">KPIs</span>
-                            <span class="tag">ROI</span>
+                            <span class="tag">Efficacité</span>
                             <span class="tag">Impact</span>
                         </div>
                     </div>
@@ -139,13 +139,13 @@
                         <div class="profile-icon">
                             <i data-lucide="package"></i>
                         </div>
-                        <h4>{{ t('profiles.product_owner') or 'Product Owner' }}</h4>
-                        <p>{{ t('onboarding.product_owner_desc') or 'AI features portfolio, user experience metrics, adoption funnels, A/B tests, and business impact tracking' }}</p>
+                        <h4>{{ t('profiles.product_owner') or 'Officier Programme IA' }}</h4>
+                        <p>{{ t('onboarding.product_owner_desc') or 'Portefeuille de capacités IA, métriques de performance et suivi d\'impact opérationnel' }}</p>
                         <div class="profile-focus">
-                            <span class="tag">Features</span>
-                            <span class="tag">UX Impact</span>
+                            <span class="tag">Capacités IA</span>
+                            <span class="tag">Performance</span>
                             <span class="tag">Adoption</span>
-                            <span class="tag">Revenue</span>
+                            <span class="tag">Impact Ops</span>
                         </div>
                     </div>
                 </div>
@@ -342,22 +342,22 @@ const tourContent = {
         ]
     },
     business_executive: {
-        title: '{{ t("onboarding.tour_exec_title") or "Executive Dashboard" }}',
-        description: '{{ t("onboarding.tour_exec_desc") or "Strategic overview of AI operations" }}',
+        title: '{{ t("onboarding.tour_exec_title") or "Tableau de Bord Commandement" }}',
+        description: '{{ t("onboarding.tour_exec_desc") or "Vue stratégique des opérations IA Défense" }}',
         features: [
-            { icon: 'trending-up', title: '{{ t("onboarding.tour_exec_1_title") or "Business Impact" }}', desc: '{{ t("onboarding.tour_exec_1_desc") or "See how AI performance affects business metrics" }}' },
-            { icon: 'dollar-sign', title: '{{ t("onboarding.tour_exec_2_title") or "Cost Overview" }}', desc: '{{ t("onboarding.tour_exec_2_desc") or "Track AI spending with clear cost breakdowns" }}' },
-            { icon: 'shield-check', title: '{{ t("onboarding.tour_exec_3_title") or "Trust & Compliance" }}', desc: '{{ t("onboarding.tour_exec_3_desc") or "One-glance view of system reliability and compliance" }}' },
-            { icon: 'bar-chart', title: '{{ t("onboarding.tour_exec_4_title") or "Key Metrics" }}', desc: '{{ t("onboarding.tour_exec_4_desc") or "Essential KPIs without technical complexity" }}' }
+            { icon: 'trending-up', title: '{{ t("onboarding.tour_exec_1_title") or "Impact Opérationnel" }}', desc: '{{ t("onboarding.tour_exec_1_desc") or "Visualisez l\'impact des systèmes IA sur les opérations" }}' },
+            { icon: 'euro', title: '{{ t("onboarding.tour_exec_2_title") or "Ressources" }}', desc: '{{ t("onboarding.tour_exec_2_desc") or "Suivez la consommation des crédits par système" }}' },
+            { icon: 'shield-check', title: '{{ t("onboarding.tour_exec_3_title") or "Confiance & Homologation" }}', desc: '{{ t("onboarding.tour_exec_3_desc") or "Fiabilité et conformité LPM en un coup d\'œil" }}' },
+            { icon: 'bar-chart', title: '{{ t("onboarding.tour_exec_4_title") or "Indicateurs Clés" }}', desc: '{{ t("onboarding.tour_exec_4_desc") or "KPIs essentiels sans complexité technique" }}' }
         ]
     },
     business_product: {
-        title: '{{ t("onboarding.tour_product_title") or "Product Owner Dashboard" }}',
-        description: '{{ t("onboarding.tour_product_desc") or "AI features portfolio, user experience metrics, and business impact tracking" }}',
+        title: '{{ t("onboarding.tour_product_title") or "Tableau de Bord Officier Programme IA" }}',
+        description: '{{ t("onboarding.tour_product_desc") or "Portefeuille de capacités IA, métriques de performance et suivi d\'impact opérationnel" }}',
         features: [
             { icon: 'grid', title: '{{ t("onboarding.tour_product_1_title") or "AI Features Portfolio" }}', desc: '{{ t("onboarding.tour_product_1_desc") or "Track all AI features with usage, satisfaction, and reliability metrics in one view" }}' },
             { icon: 'users', title: '{{ t("onboarding.tour_product_2_title") or "User Experience Impact" }}', desc: '{{ t("onboarding.tour_product_2_desc") or "Understand how AI features affect user experience and satisfaction scores" }}' },
-            { icon: 'trending-up', title: '{{ t("onboarding.tour_product_3_title") or "Conversion & Revenue" }}', desc: '{{ t("onboarding.tour_product_3_desc") or "Measure AI contribution to conversion rates, revenue, and business goals with baseline comparison" }}' },
+            { icon: 'trending-up', title: '{{ t("onboarding.tour_product_3_title") or "Détection & Efficacité" }}', desc: '{{ t("onboarding.tour_product_3_desc") or "Measure AI contribution to detection rates, operational efficiency, and mission goals with baseline comparison" }}' },
             { icon: 'filter', title: '{{ t("onboarding.tour_product_4_title") or "Adoption Funnel" }}', desc: '{{ t("onboarding.tour_product_4_desc") or "Track feature adoption from exposure through engagement to retention" }}' },
             { icon: 'flask', title: '{{ t("onboarding.tour_product_5_title") or "A/B Test Results" }}', desc: '{{ t("onboarding.tour_product_5_desc") or "View experiment results with lift, confidence levels, and winning variants" }}' },
             { icon: 'heart', title: '{{ t("onboarding.tour_product_6_title") or "Satisfaction Trends" }}', desc: '{{ t("onboarding.tour_product_6_desc") or "Monitor user satisfaction and NPS score trends over time" }}' }
@@ -373,21 +373,21 @@ const tourContent = {
         ]
     },
     compliance_legal: {
-        title: '{{ t("onboarding.tour_compliance_title") or "Compliance Dashboard" }}',
-        description: '{{ t("onboarding.tour_compliance_desc") or "Governance and regulatory compliance" }}',
+        title: '{{ t("onboarding.tour_compliance_title") or "Tableau de Bord Homologation" }}',
+        description: '{{ t("onboarding.tour_compliance_desc") or "Gouvernance et conformité réglementaire Défense" }}',
         features: [
-            { icon: 'check-square', title: '{{ t("onboarding.tour_compliance_1_title") or "Compliance Status" }}', desc: '{{ t("onboarding.tour_compliance_1_desc") or "Track compliance across all regulations (GDPR, AI Act, etc.)" }}' },
-            { icon: 'clipboard', title: '{{ t("onboarding.tour_compliance_2_title") or "Audit Trail" }}', desc: '{{ t("onboarding.tour_compliance_2_desc") or "Complete audit history with evidence management" }}' },
-            { icon: 'file-text', title: '{{ t("onboarding.tour_compliance_3_title") or "Reports" }}', desc: '{{ t("onboarding.tour_compliance_3_desc") or "Generate compliance reports for stakeholders" }}' }
+            { icon: 'check-square', title: '{{ t("onboarding.tour_compliance_1_title") or "État Homologation" }}', desc: '{{ t("onboarding.tour_compliance_1_desc") or "Suivi de conformité LPM, AI Act, IGI 1300, RGS, RGPD" }}' },
+            { icon: 'clipboard', title: '{{ t("onboarding.tour_compliance_2_title") or "Piste d\'Audit" }}', desc: '{{ t("onboarding.tour_compliance_2_desc") or "Historique complet des audits avec gestion des preuves" }}' },
+            { icon: 'file-text', title: '{{ t("onboarding.tour_compliance_3_title") or "Rapports" }}', desc: '{{ t("onboarding.tour_compliance_3_desc") or "Génération de rapports d\'homologation" }}' }
         ]
     },
     sustainability_esg: {
-        title: '{{ t("onboarding.tour_esg_title") or "Sustainability Dashboard" }}',
-        description: '{{ t("onboarding.tour_esg_desc") or "Environmental impact of AI operations" }}',
+        title: '{{ t("onboarding.tour_esg_title") or "Tableau de Bord Sobriété Numérique" }}',
+        description: '{{ t("onboarding.tour_esg_desc") or "Impact environnemental des opérations IA" }}',
         features: [
-            { icon: 'cloud', title: '{{ t("onboarding.tour_esg_1_title") or "Carbon Tracking" }}', desc: '{{ t("onboarding.tour_esg_1_desc") or "Monitor carbon emissions from AI inference and training" }}' },
-            { icon: 'zap', title: '{{ t("onboarding.tour_esg_2_title") or "Energy Consumption" }}', desc: '{{ t("onboarding.tour_esg_2_desc") or "Track energy usage with green energy percentage" }}' },
-            { icon: 'lightbulb', title: '{{ t("onboarding.tour_esg_3_title") or "Recommendations" }}', desc: '{{ t("onboarding.tour_esg_3_desc") or "Get actionable tips to reduce environmental impact" }}' }
+            { icon: 'cloud', title: '{{ t("onboarding.tour_esg_1_title") or "Empreinte Carbone" }}', desc: '{{ t("onboarding.tour_esg_1_desc") or "Suivi des émissions CO2 liées à l\'inférence et l\'entraînement IA" }}' },
+            { icon: 'zap', title: '{{ t("onboarding.tour_esg_2_title") or "Consommation Énergétique" }}', desc: '{{ t("onboarding.tour_esg_2_desc") or "Suivi de la consommation avec pourcentage d\'énergie verte" }}' },
+            { icon: 'lightbulb', title: '{{ t("onboarding.tour_esg_3_title") or "Recommandations" }}', desc: '{{ t("onboarding.tour_esg_3_desc") or "Conseils pour réduire l\'impact environnemental" }}' }
         ]
     },
     tech_data_scientist: {
@@ -403,22 +403,22 @@ const tourContent = {
         ]
     },
     governance_dsi: {
-        title: '{{ t("onboarding.tour_dsi_title") or "DSI / CIO Dashboard" }}',
-        description: '{{ t("onboarding.tour_dsi_desc") or "Strategic IT governance and AI portfolio management" }}',
+        title: '{{ t("onboarding.tour_dsi_title") or "Tableau de Bord DSSI" }}',
+        description: '{{ t("onboarding.tour_dsi_desc") or "Gouvernance SSI stratégique et portefeuille IA Défense" }}',
         features: [
-            { icon: 'grid', title: '{{ t("onboarding.tour_dsi_1_title") or "AI Portfolio" }}', desc: '{{ t("onboarding.tour_dsi_1_desc") or "Overview of all AI systems with strategic metrics" }}' },
-            { icon: 'wallet', title: '{{ t("onboarding.tour_dsi_2_title") or "Budget Allocation" }}', desc: '{{ t("onboarding.tour_dsi_2_desc") or "Track IT spending and ROI across AI initiatives" }}' },
-            { icon: 'alert-triangle', title: '{{ t("onboarding.tour_dsi_3_title") or "Risk Matrix" }}', desc: '{{ t("onboarding.tour_dsi_3_desc") or "Identify and manage IT risks with impact analysis" }}' },
-            { icon: 'refresh-cw', title: '{{ t("onboarding.tour_dsi_4_title") or "Digital Transformation" }}', desc: '{{ t("onboarding.tour_dsi_4_desc") or "Track transformation roadmap and maturity" }}' }
+            { icon: 'grid', title: '{{ t("onboarding.tour_dsi_1_title") or "Portefeuille IA" }}', desc: '{{ t("onboarding.tour_dsi_1_desc") or "Vue d\'ensemble de tous les systèmes IA avec métriques stratégiques" }}' },
+            { icon: 'wallet', title: '{{ t("onboarding.tour_dsi_2_title") or "Allocation Crédits" }}', desc: '{{ t("onboarding.tour_dsi_2_desc") or "Suivez la consommation des crédits et l\'efficacité des initiatives IA" }}' },
+            { icon: 'alert-triangle', title: '{{ t("onboarding.tour_dsi_3_title") or "Matrice des Risques" }}', desc: '{{ t("onboarding.tour_dsi_3_desc") or "Identifiez et gérez les risques SSI avec analyse d\'impact" }}' },
+            { icon: 'refresh-cw', title: '{{ t("onboarding.tour_dsi_4_title") or "Transformation Numérique" }}', desc: '{{ t("onboarding.tour_dsi_4_desc") or "Suivez la feuille de route de transformation et la maturité" }}' }
         ]
     },
     governance_rsi: {
-        title: '{{ t("onboarding.tour_rsi_title") or "RSI / IT Manager Dashboard" }}',
-        description: '{{ t("onboarding.tour_rsi_desc") or "Operational IT management and team coordination" }}',
+        title: '{{ t("onboarding.tour_rsi_title") or "Tableau de Bord OSSI" }}',
+        description: '{{ t("onboarding.tour_rsi_desc") or "Gestion opérationnelle SSI et coordination des équipes" }}',
         features: [
-            { icon: 'server', title: '{{ t("onboarding.tour_rsi_1_title") or "Systems Status" }}', desc: '{{ t("onboarding.tour_rsi_1_desc") or "Real-time health monitoring of all AI systems" }}' },
-            { icon: 'folder-kanban', title: '{{ t("onboarding.tour_rsi_2_title") or "Projects Tracker" }}', desc: '{{ t("onboarding.tour_rsi_2_desc") or "Manage AI projects with kanban-style tracking" }}' },
-            { icon: 'alert-circle', title: '{{ t("onboarding.tour_rsi_3_title") or "Incidents Management" }}', desc: '{{ t("onboarding.tour_rsi_3_desc") or "Track and resolve operational incidents" }}' }
+            { icon: 'server', title: '{{ t("onboarding.tour_rsi_1_title") or "État des Systèmes" }}', desc: '{{ t("onboarding.tour_rsi_1_desc") or "Surveillance en temps réel de tous les systèmes IA" }}' },
+            { icon: 'folder-kanban', title: '{{ t("onboarding.tour_rsi_2_title") or "Suivi des Projets" }}', desc: '{{ t("onboarding.tour_rsi_2_desc") or "Gérez les projets IA avec un suivi structuré" }}' },
+            { icon: 'alert-circle', title: '{{ t("onboarding.tour_rsi_3_title") or "Gestion des Incidents" }}', desc: '{{ t("onboarding.tour_rsi_3_desc") or "Suivez et résolvez les incidents opérationnels cyber" }}' }
         ]
     },
     privacy_dpo: {

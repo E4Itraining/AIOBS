@@ -199,17 +199,17 @@ class ImpactAnalyzer:
             "total_events": 12,
             "total_monetary_impact": 45230.50,
             "impact_by_domain": {
-                "revenue": -23500.00,
-                "cost": -15730.50,
-                "user_experience": -4000.00,
-                "compliance": 0,
-                "carbon": -2000.00,
+                "operational": -23500.00,
+                "resources": -15730.50,
+                "disponibilite": -4000.00,
+                "conformite": 0,
+                "carbone": -2000.00,
             },
             "impact_by_severity": {"critical": 1, "high": 3, "medium": 5, "low": 3},
             "top_affected_models": [
-                {"model": "recommendation-v2", "impact": -18500},
-                {"model": "fraud-detector-v1", "impact": -12000},
-                {"model": "churn-predictor", "impact": -8730},
+                {"model": "AnomalyClassifier-v2", "impact": -18500},
+                {"model": "ThreatDetector-v3", "impact": -12000},
+                {"model": "IntrusionPredictor-v1", "impact": -8730},
             ],
             "trend": "improving",  # vs previous period
             "trend_pct": -15,  # 15% less impact than before
@@ -252,25 +252,25 @@ class ImpactAnalyzer:
     # =========================================================================
 
     def _initialize_default_metrics(self):
-        """Initialize default business metrics"""
+        """Initialize default operational metrics"""
         defaults = [
             BusinessMetric(
-                "conversion_rate", "Conversion Rate", ImpactDomain.REVENUE, 0.05, 0.055, "%", True
+                "detection_rate", "Taux de Détection", ImpactDomain.REVENUE, 0.95, 0.97, "%", True
             ),
             BusinessMetric(
-                "daily_revenue", "Daily Revenue", ImpactDomain.REVENUE, 50000, 55000, "$", True
+                "daily_operations", "Opérations Quotidiennes", ImpactDomain.REVENUE, 50000, 55000, "ops", True
             ),
             BusinessMetric(
-                "inference_cost", "Inference Cost", ImpactDomain.COST, 1500, 1200, "$", False
+                "inference_cost", "Coût Inférence", ImpactDomain.COST, 1500, 1200, "€", False
             ),
             BusinessMetric(
-                "latency_p99", "P99 Latency", ImpactDomain.USER_EXPERIENCE, 150, 100, "ms", False
+                "latency_p99", "Latence P99", ImpactDomain.USER_EXPERIENCE, 150, 100, "ms", False
             ),
             BusinessMetric(
-                "error_rate", "Error Rate", ImpactDomain.OPERATIONAL, 0.02, 0.01, "%", False
+                "error_rate", "Taux d'Erreur", ImpactDomain.OPERATIONAL, 0.02, 0.01, "%", False
             ),
             BusinessMetric(
-                "carbon_daily", "Daily Carbon", ImpactDomain.CARBON, 50, 40, "kgCO2", False
+                "carbon_daily", "Carbone Quotidien", ImpactDomain.CARBON, 50, 40, "kgCO2", False
             ),
         ]
 

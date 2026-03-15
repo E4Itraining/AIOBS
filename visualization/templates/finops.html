@@ -4,14 +4,14 @@
 
 {% block sidebar_extra %}
 <div class="nav-group">
-    <span class="nav-group-title">Business Views</span>
+    <span class="nav-group-title">Vues Opérationnelles</span>
     <a href="/executive" class="nav-link">
         <i data-lucide="briefcase"></i>
         <span>Executive Dashboard</span>
     </a>
     <a href="/finops" class="nav-link active">
         <i data-lucide="wallet"></i>
-        <span>FinOps</span>
+        <span>Ressources & Budget Défense</span>
     </a>
     <a href="/greenops" class="nav-link">
         <i data-lucide="leaf"></i>
@@ -35,8 +35,8 @@
 </div>
 {% endblock %}
 
-{% block page_title %}FinOps{% endblock %}
-{% block page_subtitle %}<p class="text-muted">Gestion des coûts & optimisation</p>{% endblock %}
+{% block page_title %}Ressources & Budget Défense{% endblock %}
+{% block page_subtitle %}<p class="text-muted">Gestion des ressources & optimisation</p>{% endblock %}
 
 {% block topbar_actions %}
 <div class="time-range-selector">
@@ -53,16 +53,16 @@
 </button>
 <button class="btn btn-primary" onclick="openBudgetSettings()">
     <i data-lucide="settings"></i>
-    Paramètres budget
+    Paramètres crédits
 </button>
 {% endblock %}
 
 {% block content %}
-<!-- Budget Overview -->
+<!-- Crédits Overview -->
 <div class="budget-hero">
     <div class="budget-card main">
         <div class="budget-header">
-            <span class="budget-label">Budget mensuel</span>
+            <span class="budget-label">Crédits mensuels</span>
             <span class="badge badge-warning">75% utilisé</span>
         </div>
         <div class="budget-amount">
@@ -97,7 +97,7 @@
             </div>
             <div class="stat-content">
                 <span class="stat-value">0,0021 €</span>
-                <span class="stat-label">Coût par inférence</span>
+                <span class="stat-label">Consommation par inférence</span>
             </div>
         </div>
         <div class="budget-stat">
@@ -106,7 +106,7 @@
             </div>
             <div class="stat-content">
                 <span class="stat-value">3</span>
-                <span class="stat-label">Anomalies de coûts</span>
+                <span class="stat-label">Anomalies de consommation</span>
             </div>
         </div>
         <div class="budget-stat">
@@ -140,7 +140,7 @@
             </div>
             <div class="kpi-content">
                 <span class="kpi-value">0.032 €</span>
-                <span class="kpi-label">Coût par requête</span>
+                <span class="kpi-label">Consommation par requête</span>
                 <span class="kpi-trend down"><i data-lucide="trending-down"></i> -8.5%</span>
             </div>
         </div>
@@ -160,7 +160,7 @@
             </div>
             <div class="kpi-content">
                 <span class="kpi-value">18.5%</span>
-                <span class="kpi-label">Réduction vs budget</span>
+                <span class="kpi-label">Réduction vs crédits</span>
                 <span class="kpi-trend down"><i data-lucide="trending-down"></i> -2 340 €</span>
             </div>
         </div>
@@ -187,13 +187,13 @@
     </div>
 </section>
 
-<!-- Cost Breakdown -->
+<!-- Consommation Breakdown -->
 <section class="mb-6">
     <div class="grid grid-2">
         <!-- By Category -->
         <div class="card">
             <div class="card-header">
-                <h3 class="card-title">Coûts par catégorie</h3>
+                <h3 class="card-title">Consommation par catégorie</h3>
             </div>
             <div class="chart-container" style="height: 250px;">
                 <canvas id="costByCategory"></canvas>
@@ -250,11 +250,11 @@
     </div>
 </section>
 
-<!-- Model-Level Costs -->
+<!-- Model-Level Consommation -->
 <section class="mb-6">
     <div class="card">
         <div class="card-header">
-            <h3 class="card-title">Coûts par modèle</h3>
+            <h3 class="card-title">Consommation par modèle</h3>
             <div class="header-actions">
                 <input type="text" class="form-input" placeholder="Rechercher un modèle..." style="width: 200px;">
                 <select class="form-select" style="width: 150px;">
@@ -272,9 +272,9 @@
                         <th>Modèle</th>
                         <th>Environnement</th>
                         <th>Inférences/jour</th>
-                        <th>Coût/1K inf.</th>
-                        <th>Coût journalier</th>
-                        <th>Coût mensuel</th>
+                        <th>Conso./1K inf.</th>
+                        <th>Conso. journalière</th>
+                        <th>Conso. mensuelle</th>
                         <th>Tendance</th>
                         <th>Actions</th>
                     </tr>
@@ -283,7 +283,7 @@
                     <tr>
                         <td>
                             <div class="model-cell">
-                                <span class="model-name">recommendation-v2</span>
+                                <span class="model-name">AnomalyClassifier-v2</span>
                                 <span class="model-version">v2.3.1</span>
                             </div>
                         </td>
@@ -294,7 +294,7 @@
                         <td>16 900 €</td>
                         <td><span class="trend down"><i data-lucide="trending-down"></i> -5%</span></td>
                         <td>
-                            <button class="btn btn-ghost btn-sm" onclick="viewModelDetails('recommendation-v2')">
+                            <button class="btn btn-ghost btn-sm" onclick="viewModelDetails('AnomalyClassifier-v2')">
                                 <i data-lucide="eye"></i>
                             </button>
                         </td>
@@ -302,7 +302,7 @@
                     <tr>
                         <td>
                             <div class="model-cell">
-                                <span class="model-name">fraud-detector-v1</span>
+                                <span class="model-name">ThreatDetector-v3</span>
                                 <span class="model-version">v1.8.2</span>
                             </div>
                         </td>
@@ -313,7 +313,7 @@
                         <td>11 000 €</td>
                         <td><span class="trend up"><i data-lucide="trending-up"></i> +8%</span></td>
                         <td>
-                            <button class="btn btn-ghost btn-sm" onclick="viewModelDetails('fraud-detector-v1')">
+                            <button class="btn btn-ghost btn-sm" onclick="viewModelDetails('ThreatDetector-v3')">
                                 <i data-lucide="eye"></i>
                             </button>
                         </td>
@@ -321,7 +321,7 @@
                     <tr>
                         <td>
                             <div class="model-cell">
-                                <span class="model-name">churn-predictor</span>
+                                <span class="model-name">IntrusionPredictor-v1</span>
                                 <span class="model-version">v3.1.0</span>
                             </div>
                         </td>
@@ -332,7 +332,7 @@
                         <td>8 010 €</td>
                         <td><span class="trend stable"><i data-lucide="minus"></i> 0%</span></td>
                         <td>
-                            <button class="btn btn-ghost btn-sm" onclick="viewModelDetails('churn-predictor')">
+                            <button class="btn btn-ghost btn-sm" onclick="viewModelDetails('IntrusionPredictor-v1')">
                                 <i data-lucide="eye"></i>
                             </button>
                         </td>
@@ -340,7 +340,7 @@
                     <tr class="highlight-warning">
                         <td>
                             <div class="model-cell">
-                                <span class="model-name">llm-assistant</span>
+                                <span class="model-name">CommandAssist-v1</span>
                                 <span class="model-version">v1.0.0</span>
                             </div>
                         </td>
@@ -351,7 +351,7 @@
                         <td>13 800 €</td>
                         <td><span class="trend up"><i data-lucide="trending-up"></i> +25%</span></td>
                         <td>
-                            <button class="btn btn-warning btn-sm" onclick="optimizeModel('llm-assistant')">
+                            <button class="btn btn-warning btn-sm" onclick="optimizeModel('CommandAssist-v1')">
                                 Optimiser
                             </button>
                         </td>
@@ -359,7 +359,7 @@
                     <tr>
                         <td>
                             <div class="model-cell">
-                                <span class="model-name">sentiment-analyzer</span>
+                                <span class="model-name">SignalAnalyzer-v2</span>
                                 <span class="model-version">v2.0.1</span>
                             </div>
                         </td>
@@ -370,7 +370,7 @@
                         <td>530 €</td>
                         <td><span class="trend down"><i data-lucide="trending-down"></i> -12%</span></td>
                         <td>
-                            <button class="btn btn-ghost btn-sm" onclick="viewModelDetails('sentiment-analyzer')">
+                            <button class="btn btn-ghost btn-sm" onclick="viewModelDetails('SignalAnalyzer-v2')">
                                 <i data-lucide="eye"></i>
                             </button>
                         </td>
@@ -381,11 +381,11 @@
     </div>
 </section>
 
-<!-- Cost Anomalies -->
+<!-- Anomalies de Consommation -->
 <section class="mb-6">
     <div class="card">
         <div class="card-header">
-            <h3 class="card-title">Anomalies de coûts</h3>
+            <h3 class="card-title">Anomalies de consommation</h3>
             <span class="badge badge-warning">3 Actives</span>
         </div>
         <div class="anomalies-list">
@@ -395,13 +395,13 @@
                 </div>
                 <div class="anomaly-content">
                     <div class="anomaly-header">
-                        <span class="anomaly-title">Pic de coûts LLM Assistant</span>
+                        <span class="anomaly-title">Pic de consommation LLM Assistant</span>
                         <span class="anomaly-time">Il y a 2 heures</span>
                     </div>
                     <p class="anomaly-desc">Augmentation de 45% par rapport à la baseline. Cause probable : utilisation accrue de tokens par requête.</p>
                     <div class="anomaly-impact">
                         <span><i data-lucide="euro"></i> +780 €/jour impact</span>
-                        <span><i data-lucide="target"></i> llm-assistant</span>
+                        <span><i data-lucide="target"></i> CommandAssist-v1</span>
                     </div>
                 </div>
                 <div class="anomaly-actions">
@@ -419,7 +419,7 @@
                         <span class="anomaly-title">Croissance stockage anormale</span>
                         <span class="anomaly-time">Il y a 1 jour</span>
                     </div>
-                    <p class="anomaly-desc">Coûts de stockage en hausse 2x plus vite que prévu. Vérifier les politiques de rétention des checkpoints.</p>
+                    <p class="anomaly-desc">Consommation stockage en hausse 2x plus vite que prévu. Vérifier les politiques de rétention des checkpoints.</p>
                     <div class="anomaly-impact">
                         <span><i data-lucide="euro"></i> +110 €/jour impact</span>
                         <span><i data-lucide="target"></i> model-checkpoints</span>
@@ -495,7 +495,7 @@
             <p>Déplacer les jobs d'entraînement en heures creuses (2h-6h) pour bénéficier des tarifs spot.</p>
             <div class="opt-details">
                 <span><i data-lucide="calendar"></i> 12 jobs d'entraînement</span>
-                <span><i data-lucide="percent"></i> -40% de coûts</span>
+                <span><i data-lucide="percent"></i> -40% de consommation</span>
             </div>
             <div class="opt-actions">
                 <button class="btn btn-secondary btn-sm">Configurer</button>
@@ -555,13 +555,13 @@
     </div>
 </section>
 
-<!-- Cloud Provider Comparison & ROI -->
+<!-- Cloud Provider Comparison & Efficacité Opérationnelle -->
 <section class="mb-6">
     <div class="grid grid-2">
-        <!-- Cloud Provider Costs -->
+        <!-- Cloud Provider Consommation -->
         <div class="card">
             <div class="card-header">
-                <h3 class="card-title">Coûts par fournisseur cloud</h3>
+                <h3 class="card-title">Consommation par fournisseur cloud</h3>
                 <span class="badge badge-info">Multi-cloud</span>
             </div>
             <div class="provider-breakdown">
@@ -622,10 +622,10 @@
             </div>
         </div>
 
-        <!-- ROI Tracker -->
+        <!-- Efficacité Opérationnelle Tracker -->
         <div class="card">
             <div class="card-header">
-                <h3 class="card-title">Retour sur investissement IA</h3>
+                <h3 class="card-title">Efficacité Opérationnelle IA</h3>
                 <button class="btn btn-ghost btn-sm" onclick="openROIDeepDive()">
                     <i data-lucide="maximize-2"></i>
                 </button>
@@ -640,7 +640,7 @@
                         </svg>
                         <div class="roi-value">
                             <span class="roi-number">285%</span>
-                            <span class="roi-label">ROI</span>
+                            <span class="roi-label">Efficacité Op.</span>
                         </div>
                     </div>
                 </div>
@@ -658,7 +658,7 @@
                         <span class="roi-detail-value">89 400 €</span>
                     </div>
                     <div class="roi-detail-item">
-                        <span class="roi-detail-label">Revenu additionnel</span>
+                        <span class="roi-detail-label">Impact Opérationnel additionnel</span>
                         <span class="roi-detail-value">74 200 €</span>
                     </div>
                 </div>
@@ -667,13 +667,13 @@
     </div>
 </section>
 
-<!-- Forecast & Budget -->
+<!-- Forecast & Crédits -->
 <section class="mb-6">
     <div class="grid grid-2">
-        <!-- Cost Forecast -->
+        <!-- Consommation Forecast -->
         <div class="card">
             <div class="card-header">
-                <h3 class="card-title">Prévisions de coûts</h3>
+                <h3 class="card-title">Prévisions de consommation</h3>
             </div>
             <div class="chart-container">
                 <canvas id="costForecast"></canvas>
@@ -694,10 +694,10 @@
             </div>
         </div>
 
-        <!-- Budget Allocation -->
+        <!-- Allocation des Crédits -->
         <div class="card">
             <div class="card-header">
-                <h3 class="card-title">Allocation budgétaire</h3>
+                <h3 class="card-title">Allocation des crédits</h3>
             </div>
             <div class="budget-allocation">
                 <div class="allocation-item">
@@ -742,7 +742,7 @@
                 <div class="allocation-item">
                     <div class="allocation-header">
                         <span class="allocation-name">Développement</span>
-                        <span class="allocation-status under">Sous budget</span>
+                        <span class="allocation-status under">Sous crédits</span>
                     </div>
                     <div class="allocation-bar">
                         <div class="allocation-fill" style="width: 40%"></div>
@@ -757,13 +757,13 @@
     </div>
 </section>
 
-<!-- ROI Deep Dive Modal -->
+<!-- Efficacité Opérationnelle Deep Dive Modal -->
 <div class="modal-overlay" id="roiDeepDiveModal">
     <div class="modal-container modal-xl">
         <div class="modal-header">
             <h2>
                 <i data-lucide="target"></i>
-                Deep Dive - Retour sur Investissement IA
+                Deep Dive - Efficacité Opérationnelle IA
             </h2>
             <button class="modal-close" onclick="closeROIDeepDive()">
                 <i data-lucide="x"></i>
@@ -838,14 +838,14 @@
                     </div>
                     <div class="deep-dive-kpi-content">
                         <span class="deep-dive-kpi-value">74 200 €</span>
-                        <span class="deep-dive-kpi-label">Revenu additionnel</span>
+                        <span class="deep-dive-kpi-label">Impact Opérationnel additionnel</span>
                     </div>
                 </div>
             </div>
 
             <!-- ROI by Model Table -->
             <div class="deep-dive-table-section">
-                <h4>ROI par système IA</h4>
+                <h4>Efficacité Opérationnelle par système IA</h4>
                 <div class="table-container">
                     <table class="table">
                         <thead>
@@ -853,41 +853,41 @@
                                 <th>Système IA</th>
                                 <th>Investissement</th>
                                 <th>Valeur générée</th>
-                                <th>ROI</th>
+                                <th>Efficacité Op.</th>
                                 <th>Statut</th>
                             </tr>
                         </thead>
                         <tbody>
                             <tr>
-                                <td><strong>recommendation-v2</strong></td>
+                                <td><strong>AnomalyClassifier-v2</strong></td>
                                 <td>16 900 €</td>
                                 <td>68 500 €</td>
                                 <td><strong class="text-success">305%</strong></td>
                                 <td><span class="badge badge-success">Excellent</span></td>
                             </tr>
                             <tr>
-                                <td><strong>fraud-detector-v1</strong></td>
+                                <td><strong>ThreatDetector-v3</strong></td>
                                 <td>11 000 €</td>
                                 <td>52 800 €</td>
                                 <td><strong class="text-success">380%</strong></td>
                                 <td><span class="badge badge-success">Excellent</span></td>
                             </tr>
                             <tr>
-                                <td><strong>churn-predictor</strong></td>
+                                <td><strong>IntrusionPredictor-v1</strong></td>
                                 <td>8 010 €</td>
                                 <td>28 500 €</td>
                                 <td><strong class="text-success">256%</strong></td>
                                 <td><span class="badge badge-success">Bon</span></td>
                             </tr>
                             <tr>
-                                <td><strong>llm-assistant</strong></td>
+                                <td><strong>CommandAssist-v1</strong></td>
                                 <td>13 800 €</td>
                                 <td>18 200 €</td>
                                 <td><strong class="text-warning">32%</strong></td>
                                 <td><span class="badge badge-warning">À optimiser</span></td>
                             </tr>
                             <tr>
-                                <td><strong>sentiment-analyzer</strong></td>
+                                <td><strong>SignalAnalyzer-v2</strong></td>
                                 <td>530 €</td>
                                 <td>1 850 €</td>
                                 <td><strong class="text-success">249%</strong></td>
@@ -908,7 +908,7 @@
                         </div>
                         <div class="recommendation-content">
                             <h5>Optimiser le LLM Assistant</h5>
-                            <p>Le ROI de 32% est inférieur à l'objectif de 100%. Envisager l'activation du batching et la réduction des tokens pour améliorer l'efficacité.</p>
+                            <p>L'Efficacité Opérationnelle de 32% est inférieure à l'objectif de 100%. Envisager l'activation du batching et la réduction des tokens pour améliorer l'efficacité.</p>
                         </div>
                     </div>
                     <div class="recommendation-item success">
@@ -916,8 +916,8 @@
                             <i data-lucide="zap"></i>
                         </div>
                         <div class="recommendation-content">
-                            <h5>Fraud-detector : potentiel d'expansion</h5>
-                            <p>Avec un ROI de 380%, envisager d'étendre l'utilisation à d'autres cas d'usage (détection d'anomalies, KYC).</p>
+                            <h5>ThreatDetector-v3 : potentiel d'expansion</h5>
+                            <p>Avec une Efficacité Opérationnelle de 380%, envisager d'étendre l'utilisation à d'autres cas d'usage (détection d'anomalies, analyse de menaces).</p>
                         </div>
                     </div>
                 </div>
@@ -2191,7 +2191,7 @@ function initCharts() {
             data: {
                 labels: labels,
                 datasets: [{
-                    label: 'Coût journalier (€)',
+                    label: 'Consommation journalière (€)',
                     data: data,
                     borderColor: '#6366f1',
                     backgroundColor: 'rgba(99, 102, 241, 0.1)',
@@ -2289,14 +2289,14 @@ function updateTimeRange() {
 }
 
 function exportCostReport() {
-    showToast('Génération du rapport de coûts...', 'info');
+    showToast('Génération du rapport de consommation...', 'info');
     setTimeout(() => {
         showToast('Rapport prêt au téléchargement !', 'success');
     }, 1500);
 }
 
 function openBudgetSettings() {
-    showToast('Ouverture des paramètres budget...', 'info');
+    showToast('Ouverture des paramètres crédits...', 'info');
 }
 
 function viewModelDetails(modelId) {
@@ -2321,7 +2321,7 @@ function closeROIDeepDive() {
 }
 
 function exportROIReport() {
-    showToast('Génération du rapport ROI...', 'info');
+    showToast('Génération du rapport d\'Efficacité Opérationnelle...', 'info');
     setTimeout(() => {
         showToast('Rapport prêt au téléchargement !', 'success');
     }, 1500);

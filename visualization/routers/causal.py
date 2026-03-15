@@ -338,10 +338,10 @@ async def assess_impact(event_id: str):
     """
     impact = ImpactAssessment(
         total_impact_score=0.78,
-        affected_services=["fraud-detector-v1", "recommendation-v2", "api-gateway"],
-        affected_users_estimate=12500,
-        revenue_impact_estimate=45000.0,
-        recovery_time_estimate="2-4 hours",
+        affected_services=["ThreatDetector-v3", "AnomalyClassifier-v2", "passerelle-C2"],
+        affected_users_estimate=350,
+        revenue_impact_estimate=0.0,
+        recovery_time_estimate="2-4 heures",
     )
 
     return APIResponse(
@@ -350,9 +350,9 @@ async def assess_impact(event_id: str):
             "event_id": event_id,
             "impact": impact.model_dump(),
             "downstream_effects": [
-                {"service": "fraud-detector-v1", "impact": "High", "slo_risk": True},
-                {"service": "recommendation-v2", "impact": "Medium", "slo_risk": False},
-                {"service": "api-gateway", "impact": "Low", "slo_risk": False},
+                {"service": "ThreatDetector-v3", "impact": "High", "slo_risk": True},
+                {"service": "AnomalyClassifier-v2", "impact": "Medium", "slo_risk": False},
+                {"service": "passerelle-C2", "impact": "Low", "slo_risk": False},
             ],
             "mitigation_priority": "high",
         }

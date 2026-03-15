@@ -184,7 +184,7 @@ const PROFILE_CONFIG = {
             { label: 'Monitoring', route: '/monitoring', active: true },
             { label: 'Dashboard', route: `/profile/${profileId}` },
             { label: 'Causal', route: '/causal' },
-            { label: 'FinOps', route: '/finops' }
+            { label: 'Ressources & Budget', route: '/finops' }
         ]
     },
     'tech_data_scientist': {
@@ -213,8 +213,8 @@ const PROFILE_CONFIG = {
     'business_product': {
         color: '#f59e0b',
         icon: 'zap',
-        title: 'Product Owner Dashboard',
-        narrative: 'Suivez l\'impact de vos features IA sur l\'expérience utilisateur et les métriques business.',
+        title: 'Tableau de Bord Officier Programme IA',
+        narrative: 'Suivez l\'impact de vos features IA sur l\'expérience utilisateur et les métriques opérationnelles.',
         features: [
             { icon: 'zap', label: 'AI Features' },
             { icon: 'users', label: 'Adoption' },
@@ -224,23 +224,23 @@ const PROFILE_CONFIG = {
         tips: [
             { icon: 'filter', title: 'Funnel', desc: 'Analysez le funnel d\'adoption de vos features' },
             { icon: 'bar-chart-2', title: 'A/B Results', desc: 'Consultez les résultats de vos A/B tests' },
-            { icon: 'trending-up', title: 'Business Impact', desc: 'Mesurez l\'impact revenue de chaque feature' }
+            { icon: 'trending-up', title: 'Impact Opérationnel', desc: 'Mesurez l\'impact opérationnel de chaque capacité IA' }
         ],
         journey: [
             { label: 'Dashboard', route: `/profile/${profileId}`, active: true },
             { label: 'Executive', route: '/executive' },
             { label: 'Impact', route: '/impact' },
-            { label: 'FinOps', route: '/finops' }
+            { label: 'Ressources & Budget', route: '/finops' }
         ]
     },
     'business_executive': {
         color: '#10b981',
         icon: 'briefcase',
         title: 'Executive Dashboard',
-        narrative: 'Vue stratégique de votre portefeuille IA : ROI, risques et conformité en un coup d\'œil.',
+        narrative: 'Vue stratégique de votre portefeuille IA : efficacité opérationnelle, risques et homologation en un coup d\'œil.',
         features: [
             { icon: 'shield-check', label: 'Trust Score' },
-            { icon: 'dollar-sign', label: 'Coûts' },
+            { icon: 'dollar-sign', label: 'Ressources' },
             { icon: 'check-square', label: 'Conformité' },
             { icon: 'leaf', label: 'Carbone' }
         ],
@@ -253,7 +253,7 @@ const PROFILE_CONFIG = {
             { label: 'Dashboard', route: '/', active: true },
             { label: 'Executive', route: '/executive' },
             { label: 'Conformité', route: '/compliance' },
-            { label: 'Coûts', route: '/finops' }
+            { label: 'Ressources', route: '/finops' }
         ]
     },
     'security_soc': {
@@ -321,7 +321,7 @@ const PROFILE_CONFIG = {
         journey: [
             { label: 'Dashboard', route: `/profile/${profileId}`, active: true },
             { label: 'GreenOps', route: '/greenops' },
-            { label: 'FinOps', route: '/finops' },
+            { label: 'Ressources & Budget', route: '/finops' },
             { label: 'Compliance', route: '/compliance' }
         ]
     },
@@ -337,15 +337,15 @@ const PROFILE_CONFIG = {
             { icon: 'refresh-cw', label: 'Transformation' }
         ],
         tips: [
-            { icon: 'briefcase', title: 'Stratégie', desc: 'Alignez le portfolio IA avec les objectifs business' },
-            { icon: 'trending-up', title: 'ROI', desc: 'Mesurez le retour sur investissement IA' },
+            { icon: 'briefcase', title: 'Stratégie', desc: 'Alignez le portfolio IA avec les objectifs opérationnels' },
+            { icon: 'trending-up', title: 'Efficacité', desc: 'Mesurez l\'efficacité opérationnelle des systèmes IA' },
             { icon: 'users', title: 'Équipes', desc: 'Suivez l\'allocation des ressources' }
         ],
         journey: [
             { label: 'Dashboard', route: `/profile/${profileId}`, active: true },
             { label: 'Executive', route: '/executive' },
             { label: 'Tech', route: '/tech' },
-            { label: 'FinOps', route: '/finops' }
+            { label: 'Ressources & Budget', route: '/finops' }
         ]
     },
     'governance_rsi': {
@@ -428,7 +428,7 @@ const DEFAULT_CONFIG = {
     features: [
         { icon: 'shield-check', label: 'Trust Score' },
         { icon: 'activity', label: 'Monitoring' },
-        { icon: 'dollar-sign', label: 'Coûts' },
+        { icon: 'dollar-sign', label: 'Ressources' },
         { icon: 'leaf', label: 'Carbone' }
     ],
     tips: [
@@ -726,7 +726,7 @@ async function loadWidgetData(widget) {
     if (!container) return;
 
     try {
-        let dataSource = widget.data_source.replace('{model_id}', 'recommendation-v2');
+        let dataSource = widget.data_source.replace('{model_id}', 'AnomalyClassifier-v2');
         const response = await fetch(dataSource);
         const result = await response.json();
 

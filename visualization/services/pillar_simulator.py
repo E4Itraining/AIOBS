@@ -92,11 +92,11 @@ class PillarSimulator:
             "feature": deque(maxlen=2160),
         }
         self.models = [
-            {"name": "fraud-detection-v3", "precision": 0.942, "recall": 0.918,
+            {"name": "ThreatDetector-v3", "precision": 0.942, "recall": 0.918,
              "f1_score": 0.930, "drift_status": "stable", "inferences_24h": 45230},
-            {"name": "recommendation-engine", "precision": 0.895, "recall": 0.852,
+            {"name": "AnomalyClassifier-v2", "precision": 0.895, "recall": 0.852,
              "f1_score": 0.873, "drift_status": "stable", "inferences_24h": 128450},
-            {"name": "chatbot-assistant", "precision": 0.887, "recall": 0.863,
+            {"name": "CyberSentinel-v1", "precision": 0.887, "recall": 0.863,
              "f1_score": 0.875, "drift_status": "stable", "inferences_24h": 23180},
         ]
 
@@ -156,16 +156,16 @@ class PillarSimulator:
             "avg_alternatives_per_prediction": 3.2,
         }
         self.features = [
-            {"name": "transaction_amount", "importance": 0.23},
-            {"name": "time_since_last", "importance": 0.18},
-            {"name": "merchant_category", "importance": 0.15},
-            {"name": "device_type", "importance": 0.12},
-            {"name": "location_risk", "importance": 0.10},
+            {"name": "payload_anomaly_score", "importance": 0.23},
+            {"name": "time_since_last_event", "importance": 0.18},
+            {"name": "protocol_category", "importance": 0.15},
+            {"name": "source_type", "importance": 0.12},
+            {"name": "geolocation_risk", "importance": 0.10},
             {"name": "velocity_24h", "importance": 0.08},
-            {"name": "card_age", "importance": 0.06},
-            {"name": "avg_transaction", "importance": 0.04},
-            {"name": "failed_attempts", "importance": 0.03},
-            {"name": "new_device", "importance": 0.01},
+            {"name": "session_age", "importance": 0.06},
+            {"name": "avg_packet_size", "importance": 0.04},
+            {"name": "failed_auth_attempts", "importance": 0.03},
+            {"name": "new_endpoint", "importance": 0.01},
         ]
         self.confidence_history = deque(maxlen=2160)
 
@@ -189,11 +189,11 @@ class PillarSimulator:
             "network": 0.10, "other": 0.05,
         }
         self.cost_by_model = [
-            {"model": "fraud-detection-v3", "daily_cost": 81.41,
+            {"model": "ThreatDetector-v3", "daily_cost": 81.41,
              "per_inference": 0.0018, "trend": -0.12},
-            {"model": "recommendation-engine", "daily_cost": 321.13,
+            {"model": "AnomalyClassifier-v2", "daily_cost": 321.13,
              "per_inference": 0.0025, "trend": 0.05},
-            {"model": "chatbot-assistant", "daily_cost": 206.30,
+            {"model": "CyberSentinel-v1", "daily_cost": 206.30,
              "per_inference": 0.0089, "trend": -0.08},
         ]
 
@@ -280,8 +280,8 @@ class PillarSimulator:
 
         # --- Pre-seed security events (last 7 days of activity) ---
         attack_types = ["injection", "adversarial", "anomaly", "jailbreak", "data_extraction"]
-        models = ["chatbot-assistant", "code-generator", "customer-support",
-                  "fraud-detection-v3", "recommendation-engine"]
+        models = ["CyberSentinel-v1", "CyberAssist-v1", "TacticalAdvisor-v1",
+                  "ThreatDetector-v3", "AnomalyClassifier-v2"]
         descriptions = [
             "Tentative de jailbreak DAN détectée et bloquée",
             "Pattern d'injection dans le prompt — filtré",
@@ -446,7 +446,7 @@ class PillarSimulator:
     def _generate_baseline_threat(self):
         """Generate a routine low-level security event."""
         event_type = random.choice(["injection", "adversarial", "anomaly"])
-        model = random.choice(["chatbot-assistant", "code-generator", "customer-support"])
+        model = random.choice(["CyberSentinel-v1", "CyberAssist-v1", "TacticalAdvisor-v1"])
         severity = random.choices(["low", "medium"], weights=[0.7, 0.3])[0]
 
         event = SecurityEvent(
@@ -483,7 +483,7 @@ class PillarSimulator:
 
     def inject_attack(self, attack_type: str = "injection",
                       severity: str = "high", count: int = 1,
-                      model: str = "chatbot-assistant") -> Dict:
+                      model: str = "CyberSentinel-v1") -> Dict:
         """Inject a security attack into the simulation."""
         with self._state_lock:
             events_created = []
@@ -784,10 +784,10 @@ class PillarSimulator:
                 "risk_classification": self.compliance["risk_classification"].copy(),
                 "checklist": [item.copy() for item in self.ai_act_checklist],
                 "models_by_risk": [
-                    {"name": "fraud-detection-v3", "risk_level": "high", "compliant": True},
-                    {"name": "recommendation-engine", "risk_level": "limited", "compliant": True},
-                    {"name": "chatbot-assistant", "risk_level": "high", "compliant": False},
-                    {"name": "pricing-model-v2", "risk_level": "limited", "compliant": True},
+                    {"name": "ThreatDetector-v3", "risk_level": "high", "compliant": True},
+                    {"name": "AnomalyClassifier-v2", "risk_level": "limited", "compliant": True},
+                    {"name": "CyberSentinel-v1", "risk_level": "high", "compliant": False},
+                    {"name": "LogisticPredictor-v2", "risk_level": "limited", "compliant": True},
                 ],
                 "next_audit": "2026-06-15",
                 "last_updated": datetime.utcnow().isoformat(),
@@ -809,7 +809,7 @@ class PillarSimulator:
     def get_explainability_features(self) -> Dict:
         with self._state_lock:
             return {
-                "model_id": "fraud-detection-v3",
+                "model_id": "ThreatDetector-v3",
                 "features": [f.copy() for f in self.features],
                 "last_updated": datetime.utcnow().isoformat(),
             }
@@ -856,9 +856,9 @@ class PillarSimulator:
                 "p95_trend": self._downsample(p95_raw, min(max_pts, len(p95_raw))),
                 "p99_trend": self._downsample(p99_raw, min(max_pts, len(p99_raw))),
                 "by_model": [
-                    {"model": "fraud-detection", "p50": 42, "p95": 98, "p99": 118},
+                    {"model": "ThreatDetector-v3", "p50": 42, "p95": 98, "p99": 118},
                     {"model": "recommendation", "p50": 55, "p95": 125, "p99": 145},
-                    {"model": "chatbot", "p50": 180, "p95": 450, "p99": 620},
+                    {"model": "CyberSentinel", "p50": 180, "p95": 450, "p99": 620},
                 ],
             }
 

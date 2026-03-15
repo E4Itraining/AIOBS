@@ -4,14 +4,14 @@
 
 {% block sidebar_extra %}
 <div class="nav-group">
-    <span class="nav-group-title">Business Views</span>
+    <span class="nav-group-title">Vues Commandement</span>
     <a href="/executive" class="nav-link active">
-        <i data-lucide="briefcase"></i>
-        <span>Executive Dashboard</span>
+        <i data-lucide="shield"></i>
+        <span>Tableau de Commandement</span>
     </a>
     <a href="/finops" class="nav-link">
-        <i data-lucide="wallet"></i>
-        <span>FinOps</span>
+        <i data-lucide="box"></i>
+        <span>Ressources</span>
     </a>
     <a href="/greenops" class="nav-link">
         <i data-lucide="leaf"></i>
@@ -23,7 +23,7 @@
     </a>
 </div>
 <div class="nav-group">
-    <span class="nav-group-title">Technical Views</span>
+    <span class="nav-group-title">Vues Techniques</span>
     <a href="/monitoring" class="nav-link">
         <i data-lucide="activity"></i>
         <span>Live Monitoring</span>
@@ -35,21 +35,21 @@
 </div>
 {% endblock %}
 
-{% block page_title %}Executive Dashboard{% endblock %}
-{% block page_subtitle %}<p class="text-muted">Business-focused AI operations overview</p>{% endblock %}
+{% block page_title %}Tableau de Commandement{% endblock %}
+{% block page_subtitle %}<p class="text-muted">Vue stratégique opérations IA Défense</p>{% endblock %}
 
 {% block topbar_actions %}
 <div class="time-range-selector">
     <select class="form-select" id="timeRange" onchange="updateTimeRange()">
-        <option value="24h">Last 24 Hours</option>
-        <option value="7d" selected>Last 7 Days</option>
-        <option value="30d">Last 30 Days</option>
-        <option value="90d">Last Quarter</option>
+        <option value="24h">Dernières 24h</option>
+        <option value="7d" selected>7 derniers jours</option>
+        <option value="30d">30 derniers jours</option>
+        <option value="90d">Dernier trimestre</option>
     </select>
 </div>
 <button class="btn btn-secondary" onclick="exportReport()">
     <i data-lucide="download"></i>
-    Export Report
+    Exporter le rapport
 </button>
 {% endblock %}
 
@@ -59,35 +59,35 @@
     <div class="risk-banner-content">
         <div class="risk-indicator">
             <i data-lucide="shield-check"></i>
-            <span class="risk-level">LOW RISK</span>
+            <span class="risk-level">RISQUE FAIBLE</span>
         </div>
-        <span class="risk-message">All AI systems operating within acceptable parameters</span>
+        <span class="risk-message">Tous les systèmes IA opèrent dans les paramètres acceptables</span>
     </div>
     <button class="btn btn-ghost" onclick="viewRiskDetails()">
-        View Details <i data-lucide="arrow-right"></i>
+        Voir détails <i data-lucide="arrow-right"></i>
     </button>
 </div>
 
-<!-- Business KPIs -->
+<!-- KPIs Opérationnels -->
 <section class="mb-6">
-    <h2 class="section-title">Business Performance</h2>
+    <h2 class="section-title">Performance Opérationnelle</h2>
     <div class="kpi-grid" id="businessKpis">
         <div class="kpi-card">
             <div class="kpi-icon success">
-                <i data-lucide="dollar-sign"></i>
+                <i data-lucide="target"></i>
             </div>
-            <div class="kpi-label">AI-Driven Revenue</div>
-            <div class="kpi-value">$2.4M</div>
+            <div class="kpi-label">Impact Opérationnel IA</div>
+            <div class="kpi-value">2.4K ops</div>
             <div class="kpi-trend up">
                 <i data-lucide="trending-up"></i>
-                +12.5% vs last period
+                +12.5% vs période précédente
             </div>
         </div>
         <div class="kpi-card">
             <div class="kpi-icon primary">
                 <i data-lucide="target"></i>
             </div>
-            <div class="kpi-label">Model Accuracy</div>
+            <div class="kpi-label">Précision Modèles</div>
             <div class="kpi-value">94.2%</div>
             <div class="kpi-trend stable">
                 <i data-lucide="minus"></i>
@@ -96,20 +96,20 @@
         </div>
         <div class="kpi-card">
             <div class="kpi-icon warning">
-                <i data-lucide="wallet"></i>
+                <i data-lucide="box"></i>
             </div>
-            <div class="kpi-label">Monthly AI Costs</div>
-            <div class="kpi-value">$45.2K</div>
+            <div class="kpi-label">Ressources IA Mensuelles</div>
+            <div class="kpi-value">45.2K unités</div>
             <div class="kpi-trend down">
                 <i data-lucide="trending-down"></i>
-                -8% optimized
+                -8% optimisé
             </div>
         </div>
         <div class="kpi-card">
             <div class="kpi-icon success">
                 <i data-lucide="zap"></i>
             </div>
-            <div class="kpi-label">ROI</div>
+            <div class="kpi-label">Efficacité Opérationnelle</div>
             <div class="kpi-value">5,210%</div>
             <div class="kpi-trend up">
                 <i data-lucide="trending-up"></i>
@@ -125,11 +125,11 @@
         <!-- AI Trust Score -->
         <div class="card">
             <div class="card-header">
-                <h3 class="card-title">AI Trust Score</h3>
+                <h3 class="card-title">Indice de Confiance IA</h3>
                 <div class="card-header-actions">
                     <span class="badge badge-success">
                         <span class="badge-dot"></span>
-                        Healthy
+                        Opérationnel
                     </span>
                     <button class="btn btn-ghost btn-sm" onclick="openTrustScoreDeepDive()">
                         <i data-lucide="maximize-2"></i>
@@ -230,7 +230,7 @@
     </div>
 </section>
 
-<!-- Business Impact & Compliance -->
+<!-- Impact Opérationnel & Conformité -->
 <section class="mb-6">
     <div class="grid grid-3">
         <!-- SLA Performance -->
@@ -324,19 +324,19 @@
         <!-- Cost vs Value -->
         <div class="card">
             <div class="card-header">
-                <h3 class="card-title">Cost vs Value</h3>
+                <h3 class="card-title">Ressources vs Impact</h3>
             </div>
             <div class="cost-value-chart">
                 <canvas id="costValueChart"></canvas>
             </div>
             <div class="cost-summary">
                 <div class="cost-item">
-                    <span class="cost-label">Total Investment</span>
-                    <span class="cost-amount">$542K</span>
+                    <span class="cost-label">Ressources Allouées</span>
+                    <span class="cost-amount">542K unités</span>
                 </div>
                 <div class="cost-item">
-                    <span class="cost-label">Generated Value</span>
-                    <span class="cost-amount success">$2.8M</span>
+                    <span class="cost-label">Impact Généré</span>
+                    <span class="cost-amount success">2.8K missions</span>
                 </div>
             </div>
         </div>
@@ -361,7 +361,7 @@
 
         <div class="card">
             <div class="card-header">
-                <h3 class="card-title">Cost Forecast</h3>
+                <h3 class="card-title">Prévision Ressources</h3>
             </div>
             <div class="chart-container">
                 <canvas id="costForecast"></canvas>
@@ -369,11 +369,11 @@
             <div class="forecast-summary">
                 <div class="forecast-item">
                     <i data-lucide="trending-up"></i>
-                    <span>Projected next month: <strong>$48.5K</strong></span>
+                    <span>Projection mois prochain : <strong>48.5K unités</strong></span>
                 </div>
                 <div class="forecast-item savings">
-                    <i data-lucide="piggy-bank"></i>
-                    <span>Potential savings: <strong>$5.2K</strong> with optimizations</span>
+                    <i data-lucide="arrow-down-circle"></i>
+                    <span>Économies potentielles : <strong>5.2K unités</strong> avec optimisations</span>
                 </div>
             </div>
         </div>
@@ -390,7 +390,7 @@
         </button>
         <button class="action-card" onclick="window.location='/finops'">
             <i data-lucide="calculator"></i>
-            <span>Review Cost Optimization</span>
+            <span>Optimisation Ressources</span>
         </button>
         <button class="action-card" onclick="window.location='/greenops'">
             <i data-lucide="leaf"></i>
@@ -517,7 +517,7 @@
                         </thead>
                         <tbody>
                             <tr>
-                                <td><strong>recommendation-v2</strong></td>
+                                <td><strong>AnomalyClassifier-v2</strong></td>
                                 <td>95%</td>
                                 <td>92%</td>
                                 <td>98%</td>
@@ -526,7 +526,7 @@
                                 <td><span class="badge badge-success">Excellent</span></td>
                             </tr>
                             <tr>
-                                <td><strong>fraud-detector-v1</strong></td>
+                                <td><strong>ThreatDetector-v3</strong></td>
                                 <td>90%</td>
                                 <td>88%</td>
                                 <td>95%</td>
@@ -535,7 +535,7 @@
                                 <td><span class="badge badge-success">Bon</span></td>
                             </tr>
                             <tr>
-                                <td><strong>churn-predictor</strong></td>
+                                <td><strong>IntrusionPredictor-v1</strong></td>
                                 <td>85%</td>
                                 <td>80%</td>
                                 <td>92%</td>
@@ -544,7 +544,7 @@
                                 <td><span class="badge badge-success">Bon</span></td>
                             </tr>
                             <tr>
-                                <td><strong>llm-assistant</strong></td>
+                                <td><strong>CommandAssist-v1</strong></td>
                                 <td>82%</td>
                                 <td>75%</td>
                                 <td>88%</td>
@@ -553,7 +553,7 @@
                                 <td><span class="badge badge-warning">À surveiller</span></td>
                             </tr>
                             <tr>
-                                <td><strong>sentiment-analyzer</strong></td>
+                                <td><strong>SignalAnalyzer-v2</strong></td>
                                 <td>88%</td>
                                 <td>85%</td>
                                 <td>90%</td>
@@ -584,7 +584,7 @@
                             <i data-lucide="refresh-cw"></i>
                         </div>
                         <div class="recommendation-content">
-                            <h5>Recalibrer le churn-predictor</h5>
+                            <h5>Recalibrer le IntrusionPredictor-v1</h5>
                             <p>Le drift score indique une dérive légère. Planifier un réentraînement avec les données récentes.</p>
                         </div>
                     </div>
@@ -1428,7 +1428,7 @@ function initCharts() {
         new Chart(costValueCtx, {
             type: 'doughnut',
             data: {
-                labels: ['Investment', 'Generated Value'],
+                labels: ['Ressources Allouées', 'Impact Généré'],
                 datasets: [{
                     data: [542, 2800],
                     backgroundColor: ['#f59e0b', '#10b981'],
@@ -1499,7 +1499,7 @@ function initCharts() {
             data: {
                 labels: labels,
                 datasets: [{
-                    label: 'Cost ($K)',
+                    label: 'Ressources (K unités)',
                     data: [10.5, 11.2, 12.1, 11.4, 12.3],
                     backgroundColor: labels.map((_, i) => i === 4 ? 'rgba(99, 102, 241, 0.5)' : '#6366f1'),
                     borderColor: labels.map((_, i) => i === 4 ? '#6366f1' : 'transparent'),
@@ -1523,10 +1523,10 @@ function updateTimeRange() {
 }
 
 function exportReport() {
-    showToast('Generating executive report...', 'info');
+    showToast('Génération du rapport de commandement...', 'info');
     // Simulate report generation
     setTimeout(() => {
-        showToast('Report generated successfully!', 'success');
+        showToast('Rapport généré avec succès !', 'success');
     }, 2000);
 }
 

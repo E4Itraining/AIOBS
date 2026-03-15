@@ -328,51 +328,53 @@ Important rules:
         elif any(word in query_lower for word in ["alert", "alerte", "warning", "incident"]):
             if language == "fr":
                 return (
-                    "**3 alertes actives** dans votre systeme:\n\n"
-                    "1. **HAUTE** - Latence P99 > 2s sur `recommendation-service`\n"
-                    "   - Debut: il y a 15 minutes\n"
-                    "   - Impact: 1,200 utilisateurs affectes\n\n"
-                    "2. **MOYENNE** - Drift detecte sur `fraud-detection-model`\n"
+                    "**3 alertes actives** dans le périmètre:\n\n"
+                    "1. **HAUTE** - Latence P99 > 2s sur `AnomalyClassifier-v2` (Mer — Toulon)\n"
+                    "   - Début: il y a 15 minutes\n"
+                    "   - Impact: 350 opérateurs affectés\n\n"
+                    "2. **MOYENNE** - Dérive détectée sur `ThreatDetector-v3` (Terre — Balard)\n"
                     "   - Niveau: 12% au-dessus du seuil\n\n"
-                    "3. **BASSE** - Augmentation du taux d'erreur sur `api-gateway`\n"
+                    "3. **BASSE** - Augmentation du taux d'erreur sur `passerelle-C2`\n"
                     "   - Taux actuel: 0.5% (seuil: 0.3%)"
                 )
             return (
-                "**3 active alerts** in your system:\n\n"
-                "1. **HIGH** - P99 latency > 2s on `recommendation-service`\n"
+                "**3 active alerts** in the perimeter:\n\n"
+                "1. **HIGH** - P99 latency > 2s on `AnomalyClassifier-v2` (Sea — Toulon)\n"
                 "   - Started: 15 minutes ago\n"
-                "   - Impact: 1,200 users affected\n\n"
-                "2. **MEDIUM** - Drift detected on `fraud-detection-model`\n"
+                "   - Impact: 350 operators affected\n\n"
+                "2. **MEDIUM** - Drift detected on `ThreatDetector-v3` (Land — Balard)\n"
                 "   - Level: 12% above threshold\n\n"
-                "3. **LOW** - Error rate increase on `api-gateway`\n"
+                "3. **LOW** - Error rate increase on `passerelle-C2`\n"
                 "   - Current rate: 0.5% (threshold: 0.3%)"
             )
 
         elif any(word in query_lower for word in ["cost", "cout", "budget", "prix"]):
             if language == "fr":
                 return (
-                    "Voici l'analyse **FinOps** de vos systemes IA:\n\n"
-                    "**Couts Journaliers:** $1,250 (+5% vs hier)\n"
-                    "**Couts Mensuels Projetes:** $38,500\n\n"
-                    "**Repartition par modele:**\n"
-                    "- GPT-4o: 65% ($812/jour)\n"
-                    "- Claude: 25% ($312/jour)\n"
-                    "- Modeles internes: 10% ($126/jour)\n\n"
-                    "**Opportunites d'optimisation:**\n"
-                    "- Routage intelligent: economie potentielle de **20%**\n"
-                    "- Mise en cache: economie potentielle de **15%**"
+                    "Voici l'analyse **Ressources** de vos systèmes IA Défense:\n\n"
+                    "**Consommation Journalière:** 1 250 € (+5% vs hier)\n"
+                    "**Projection Mensuelle:** 38 500 €\n\n"
+                    "**Répartition par système:**\n"
+                    "- ThreatDetector-v3 (Terre): 45% (562 €/jour)\n"
+                    "- AnomalyClassifier-v2 (Mer): 30% (375 €/jour)\n"
+                    "- IntrusionPredictor-v1 (Air): 15% (188 €/jour)\n"
+                    "- CyberSentinel-v1 (Interarmées): 10% (125 €/jour)\n\n"
+                    "**Pistes d'optimisation:**\n"
+                    "- Routage intelligent inter-sites: économie potentielle de **20%**\n"
+                    "- Mise en cache des inférences: économie potentielle de **15%**"
                 )
             return (
-                "Here's the **FinOps** analysis of your AI systems:\n\n"
-                "**Daily Costs:** $1,250 (+5% vs yesterday)\n"
-                "**Projected Monthly Costs:** $38,500\n\n"
-                "**Breakdown by model:**\n"
-                "- GPT-4o: 65% ($812/day)\n"
-                "- Claude: 25% ($312/day)\n"
-                "- Internal models: 10% ($126/day)\n\n"
+                "Here's the **Resource** analysis of your Defense AI systems:\n\n"
+                "**Daily Consumption:** €1,250 (+5% vs yesterday)\n"
+                "**Projected Monthly:** €38,500\n\n"
+                "**Breakdown by system:**\n"
+                "- ThreatDetector-v3 (Land): 45% (€562/day)\n"
+                "- AnomalyClassifier-v2 (Sea): 30% (€375/day)\n"
+                "- IntrusionPredictor-v1 (Air): 15% (€188/day)\n"
+                "- CyberSentinel-v1 (Joint): 10% (€125/day)\n\n"
                 "**Optimization opportunities:**\n"
-                "- Intelligent routing: potential savings of **20%**\n"
-                "- Caching: potential savings of **15%**"
+                "- Intelligent inter-site routing: potential savings of **20%**\n"
+                "- Inference caching: potential savings of **15%**"
             )
 
         elif any(word in query_lower for word in ["drift", "derive", "change"]):

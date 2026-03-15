@@ -226,7 +226,7 @@ class UnifiedObservabilityView:
                 {
                     "id": "model-fraud",
                     "type": "model",
-                    "label": "Fraud Detection",
+                    "label": "Détection de Menaces",
                     "status": "degraded",
                 },
                 {
@@ -328,12 +328,12 @@ class UnifiedObservabilityView:
                 "monitoring": 1500.00,
             },
             "by_model": {
-                "recommendation-v2": 18500.00,
-                "fraud-detector-v1": 12000.00,
-                "churn-predictor": 8730.50,
+                "AnomalyClassifier-v2": 18500.00,
+                "ThreatDetector-v3": 12000.00,
+                "IntrusionPredictor-v1": 8730.50,
                 "other": 6000.00,
             },
-            "by_environment": {"production": 38000.00, "staging": 5230.50, "development": 2000.00},
+            "by_environment": {"opérationnel": 38000.00, "qualification": 5230.50, "développement": 2000.00},
             "trend": "up",
             "trend_pct": 12,
             "forecast_next_month": 50750.00,
@@ -354,14 +354,14 @@ class UnifiedObservabilityView:
                 "storage": 100.0,
                 "networking": 50.0,
             },
-            "by_region": {"us-east-1": 500.0, "eu-west-1": 350.5, "ap-southeast-1": 400.0},
+            "by_region": {"Terre (Balard)": 500.0, "Mer (Toulon)": 350.5, "Air (Mont-de-Marsan)": 400.0},
             "carbon_credits_equivalent": 1.25,
             "trend": "down",
             "trend_pct": -8,
             "recommendations": [
-                "Shift batch jobs to low-carbon hours (2am-6am UTC)",
-                "Consider eu-west-1 for new deployments (lower carbon intensity)",
-                "Enable GPU sleep mode during off-peak hours",
+                "Décaler les traitements batch en heures creuses (02h-06h)",
+                "Privilégier le site Terre (Balard) pour les nouveaux déploiements (intensité carbone réduite)",
+                "Activer la mise en veille GPU hors pics opérationnels",
             ],
         }
 
@@ -380,9 +380,11 @@ class UnifiedObservabilityView:
                 "explainability": {"score": 92, "status": "compliant"},
             },
             "regulations": {
-                "ai_act": {"status": "compliant", "last_audit": "2024-01-15"},
-                "gdpr": {"status": "compliant", "last_audit": "2024-01-10"},
-                "sox": {"status": "compliant", "last_audit": "2024-01-05"},
+                "lpm": {"status": "compliant", "last_audit": "2024-01-15"},
+                "ai_act": {"status": "compliant", "last_audit": "2024-01-10"},
+                "igi_1300": {"status": "compliant", "last_audit": "2024-01-05"},
+                "rgs": {"status": "warning", "last_audit": "2024-01-12"},
+                "rgpd": {"status": "compliant", "last_audit": "2024-01-08"},
             },
             "pending_reviews": 3,
             "overdue_reviews": 1,
@@ -390,7 +392,7 @@ class UnifiedObservabilityView:
                 {
                     "id": "AUD-2024-001",
                     "severity": "medium",
-                    "finding": "Model documentation incomplete for v2.3",
+                    "finding": "Documentation modèle incomplète pour ThreatDetector v2.3",
                     "status": "in_progress",
                 }
             ],
@@ -447,21 +449,11 @@ class UnifiedObservabilityView:
         )
 
     def _generate_demo_services(self) -> List[ServiceHealth]:
-        """Generate demo service health data"""
+        """Generate demo service health data — contexte Terre/Mer/Air"""
         return [
             ServiceHealth(
-                service_id="rec-v2",
-                service_name="Recommendation Model v2",
-                service_type="model",
-                status="healthy",
-                uptime_pct=99.95,
-                error_rate_pct=0.1,
-                latency_p99_ms=45,
-                last_check=datetime.utcnow(),
-            ),
-            ServiceHealth(
-                service_id="fraud-v1",
-                service_name="Fraud Detection v1",
+                service_id="threat-v3",
+                service_name="ThreatDetector-v3 (Terre — Balard)",
                 service_type="model",
                 status="degraded",
                 uptime_pct=99.5,
@@ -470,8 +462,18 @@ class UnifiedObservabilityView:
                 last_check=datetime.utcnow(),
             ),
             ServiceHealth(
-                service_id="churn-v1",
-                service_name="Churn Predictor",
+                service_id="anomaly-v2",
+                service_name="AnomalyClassifier-v2 (Mer — Toulon)",
+                service_type="model",
+                status="healthy",
+                uptime_pct=99.95,
+                error_rate_pct=0.1,
+                latency_p99_ms=45,
+                last_check=datetime.utcnow(),
+            ),
+            ServiceHealth(
+                service_id="intrusion-v1",
+                service_name="IntrusionPredictor-v1 (Air — Mont-de-Marsan)",
                 service_type="model",
                 status="healthy",
                 uptime_pct=99.99,
@@ -480,8 +482,18 @@ class UnifiedObservabilityView:
                 last_check=datetime.utcnow(),
             ),
             ServiceHealth(
+                service_id="cyber-sentinel",
+                service_name="CyberSentinel-v1 (Interarmées)",
+                service_type="model",
+                status="healthy",
+                uptime_pct=99.97,
+                error_rate_pct=0.03,
+                latency_p99_ms=85,
+                last_check=datetime.utcnow(),
+            ),
+            ServiceHealth(
                 service_id="feature-store",
-                service_name="Feature Store",
+                service_name="Base de Signatures (SOC Défense)",
                 service_type="pipeline",
                 status="healthy",
                 uptime_pct=99.99,
@@ -491,7 +503,7 @@ class UnifiedObservabilityView:
             ),
             ServiceHealth(
                 service_id="inference-cluster",
-                service_name="Inference Cluster",
+                service_name="Cluster Inférence (Cloud Défense)",
                 service_type="infrastructure",
                 status="healthy",
                 uptime_pct=99.95,
@@ -562,7 +574,7 @@ class UnifiedObservabilityView:
             {
                 "id": "ANO-001",
                 "metric": "latency_p99",
-                "service": "fraud-detector-v1",
+                "service": "ThreatDetector-v3",
                 "detected_at": datetime.utcnow() - timedelta(hours=2),
                 "expected_value": 80,
                 "actual_value": 150,
