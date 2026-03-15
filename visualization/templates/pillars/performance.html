@@ -13,11 +13,11 @@
         </div>
         <div class="pillar-header-text">
             <h1>{{ t('pillars.performance.name') or 'Performance' }}</h1>
-            <span class="question">{{ t('pillars.performance.question') or 'À quel coût ?' }}</span>
+            <span class="question">{{ t('pillars.performance.question') or 'Coût maîtrisé ?' }}</span>
         </div>
     </div>
     <div class="pillar-header-score">
-        <div class="score-value" id="performanceScore" style="color: var(--pillar-performance);">--</div>
+        <div class="score-value" id="performanceScore">--</div>
         <div class="score-label">{{ t('pillars.score') or 'Score' }}</div>
         <div class="score-trend up" id="performanceTrend">
             <i data-lucide="trending-up"></i>
@@ -80,11 +80,7 @@
             <i data-lucide="clock"></i>
             {{ t('pillars.performance.latency_throughput') or 'Latence & Débit' }}
         </h2>
-        <div class="flex gap-2">
-            <button class="btn btn-secondary btn-sm" data-range="1h">1h</button>
-            <button class="btn btn-primary btn-sm" data-range="24h">24h</button>
-            <button class="btn btn-secondary btn-sm" data-range="7d">7j</button>
-        </div>
+        <span class="text-sm text-muted">Plage: sélecteur global</span>
     </div>
 
     <div class="grid grid-2 gap-4 mb-4">
@@ -301,136 +297,202 @@
 <script>
 document.addEventListener('DOMContentLoaded', () => {
     loadPerformanceData();
-    initCharts();
+    loadLatencyData();
+    loadCostData();
     lucide.createIcons();
+    startAutoRefresh([loadPerformanceData, loadLatencyData, loadCostData]);
 });
+
+function makeLabels(count, hours) {
+    const labels = [];
+    const now = new Date();
+    const step = (hours * 3600000) / count;
+    for (let i = count - 1; i >= 0; i--) {
+        const d = new Date(now - i * step);
+        labels.push(hours > 48
+            ? d.toLocaleDateString('fr', { day: '2-digit', month: 'short' })
+            : d.toLocaleTimeString('fr', { hour: '2-digit', minute: '2-digit' }));
+    }
+    return labels;
+}
 
 async function loadPerformanceData() {
     try {
-        const response = await fetch('/api/pillars/performance');
+        const hours = getTimeRange();
+        const response = await fetch(`/api/pillars/performance?hours=${hours}`);
         const data = await response.json();
-        if (data.success) {
-            document.getElementById('performanceScore').textContent = Math.round(data.data.score * 100) + '%';
+        if (!data.success) return;
+        const d = data.data;
+
+        document.getElementById('performanceScore').textContent = Math.round(d.score * 100) + '%';
+        document.getElementById('latencyP99').textContent = d.latency.p99 + 'ms';
+        document.getElementById('throughput').textContent = (d.throughput.current / 1000).toFixed(1) + 'K/s';
+        document.getElementById('costPerInference').textContent = '$' + d.cost.per_inference.toFixed(4);
+
+        const gpuAvg = Math.round(((d.gpu_utilization.cluster_a + d.gpu_utilization.cluster_b + d.gpu_utilization.inference) / 3) * 100);
+        document.getElementById('gpuUtilization').textContent = gpuAvg + '%';
+
+        const statValues = document.querySelectorAll('#latency .stat-value');
+        if (statValues.length >= 4) {
+            statValues[0].textContent = d.latency.p50 + 'ms';
+            statValues[1].textContent = d.latency.p90 + 'ms';
+            statValues[2].textContent = d.latency.p95 + 'ms';
+            statValues[3].textContent = d.latency.p99 + 'ms';
         }
+
+        const gpuData = [
+            { value: d.gpu_utilization.cluster_a, label: 'GPU Cluster A' },
+            { value: d.gpu_utilization.cluster_b, label: 'GPU Cluster B' },
+            { value: d.gpu_utilization.inference, label: 'GPU Inference' }
+        ];
+        const gpuCards = document.querySelectorAll('#gpu .card.text-center');
+        gpuCards.forEach((card, i) => {
+            if (gpuData[i]) {
+                const pct = Math.round(gpuData[i].value * 100);
+                const span = card.querySelector('.progress-ring span');
+                if (span) span.textContent = pct + '%';
+                const path = card.querySelectorAll('path')[1];
+                if (path) path.setAttribute('stroke-dasharray', `${pct}, 100`);
+            }
+        });
+
+        const throughputLabels = Array.from({length: 24}, (_, i) => `${i}h`);
+        const throughputBase = d.throughput.current;
+        const throughputData = throughputLabels.map((_, i) => {
+            const hourFactor = Math.sin((i - 6) * Math.PI / 12) * 0.4 + 0.6;
+            return Math.round(throughputBase * hourFactor * (0.9 + Math.random() * 0.2));
+        });
+        createChart('throughputChart', {
+            type: 'bar',
+            data: {
+                labels: throughputLabels,
+                datasets: [{
+                    label: 'req/s',
+                    data: throughputData,
+                    backgroundColor: 'rgba(59, 130, 246, 0.8)',
+                    borderRadius: 4
+                }]
+            },
+            options: {
+                responsive: true, maintainAspectRatio: false,
+                plugins: { legend: { display: false } },
+                scales: { x: { grid: { display: false } }, y: { beginAtZero: true } }
+            }
+        });
     } catch (error) {
+        console.error('Performance API error:', error);
         document.getElementById('performanceScore').textContent = '91%';
     }
 }
 
-function initCharts() {
-    // Latency Chart
-    const latencyCtx = document.getElementById('latencyChart').getContext('2d');
-    new Chart(latencyCtx, {
-        type: 'line',
-        data: {
-            labels: generateHours(24),
-            datasets: [
-                { label: 'P99', data: generateLatencyData(24, 110, 140), borderColor: '#ef4444', tension: 0.4, borderWidth: 2, pointRadius: 0 },
-                { label: 'P95', data: generateLatencyData(24, 95, 120), borderColor: '#f59e0b', tension: 0.4, borderWidth: 2, pointRadius: 0 },
-                { label: 'P50', data: generateLatencyData(24, 40, 55), borderColor: '#10b981', tension: 0.4, borderWidth: 2, pointRadius: 0, fill: true, backgroundColor: 'rgba(16, 185, 129, 0.1)' }
-            ]
-        },
-        options: {
-            responsive: true,
-            maintainAspectRatio: false,
-            plugins: { legend: { position: 'bottom', labels: { boxWidth: 12 } } },
-            scales: {
-                x: { grid: { display: false } },
-                y: { beginAtZero: true, ticks: { callback: v => v + 'ms' } }
+async function loadLatencyData() {
+    try {
+        const hours = getTimeRange();
+        const response = await fetch(`/api/pillars/performance/latency?hours=${hours}`);
+        const data = await response.json();
+        if (!data.success) return;
+        const d = data.data;
+
+        const labels = makeLabels(d.p50_trend.length, hours);
+        createChart('latencyChart', {
+            type: 'line',
+            data: {
+                labels: labels,
+                datasets: [
+                    { label: 'P99', data: d.p99_trend, borderColor: '#ef4444', backgroundColor: 'rgba(239,68,68,0.06)', fill: true, pointRadius: 0 },
+                    { label: 'P95', data: d.p95_trend, borderColor: '#f59e0b', backgroundColor: 'rgba(245,158,11,0.06)', fill: true, pointRadius: 0 },
+                    { label: 'P50', data: d.p50_trend, borderColor: '#10b981', backgroundColor: 'rgba(16,185,129,0.12)', fill: true, pointRadius: 0 },
+                    { label: 'SLA 200ms', data: Array(d.p50_trend.length).fill(200), borderColor: '#ef4444', borderDash: [6, 3], borderWidth: 1, pointRadius: 0, fill: false }
+                ]
+            },
+            options: {
+                responsive: true, maintainAspectRatio: false,
+                plugins: { legend: { position: 'bottom', labels: { boxWidth: 10 } } },
+                scales: {
+                    x: { grid: { display: false }, ticks: { maxTicksLimit: 12, font: { size: 10 } } },
+                    y: { beginAtZero: true, ticks: { callback: v => Math.round(v) + 'ms' } }
+                }
             }
-        }
-    });
-
-    // Throughput Chart
-    const throughputCtx = document.getElementById('throughputChart').getContext('2d');
-    new Chart(throughputCtx, {
-        type: 'bar',
-        data: {
-            labels: generateHours(24),
-            datasets: [{
-                label: 'req/s',
-                data: generateThroughputData(24),
-                backgroundColor: 'rgba(59, 130, 246, 0.8)',
-                borderRadius: 4
-            }]
-        },
-        options: {
-            responsive: true,
-            maintainAspectRatio: false,
-            plugins: { legend: { display: false } },
-            scales: {
-                x: { grid: { display: false } },
-                y: { beginAtZero: true }
-            }
-        }
-    });
-
-    // Cost Breakdown Chart
-    const costBreakdownCtx = document.getElementById('costBreakdownChart').getContext('2d');
-    new Chart(costBreakdownCtx, {
-        type: 'doughnut',
-        data: {
-            labels: ['Compute (GPU)', 'Storage', 'Network', 'Autre'],
-            datasets: [{
-                data: [65, 20, 10, 5],
-                backgroundColor: ['#3b82f6', '#10b981', '#f59e0b', '#94a3b8'],
-                borderWidth: 0
-            }]
-        },
-        options: {
-            responsive: true,
-            maintainAspectRatio: false,
-            cutout: '60%',
-            plugins: { legend: { position: 'right', labels: { boxWidth: 12 } } }
-        }
-    });
-
-    // Daily Cost Chart
-    const dailyCostCtx = document.getElementById('dailyCostChart').getContext('2d');
-    new Chart(dailyCostCtx, {
-        type: 'line',
-        data: {
-            labels: ['Lun', 'Mar', 'Mer', 'Jeu', 'Ven', 'Sam', 'Dim'],
-            datasets: [{
-                label: 'Coût ($)',
-                data: [620, 645, 598, 672, 658, 420, 380],
-                borderColor: '#3b82f6',
-                backgroundColor: 'rgba(59, 130, 246, 0.1)',
-                fill: true,
-                tension: 0.4,
-                borderWidth: 2
-            }]
-        },
-        options: {
-            responsive: true,
-            maintainAspectRatio: false,
-            plugins: { legend: { display: false } },
-            scales: {
-                x: { grid: { display: false } },
-                y: { beginAtZero: true, ticks: { callback: v => '$' + v } }
-            }
-        }
-    });
-}
-
-function generateHours(count) {
-    return Array.from({length: count}, (_, i) => `${i}h`);
-}
-
-function generateLatencyData(count, min, max) {
-    const data = [];
-    let value = (min + max) / 2;
-    for (let i = 0; i < count; i++) {
-        value += (Math.random() - 0.5) * 10;
-        value = Math.max(min, Math.min(max, value));
-        data.push(Math.round(value));
+        });
+    } catch (error) {
+        console.error('Latency API error:', error);
     }
-    return data;
 }
 
-function generateThroughputData(count) {
-    const base = [1800, 1200, 800, 600, 500, 450, 500, 800, 1500, 2200, 2600, 2800, 2400, 2600, 2800, 2900, 2700, 2500, 2200, 2000, 1800, 1600, 1400, 1200];
-    return base.slice(0, count).map(v => v + Math.random() * 200 - 100);
+async function loadCostData() {
+    try {
+        const hours = getTimeRange();
+        const days = Math.max(7, Math.round(hours / 24));
+        const response = await fetch(`/api/pillars/performance/cost?days=${days}`);
+        const data = await response.json();
+        if (!data.success) return;
+        const d = data.data;
+
+        const breakdown = d.breakdown;
+        createChart('costBreakdownChart', {
+            type: 'doughnut',
+            data: {
+                labels: ['Compute (GPU)', 'Storage', 'Network', 'Autre'],
+                datasets: [{
+                    data: [
+                        Math.round(breakdown.compute_gpu * 100),
+                        Math.round(breakdown.storage * 100),
+                        Math.round(breakdown.network * 100),
+                        Math.round(breakdown.other * 100)
+                    ],
+                    backgroundColor: ['#3b82f6', '#10b981', '#f59e0b', '#94a3b8'],
+                    borderWidth: 0
+                }]
+            },
+            options: {
+                responsive: true, maintainAspectRatio: false,
+                cutout: '60%',
+                plugins: { legend: { position: 'right', labels: { boxWidth: 12 } } }
+            }
+        });
+
+        const dayLabels = ['Lun', 'Mar', 'Mer', 'Jeu', 'Ven', 'Sam', 'Dim'];
+        createChart('dailyCostChart', {
+            type: 'line',
+            data: {
+                labels: dayLabels.slice(0, d.daily_costs.length),
+                datasets: [{
+                    label: 'Coût ($)',
+                    data: d.daily_costs,
+                    borderColor: '#3b82f6',
+                    backgroundColor: 'rgba(59, 130, 246, 0.1)',
+                    fill: true, tension: 0.4, borderWidth: 2
+                }]
+            },
+            options: {
+                responsive: true, maintainAspectRatio: false,
+                plugins: { legend: { display: false } },
+                scales: {
+                    x: { grid: { display: false } },
+                    y: { beginAtZero: true, ticks: { callback: v => '$' + Math.round(v) } }
+                }
+            }
+        });
+
+        const costTbody = document.querySelector('#cost .table tbody');
+        if (costTbody && d.by_model) {
+            costTbody.innerHTML = d.by_model.map(m => {
+                const trendIcon = m.trend < 0 ? 'trending-down' : 'trending-up';
+                const trendClass = m.trend < 0 ? 'badge-healthy' : 'badge-warning';
+                const trendPct = m.trend > 0 ? '+' + Math.round(m.trend * 100) + '%' : Math.round(m.trend * 100) + '%';
+                return `<tr>
+                    <td><strong>${m.model}</strong></td>
+                    <td>${Math.round(m.daily_cost / m.per_inference).toLocaleString('fr-FR')}</td>
+                    <td>$${m.per_inference.toFixed(4)}</td>
+                    <td>$${m.daily_cost.toFixed(2)}</td>
+                    <td><span class="badge ${trendClass}"><i data-lucide="${trendIcon}" class="inline-block w-3 h-3"></i> ${trendPct}</span></td>
+                </tr>`;
+            }).join('');
+            lucide.createIcons();
+        }
+    } catch (error) {
+        console.error('Cost API error:', error);
+    }
 }
 </script>
 {% endblock %}
