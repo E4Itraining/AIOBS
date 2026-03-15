@@ -41,8 +41,8 @@
     --pillar-active-glow: rgba(99, 102, 241, 0.12);
 
     --gradient-reliability: linear-gradient(135deg, #059669 0%, #10B981 100%);
-    --gradient-security: linear-gradient(135deg, #8B1A2B 0%, #C8102E 100%);
-    --gradient-compliance: linear-gradient(135deg, #1B2A4A 0%, #2563EB 100%);
+    --gradient-security: linear-gradient(135deg, #C8102E 0%, #E04B5E 100%);
+    --gradient-compliance: linear-gradient(135deg, #2563EB 0%, #3B82F6 100%);
     --gradient-explainability: linear-gradient(135deg, #7C3AED 0%, #8B5CF6 100%);
     --gradient-performance: linear-gradient(135deg, #2563EB 0%, #3B82F6 100%);
 }
@@ -262,25 +262,26 @@
 
 .pillars-hero {
     text-align: center;
-    padding: 32px 24px;
+    padding: 28px 24px;
     margin-bottom: 28px;
-    background: var(--gradient-hero);
+    background: var(--bg-card);
+    border: 1px solid var(--border-color);
     border-radius: 16px;
-    color: white;
+    box-shadow: var(--shadow-sm);
 }
 
 .pillars-hero h1 {
-    font-size: 1.6rem;
+    font-size: 1.5rem;
     font-weight: 700;
-    margin-bottom: 8px;
+    margin-bottom: 6px;
     font-family: 'Space Grotesk', sans-serif;
-    color: white;
+    color: var(--text-primary);
     letter-spacing: 0.02em;
 }
 
 .pillars-hero p {
-    font-size: 0.95rem;
-    color: rgba(255, 255, 255, 0.75);
+    font-size: 0.9rem;
+    color: var(--text-secondary);
     max-width: 460px;
     margin: 0 auto;
     line-height: 1.5;
@@ -996,19 +997,19 @@ body.pillar-performance,
 }
 
 .pentagon-shape {
-    fill: rgba(139, 26, 43, 0.12);
-    stroke: #8B1A2B;
+    fill: rgba(37, 99, 235, 0.1);
+    stroke: #2563EB;
     stroke-width: 2.5;
     transition: all 0.3s ease;
 }
 
 .pentagon-point {
-    fill: #8B1A2B;
+    fill: #2563EB;
     cursor: pointer;
     transition: all 0.2s ease;
 }
 
-.pentagon-point:hover { fill: #C8102E; }
+.pentagon-point:hover { fill: #3B82F6; }
 
 .pentagon-label {
     font-size: 0.85rem;
