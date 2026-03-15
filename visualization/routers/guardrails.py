@@ -1,7 +1,8 @@
 """
 AIOBS Guardrails API Router
-Endpoints for GenAI safety mesh: prompt injection detection,
-jailbreak prevention, data leak prevention, and security posture.
+Garde-fous IA souveraine : détection d'injection de prompts,
+prévention de jailbreak, DLP sur données classifiées,
+et posture de sécurité IA Défense.
 """
 
 import random
@@ -16,16 +17,17 @@ router = APIRouter(prefix="/api/guardrails", tags=["guardrails"])
 
 
 # =============================================================================
-# Simulated Data (production: backed by AIOBS guardrails engine)
+# Données simulées (production : AIOBS guardrails engine)
 # =============================================================================
 
 
 def _generate_security_posture():
-    """Generate simulated AI security posture data."""
+    """Posture de sécurité IA Défense."""
     return {
         "timestamp": datetime.utcnow().isoformat() + "Z",
         "overallScore": 87,
-        "riskLevel": "moderate",
+        "riskLevel": "élevé",
+        "classification": "DR",
         "threatsBlocked24h": 156,
         "injectionAttempts24h": 42,
         "jailbreakAttempts24h": 8,
@@ -35,51 +37,68 @@ def _generate_security_posture():
                 "score": 92,
                 "blocked": 42,
                 "detected": 45,
-                "status": "protected",
+                "status": "protégé",
+                "description": "Tentatives d'injection sur modèles tactiques",
             },
             "jailbreak": {
                 "score": 88,
                 "blocked": 8,
                 "detected": 9,
-                "status": "protected",
+                "status": "protégé",
+                "description": "Contournement de consignes opérationnelles",
             },
             "dataLeakPrevention": {
                 "score": 85,
                 "blocked": 23,
                 "detected": 28,
-                "status": "monitoring",
+                "status": "surveillance",
+                "description": "Fuite de données classifiées DR/CD via sorties IA",
             },
             "contentSafety": {
                 "score": 94,
                 "flagged": 12,
                 "reviewed": 10,
-                "status": "protected",
+                "status": "protégé",
+                "description": "Contenus non conformes aux règles d'engagement",
             },
-            "biasDetection": {
+            "adversarialRobustness": {
                 "score": 78,
                 "detected": 5,
                 "mitigated": 3,
                 "status": "attention",
+                "description": "Attaques adversariales sur modèles de détection",
             },
         },
         "recentIncidents": [
             {
                 "id": str(uuid.uuid4()),
                 "type": "prompt_injection",
-                "severity": "high",
+                "severity": "critical",
                 "timestamp": (datetime.utcnow() - timedelta(minutes=15)).isoformat() + "Z",
                 "modelId": "ThreatDetector-v3",
                 "blocked": True,
-                "description": "Multi-step prompt injection attempt detected and blocked",
+                "description": "Injection multi-étapes sur le classifieur de menaces COMCYBER",
+                "mitreTechnique": "T0889",
             },
             {
                 "id": str(uuid.uuid4()),
                 "type": "dlp_violation",
-                "severity": "medium",
+                "severity": "high",
                 "timestamp": (datetime.utcnow() - timedelta(hours=1)).isoformat() + "Z",
-                "modelId": "SupportBot-v2",
+                "modelId": "AssistantOps-v2",
                 "blocked": True,
-                "description": "PII data exfiltration attempt in model output",
+                "description": "Tentative d'exfiltration de données classifiées CD dans la sortie du modèle",
+                "mitreTechnique": "T0882",
+            },
+            {
+                "id": str(uuid.uuid4()),
+                "type": "adversarial_attack",
+                "severity": "medium",
+                "timestamp": (datetime.utcnow() - timedelta(hours=3)).isoformat() + "Z",
+                "modelId": "AnomalyClassifier-v2",
+                "blocked": True,
+                "description": "Perturbation adversariale sur le classifieur d'anomalies réseau SIC",
+                "mitreTechnique": "T0831",
             },
         ],
         "policyCompliance": {
@@ -88,6 +107,7 @@ def _generate_security_posture():
             "nonCompliant": 2,
             "underReview": 1,
             "complianceRate": 87.5,
+            "frameworks": ["LPM", "AI Act", "IGI 1300", "RGPD Défense"],
         },
     }
 
@@ -99,13 +119,13 @@ def _generate_security_posture():
 
 @router.get("/security-posture")
 async def get_security_posture() -> APIResponse:
-    """Get AI security posture overview."""
+    """Posture de sécurité IA — vue d'ensemble Défense."""
     return APIResponse(success=True, data=_generate_security_posture())
 
 
 @router.get("/metrics")
 async def get_guardrails_metrics() -> APIResponse:
-    """Get guardrails metrics summary."""
+    """Métriques des garde-fous IA."""
     return APIResponse(
         success=True,
         data={
@@ -114,6 +134,8 @@ async def get_guardrails_metrics() -> APIResponse:
             "falsePositiveRate": 2.1,
             "avgResponseTimeMs": 45,
             "uptime": 99.97,
+            "classifiedDataProtected": True,
+            "sovereignEngine": "AIOBS Guardrails v1.0",
         },
     )
 
@@ -122,10 +144,18 @@ async def get_guardrails_metrics() -> APIResponse:
 async def get_incidents(
     limit: int = Query(20, ge=1, le=100),
 ) -> APIResponse:
-    """Get recent security incidents."""
-    incidents = []
-    types = ["prompt_injection", "jailbreak", "dlp_violation", "content_safety", "bias"]
+    """Incidents de sécurité IA récents."""
+    types = ["prompt_injection", "jailbreak", "dlp_classified", "adversarial", "semantic_drift"]
     severities = ["critical", "high", "medium", "low"]
+    models = ["ThreatDetector-v3", "AnomalyClassifier-v2", "IntrusionPredictor-v1", "AssistantOps-v2"]
+    descriptions = [
+        "Injection de prompts sur modèle tactique",
+        "Tentative de jailbreak sur assistant opérationnel",
+        "Fuite de données classifiées DR détectée",
+        "Attaque adversariale sur classifieur de menaces",
+        "Dérive sémantique sur modèle de corrélation IT/OT",
+    ]
+    incidents = []
     for i in range(min(limit, 20)):
         incidents.append(
             {
@@ -133,9 +163,10 @@ async def get_incidents(
                 "type": types[i % len(types)],
                 "severity": severities[i % len(severities)],
                 "timestamp": (datetime.utcnow() - timedelta(minutes=i * 30)).isoformat() + "Z",
-                "modelId": f"Model-{(i % 3) + 1}",
+                "modelId": models[i % len(models)],
                 "blocked": random.random() > 0.1,
-                "description": f"Security incident #{i + 1}",
+                "description": descriptions[i % len(descriptions)],
+                "mitreTechnique": f"T08{50 + i}",
             }
         )
     return APIResponse(success=True, data=incidents)
