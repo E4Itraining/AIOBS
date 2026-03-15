@@ -132,7 +132,17 @@ async def get_performance_cost(days: int = Query(30, ge=1, le=365)) -> APIRespon
 
 
 # ============================================================================
-# 6. SEMANTIC DRIFT (Differentiating Feature)
+# 6. INGESTION & COLLECTION
+# ============================================================================
+
+
+@router.get("/ingestion")
+async def get_ingestion_data(hours: int = Query(24, ge=1, le=720)) -> APIResponse:
+    return APIResponse(success=True, data=get_simulator().get_ingestion(hours))
+
+
+# ============================================================================
+# 7. SEMANTIC DRIFT (Differentiating Feature)
 # ============================================================================
 
 

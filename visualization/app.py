@@ -801,6 +801,22 @@ async def pillars_performance(request: Request):
     )
 
 
+@app.get("/pillars/ingestion", response_class=HTMLResponse)
+async def pillars_ingestion(request: Request):
+    """Ingestion & Collection - PCAP, Suricata, Zeek, OTel, Syslog, Modbus"""
+    i18n = create_i18n_context(request)
+    return templates.TemplateResponse(
+        "pillars/ingestion.html",
+        {
+            "request": request,
+            "title": "Ingestion & Collecte - Modules Défense",
+            "active_pillar": "ingestion",
+            "personas": PILLAR_PERSONAS,
+            **i18n,
+        },
+    )
+
+
 @app.get("/pillars/semantic-drift", response_class=HTMLResponse)
 async def pillars_semantic_drift(request: Request):
     """Semantic Drift - 6 drift types, tri-layer engine, MITRE mapping"""

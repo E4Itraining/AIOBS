@@ -874,6 +874,54 @@ class PillarSimulator:
                 "by_model": [m.copy() for m in self.cost_by_model],
             }
 
+    def get_ingestion(self, hours: int = 24) -> Dict:
+        """Get ingestion & collection status for all connectors."""
+        with self._state_lock:
+            n = self._points_for_hours(hours)
+            max_pts = 100
+
+            connectors = {
+                "pcap": {"base_eps": 4200, "noise": 300},
+                "suricata": {"base_eps": 1240, "noise": 150},
+                "zeek": {"base_eps": 3850, "noise": 250},
+                "otel": {"base_eps": 8200, "noise": 500},
+                "syslog": {"base_eps": 4680, "noise": 350},
+                "modbus": {"base_eps": 620, "noise": 80},
+                "stix": {"base_eps": 45, "noise": 10},
+                "api": {"base_eps": 340, "noise": 60},
+            }
+
+            # Generate trends from drift history (reuse for time correlation)
+            raw = list(self.reliability_history)[-n:]
+
+            connector_trends = {}
+            connector_eps = []
+            connector_volumes = []
+            for key, cfg in connectors.items():
+                eps = max(10, int(cfg["base_eps"] + random.gauss(0, cfg["noise"])))
+                connector_eps.append(eps)
+                connector_volumes.append(round(eps * 3600 * 24 / 1_000_000, 1))  # M events/day
+                trend = self._downsample(
+                    [max(10, int(cfg["base_eps"] * (0.8 + 0.4 * v) + random.gauss(0, cfg["noise"] * 0.3)))
+                     for v in raw], min(max_pts, len(raw)))
+                connector_trends[key] = trend
+
+            total_eps = sum(connector_eps)
+            active = 7  # 7 out of 8 active (API is degraded)
+            total = 8
+
+            return {
+                "events_per_sec": total_eps,
+                "volume_24h": f"{round(total_eps * 3600 * 24 / 1_000_000_000, 1)} G evt",
+                "active_connectors": active,
+                "total_connectors": total,
+                "avg_latency_ms": random.randint(85, 165),
+                "connector_trends": connector_trends,
+                "connector_eps": connector_eps,
+                "connector_volumes": connector_volumes,
+                "timestamp": datetime.utcnow().isoformat(),
+            }
+
     def get_semantic_drift(self, hours: int = 24) -> Dict:
         """Get semantic drift detection data with 6 drift types."""
         with self._state_lock:

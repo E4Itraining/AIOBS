@@ -276,6 +276,34 @@
                         Modules Défense
                     </span>
 
+                    <!-- INGESTION & COLLECTE -->
+                    <div class="pillar-nav-item {% if active_pillar == 'ingestion' %}active{% endif %}" data-pillar="ingestion">
+                        <a href="/pillars/ingestion" class="pillar-link">
+                            <div class="pillar-icon" style="background:linear-gradient(135deg, #0ea5e9 0%, #0369a1 100%);">
+                                <i data-lucide="radio-tower"></i>
+                            </div>
+                            <div class="pillar-info">
+                                <span class="pillar-name">Ingestion</span>
+                                <span class="pillar-question">Sources opérationnelles ?</span>
+                            </div>
+                            <div class="pillar-score" id="sidebarIngestionScore">--</div>
+                        </a>
+                        <div class="pillar-submenu">
+                            <a href="/pillars/ingestion#connectors" class="pillar-sublink">
+                                <i data-lucide="plug-zap"></i>
+                                Connecteurs Terrain
+                            </a>
+                            <a href="/pillars/ingestion#pipeline" class="pillar-sublink">
+                                <i data-lucide="git-branch"></i>
+                                Pipeline
+                            </a>
+                            <a href="/pillars/ingestion#throughput" class="pillar-sublink">
+                                <i data-lucide="bar-chart-3"></i>
+                                Volume & Débit
+                            </a>
+                        </div>
+                    </div>
+
                     <!-- DÉRIVE SÉMANTIQUE -->
                     <div class="pillar-nav-item {% if active_pillar == 'semantic_drift' %}active{% endif %}" data-pillar="semantic_drift">
                         <a href="/pillars/semantic-drift" class="pillar-link">
@@ -414,6 +442,8 @@
                         <i data-lucide="lightbulb"></i> Explicabilité
                         {% elif active_pillar == 'performance' %}
                         <i data-lucide="zap"></i> Performance
+                        {% elif active_pillar == 'ingestion' %}
+                        <i data-lucide="radio-tower"></i> Ingestion
                         {% elif active_pillar == 'semantic_drift' %}
                         <i data-lucide="brain"></i> Dérive Sémantique
                         {% elif active_pillar == 'homologation' %}
@@ -453,6 +483,18 @@
                 </div>
 
                 <div class="topbar-actions">
+                    <!-- Air-Gap Status Indicator -->
+                    <div class="airgap-indicator" id="airgapIndicator" title="Statut de connectivité plateforme">
+                        <div class="airgap-icon" id="airgapIcon">
+                            <i data-lucide="wifi" id="airgapIconConnected"></i>
+                            <i data-lucide="wifi-off" id="airgapIconDisconnected" style="display:none;"></i>
+                        </div>
+                        <div class="airgap-info">
+                            <span class="airgap-label" id="airgapLabel">Connecté</span>
+                            <span class="airgap-detail" id="airgapDetail">3/3 noeuds</span>
+                        </div>
+                    </div>
+
                     <!-- Time Range Selector -->
                     <div class="time-range-selector" id="timeRangeSelector">
                         <button class="btn btn-secondary btn-sm time-btn" data-hours="1">1h</button>
@@ -523,6 +565,7 @@
             { type: 'pillar', title: 'Conformité', url: '/pillars/compliance', icon: 'scale', keywords: ['conformité', 'compliance', 'audit', 'ai act', 'traçabilité'] },
             { type: 'pillar', title: 'Explicabilité', url: '/pillars/explainability', icon: 'lightbulb', keywords: ['explicabilité', 'explainability', 'feature', 'confiance', 'éthique'] },
             { type: 'pillar', title: 'Performance', url: '/pillars/performance', icon: 'zap', keywords: ['performance', 'latence', 'coût', 'gpu', 'throughput'] },
+            { type: 'defense', title: 'Ingestion & Collecte', url: '/pillars/ingestion', icon: 'radio-tower', keywords: ['ingestion', 'collecte', 'pcap', 'suricata', 'zeek', 'otel', 'opentelemetry', 'syslog', 'modbus', 'connecteur'] },
             { type: 'defense', title: 'Dérive Sémantique', url: '/pillars/semantic-drift', icon: 'brain', keywords: ['dérive', 'sémantique', 'drift', 'semantic', 'inversion', 'manipulation', 'adversariale'] },
             { type: 'defense', title: 'Homologation Défense', url: '/pillars/homologation', icon: 'stamp', keywords: ['homologation', 'dssi', 'ebios', 'anssi', 'pentest', 'certification', 'rgs', 'igi'] },
             { type: 'page', title: 'Vue d\'ensemble Piliers', url: '/pillars', icon: 'home', keywords: ['overview', 'vue', 'ensemble', 'pentagon'] },
@@ -753,10 +796,62 @@
             }
         }
 
-        document.addEventListener('DOMContentLoaded', loadPillarScores);
+        // Air-gap status
+        async function loadAirgapStatus() {
+            try {
+                const response = await fetch('/api/defense-soc/edge-nodes');
+                const data = await response.json();
+                if (!data.success) return;
+                const nodes = data.data;
+                const total = nodes.length;
+                const online = nodes.filter(n => n.status === 'online').length;
+                const offline = total - online;
 
-        // Auto-refresh sidebar scores every 5 seconds
-        setInterval(loadPillarScores, 5000);
+                const indicator = document.getElementById('airgapIndicator');
+                const label = document.getElementById('airgapLabel');
+                const detail = document.getElementById('airgapDetail');
+                const iconConn = document.getElementById('airgapIconConnected');
+                const iconDisc = document.getElementById('airgapIconDisconnected');
+
+                indicator.classList.remove('connected', 'degraded', 'airgap');
+
+                if (offline === 0) {
+                    indicator.classList.add('connected');
+                    label.textContent = 'Connecté';
+                    detail.textContent = total + '/' + total + ' noeuds';
+                    iconConn.style.display = '';
+                    iconDisc.style.display = 'none';
+                } else if (online > 0) {
+                    indicator.classList.add('degraded');
+                    label.textContent = 'Dégradé';
+                    detail.textContent = online + '/' + total + ' noeuds';
+                    iconConn.style.display = '';
+                    iconDisc.style.display = 'none';
+                } else {
+                    indicator.classList.add('airgap');
+                    label.textContent = 'AIR-GAP';
+                    detail.textContent = 'Mode autonome';
+                    iconConn.style.display = 'none';
+                    iconDisc.style.display = '';
+                }
+            } catch (e) {
+                const indicator = document.getElementById('airgapIndicator');
+                indicator.classList.remove('connected', 'degraded');
+                indicator.classList.add('airgap');
+                document.getElementById('airgapLabel').textContent = 'AIR-GAP';
+                document.getElementById('airgapDetail').textContent = 'Réseau indisponible';
+                document.getElementById('airgapIconConnected').style.display = 'none';
+                document.getElementById('airgapIconDisconnected').style.display = '';
+            }
+        }
+
+        document.addEventListener('DOMContentLoaded', () => {
+            loadPillarScores();
+            loadAirgapStatus();
+        });
+
+        // Auto-refresh sidebar scores + airgap every 5 seconds
+        setInterval(() => { loadPillarScores(); loadAirgapStatus(); }, 5000);
     </script>
 
     <!-- Auto-refresh engine + Chart management + Time range -->
@@ -854,6 +949,22 @@
                 .time-btn:hover{background:var(--bg-tertiary) !important;color:var(--text-primary) !important;}
                 .time-btn.active{background:var(--gradient-primary) !important;color:#fff !important;box-shadow:0 1px 3px rgba(0,0,0,0.2);}
                 .chart-container{position:relative;}
+                .airgap-indicator{display:flex;align-items:center;gap:6px;padding:4px 10px;border-radius:6px;font-size:0.75rem;cursor:default;transition:all 0.3s;border:1px solid transparent;}
+                .airgap-indicator.connected{background:rgba(16,185,129,0.08);border-color:rgba(16,185,129,0.2);}
+                .airgap-indicator.degraded{background:rgba(245,158,11,0.08);border-color:rgba(245,158,11,0.3);}
+                .airgap-indicator.airgap{background:rgba(239,68,68,0.08);border-color:rgba(239,68,68,0.3);animation:airgap-pulse 3s infinite;}
+                @keyframes airgap-pulse{0%,100%{border-color:rgba(239,68,68,0.3)}50%{border-color:rgba(239,68,68,0.7);box-shadow:0 0 8px rgba(239,68,68,0.2);}}
+                .airgap-icon{display:flex;align-items:center;}
+                .airgap-icon svg{width:14px;height:14px;}
+                .connected .airgap-icon{color:#10b981;}
+                .degraded .airgap-icon{color:#f59e0b;}
+                .airgap .airgap-icon{color:#ef4444;}
+                .airgap-info{display:flex;flex-direction:column;line-height:1.2;}
+                .airgap-label{font-weight:600;font-size:0.7rem;}
+                .connected .airgap-label{color:#10b981;}
+                .degraded .airgap-label{color:#f59e0b;}
+                .airgap .airgap-label{color:#ef4444;}
+                .airgap-detail{font-size:0.6rem;color:var(--text-secondary);}
             `;
             document.head.appendChild(style);
 
