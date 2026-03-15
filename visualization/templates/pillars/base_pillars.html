@@ -379,6 +379,14 @@
                 </div>
 
                 <div class="topbar-actions">
+                    <!-- Time Range Selector -->
+                    <div class="time-range-selector" id="timeRangeSelector">
+                        <button class="btn btn-secondary btn-sm time-btn" data-hours="1">1h</button>
+                        <button class="btn btn-secondary btn-sm time-btn" data-hours="6">6h</button>
+                        <button class="btn btn-primary btn-sm time-btn active" data-hours="24">24h</button>
+                        <button class="btn btn-secondary btn-sm time-btn" data-hours="168">7j</button>
+                        <button class="btn btn-secondary btn-sm time-btn" data-hours="720">30j</button>
+                    </div>
                     {% block topbar_actions %}{% endblock %}
                 </div>
             </header>
@@ -675,33 +683,83 @@
         setInterval(loadPillarScores, 5000);
     </script>
 
-    <!-- Auto-refresh engine for pillar sub-pages -->
+    <!-- Auto-refresh engine + Chart management + Time range -->
     <script>
     (function() {
-        const REFRESH_INTERVAL = 5000; // 5 seconds
+        const REFRESH_INTERVAL = 5000;
 
-        // Store chart instances for update
-        window._pillarCharts = window._pillarCharts || {};
+        // === CHART REGISTRY ===
+        // Stores Chart.js instances by canvas ID for destroy/recreate
+        window._charts = {};
 
-        // Generic auto-refresh: re-call the page's load functions
+        window.createChart = function(canvasId, config) {
+            // Destroy existing chart on same canvas
+            if (window._charts[canvasId]) {
+                window._charts[canvasId].destroy();
+                delete window._charts[canvasId];
+            }
+            const ctx = document.getElementById(canvasId);
+            if (!ctx) return null;
+            const chart = new Chart(ctx.getContext('2d'), config);
+            window._charts[canvasId] = chart;
+            return chart;
+        };
+
+        // === TIME RANGE ===
+        window._timeRangeHours = 24;
+
+        window.getTimeRange = function() {
+            return window._timeRangeHours;
+        };
+
+        // === AUTO-REFRESH ===
+        window._refreshFunctions = [];
+
         window.startAutoRefresh = function(loadFunctions) {
+            window._refreshFunctions = loadFunctions;
             setInterval(() => {
                 loadFunctions.forEach(fn => {
                     if (typeof fn === 'function') {
                         try { fn(); } catch(e) { console.warn('Refresh error:', e); }
                     }
                 });
+                // Flash the live indicator
+                const ind = document.getElementById('refreshIndicator');
+                if (ind) {
+                    ind.style.opacity = '1';
+                    setTimeout(() => ind.style.opacity = '0.7', 300);
+                }
             }, REFRESH_INTERVAL);
         };
 
-        // Refresh indicator
+        // === INIT ===
         document.addEventListener('DOMContentLoaded', () => {
+            // Live indicator
             const indicator = document.createElement('div');
             indicator.id = 'refreshIndicator';
-            indicator.innerHTML = '<i data-lucide="refresh-cw" style="width:14px;height:14px;"></i> <span>Live</span>';
-            indicator.style.cssText = 'position:fixed;bottom:16px;right:16px;background:var(--color-success);color:#fff;padding:6px 12px;border-radius:20px;font-size:0.75rem;display:flex;align-items:center;gap:6px;z-index:1000;opacity:0.85;';
+            indicator.innerHTML = '<span style="width:8px;height:8px;background:#fff;border-radius:50%;display:inline-block;animation:pulse 2s infinite;"></span> <span>Live · 5s</span>';
+            indicator.style.cssText = 'position:fixed;bottom:16px;right:16px;background:var(--color-success);color:#fff;padding:6px 14px;border-radius:20px;font-size:0.72rem;display:flex;align-items:center;gap:8px;z-index:1000;opacity:0.7;transition:opacity 0.3s;';
             document.body.appendChild(indicator);
-            if (typeof lucide !== 'undefined') lucide.createIcons();
+
+            // Pulse animation
+            const style = document.createElement('style');
+            style.textContent = '@keyframes pulse{0%,100%{opacity:1}50%{opacity:0.3}} .time-range-selector{display:flex;gap:4px;align-items:center;} .time-btn{min-width:36px;padding:4px 8px !important;font-size:0.75rem !important;} .time-btn.active{background:var(--gradient-primary) !important;color:#fff !important;border-color:transparent !important;}';
+            document.head.appendChild(style);
+
+            // Time range buttons
+            document.querySelectorAll('.time-btn').forEach(btn => {
+                btn.addEventListener('click', function() {
+                    document.querySelectorAll('.time-btn').forEach(b => b.classList.remove('active'));
+                    this.classList.add('active');
+                    window._timeRangeHours = parseInt(this.dataset.hours);
+                    // Reload all registered functions with new time range
+                    window._refreshFunctions.forEach(fn => {
+                        if (typeof fn === 'function') {
+                            try { fn(); } catch(e) {}
+                        }
+                    });
+                });
+            });
         });
     })();
     </script>

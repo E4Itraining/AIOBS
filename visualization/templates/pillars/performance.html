@@ -80,11 +80,7 @@
             <i data-lucide="clock"></i>
             {{ t('pillars.performance.latency_throughput') or 'Latence & Débit' }}
         </h2>
-        <div class="flex gap-2">
-            <button class="btn btn-secondary btn-sm" data-range="1h">1h</button>
-            <button class="btn btn-primary btn-sm" data-range="24h">24h</button>
-            <button class="btn btn-secondary btn-sm" data-range="7d">7j</button>
-        </div>
+        <span class="text-sm text-muted">Plage: sélecteur global</span>
     </div>
 
     <div class="grid grid-2 gap-4 mb-4">
@@ -304,12 +300,26 @@ document.addEventListener('DOMContentLoaded', () => {
     loadLatencyData();
     loadCostData();
     lucide.createIcons();
-    startAutoRefresh([loadPerformanceData]);
+    startAutoRefresh([loadPerformanceData, loadLatencyData, loadCostData]);
 });
+
+function makeLabels(count, hours) {
+    const labels = [];
+    const now = new Date();
+    const step = (hours * 3600000) / count;
+    for (let i = count - 1; i >= 0; i--) {
+        const d = new Date(now - i * step);
+        labels.push(hours > 48
+            ? d.toLocaleDateString('fr', { day: '2-digit', month: 'short' })
+            : d.toLocaleTimeString('fr', { hour: '2-digit', minute: '2-digit' }));
+    }
+    return labels;
+}
 
 async function loadPerformanceData() {
     try {
-        const response = await fetch('/api/pillars/performance');
+        const hours = getTimeRange();
+        const response = await fetch(`/api/pillars/performance?hours=${hours}`);
         const data = await response.json();
         if (!data.success) return;
         const d = data.data;
@@ -319,11 +329,9 @@ async function loadPerformanceData() {
         document.getElementById('throughput').textContent = (d.throughput.current / 1000).toFixed(1) + 'K/s';
         document.getElementById('costPerInference').textContent = '$' + d.cost.per_inference.toFixed(4);
 
-        // GPU utilization - average of clusters
         const gpuAvg = Math.round(((d.gpu_utilization.cluster_a + d.gpu_utilization.cluster_b + d.gpu_utilization.inference) / 3) * 100);
         document.getElementById('gpuUtilization').textContent = gpuAvg + '%';
 
-        // Update latency percentile cards
         const statValues = document.querySelectorAll('#latency .stat-value');
         if (statValues.length >= 4) {
             statValues[0].textContent = d.latency.p50 + 'ms';
@@ -332,7 +340,6 @@ async function loadPerformanceData() {
             statValues[3].textContent = d.latency.p99 + 'ms';
         }
 
-        // Update GPU rings
         const gpuData = [
             { value: d.gpu_utilization.cluster_a, label: 'GPU Cluster A' },
             { value: d.gpu_utilization.cluster_b, label: 'GPU Cluster B' },
@@ -349,18 +356,16 @@ async function loadPerformanceData() {
             }
         });
 
-        // Throughput chart with API data
-        const throughputCtx = document.getElementById('throughputChart').getContext('2d');
-        const hours = Array.from({length: 24}, (_, i) => `${i}h`);
+        const throughputLabels = Array.from({length: 24}, (_, i) => `${i}h`);
         const throughputBase = d.throughput.current;
-        const throughputData = hours.map((_, i) => {
+        const throughputData = throughputLabels.map((_, i) => {
             const hourFactor = Math.sin((i - 6) * Math.PI / 12) * 0.4 + 0.6;
             return Math.round(throughputBase * hourFactor * (0.9 + Math.random() * 0.2));
         });
-        new Chart(throughputCtx, {
+        createChart('throughputChart', {
             type: 'bar',
             data: {
-                labels: hours,
+                labels: throughputLabels,
                 datasets: [{
                     label: 'req/s',
                     data: throughputData,
@@ -382,14 +387,14 @@ async function loadPerformanceData() {
 
 async function loadLatencyData() {
     try {
-        const response = await fetch('/api/pillars/performance/latency');
+        const hours = getTimeRange();
+        const response = await fetch(`/api/pillars/performance/latency?hours=${hours}`);
         const data = await response.json();
         if (!data.success) return;
         const d = data.data;
 
-        const labels = Array.from({length: d.p50_trend.length}, (_, i) => `${i}h`);
-        const latencyCtx = document.getElementById('latencyChart').getContext('2d');
-        new Chart(latencyCtx, {
+        const labels = makeLabels(d.p50_trend.length, hours);
+        createChart('latencyChart', {
             type: 'line',
             data: {
                 labels: labels,
@@ -415,15 +420,15 @@ async function loadLatencyData() {
 
 async function loadCostData() {
     try {
-        const response = await fetch('/api/pillars/performance/cost?days=7');
+        const hours = getTimeRange();
+        const days = Math.max(7, Math.round(hours / 24));
+        const response = await fetch(`/api/pillars/performance/cost?days=${days}`);
         const data = await response.json();
         if (!data.success) return;
         const d = data.data;
 
-        // Cost breakdown doughnut from API
         const breakdown = d.breakdown;
-        const costBreakdownCtx = document.getElementById('costBreakdownChart').getContext('2d');
-        new Chart(costBreakdownCtx, {
+        createChart('costBreakdownChart', {
             type: 'doughnut',
             data: {
                 labels: ['Compute (GPU)', 'Storage', 'Network', 'Autre'],
@@ -445,13 +450,11 @@ async function loadCostData() {
             }
         });
 
-        // Daily cost line chart from API
-        const days = ['Lun', 'Mar', 'Mer', 'Jeu', 'Ven', 'Sam', 'Dim'];
-        const dailyCostCtx = document.getElementById('dailyCostChart').getContext('2d');
-        new Chart(dailyCostCtx, {
+        const dayLabels = ['Lun', 'Mar', 'Mer', 'Jeu', 'Ven', 'Sam', 'Dim'];
+        createChart('dailyCostChart', {
             type: 'line',
             data: {
-                labels: days.slice(0, d.daily_costs.length),
+                labels: dayLabels.slice(0, d.daily_costs.length),
                 datasets: [{
                     label: 'Coût ($)',
                     data: d.daily_costs,
@@ -470,7 +473,6 @@ async function loadCostData() {
             }
         });
 
-        // Update cost table with API data
         const costTbody = document.querySelector('#cost .table tbody');
         if (costTbody && d.by_model) {
             costTbody.innerHTML = d.by_model.map(m => {

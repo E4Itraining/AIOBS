@@ -259,12 +259,13 @@ document.addEventListener('DOMContentLoaded', () => {
     loadAuditData();
     loadAiActData();
     lucide.createIcons();
-    startAutoRefresh([loadComplianceData]);
+    startAutoRefresh([loadComplianceData, loadAuditData]);
 });
 
 async function loadComplianceData() {
     try {
-        const response = await fetch('/api/pillars/compliance');
+        const hours = getTimeRange();
+        const response = await fetch(`/api/pillars/compliance?hours=${hours}`);
         const data = await response.json();
         if (!data.success) return;
         const d = data.data;
@@ -275,15 +276,12 @@ async function loadComplianceData() {
         document.getElementById('dataLineage').textContent = Math.round(d.data_lineage_coverage * 100) + '%';
         document.getElementById('aiActReady').textContent = Math.round(d.ai_act_readiness * 100) + '%';
 
-        // Update trace coverage stat
         const traceStat = document.querySelector('.stat-value[style*="pillar-compliance"]');
         if (traceStat) traceStat.textContent = (d.inference_traceability * 100).toFixed(1) + '%';
 
-        // Inference chart - use audit events as basis
-        const inferenceCtx = document.getElementById('inferenceChart').getContext('2d');
         const eventsPerDay = Math.round(d.audit_events_30d / 30);
         const dailyData = Array.from({length: 7}, () => Math.round(eventsPerDay * (0.8 + Math.random() * 0.4) / 1000));
-        new Chart(inferenceCtx, {
+        createChart('inferenceChart', {
             type: 'bar',
             data: {
                 labels: ['Lun', 'Mar', 'Mer', 'Jeu', 'Ven', 'Sam', 'Dim'],
@@ -301,10 +299,8 @@ async function loadComplianceData() {
             }
         });
 
-        // Risk Classification chart from API
         const risk = d.risk_classification;
-        const riskCtx = document.getElementById('riskClassChart').getContext('2d');
-        new Chart(riskCtx, {
+        createChart('riskClassChart', {
             type: 'doughnut',
             data: {
                 labels: ['Minimal', 'Limité', 'Élevé', 'Inacceptable'],
@@ -321,16 +317,13 @@ async function loadComplianceData() {
             }
         });
 
-        // Update high risk badge count
         const highRiskBadge = document.querySelector('#aiact .badge-warning[style]');
         if (highRiskBadge && risk.high !== undefined) {
             highRiskBadge.innerHTML = `<i data-lucide="alert-triangle" class="inline-block w-4 h-4 mr-1"></i> ${risk.high} Modèles à Haut Risque`;
             lucide.createIcons();
         }
 
-        // Lineage Flow chart
-        const lineageCtx = document.getElementById('lineageFlowChart').getContext('2d');
-        new Chart(lineageCtx, {
+        createChart('lineageFlowChart', {
             type: 'bar',
             data: {
                 labels: ['BDD Transactions', 'Logs Serveur', 'API Externes', 'Données Client', 'Capteurs IoT', 'Fichiers CSV', 'Streaming', 'Data Lake'],
@@ -357,7 +350,6 @@ async function loadAuditData() {
         const data = await response.json();
         if (!data.success) return;
 
-        // Update traceability table with API data
         const tbody = document.querySelector('#traceability .table tbody');
         if (tbody && data.data.models) {
             tbody.innerHTML = data.data.models.map(m => `<tr>
@@ -369,7 +361,6 @@ async function loadAuditData() {
             </tr>`).join('');
         }
 
-        // Populate versioning table
         const versionTbody = document.getElementById('versioningTable');
         if (versionTbody && data.data.models) {
             versionTbody.innerHTML = data.data.models.map((m, i) => {
@@ -399,7 +390,6 @@ async function loadAiActData() {
         if (!data.success) return;
         const d = data.data;
 
-        // Update AI Act checklist from API
         const checklistContainer = document.querySelector('#aiact .pillar-checklist-item')?.parentElement;
         if (checklistContainer && d.checklist) {
             const statusIcons = {

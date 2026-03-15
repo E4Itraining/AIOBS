@@ -224,7 +224,7 @@ document.addEventListener('DOMContentLoaded', async () => {
     drawPentagon();
     loadRecommendations();
     lucide.createIcons();
-    startAutoRefresh([loadPillarData]);
+    startAutoRefresh([loadPillarData, initCharts]);
 });
 
 async function loadPillarData() {
@@ -235,26 +235,22 @@ async function loadPillarData() {
         if (data.success) {
             const scores = data.data;
 
-            // Update card scores
             document.getElementById('reliabilityScoreCard').textContent = Math.round(scores.reliability * 100) + '%';
             document.getElementById('securityScoreCard').textContent = Math.round(scores.security * 100) + '%';
             document.getElementById('complianceScoreCard').textContent = Math.round(scores.compliance * 100) + '%';
             document.getElementById('explainabilityScoreCard').textContent = Math.round(scores.explainability * 100) + '%';
             document.getElementById('performanceScoreCard').textContent = Math.round(scores.performance * 100) + '%';
 
-            // Calculate global score
             const globalScore = (scores.reliability + scores.security + scores.compliance +
                                 scores.explainability + scores.performance) / 5;
             document.getElementById('globalTrustScore').querySelector('.score').textContent =
                 Math.round(globalScore * 100) + '%';
 
-            // Store for pentagon
             window.pillarScores = scores;
             drawPentagon();
         }
     } catch (error) {
         console.error('Error loading pillar data:', error);
-        // Show demo data
         const demoScores = {
             reliability: 0.87,
             security: 0.82,
@@ -379,8 +375,7 @@ function initCharts() {
         Math.max(0, Math.round((1 - (scores.performance || 0.91)) * 30))
     ];
 
-    const issuesCtx = document.getElementById('issuesByPillarChart').getContext('2d');
-    new Chart(issuesCtx, {
+    createChart('issuesByPillarChart', {
         type: 'bar',
         data: {
             labels: ['Fiabilité', 'Sécurité', 'Conformité', 'Explicabilité', 'Performance'],
@@ -422,8 +417,7 @@ function initCharts() {
         return Array.from({length: 6}, (_, i) => Math.round(current - improvement + (improvement * i / 5)));
     }
 
-    const trustCtx = document.getElementById('trustEvolutionChart').getContext('2d');
-    new Chart(trustCtx, {
+    createChart('trustEvolutionChart', {
         type: 'line',
         data: {
             labels: ['Oct', 'Nov', 'Déc', 'Jan', 'Fév', 'Mar'],

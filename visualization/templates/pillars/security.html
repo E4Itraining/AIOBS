@@ -231,12 +231,26 @@ document.addEventListener('DOMContentLoaded', () => {
     loadRecentThreats();
     loadIncidents();
     lucide.createIcons();
-    startAutoRefresh([loadSecurityData, loadRecentThreats]);
+    startAutoRefresh([loadSecurityData, loadRecentThreats, loadIncidents]);
 });
+
+function makeLabels(count, hours) {
+    const labels = [];
+    const now = new Date();
+    const step = (hours * 3600000) / count;
+    for (let i = count - 1; i >= 0; i--) {
+        const d = new Date(now - i * step);
+        labels.push(hours > 48
+            ? d.toLocaleDateString('fr', { day: '2-digit', month: 'short' })
+            : d.toLocaleTimeString('fr', { hour: '2-digit', minute: '2-digit' }));
+    }
+    return labels;
+}
 
 async function loadSecurityData() {
     try {
-        const response = await fetch('/api/pillars/security');
+        const hours = getTimeRange();
+        const response = await fetch(`/api/pillars/security?hours=${hours}`);
         const data = await response.json();
         if (!data.success) return;
         const d = data.data;
@@ -249,8 +263,7 @@ async function loadSecurityData() {
 
         // Injection Types doughnut from API data
         const types = d.injection_attempts.types;
-        const typesCtx = document.getElementById('injectionTypesChart').getContext('2d');
-        new Chart(typesCtx, {
+        createChart('injectionTypesChart', {
             type: 'doughnut',
             data: {
                 labels: ['Jailbreak', 'Prompt Leaking', 'Role Manipulation', 'Autre'],
@@ -271,8 +284,7 @@ async function loadSecurityData() {
         const threatLevel = d.threat_level;
         const gaugeValue = threatLevel === 'low' ? 20 : threatLevel === 'medium' ? 50 : 80;
         const gaugeColor = threatLevel === 'low' ? '#10b981' : threatLevel === 'medium' ? '#f59e0b' : '#ef4444';
-        const gaugeCtx = document.getElementById('threatGaugeChart').getContext('2d');
-        new Chart(gaugeCtx, {
+        createChart('threatGaugeChart', {
             type: 'doughnut',
             data: {
                 labels: ['Niveau actuel', 'Marge'],
@@ -303,7 +315,8 @@ async function loadSecurityData() {
 async function loadRecentThreats() {
     const tbody = document.getElementById('injectionEventsTable');
     try {
-        const response = await fetch('/api/pillars/security/threats?hours=168');
+        const hours = getTimeRange();
+        const response = await fetch(`/api/pillars/security/threats?hours=${hours}`);
         const data = await response.json();
         if (!data.success || !data.data.threats) return;
 
@@ -329,8 +342,7 @@ async function loadRecentThreats() {
             dayCounts[day] = (dayCounts[day] || 0) + 1;
         });
         const orderedDays = ['Lun', 'Mar', 'Mer', 'Jeu', 'Ven', 'Sam', 'Dim'];
-        const injectionCtx = document.getElementById('injectionChart').getContext('2d');
-        new Chart(injectionCtx, {
+        createChart('injectionChart', {
             type: 'bar',
             data: {
                 labels: orderedDays,
@@ -359,12 +371,9 @@ async function loadIncidents() {
         if (!data.success) return;
 
         // Anomaly chart from incident response times
-        const anomalyCtx = document.getElementById('anomalyChart').getContext('2d');
-        const hours = Array.from({length: 24}, (_, i) => `${i}h`);
-        // Generate baseline + anomaly spikes from incident data
+        const hrs = Array.from({length: 24}, (_, i) => `${i}h`);
         const baseline = 100;
-        const anomalyData = hours.map(() => baseline + Math.random() * 20 - 10);
-        // Add spikes based on incident count
+        const anomalyData = hrs.map(() => baseline + Math.random() * 20 - 10);
         const spikeCount = data.data.incidents.length;
         for (let i = 0; i < spikeCount && i < 3; i++) {
             const pos = 8 + i * 4;
@@ -373,10 +382,10 @@ async function loadIncidents() {
                 if (pos + 1 < 24) anomalyData[pos + 1] = baseline * (1.5 + Math.random());
             }
         }
-        new Chart(anomalyCtx, {
+        createChart('anomalyChart', {
             type: 'line',
             data: {
-                labels: hours,
+                labels: hrs,
                 datasets: [
                     { label: 'Requêtes/min', data: anomalyData, borderColor: '#3b82f6', tension: 0.4, borderWidth: 2, pointRadius: 0, fill: true, backgroundColor: 'rgba(59, 130, 246, 0.1)' },
                     { label: 'Baseline', data: Array(24).fill(baseline), borderColor: '#94a3b8', borderDash: [5, 5], borderWidth: 1, pointRadius: 0 }

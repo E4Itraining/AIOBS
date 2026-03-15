@@ -206,25 +206,113 @@ class PillarSimulator:
         self._seed_history()
 
     def _seed_history(self):
-        """Populate initial history with realistic data."""
-        for i in range(100):
-            t = i / 100
-            noise = random.gauss(0, 0.005)
-            self.reliability_history.append(0.88 + noise + t * 0.01)
-            self.drift_history["data"].append(0.02 + random.gauss(0, 0.003))
-            self.drift_history["concept"].append(0.06 + random.gauss(0, 0.008))
-            self.drift_history["feature"].append(0.015 + random.gauss(0, 0.002))
-            self.confidence_history.append(0.85 + random.gauss(0, 0.02))
+        """Populate rich initial history simulating 7 days of activity."""
+        now = datetime.utcnow()
 
-            lat_base = 45 + 10 * math.sin(i * 0.1)
-            self.latency_history["p50"].append(lat_base + random.gauss(0, 3))
-            self.latency_history["p95"].append(lat_base * 2.5 + random.gauss(0, 5))
-            self.latency_history["p99"].append(lat_base * 3 + random.gauss(0, 8))
+        # --- 720 data points = ~24h at 2s intervals, but we simulate 7 days worth ---
+        for i in range(720):
+            # Simulate hour-of-day patterns over 7 days
+            hour = (i / 30) % 24  # 30 points per simulated hour
+            day_phase = math.sin((hour - 6) * math.pi / 12)  # peak at noon
+            daily_factor = 0.7 + 0.3 * max(0, day_phase)
 
+            # Reliability: gradual improvement with a dip around point 400
+            dip = 0.04 * math.exp(-((i - 400) ** 2) / 5000) if 350 < i < 450 else 0
+            self.reliability_history.append(
+                self._clamp(0.86 + 0.02 * (i / 720) - dip + random.gauss(0, 0.004), 0.75, 0.95))
+
+            # Drift: concept drift spikes around point 380-420
+            dd = 0.02 + 0.005 * math.sin(i * 0.05) + random.gauss(0, 0.002)
+            cd_spike = 0.08 * math.exp(-((i - 400) ** 2) / 3000) if 350 < i < 450 else 0
+            cd = 0.05 + cd_spike + 0.003 * math.sin(i * 0.03) + random.gauss(0, 0.005)
+            fd = 0.012 + 0.002 * math.sin(i * 0.02) + random.gauss(0, 0.001)
+            self.drift_history["data"].append(self._clamp(dd, 0, 0.15))
+            self.drift_history["concept"].append(self._clamp(cd, 0, 0.25))
+            self.drift_history["feature"].append(self._clamp(fd, 0, 0.08))
+
+            # Confidence: stable with slight daily variation
+            self.confidence_history.append(
+                self._clamp(0.85 + 0.03 * daily_factor + random.gauss(0, 0.015), 0.7, 0.95))
+
+            # Latency: strong diurnal pattern
+            lat_base = 35 + 20 * daily_factor
+            # Spike around point 500
+            lat_spike = 80 * math.exp(-((i - 500) ** 2) / 1000) if 480 < i < 520 else 0
+            self.latency_history["p50"].append(
+                max(15, int(lat_base + lat_spike * 0.3 + random.gauss(0, 3))))
+            self.latency_history["p95"].append(
+                max(50, int(lat_base * 2.5 + lat_spike * 0.7 + random.gauss(0, 8))))
+            self.latency_history["p99"].append(
+                max(70, int(lat_base * 3.2 + lat_spike + random.gauss(0, 12))))
+
+        # --- 30 days of cost data ---
         for i in range(30):
-            base_cost = 580 + random.gauss(0, 40)
-            weekday_factor = 1.0 if i % 7 < 5 else 0.65
-            self.cost_history.append(round(base_cost * weekday_factor, 2))
+            weekday = i % 7
+            base_cost = 560 + 20 * math.sin(i * 0.3)  # slow trend
+            weekday_factor = 1.0 if weekday < 5 else 0.55 + 0.1 * weekday
+            self.cost_history.append(round(base_cost * weekday_factor + random.gauss(0, 25), 2))
+
+        # --- Pre-seed security events (last 7 days of activity) ---
+        attack_types = ["injection", "adversarial", "anomaly", "jailbreak", "data_extraction"]
+        models = ["chatbot-assistant", "code-generator", "customer-support",
+                  "fraud-detection-v3", "recommendation-engine"]
+        descriptions = [
+            "Tentative de jailbreak DAN détectée et bloquée",
+            "Pattern d'injection dans le prompt — filtré",
+            "Requête suspecte interceptée par le garde-fou",
+            "Perturbation adversariale sur l'entrée détectée",
+            "Extraction de données bloquée par le filtre de sortie",
+            "Pic de requêtes anormal détecté — throttling activé",
+            "Tentative de contournement de rôle bloquée",
+            "Prompt leaking détecté — réponse sanitisée",
+        ]
+
+        for i in range(80):  # 80 events over 7 days
+            hours_ago = random.randint(1, 168)
+            ts = (now - timedelta(hours=hours_ago)).isoformat()
+            atype = random.choice(attack_types)
+            sev = random.choices(["low", "medium", "high", "critical"],
+                                 weights=[0.4, 0.3, 0.2, 0.1])[0]
+            event = SecurityEvent(
+                timestamp=ts,
+                event_type=atype,
+                severity=sev,
+                model=random.choice(models),
+                description=random.choice(descriptions),
+                status=random.choices(["blocked", "mitigated", "investigating"],
+                                      weights=[0.8, 0.15, 0.05])[0],
+            )
+            self.security_events.append(event)
+
+            # Update counters
+            inj = self.security["injection_attempts"]
+            inj["blocked"] += 1
+            if atype in ("injection", "jailbreak"):
+                key = random.choice(list(inj["types"].keys()))
+                inj["types"][key] += 1
+            elif atype == "adversarial":
+                self.security["adversarial_attacks"]["detected"] += 1
+            elif atype == "data_extraction":
+                self.security["data_extraction_attempts"] += 1
+            elif atype == "anomaly":
+                self.security["anomalies"] += 1
+
+        # Sort events by timestamp
+        self.security_events.sort(key=lambda e: e.timestamp)
+
+        # Set initial security counters to realistic values
+        self.security["injection_attempts"]["blocked"] = max(
+            self.security["injection_attempts"]["blocked"], 127)
+        inj_types = self.security["injection_attempts"]["types"]
+        inj_types["jailbreak"] = max(inj_types["jailbreak"], 42)
+        inj_types["prompt_leaking"] = max(inj_types["prompt_leaking"], 28)
+        inj_types["role_manipulation"] = max(inj_types["role_manipulation"], 19)
+        inj_types["other"] = max(inj_types["other"], 8)
+        self.security["adversarial_attacks"]["detected"] = max(
+            self.security["adversarial_attacks"]["detected"], 8)
+        self.security["data_extraction_attempts"] = max(
+            self.security["data_extraction_attempts"], 3)
+        self.security["anomalies"] = max(self.security["anomalies"], 4)
 
     def _smooth_evolve(self, current: float, target: float, speed: float = 0.02) -> float:
         """Smoothly evolve a value toward a target."""
