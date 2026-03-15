@@ -90,8 +90,13 @@
 }
 
 /* =============================================================================
-   SIDEBAR NAVIGATION
+   SIDEBAR NAVIGATION — Dark Navy Defense Theme
    ============================================================================= */
+
+.pillars-sidebar {
+    background: var(--gradient-sidebar) !important;
+    border-right: 1px solid var(--border-sidebar) !important;
+}
 
 .pillars-section {
     margin: var(--space-4) 0;
@@ -105,9 +110,11 @@
     font-weight: 700;
     text-transform: uppercase;
     letter-spacing: 0.08em;
-    color: var(--text-muted);
+    color: var(--text-sidebar-muted);
     padding: var(--space-2) var(--space-3);
 }
+
+.pillars-section-title i { color: var(--text-sidebar-muted); }
 
 .pillar-nav-item {
     margin-bottom: 2px;
@@ -117,11 +124,11 @@
 }
 
 .pillar-nav-item:hover {
-    background: var(--bg-secondary);
+    background: var(--bg-sidebar-hover);
 }
 
 .pillar-nav-item.active {
-    background: var(--bg-secondary);
+    background: var(--bg-sidebar-active);
 }
 
 .pillar-link {
@@ -130,7 +137,7 @@
     gap: var(--space-3);
     padding: 10px 12px;
     text-decoration: none;
-    color: inherit;
+    color: var(--text-sidebar);
     cursor: pointer;
 }
 
@@ -163,7 +170,7 @@
     display: block;
     font-weight: 600;
     font-size: 0.875rem;
-    color: var(--text-primary);
+    color: var(--text-sidebar);
     white-space: nowrap;
     overflow: hidden;
     text-overflow: ellipsis;
@@ -172,7 +179,7 @@
 .pillar-question {
     display: block;
     font-size: 0.7rem;
-    color: var(--text-muted);
+    color: var(--text-sidebar-muted);
     margin-top: 1px;
     white-space: nowrap;
     overflow: hidden;
@@ -184,8 +191,8 @@
     font-weight: 700;
     padding: 3px 8px;
     border-radius: var(--radius-sm);
-    background: var(--bg-tertiary);
-    color: var(--text-primary);
+    background: rgba(255, 255, 255, 0.08);
+    color: var(--text-sidebar);
     flex-shrink: 0;
 }
 
@@ -194,7 +201,7 @@
     max-height: 0;
     overflow: hidden;
     transition: max-height 0.3s ease;
-    background: var(--bg-tertiary);
+    background: rgba(0, 0, 0, 0.2);
     border-radius: 0 0 var(--radius-md) var(--radius-md);
 }
 
@@ -208,14 +215,14 @@
     gap: var(--space-2);
     padding: 6px 12px 6px 56px;
     font-size: 0.8rem;
-    color: var(--text-secondary);
+    color: var(--text-sidebar-muted);
     text-decoration: none;
     transition: all 0.15s ease;
 }
 
 .pillar-sublink:hover {
-    color: var(--text-primary);
-    background: var(--bg-hover);
+    color: var(--text-sidebar);
+    background: var(--bg-sidebar-hover);
 }
 
 .pillar-sublink i { width: 14px; height: 14px; opacity: 0.6; }
@@ -255,23 +262,28 @@
 
 .pillars-hero {
     text-align: center;
-    padding: 40px 20px 24px;
-    margin-bottom: 32px;
+    padding: 32px 24px;
+    margin-bottom: 28px;
+    background: var(--gradient-hero);
+    border-radius: 16px;
+    color: white;
 }
 
 .pillars-hero h1 {
-    font-size: 2rem;
+    font-size: 1.6rem;
     font-weight: 700;
-    margin-bottom: 12px;
+    margin-bottom: 8px;
     font-family: 'Space Grotesk', sans-serif;
+    color: white;
+    letter-spacing: 0.02em;
 }
 
 .pillars-hero p {
-    font-size: 1.05rem;
-    color: var(--text-secondary);
-    max-width: 560px;
+    font-size: 0.95rem;
+    color: rgba(255, 255, 255, 0.75);
+    max-width: 460px;
     margin: 0 auto;
-    line-height: 1.6;
+    line-height: 1.5;
 }
 
 /* 5 Pillar Cards on home */
@@ -808,24 +820,24 @@ body.pillar-performance,
     gap: 8px;
     width: 100%;
     padding: 10px 12px;
-    background: var(--bg-secondary);
-    border: 1px solid var(--border-color);
+    background: rgba(255, 255, 255, 0.06);
+    border: 1px solid var(--border-sidebar);
     border-radius: var(--radius-lg);
     cursor: pointer;
     font-size: 0.85rem;
-    color: var(--text-primary);
+    color: var(--text-sidebar);
     transition: all 0.2s ease;
 }
 
 .persona-quick-btn:hover {
-    background: var(--bg-tertiary);
-    border-color: var(--border-color-hover);
+    background: rgba(255, 255, 255, 0.1);
+    border-color: rgba(255, 255, 255, 0.15);
 }
 
 .persona-quick-btn i:first-child {
     width: 20px;
     height: 20px;
-    color: var(--color-primary);
+    color: #E04B5E;
 }
 
 .persona-quick-btn i:last-child {
@@ -833,6 +845,7 @@ body.pillar-performance,
     width: 14px;
     height: 14px;
     opacity: 0.4;
+    color: var(--text-sidebar-muted);
 }
 
 .persona-dropdown {
@@ -840,10 +853,10 @@ body.pillar-performance,
     top: 100%;
     left: 0;
     right: 0;
-    background: var(--bg-card);
-    border: 1px solid var(--border-color);
+    background: #1B2A4A;
+    border: 1px solid rgba(255, 255, 255, 0.1);
     border-radius: var(--radius-lg);
-    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.15);
+    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.4);
     z-index: 100;
     margin-top: 4px;
     max-height: 280px;
@@ -870,14 +883,14 @@ body.pillar-performance,
     border: none;
     cursor: pointer;
     font-size: 0.85rem;
-    color: var(--text-primary);
+    color: var(--text-sidebar);
     text-align: left;
     transition: background 0.15s ease;
 }
 
-.persona-option:hover { background: var(--bg-secondary); }
+.persona-option:hover { background: rgba(255, 255, 255, 0.06); }
 
-.persona-option i { width: 18px; height: 18px; color: var(--text-muted); }
+.persona-option i { width: 18px; height: 18px; color: var(--text-sidebar-muted); }
 
 /* =============================================================================
    NAV DIVIDER & QUICK ACCESS
@@ -885,7 +898,7 @@ body.pillar-performance,
 
 .nav-divider {
     height: 1px;
-    background: var(--border-color);
+    background: var(--border-sidebar);
     margin: 16px 12px;
 }
 
@@ -899,7 +912,7 @@ body.pillar-performance,
     font-weight: 700;
     text-transform: uppercase;
     letter-spacing: 0.08em;
-    color: var(--text-muted);
+    color: var(--text-sidebar-muted);
     padding: 6px 8px;
 }
 
@@ -911,15 +924,15 @@ body.pillar-performance,
     gap: 8px;
     padding: 8px;
     font-size: 0.8rem;
-    color: var(--text-secondary);
+    color: var(--text-sidebar-muted);
     text-decoration: none;
     border-radius: var(--radius-md);
     transition: all 0.15s ease;
 }
 
 .quick-access-section .nav-link:hover {
-    background: var(--bg-secondary);
-    color: var(--text-primary);
+    background: var(--bg-sidebar-hover);
+    color: var(--text-sidebar);
 }
 
 .quick-access-section .nav-link i { width: 16px; height: 16px; }
@@ -933,18 +946,18 @@ body.pillar-performance,
     margin-bottom: 8px;
     font-weight: 600;
     font-size: 0.85rem;
-    color: var(--text-primary);
+    color: var(--text-sidebar);
     text-decoration: none;
     border-radius: var(--radius-lg);
-    background: var(--bg-secondary);
+    background: rgba(255, 255, 255, 0.06);
     transition: all 0.15s ease;
 }
 
-.nav-link-home:hover { background: var(--bg-tertiary); }
+.nav-link-home:hover { background: rgba(255, 255, 255, 0.1); }
 
 .nav-link-home.active {
-    background: var(--color-primary);
-    color: white;
+    background: var(--bg-sidebar-active);
+    color: #E04B5E;
 }
 
 .nav-link-home i { width: 18px; height: 18px; }
@@ -983,19 +996,19 @@ body.pillar-performance,
 }
 
 .pentagon-shape {
-    fill: rgba(99, 102, 241, 0.15);
-    stroke: var(--color-primary);
+    fill: rgba(139, 26, 43, 0.12);
+    stroke: #8B1A2B;
     stroke-width: 2.5;
     transition: all 0.3s ease;
 }
 
 .pentagon-point {
-    fill: var(--color-primary);
+    fill: #8B1A2B;
     cursor: pointer;
     transition: all 0.2s ease;
 }
 
-.pentagon-point:hover { fill: var(--color-primary-dark); }
+.pentagon-point:hover { fill: #C8102E; }
 
 .pentagon-label {
     font-size: 0.85rem;
@@ -1219,7 +1232,7 @@ body.pillar-performance,
     flex-direction: column;
     align-items: center;
     padding: 12px 16px;
-    background: var(--gradient-primary);
+    background: var(--gradient-secondary);
     border-radius: var(--radius-xl);
     color: white;
 }
