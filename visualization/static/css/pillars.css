@@ -1,6 +1,8 @@
 /**
  * SKOPHIA - 5 Pillars UX Design System
  * Fiabilité | Sécurité | Conformité | Explicabilité | Performance
+ *
+ * Redesign v2 — Focus: lisibilité, aération, hiérarchie visuelle claire
  */
 
 /* =============================================================================
@@ -9,23 +11,23 @@
 
 :root {
     /* Pillar Colors - Bordeaux & Navy Palette */
-    --pillar-reliability: #059669;      /* Emerald 600 */
+    --pillar-reliability: #059669;
     --pillar-reliability-light: #ECFDF5;
     --pillar-reliability-dark: #047857;
 
-    --pillar-security: #8B1A2B;         /* Bordeaux */
+    --pillar-security: #8B1A2B;
     --pillar-security-light: #FDF0F2;
     --pillar-security-dark: #6E1522;
 
-    --pillar-compliance: #1B2A4A;       /* Navy */
+    --pillar-compliance: #1B2A4A;
     --pillar-compliance-light: #E8ECF4;
     --pillar-compliance-dark: #0F1729;
 
-    --pillar-explainability: #7C3AED;   /* Violet 600 */
+    --pillar-explainability: #7C3AED;
     --pillar-explainability-light: #F5F3FF;
     --pillar-explainability-dark: #5B21B6;
 
-    --pillar-performance: #2563EB;      /* Blue 600 */
+    --pillar-performance: #2563EB;
     --pillar-performance-light: #EFF6FF;
     --pillar-performance-dark: #1D4ED8;
 
@@ -37,26 +39,22 @@
     --gradient-performance: linear-gradient(135deg, #2563EB 0%, #3B82F6 100%);
 }
 
-/* Dark mode adjustments */
+/* Dark mode */
 [data-theme="dark"] {
     --pillar-reliability: #10B981;
     --pillar-reliability-light: rgba(5, 150, 105, 0.15);
-
     --pillar-security: #E04B5E;
     --pillar-security-light: rgba(139, 26, 43, 0.2);
-
     --pillar-compliance: #60A5FA;
     --pillar-compliance-light: rgba(37, 99, 235, 0.15);
-
     --pillar-explainability: #A78BFA;
     --pillar-explainability-light: rgba(124, 58, 237, 0.15);
-
     --pillar-performance: #60A5FA;
     --pillar-performance-light: rgba(37, 99, 235, 0.15);
 }
 
 /* =============================================================================
-   PILLARS LAYOUT
+   MAIN LAYOUT — more breathing room
    ============================================================================= */
 
 .pillars-layout {
@@ -74,11 +72,12 @@
 }
 
 .pillars-content {
-    padding: var(--space-6);
+    padding: 32px 40px;
+    max-width: 1200px;
 }
 
 /* =============================================================================
-   PILLAR NAVIGATION
+   SIDEBAR NAVIGATION — cleaner hierarchy
    ============================================================================= */
 
 .pillars-section {
@@ -89,16 +88,16 @@
     display: flex;
     align-items: center;
     gap: var(--space-2);
-    font-size: 0.75rem;
-    font-weight: 600;
+    font-size: 0.7rem;
+    font-weight: 700;
     text-transform: uppercase;
-    letter-spacing: 0.05em;
+    letter-spacing: 0.08em;
     color: var(--text-muted);
     padding: var(--space-2) var(--space-3);
 }
 
 .pillar-nav-item {
-    margin-bottom: var(--space-1);
+    margin-bottom: 2px;
     border-radius: var(--radius-lg);
     overflow: hidden;
     transition: all 0.2s ease;
@@ -116,15 +115,15 @@
     display: flex;
     align-items: center;
     gap: var(--space-3);
-    padding: var(--space-3);
+    padding: 10px 12px;
     text-decoration: none;
     color: inherit;
     cursor: pointer;
 }
 
 .pillar-icon {
-    width: 40px;
-    height: 40px;
+    width: 36px;
+    height: 36px;
     border-radius: var(--radius-md);
     display: flex;
     align-items: center;
@@ -140,39 +139,47 @@
 .pillar-icon.performance { background: var(--gradient-performance); }
 
 .pillar-icon i {
-    width: 20px;
-    height: 20px;
+    width: 18px;
+    height: 18px;
 }
 
 .pillar-info {
     flex: 1;
     min-width: 0;
+    overflow: hidden;
 }
 
 .pillar-name {
     display: block;
     font-weight: 600;
-    font-size: 0.9rem;
+    font-size: 0.875rem;
     color: var(--text-primary);
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
 }
 
 .pillar-question {
     display: block;
-    font-size: 0.75rem;
+    font-size: 0.7rem;
     color: var(--text-muted);
-    margin-top: 2px;
+    margin-top: 1px;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
 }
 
 .pillar-score {
-    font-size: 0.85rem;
+    font-size: 0.8rem;
     font-weight: 700;
-    padding: var(--space-1) var(--space-2);
+    padding: 3px 8px;
     border-radius: var(--radius-sm);
     background: var(--bg-tertiary);
     color: var(--text-primary);
+    flex-shrink: 0;
 }
 
-/* Pillar Submenu */
+/* Submenu */
 .pillar-submenu {
     max-height: 0;
     overflow: hidden;
@@ -189,8 +196,8 @@
     display: flex;
     align-items: center;
     gap: var(--space-2);
-    padding: var(--space-2) var(--space-3) var(--space-2) calc(var(--space-3) + 52px);
-    font-size: 0.85rem;
+    padding: 6px 12px 6px 56px;
+    font-size: 0.8rem;
     color: var(--text-secondary);
     text-decoration: none;
     transition: all 0.15s ease;
@@ -202,13 +209,13 @@
 }
 
 .pillar-sublink i {
-    width: 16px;
-    height: 16px;
-    opacity: 0.7;
+    width: 14px;
+    height: 14px;
+    opacity: 0.6;
 }
 
 /* =============================================================================
-   PILLAR BREADCRUMBS
+   BREADCRUMBS
    ============================================================================= */
 
 .pillar-breadcrumbs {
@@ -220,10 +227,10 @@
 .pillar-badge {
     display: inline-flex;
     align-items: center;
-    gap: var(--space-1);
-    padding: var(--space-1) var(--space-2);
+    gap: 4px;
+    padding: 4px 10px;
     border-radius: var(--radius-full);
-    font-size: 0.8rem;
+    font-size: 0.75rem;
     font-weight: 600;
     color: white;
 }
@@ -234,47 +241,45 @@
 .pillar-badge.explainability { background: var(--pillar-explainability); }
 .pillar-badge.performance { background: var(--pillar-performance); }
 
-.pillar-badge i {
-    width: 14px;
-    height: 14px;
-}
+.pillar-badge i { width: 13px; height: 13px; }
 
 /* =============================================================================
-   PILLARS OVERVIEW PAGE
+   HOME / OVERVIEW PAGE
    ============================================================================= */
 
 .pillars-hero {
     text-align: center;
-    padding: var(--space-8) var(--space-4);
-    margin-bottom: var(--space-6);
+    padding: 40px 20px 24px;
+    margin-bottom: 32px;
 }
 
 .pillars-hero h1 {
-    font-size: 2.5rem;
+    font-size: 2rem;
     font-weight: 700;
-    margin-bottom: var(--space-3);
+    margin-bottom: 12px;
     font-family: 'Space Grotesk', sans-serif;
 }
 
 .pillars-hero p {
-    font-size: 1.1rem;
+    font-size: 1.05rem;
     color: var(--text-secondary);
-    max-width: 600px;
+    max-width: 560px;
     margin: 0 auto;
+    line-height: 1.6;
 }
 
-/* Pillar Cards Grid */
+/* 5 Pillar Cards */
 .pillars-grid {
     display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
-    gap: var(--space-5);
-    margin-bottom: var(--space-6);
+    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+    gap: 24px;
+    margin-bottom: 40px;
 }
 
 .pillar-card {
     background: var(--bg-card);
-    border-radius: var(--radius-xl);
-    padding: var(--space-6);
+    border-radius: 16px;
+    padding: 28px;
     border: 1px solid var(--border-color);
     transition: all 0.3s ease;
     cursor: pointer;
@@ -301,26 +306,27 @@
 .pillar-card.performance::before { background: var(--gradient-performance); }
 
 .pillar-card:hover {
-    transform: translateY(-4px);
-    box-shadow: 0 12px 40px rgba(0, 0, 0, 0.12);
+    transform: translateY(-3px);
+    box-shadow: 0 8px 30px rgba(0, 0, 0, 0.1);
     border-color: transparent;
 }
 
 .pillar-card-header {
     display: flex;
     align-items: center;
-    gap: var(--space-4);
-    margin-bottom: var(--space-4);
+    gap: 16px;
+    margin-bottom: 16px;
 }
 
 .pillar-card-icon {
-    width: 56px;
-    height: 56px;
-    border-radius: var(--radius-lg);
+    width: 52px;
+    height: 52px;
+    border-radius: 12px;
     display: flex;
     align-items: center;
     justify-content: center;
     color: white;
+    flex-shrink: 0;
 }
 
 .pillar-card-icon.reliability { background: var(--gradient-reliability); }
@@ -329,42 +335,35 @@
 .pillar-card-icon.explainability { background: var(--gradient-explainability); }
 .pillar-card-icon.performance { background: var(--gradient-performance); }
 
-.pillar-card-icon i {
-    width: 28px;
-    height: 28px;
-}
+.pillar-card-icon i { width: 26px; height: 26px; }
 
-.pillar-card-title {
-    flex: 1;
-}
+.pillar-card-title { flex: 1; min-width: 0; }
 
 .pillar-card-title h3 {
-    font-size: 1.25rem;
+    font-size: 1.15rem;
     font-weight: 700;
-    margin-bottom: 4px;
+    margin-bottom: 2px;
 }
 
 .pillar-card-title .question {
-    font-size: 0.9rem;
+    font-size: 0.85rem;
     color: var(--text-muted);
     font-style: italic;
 }
 
-.pillar-card-score {
-    text-align: center;
-}
+.pillar-card-score { text-align: center; flex-shrink: 0; }
 
 .pillar-card-score .score-value {
-    font-size: 2rem;
+    font-size: 1.8rem;
     font-weight: 800;
     font-family: 'Space Grotesk', sans-serif;
 }
 
 .pillar-card-score .score-label {
-    font-size: 0.75rem;
+    font-size: 0.65rem;
     color: var(--text-muted);
     text-transform: uppercase;
-    letter-spacing: 0.05em;
+    letter-spacing: 0.06em;
 }
 
 .pillar-card.reliability .score-value { color: var(--pillar-reliability); }
@@ -373,52 +372,48 @@
 .pillar-card.explainability .score-value { color: var(--pillar-explainability); }
 .pillar-card.performance .score-value { color: var(--pillar-performance); }
 
-.pillar-card-body {
-    margin-bottom: var(--space-4);
-}
+.pillar-card-body { margin-bottom: 16px; }
 
 .pillar-card-body p {
     color: var(--text-secondary);
     line-height: 1.6;
-    margin-bottom: var(--space-3);
+    font-size: 0.9rem;
+    margin-bottom: 12px;
 }
 
 .pillar-metrics {
     display: flex;
     flex-wrap: wrap;
-    gap: var(--space-2);
+    gap: 6px;
 }
 
 .pillar-metric {
     display: inline-flex;
     align-items: center;
-    gap: var(--space-1);
-    padding: var(--space-1) var(--space-2);
+    gap: 4px;
+    padding: 4px 10px;
     background: var(--bg-secondary);
     border-radius: var(--radius-full);
-    font-size: 0.8rem;
+    font-size: 0.75rem;
     color: var(--text-secondary);
 }
 
-.pillar-metric i {
-    width: 14px;
-    height: 14px;
-}
+.pillar-metric i { width: 12px; height: 12px; }
 
 .pillar-card-footer {
     display: flex;
     align-items: center;
     justify-content: space-between;
-    padding-top: var(--space-4);
+    padding-top: 16px;
     border-top: 1px solid var(--border-color);
 }
 
 .pillar-card-link {
     display: inline-flex;
     align-items: center;
-    gap: var(--space-2);
+    gap: 8px;
     font-weight: 600;
-    font-size: 0.9rem;
+    font-size: 0.85rem;
     transition: gap 0.2s ease;
 }
 
@@ -428,42 +423,41 @@
 .pillar-card.explainability .pillar-card-link { color: var(--pillar-explainability); }
 .pillar-card.performance .pillar-card-link { color: var(--pillar-performance); }
 
-.pillar-card:hover .pillar-card-link {
-    gap: var(--space-3);
-}
+.pillar-card:hover .pillar-card-link { gap: 12px; }
 
-.pillar-card-link i {
-    width: 18px;
-    height: 18px;
-}
+.pillar-card-link i { width: 16px; height: 16px; }
 
 /* =============================================================================
-   PILLAR DASHBOARD COMMON COMPONENTS
+   PILLAR DETAIL PAGES — Header, KPIs, Sections
    ============================================================================= */
 
+/* Page Header */
 .pillar-header {
     display: flex;
     align-items: center;
     justify-content: space-between;
-    margin-bottom: var(--space-6);
-    padding-bottom: var(--space-4);
-    border-bottom: 1px solid var(--border-color);
+    margin-bottom: 32px;
+    padding: 24px 28px;
+    background: var(--bg-card);
+    border-radius: 16px;
+    border: 1px solid var(--border-color);
 }
 
 .pillar-header-info {
     display: flex;
     align-items: center;
-    gap: var(--space-4);
+    gap: 20px;
 }
 
 .pillar-header-icon {
-    width: 64px;
-    height: 64px;
-    border-radius: var(--radius-xl);
+    width: 56px;
+    height: 56px;
+    border-radius: 14px;
     display: flex;
     align-items: center;
     justify-content: center;
     color: white;
+    flex-shrink: 0;
 }
 
 .pillar-header-icon.reliability { background: var(--gradient-reliability); }
@@ -472,43 +466,44 @@
 .pillar-header-icon.explainability { background: var(--gradient-explainability); }
 .pillar-header-icon.performance { background: var(--gradient-performance); }
 
-.pillar-header-icon i {
-    width: 32px;
-    height: 32px;
-}
+.pillar-header-icon i { width: 28px; height: 28px; }
 
 .pillar-header-text h1 {
-    font-size: 1.75rem;
+    font-size: 1.5rem;
     font-weight: 700;
-    margin-bottom: 4px;
+    margin-bottom: 2px;
+    font-family: 'Space Grotesk', sans-serif;
 }
 
 .pillar-header-text .question {
-    font-size: 1rem;
+    font-size: 0.95rem;
     color: var(--text-muted);
+    font-style: italic;
 }
 
 .pillar-header-score {
     display: flex;
     flex-direction: column;
     align-items: center;
-    padding: var(--space-4);
+    padding: 16px 24px;
     background: var(--bg-secondary);
-    border-radius: var(--radius-xl);
-    min-width: 120px;
+    border-radius: 14px;
+    min-width: 130px;
 }
 
 .pillar-header-score .score-value {
-    font-size: 2.5rem;
+    font-size: 2.8rem;
     font-weight: 800;
     font-family: 'Space Grotesk', sans-serif;
     line-height: 1;
 }
 
 .pillar-header-score .score-label {
-    font-size: 0.8rem;
+    font-size: 0.75rem;
     color: var(--text-muted);
-    margin-top: var(--space-1);
+    margin-top: 4px;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
 }
 
 .pillar-header-score .score-trend {
@@ -516,56 +511,63 @@
     align-items: center;
     gap: 4px;
     font-size: 0.85rem;
-    margin-top: var(--space-2);
+    font-weight: 600;
+    margin-top: 8px;
 }
 
+.pillar-header-score .score-trend i { width: 16px; height: 16px; }
 .pillar-header-score .score-trend.up { color: var(--color-success); }
 .pillar-header-score .score-trend.down { color: var(--color-danger); }
 .pillar-header-score .score-trend.stable { color: var(--text-muted); }
 
-/* Pillar KPI Grid */
+/* KPI Grid — larger, more readable */
 .pillar-kpi-grid {
     display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-    gap: var(--space-4);
-    margin-bottom: var(--space-6);
+    grid-template-columns: repeat(4, 1fr);
+    gap: 20px;
+    margin-bottom: 32px;
 }
 
 .pillar-kpi-card {
     background: var(--bg-card);
-    border-radius: var(--radius-lg);
-    padding: var(--space-4);
+    border-radius: 14px;
+    padding: 20px 24px;
     border: 1px solid var(--border-color);
     transition: all 0.2s ease;
 }
 
 .pillar-kpi-card:hover {
     border-color: var(--border-color-hover);
-    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+    box-shadow: 0 4px 16px rgba(0, 0, 0, 0.06);
 }
 
 .pillar-kpi-header {
     display: flex;
     align-items: center;
     justify-content: space-between;
-    margin-bottom: var(--space-2);
+    margin-bottom: 12px;
 }
 
 .pillar-kpi-header i {
     width: 20px;
     height: 20px;
     color: var(--text-muted);
+    opacity: 0.6;
 }
 
 .pillar-kpi-label {
-    font-size: 0.85rem;
+    font-size: 0.8rem;
+    font-weight: 500;
     color: var(--text-muted);
+    letter-spacing: 0.01em;
 }
 
 .pillar-kpi-value {
-    font-size: 1.75rem;
+    font-size: 2rem;
     font-weight: 700;
     font-family: 'Space Grotesk', sans-serif;
+    line-height: 1.2;
+    color: var(--text-primary);
 }
 
 .pillar-kpi-trend {
@@ -573,22 +575,21 @@
     align-items: center;
     gap: 4px;
     font-size: 0.8rem;
-    margin-top: var(--space-1);
+    font-weight: 500;
+    margin-top: 8px;
 }
 
+.pillar-kpi-trend i { width: 14px; height: 14px; }
 .pillar-kpi-trend.up { color: var(--color-success); }
 .pillar-kpi-trend.down { color: var(--color-danger); }
 .pillar-kpi-trend.stable { color: var(--text-muted); }
 
-/* =============================================================================
-   PILLAR SECTIONS
-   ============================================================================= */
-
+/* Content Sections — clear separation */
 .pillar-section {
     background: var(--bg-card);
-    border-radius: var(--radius-xl);
-    padding: var(--space-6);
-    margin-bottom: var(--space-6);
+    border-radius: 16px;
+    padding: 28px;
+    margin-bottom: 24px;
     border: 1px solid var(--border-color);
 }
 
@@ -596,20 +597,65 @@
     display: flex;
     align-items: center;
     justify-content: space-between;
-    margin-bottom: var(--space-4);
+    flex-wrap: wrap;
+    gap: 12px;
+    margin-bottom: 24px;
+    padding-bottom: 16px;
+    border-bottom: 1px solid var(--border-color);
 }
 
 .pillar-section-title {
     display: flex;
     align-items: center;
-    gap: var(--space-2);
-    font-size: 1.1rem;
-    font-weight: 600;
+    gap: 10px;
+    font-size: 1.15rem;
+    font-weight: 700;
+    color: var(--text-primary);
 }
 
 .pillar-section-title i {
     width: 22px;
     height: 22px;
+    opacity: 0.7;
+}
+
+/* Chart containers — standardized heights */
+.pillar-section .chart-container {
+    min-height: 220px;
+}
+
+/* Tables — zebra striping, more padding */
+.pillar-section .table {
+    width: 100%;
+    border-collapse: separate;
+    border-spacing: 0;
+}
+
+.pillar-section .table th {
+    font-size: 0.75rem;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.04em;
+    color: var(--text-muted);
+    padding: 12px 16px;
+    border-bottom: 2px solid var(--border-color);
+    text-align: left;
+    white-space: nowrap;
+}
+
+.pillar-section .table td {
+    padding: 12px 16px;
+    font-size: 0.9rem;
+    border-bottom: 1px solid var(--border-color);
+    vertical-align: middle;
+}
+
+.pillar-section .table tbody tr:nth-child(even) {
+    background: var(--bg-secondary);
+}
+
+.pillar-section .table tbody tr:hover {
+    background: var(--bg-tertiary);
 }
 
 /* =============================================================================
@@ -624,14 +670,14 @@
 .persona-quick-btn {
     display: flex;
     align-items: center;
-    gap: var(--space-2);
+    gap: 8px;
     width: 100%;
-    padding: var(--space-3);
+    padding: 10px 12px;
     background: var(--bg-secondary);
     border: 1px solid var(--border-color);
     border-radius: var(--radius-lg);
     cursor: pointer;
-    font-size: 0.9rem;
+    font-size: 0.85rem;
     color: var(--text-primary);
     transition: all 0.2s ease;
 }
@@ -642,16 +688,16 @@
 }
 
 .persona-quick-btn i:first-child {
-    width: 24px;
-    height: 24px;
+    width: 20px;
+    height: 20px;
     color: var(--color-primary);
 }
 
 .persona-quick-btn i:last-child {
     margin-left: auto;
-    width: 16px;
-    height: 16px;
-    opacity: 0.5;
+    width: 14px;
+    height: 14px;
+    opacity: 0.4;
 }
 
 .persona-dropdown {
@@ -664,8 +710,8 @@
     border-radius: var(--radius-lg);
     box-shadow: 0 8px 24px rgba(0, 0, 0, 0.15);
     z-index: 100;
-    margin-top: var(--space-1);
-    max-height: 300px;
+    margin-top: 4px;
+    max-height: 280px;
     overflow-y: auto;
     opacity: 0;
     visibility: hidden;
@@ -682,25 +728,23 @@
 .persona-option {
     display: flex;
     align-items: center;
-    gap: var(--space-2);
+    gap: 8px;
     width: 100%;
-    padding: var(--space-3);
+    padding: 10px 12px;
     background: none;
     border: none;
     cursor: pointer;
-    font-size: 0.9rem;
+    font-size: 0.85rem;
     color: var(--text-primary);
     text-align: left;
     transition: background 0.15s ease;
 }
 
-.persona-option:hover {
-    background: var(--bg-secondary);
-}
+.persona-option:hover { background: var(--bg-secondary); }
 
 .persona-option i {
-    width: 20px;
-    height: 20px;
+    width: 18px;
+    height: 18px;
     color: var(--text-muted);
 }
 
@@ -711,36 +755,31 @@
 .nav-divider {
     height: 1px;
     background: var(--border-color);
-    margin: var(--space-4) var(--space-3);
+    margin: 16px 12px;
 }
 
-.quick-access-section {
-    padding: 0 var(--space-2);
-}
+.quick-access-section { padding: 0 8px; }
 
 .quick-access-section .section-title {
     display: flex;
     align-items: center;
-    gap: var(--space-2);
-    font-size: 0.7rem;
-    font-weight: 600;
+    gap: 6px;
+    font-size: 0.65rem;
+    font-weight: 700;
     text-transform: uppercase;
-    letter-spacing: 0.05em;
+    letter-spacing: 0.08em;
     color: var(--text-muted);
-    padding: var(--space-2) var(--space-2);
+    padding: 6px 8px;
 }
 
-.quick-access-section .section-title i {
-    width: 14px;
-    height: 14px;
-}
+.quick-access-section .section-title i { width: 12px; height: 12px; }
 
 .quick-access-section .nav-link {
     display: flex;
     align-items: center;
-    gap: var(--space-2);
-    padding: var(--space-2) var(--space-2);
-    font-size: 0.85rem;
+    gap: 8px;
+    padding: 8px;
+    font-size: 0.8rem;
     color: var(--text-secondary);
     text-decoration: none;
     border-radius: var(--radius-md);
@@ -752,19 +791,17 @@
     color: var(--text-primary);
 }
 
-.quick-access-section .nav-link i {
-    width: 18px;
-    height: 18px;
-}
+.quick-access-section .nav-link i { width: 16px; height: 16px; }
 
 /* Nav link home */
 .nav-link-home {
     display: flex;
     align-items: center;
-    gap: var(--space-2);
-    padding: var(--space-3);
-    margin-bottom: var(--space-2);
+    gap: 8px;
+    padding: 10px 12px;
+    margin-bottom: 8px;
     font-weight: 600;
+    font-size: 0.85rem;
     color: var(--text-primary);
     text-decoration: none;
     border-radius: var(--radius-lg);
@@ -772,88 +809,34 @@
     transition: all 0.15s ease;
 }
 
-.nav-link-home:hover {
-    background: var(--bg-tertiary);
-}
+.nav-link-home:hover { background: var(--bg-tertiary); }
 
 .nav-link-home.active {
     background: var(--color-primary);
     color: white;
 }
 
-.nav-link-home i {
-    width: 20px;
-    height: 20px;
-}
+.nav-link-home i { width: 18px; height: 18px; }
 
 /* =============================================================================
-   RESPONSIVE
-   ============================================================================= */
-
-@media (max-width: 768px) {
-    .pillars-sidebar {
-        position: fixed;
-        left: -300px;
-        top: 0;
-        height: 100vh;
-        z-index: 1000;
-        transition: left 0.3s ease;
-    }
-
-    .pillars-sidebar.open {
-        left: 0;
-    }
-
-    .pillars-hero h1 {
-        font-size: 1.75rem;
-    }
-
-    .pillars-grid {
-        grid-template-columns: 1fr;
-    }
-
-    .pillar-header {
-        flex-direction: column;
-        gap: var(--space-4);
-        text-align: center;
-    }
-
-    .pillar-header-info {
-        flex-direction: column;
-    }
-
-    .pillar-kpi-grid {
-        grid-template-columns: repeat(2, 1fr);
-    }
-}
-
-@media (max-width: 480px) {
-    .pillar-kpi-grid {
-        grid-template-columns: 1fr;
-    }
-}
-
-/* =============================================================================
-   TRUST PENTAGON VISUALIZATION
+   TRUST PENTAGON
    ============================================================================= */
 
 .trust-pentagon-container {
     display: flex;
     justify-content: center;
     align-items: center;
-    padding: var(--space-6);
+    padding: 24px;
 }
 
 .trust-pentagon {
     position: relative;
-    width: 400px;
-    height: 400px;
+    width: 380px;
+    height: 380px;
+    max-width: 100%;
 }
 
-.trust-pentagon svg {
-    width: 100%;
-    height: 100%;
-}
+.trust-pentagon svg { width: 100%; height: 100%; }
 
 .pentagon-axis {
     stroke: var(--border-color);
@@ -865,37 +848,309 @@
     stroke: var(--border-color);
     stroke-width: 0.5;
     fill: none;
-    opacity: 0.5;
+    opacity: 0.4;
 }
 
 .pentagon-shape {
-    fill: rgba(99, 102, 241, 0.2);
+    fill: rgba(99, 102, 241, 0.15);
     stroke: var(--color-primary);
-    stroke-width: 2;
+    stroke-width: 2.5;
     transition: all 0.3s ease;
 }
 
 .pentagon-point {
     fill: var(--color-primary);
-    r: 6;
     cursor: pointer;
     transition: all 0.2s ease;
 }
 
 .pentagon-point:hover {
-    r: 10;
     fill: var(--color-primary-dark);
 }
 
 .pentagon-label {
     font-size: 0.85rem;
-    font-weight: 600;
+    font-weight: 700;
     fill: var(--text-primary);
     text-anchor: middle;
 }
 
 .pentagon-score {
-    font-size: 0.75rem;
+    font-size: 0.8rem;
+    font-weight: 600;
     fill: var(--text-muted);
     text-anchor: middle;
+}
+
+/* =============================================================================
+   UTILITY: progress rings, bars (used in performance page)
+   ============================================================================= */
+
+.progress-ring {
+    position: relative;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.progress-ring span {
+    position: absolute;
+    font-family: 'Space Grotesk', sans-serif;
+}
+
+.progress-bar {
+    height: 8px;
+    background: var(--bg-tertiary);
+    border-radius: 4px;
+    overflow: hidden;
+}
+
+.progress-bar-fill {
+    height: 100%;
+    border-radius: 4px;
+    transition: width 0.5s ease;
+}
+
+/* Grid helper */
+.grid-4 {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+}
+
+/* Alert items inside sections */
+.pillar-alert-item {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    padding: 16px;
+    border-bottom: 1px solid var(--border-color);
+    transition: background 0.15s ease;
+}
+
+.pillar-alert-item:last-child {
+    border-bottom: none;
+}
+
+.pillar-alert-item:hover {
+    background: var(--bg-secondary);
+}
+
+.pillar-alert-item .alert-body {
+    flex: 1;
+    min-width: 0;
+}
+
+.pillar-alert-item .alert-body strong {
+    display: block;
+    margin-bottom: 2px;
+}
+
+.pillar-alert-item .alert-body .text-sm {
+    color: var(--text-muted);
+}
+
+/* Checklist items */
+.pillar-checklist-item {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 12px 16px;
+    background: var(--bg-secondary);
+    border-radius: var(--radius-lg);
+    margin-bottom: 8px;
+    transition: background 0.15s ease;
+}
+
+.pillar-checklist-item:hover {
+    background: var(--bg-tertiary);
+}
+
+.pillar-checklist-item:last-child {
+    margin-bottom: 0;
+}
+
+.pillar-checklist-item .check-label {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-size: 0.9rem;
+}
+
+.pillar-checklist-item .check-label i {
+    width: 16px;
+    height: 16px;
+    flex-shrink: 0;
+}
+
+/* Stat highlight card (used inside sections) */
+.stat-highlight {
+    text-align: center;
+    padding: 20px;
+}
+
+.stat-highlight .stat-value {
+    font-size: 3rem;
+    font-weight: 800;
+    font-family: 'Space Grotesk', sans-serif;
+    line-height: 1.2;
+}
+
+.stat-highlight .stat-label {
+    font-size: 0.85rem;
+    color: var(--text-muted);
+    margin-top: 4px;
+}
+
+/* Protection status items */
+.protection-item {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 12px 16px;
+    background: var(--bg-secondary);
+    border-radius: var(--radius-lg);
+    margin-bottom: 8px;
+    font-size: 0.9rem;
+}
+
+.protection-item:last-child {
+    margin-bottom: 0;
+}
+
+.protection-item .protection-label {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.protection-item .protection-label i {
+    width: 16px;
+    height: 16px;
+}
+
+/* Example prediction (explainability) */
+.prediction-example {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 16px;
+}
+
+.prediction-option {
+    padding: 16px;
+    border-radius: var(--radius-lg);
+    border-left: 4px solid var(--text-muted);
+    background: var(--bg-secondary);
+}
+
+.prediction-option.chosen {
+    border-left-color: var(--color-success);
+    background: var(--color-success-light, rgba(16, 185, 129, 0.08));
+}
+
+.prediction-option .pred-label {
+    font-size: 0.75rem;
+    color: var(--text-muted);
+    margin-bottom: 6px;
+}
+
+.prediction-option .pred-value {
+    font-weight: 700;
+    font-size: 0.95rem;
+}
+
+.prediction-option .pred-confidence {
+    font-size: 0.8rem;
+    color: var(--text-muted);
+    margin-top: 2px;
+}
+
+/* =============================================================================
+   HOME PAGE — Global Score Badge
+   ============================================================================= */
+
+.global-score-badge {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding: 12px 16px;
+    background: var(--gradient-primary);
+    border-radius: var(--radius-xl);
+    color: white;
+}
+
+.global-score-badge .score {
+    font-size: 2rem;
+    font-weight: 800;
+    font-family: 'Space Grotesk', sans-serif;
+    line-height: 1;
+}
+
+.global-score-badge .label {
+    font-size: 0.75rem;
+    opacity: 0.9;
+    margin-top: 4px;
+}
+
+/* =============================================================================
+   RESPONSIVE
+   ============================================================================= */
+
+@media (max-width: 1024px) {
+    .pillars-content {
+        padding: 24px;
+    }
+
+    .pillar-kpi-grid {
+        grid-template-columns: repeat(2, 1fr);
+    }
+
+    .pillar-header {
+        padding: 20px;
+    }
+
+    .grid-4 {
+        grid-template-columns: repeat(2, 1fr);
+    }
+
+    .prediction-example {
+        grid-template-columns: 1fr;
+    }
+}
+
+@media (max-width: 768px) {
+    .pillars-sidebar {
+        position: fixed;
+        left: -300px;
+        top: 0;
+        height: 100vh;
+        z-index: 1000;
+        transition: left 0.3s ease;
+    }
+
+    .pillars-sidebar.open { left: 0; }
+
+    .pillars-content { padding: 16px; }
+
+    .pillars-hero h1 { font-size: 1.5rem; }
+
+    .pillars-grid { grid-template-columns: 1fr; }
+
+    .pillar-header {
+        flex-direction: column;
+        gap: 16px;
+        text-align: center;
+    }
+
+    .pillar-header-info { flex-direction: column; }
+
+    .pillar-kpi-grid { grid-template-columns: repeat(2, 1fr); }
+
+    .pillar-section { padding: 20px; }
+
+    .pillar-section-header { flex-direction: column; align-items: flex-start; }
+}
+
+@media (max-width: 480px) {
+    .pillar-kpi-grid { grid-template-columns: 1fr; }
+    .pillar-kpi-value { font-size: 1.6rem; }
 }

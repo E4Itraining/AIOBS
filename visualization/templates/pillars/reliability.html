@@ -208,26 +208,26 @@
     </div>
 
     <div id="reliabilityAlerts">
-        <div class="flex items-center gap-4 p-4" style="border-bottom: 1px solid var(--border-color);">
+        <div class="pillar-alert-item">
             <span class="badge badge-warning"><span class="badge-dot"></span>Warning</span>
-            <div style="flex: 1;">
+            <div class="alert-body">
                 <strong>Concept drift détecté sur recommendation-engine</strong>
-                <div class="text-sm text-muted">Le score PSI a atteint 0.08 (seuil: 0.15) - il y a 2h</div>
+                <div class="text-sm">Le score PSI a atteint 0.08 (seuil: 0.15) - il y a 2h</div>
             </div>
             <button class="btn btn-secondary btn-sm">
                 <i data-lucide="search"></i>
-                Investiguer
+                {{ t('actions.investigate') or 'Investiguer' }}
             </button>
         </div>
-        <div class="flex items-center gap-4 p-4" style="border-bottom: 1px solid var(--border-color);">
+        <div class="pillar-alert-item">
             <span class="badge badge-info"><span class="badge-dot"></span>Info</span>
-            <div style="flex: 1;">
+            <div class="alert-body">
                 <strong>Calibration automatique terminée</strong>
-                <div class="text-sm text-muted">fraud-detection-v3 recalibré avec succès - il y a 6h</div>
+                <div class="text-sm">fraud-detection-v3 recalibré avec succès - il y a 6h</div>
             </div>
             <button class="btn btn-secondary btn-sm">
                 <i data-lucide="file-text"></i>
-                Rapport
+                {{ t('actions.report') or 'Rapport' }}
             </button>
         </div>
     </div>
