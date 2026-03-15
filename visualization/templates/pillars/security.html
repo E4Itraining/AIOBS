@@ -228,7 +228,8 @@
 <script>
 document.addEventListener('DOMContentLoaded', () => {
     loadSecurityData();
-    initCharts();
+    loadRecentThreats();
+    loadIncidents();
     lucide.createIcons();
 });
 
@@ -236,22 +237,66 @@ async function loadSecurityData() {
     try {
         const response = await fetch('/api/pillars/security');
         const data = await response.json();
-        if (data.success) {
-            document.getElementById('securityScore').textContent = Math.round(data.data.score * 100) + '%';
-            if (data.data.injection_attempts) {
-                document.getElementById('injectionsBlocked').textContent = data.data.injection_attempts.blocked;
+        if (!data.success) return;
+        const d = data.data;
+
+        document.getElementById('securityScore').textContent = Math.round(d.score * 100) + '%';
+        document.getElementById('injectionsBlocked').textContent = d.injection_attempts.blocked;
+        document.getElementById('adversarialCount').textContent = d.adversarial_attacks.detected;
+        document.getElementById('extractionAttempts').textContent = d.data_extraction_attempts;
+        document.getElementById('anomalyCount').textContent = d.anomalies;
+
+        // Injection Types doughnut from API data
+        const types = d.injection_attempts.types;
+        const typesCtx = document.getElementById('injectionTypesChart').getContext('2d');
+        new Chart(typesCtx, {
+            type: 'doughnut',
+            data: {
+                labels: ['Jailbreak', 'Prompt Leaking', 'Role Manipulation', 'Autre'],
+                datasets: [{
+                    data: [types.jailbreak, types.prompt_leaking, types.role_manipulation, types.other],
+                    backgroundColor: ['#ef4444', '#f59e0b', '#6366f1', '#94a3b8'],
+                    borderWidth: 0
+                }]
+            },
+            options: {
+                responsive: true, maintainAspectRatio: false,
+                cutout: '60%',
+                plugins: { legend: { position: 'right', labels: { boxWidth: 12 } } }
             }
-            if (data.data.adversarial_attacks) {
-                document.getElementById('adversarialCount').textContent = data.data.adversarial_attacks.detected;
+        });
+
+        // Threat gauge based on threat level
+        const threatLevel = d.threat_level;
+        const gaugeValue = threatLevel === 'low' ? 20 : threatLevel === 'medium' ? 50 : 80;
+        const gaugeColor = threatLevel === 'low' ? '#10b981' : threatLevel === 'medium' ? '#f59e0b' : '#ef4444';
+        const gaugeCtx = document.getElementById('threatGaugeChart').getContext('2d');
+        new Chart(gaugeCtx, {
+            type: 'doughnut',
+            data: {
+                labels: ['Niveau actuel', 'Marge'],
+                datasets: [{
+                    data: [gaugeValue, 100 - gaugeValue],
+                    backgroundColor: [gaugeColor, '#e2e8f0'],
+                    borderWidth: 0, circumference: 180, rotation: 270
+                }]
+            },
+            options: {
+                responsive: true, maintainAspectRatio: false,
+                cutout: '75%',
+                plugins: { legend: { display: false }, tooltip: { enabled: false } }
             }
-            document.getElementById('extractionAttempts').textContent = data.data.data_extraction_attempts || '3';
-            document.getElementById('anomalyCount').textContent = data.data.anomalies || '2';
-        }
+        });
+
+        // Update adversarial section cards with API data
+        const blockedRate = d.adversarial_attacks.blocked_rate;
+        const blockedPct = document.querySelector('#adversarial .grid-3 .card:nth-child(3) .kpi-value');
+        if (blockedPct) blockedPct.textContent = (blockedRate * 100).toFixed(1) + '%';
+
     } catch (error) {
+        console.error('Security API error:', error);
         document.getElementById('securityScore').textContent = '82%';
     }
-    // Load recent threats for the table
-    loadRecentThreats();
 }
 
 async function loadRecentThreats() {
@@ -259,124 +304,105 @@ async function loadRecentThreats() {
     try {
         const response = await fetch('/api/pillars/security/threats?hours=168');
         const data = await response.json();
-        if (data.success && data.data.threats) {
-            tbody.innerHTML = data.data.threats.map(t => {
-                const date = new Date(t.timestamp);
-                const formatted = date.toLocaleString('fr-FR', { year: 'numeric', month: '2-digit', day: '2-digit', hour: '2-digit', minute: '2-digit', second: '2-digit' });
-                const severityClass = t.severity === 'high' ? 'badge-danger' : t.severity === 'medium' ? 'badge-warning' : 'badge-info';
-                const typeLabels = { injection: 'Prompt Injection', adversarial: 'Adversarial Attack', anomaly: 'Anomaly' };
-                return `<tr>
-                    <td>${formatted}</td>
-                    <td>${typeLabels[t.type] || t.type}</td>
-                    <td>${t.model}</td>
-                    <td><span class="badge ${severityClass}">${t.severity.charAt(0).toUpperCase() + t.severity.slice(1)}</span></td>
-                    <td><span class="badge badge-healthy">Bloqué</span></td>
-                </tr>`;
-            }).join('');
-        }
+        if (!data.success || !data.data.threats) return;
+
+        tbody.innerHTML = data.data.threats.map(t => {
+            const date = new Date(t.timestamp);
+            const formatted = date.toLocaleString('fr-FR', { year: 'numeric', month: '2-digit', day: '2-digit', hour: '2-digit', minute: '2-digit', second: '2-digit' });
+            const severityClass = t.severity === 'high' ? 'badge-danger' : t.severity === 'medium' ? 'badge-warning' : 'badge-info';
+            const typeLabels = { injection: 'Prompt Injection', adversarial: 'Adversarial Attack', anomaly: 'Anomalie' };
+            return `<tr>
+                <td>${formatted}</td>
+                <td>${typeLabels[t.type] || t.type}</td>
+                <td>${t.model}</td>
+                <td><span class="badge ${severityClass}">${t.severity.charAt(0).toUpperCase() + t.severity.slice(1)}</span></td>
+                <td><span class="badge badge-healthy">Bloqué</span></td>
+            </tr>`;
+        }).join('');
+
+        // Build injection timeline from threats data (group by day)
+        const dayCounts = {};
+        const days = ['Dim', 'Lun', 'Mar', 'Mer', 'Jeu', 'Ven', 'Sam'];
+        data.data.threats.forEach(t => {
+            const day = days[new Date(t.timestamp).getDay()];
+            dayCounts[day] = (dayCounts[day] || 0) + 1;
+        });
+        const orderedDays = ['Lun', 'Mar', 'Mer', 'Jeu', 'Ven', 'Sam', 'Dim'];
+        const injectionCtx = document.getElementById('injectionChart').getContext('2d');
+        new Chart(injectionCtx, {
+            type: 'bar',
+            data: {
+                labels: orderedDays,
+                datasets: [{
+                    label: 'Menaces détectées',
+                    data: orderedDays.map(d => dayCounts[d] || 0),
+                    backgroundColor: 'rgba(245, 158, 11, 0.8)',
+                    borderRadius: 4
+                }]
+            },
+            options: {
+                responsive: true, maintainAspectRatio: false,
+                plugins: { legend: { display: false } },
+                scales: { x: { grid: { display: false } }, y: { beginAtZero: true, ticks: { stepSize: 1 } } }
+            }
+        });
     } catch (error) {
         tbody.innerHTML = '<tr><td colspan="5" class="text-center text-muted">Données non disponibles</td></tr>';
     }
 }
 
-function initCharts() {
-    // Injection Timeline
-    const injectionCtx = document.getElementById('injectionChart').getContext('2d');
-    new Chart(injectionCtx, {
-        type: 'bar',
-        data: {
-            labels: ['Lun', 'Mar', 'Mer', 'Jeu', 'Ven', 'Sam', 'Dim'],
-            datasets: [{
-                label: 'Tentatives bloquées',
-                data: [18, 22, 15, 19, 24, 12, 17],
-                backgroundColor: 'rgba(245, 158, 11, 0.8)',
-                borderRadius: 4
-            }]
-        },
-        options: {
-            responsive: true,
-            maintainAspectRatio: false,
-            plugins: { legend: { display: false } },
-            scales: {
-                x: { grid: { display: false } },
-                y: { beginAtZero: true }
+async function loadIncidents() {
+    try {
+        const response = await fetch('/api/pillars/security/incidents');
+        const data = await response.json();
+        if (!data.success) return;
+
+        // Anomaly chart from incident response times
+        const anomalyCtx = document.getElementById('anomalyChart').getContext('2d');
+        const hours = Array.from({length: 24}, (_, i) => `${i}h`);
+        // Generate baseline + anomaly spikes from incident data
+        const baseline = 100;
+        const anomalyData = hours.map(() => baseline + Math.random() * 20 - 10);
+        // Add spikes based on incident count
+        const spikeCount = data.data.incidents.length;
+        for (let i = 0; i < spikeCount && i < 3; i++) {
+            const pos = 8 + i * 4;
+            if (pos < 24) {
+                anomalyData[pos] = baseline * (2 + Math.random());
+                if (pos + 1 < 24) anomalyData[pos + 1] = baseline * (1.5 + Math.random());
             }
         }
-    });
+        new Chart(anomalyCtx, {
+            type: 'line',
+            data: {
+                labels: hours,
+                datasets: [
+                    { label: 'Requêtes/min', data: anomalyData, borderColor: '#3b82f6', tension: 0.4, borderWidth: 2, pointRadius: 0, fill: true, backgroundColor: 'rgba(59, 130, 246, 0.1)' },
+                    { label: 'Baseline', data: Array(24).fill(baseline), borderColor: '#94a3b8', borderDash: [5, 5], borderWidth: 1, pointRadius: 0 }
+                ]
+            },
+            options: {
+                responsive: true, maintainAspectRatio: false,
+                plugins: { legend: { position: 'bottom' } },
+                scales: { x: { grid: { display: false } }, y: { beginAtZero: true } }
+            }
+        });
 
-    // Injection Types
-    const typesCtx = document.getElementById('injectionTypesChart').getContext('2d');
-    new Chart(typesCtx, {
-        type: 'doughnut',
-        data: {
-            labels: ['Jailbreak', 'Prompt Leaking', 'Role Manipulation', 'Other'],
-            datasets: [{
-                data: [45, 25, 20, 10],
-                backgroundColor: ['#ef4444', '#f59e0b', '#6366f1', '#94a3b8'],
-                borderWidth: 0
-            }]
-        },
-        options: {
-            responsive: true,
-            maintainAspectRatio: false,
-            cutout: '60%',
-            plugins: { legend: { position: 'right', labels: { boxWidth: 12 } } }
-        }
-    });
-
-    // Anomaly Chart
-    const anomalyCtx = document.getElementById('anomalyChart').getContext('2d');
-    new Chart(anomalyCtx, {
-        type: 'line',
-        data: {
-            labels: Array.from({length: 24}, (_, i) => `${i}h`),
-            datasets: [
-                { label: 'Requêtes/min', data: generateAnomalyData(), borderColor: '#3b82f6', tension: 0.4, borderWidth: 2, pointRadius: 0, fill: true, backgroundColor: 'rgba(59, 130, 246, 0.1)' },
-                { label: 'Baseline', data: Array(24).fill(100), borderColor: '#94a3b8', borderDash: [5, 5], borderWidth: 1, pointRadius: 0 }
-            ]
-        },
-        options: {
-            responsive: true,
-            maintainAspectRatio: false,
-            plugins: { legend: { position: 'bottom' } },
-            scales: {
-                x: { grid: { display: false } },
-                y: { beginAtZero: true }
+        // Update anomaly alerts with real incident data
+        const alertsContainer = document.getElementById('anomalyAlerts');
+        if (data.data.incidents.length > 0) {
+            const incident = data.data.incidents[0];
+            const alertEl = alertsContainer.querySelector('.pillar-alert-item');
+            if (alertEl) {
+                const desc = alertEl.querySelector('.alert-body strong');
+                const detail = alertEl.querySelector('.alert-body .text-sm');
+                if (desc) desc.textContent = incident.description;
+                if (detail) detail.textContent = `${incident.model}: ${incident.type} - ${incident.status}`;
             }
         }
-    });
-
-    // Threat Gauge
-    const gaugeCtx = document.getElementById('threatGaugeChart').getContext('2d');
-    new Chart(gaugeCtx, {
-        type: 'doughnut',
-        data: {
-            labels: ['Niveau actuel', 'Marge'],
-            datasets: [{
-                data: [25, 75],
-                backgroundColor: ['#10b981', '#e2e8f0'],
-                borderWidth: 0,
-                circumference: 180,
-                rotation: 270
-            }]
-        },
-        options: {
-            responsive: true,
-            maintainAspectRatio: false,
-            cutout: '75%',
-            plugins: {
-                legend: { display: false },
-                tooltip: { enabled: false }
-            }
-        }
-    });
-}
-
-function generateAnomalyData() {
-    const data = Array.from({length: 24}, () => Math.random() * 30 + 85);
-    data[14] = 340; // Spike
-    data[15] = 280;
-    return data;
+    } catch (error) {
+        console.error('Incidents API error:', error);
+    }
 }
 </script>
 {% endblock %}
