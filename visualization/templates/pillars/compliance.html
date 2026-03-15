@@ -89,19 +89,17 @@
     <div class="grid grid-2 gap-4 mb-4">
         <div class="card">
             <h4 class="text-sm text-muted mb-2">{{ t('pillars.compliance.daily_inferences') or 'Inférences par Jour' }}</h4>
-            <div class="chart-container" style="height: 200px;">
+            <div class="chart-container" style="height: 220px;">
                 <canvas id="inferenceChart"></canvas>
             </div>
         </div>
         <div class="card">
             <h4 class="text-sm text-muted mb-2">{{ t('pillars.compliance.trace_coverage') or 'Couverture de Traçabilité' }}</h4>
-            <div class="flex justify-center items-center" style="height: 200px;">
-                <div class="text-center">
-                    <div style="font-size: 4rem; font-weight: 800; color: var(--pillar-compliance); font-family: 'Space Grotesk';">99.8%</div>
-                    <div class="text-muted">Des inférences tracées</div>
-                    <div class="mt-2">
-                        <span class="badge badge-healthy">Conforme</span>
-                    </div>
+            <div class="stat-highlight" style="height: 220px; display: flex; flex-direction: column; align-items: center; justify-content: center;">
+                <div class="stat-value" style="color: var(--pillar-compliance);">99.8%</div>
+                <div class="stat-label">{{ t('pillars.compliance.traced_desc') or 'Des inférences tracées' }}</div>
+                <div style="margin-top: 12px;">
+                    <span class="badge badge-healthy">{{ t('common.compliant') or 'Conforme' }}</span>
                 </div>
             </div>
         </div>
@@ -121,24 +119,24 @@
             <tbody>
                 <tr>
                     <td><strong>fraud-detection-v3</strong></td>
-                    <td>45,230</td>
+                    <td>45 230</td>
                     <td>100%</td>
                     <td>90 jours</td>
-                    <td><span class="badge badge-healthy">Conforme</span></td>
+                    <td><span class="badge badge-healthy">{{ t('common.compliant') or 'Conforme' }}</span></td>
                 </tr>
                 <tr>
                     <td><strong>recommendation-engine</strong></td>
-                    <td>128,450</td>
+                    <td>128 450</td>
                     <td>99.9%</td>
                     <td>30 jours</td>
-                    <td><span class="badge badge-healthy">Conforme</span></td>
+                    <td><span class="badge badge-healthy">{{ t('common.compliant') or 'Conforme' }}</span></td>
                 </tr>
                 <tr>
                     <td><strong>chatbot-assistant</strong></td>
-                    <td>23,180</td>
+                    <td>23 180</td>
                     <td>100%</td>
                     <td>365 jours</td>
-                    <td><span class="badge badge-healthy">Conforme</span></td>
+                    <td><span class="badge badge-healthy">{{ t('common.compliant') or 'Conforme' }}</span></td>
                 </tr>
             </tbody>
         </table>
@@ -165,28 +163,8 @@
                     <th>{{ t('pillars.compliance.rollback') or 'Rollback' }}</th>
                 </tr>
             </thead>
-            <tbody>
-                <tr>
-                    <td><strong>fraud-detection</strong></td>
-                    <td>v3.2.1</td>
-                    <td>24</td>
-                    <td>2024-12-20</td>
-                    <td><button class="btn btn-secondary btn-sm"><i data-lucide="rotate-ccw"></i></button></td>
-                </tr>
-                <tr>
-                    <td><strong>recommendation-engine</strong></td>
-                    <td>v2.8.0</td>
-                    <td>18</td>
-                    <td>2024-12-15</td>
-                    <td><button class="btn btn-secondary btn-sm"><i data-lucide="rotate-ccw"></i></button></td>
-                </tr>
-                <tr>
-                    <td><strong>pricing-model</strong></td>
-                    <td>v2.1.3</td>
-                    <td>12</td>
-                    <td>2024-12-22</td>
-                    <td><button class="btn btn-secondary btn-sm"><i data-lucide="rotate-ccw"></i></button></td>
-                </tr>
+            <tbody id="versioningTable">
+                <!-- Populated dynamically -->
             </tbody>
         </table>
     </div>
@@ -201,28 +179,25 @@
         </h2>
     </div>
 
-    <div class="card mb-4" style="background: var(--bg-secondary); text-align: center; padding: var(--space-8);">
-        <i data-lucide="network" style="width: 48px; height: 48px; color: var(--text-muted); margin-bottom: var(--space-4);"></i>
-        <h3>{{ t('pillars.compliance.lineage_graph') or 'Graphe de Lignage' }}</h3>
-        <p class="text-muted">{{ t('pillars.compliance.lineage_desc') or 'Visualisez le flux de données depuis les sources jusqu\'aux prédictions' }}</p>
-        <button class="btn btn-primary mt-4">
-            <i data-lucide="external-link"></i>
-            {{ t('actions.view_graph') or 'Voir le Graphe' }}
-        </button>
+    <div class="grid grid-3 gap-4 mb-4">
+        <div class="card stat-highlight">
+            <div class="stat-value" style="color: var(--color-success); font-size: 2.5rem;">12</div>
+            <div class="stat-label">{{ t('pillars.compliance.data_sources') or 'Sources de Données' }}</div>
+        </div>
+        <div class="card stat-highlight">
+            <div class="stat-value" style="color: var(--pillar-compliance); font-size: 2.5rem;">8</div>
+            <div class="stat-label">{{ t('pillars.compliance.transformations') or 'Transformations' }}</div>
+        </div>
+        <div class="card stat-highlight">
+            <div class="stat-value" style="color: var(--color-success); font-size: 2.5rem;">100%</div>
+            <div class="stat-label">{{ t('pillars.compliance.documented') or 'Documentées' }}</div>
+        </div>
     </div>
 
-    <div class="grid grid-3 gap-4">
-        <div class="card text-center">
-            <div class="kpi-value" style="color: var(--color-success);">12</div>
-            <div class="text-sm text-muted">{{ t('pillars.compliance.data_sources') or 'Sources de Données' }}</div>
-        </div>
-        <div class="card text-center">
-            <div class="kpi-value" style="color: var(--pillar-compliance);">8</div>
-            <div class="text-sm text-muted">{{ t('pillars.compliance.transformations') or 'Transformations' }}</div>
-        </div>
-        <div class="card text-center">
-            <div class="kpi-value" style="color: var(--color-success);">100%</div>
-            <div class="text-sm text-muted">{{ t('pillars.compliance.documented') or 'Documentées' }}</div>
+    <div class="card">
+        <h4 class="text-sm text-muted mb-2">{{ t('pillars.compliance.lineage_flow') or 'Flux de Données' }}</h4>
+        <div class="chart-container" style="height: 220px;">
+            <canvas id="lineageFlowChart"></canvas>
         </div>
     </div>
 </div>
@@ -232,46 +207,44 @@
     <div class="pillar-section-header">
         <h2 class="pillar-section-title">
             <i data-lucide="file-check"></i>
-            {{ t('pillars.compliance.aiact') or 'Preuves pour l\'AI Act' }}
+            {{ t('pillars.compliance.aiact') or 'Conformité AI Act' }}
         </h2>
-        <span class="badge badge-warning">En progression</span>
+        <span class="badge badge-warning">{{ t('common.in_progress') or 'En progression' }}</span>
     </div>
 
     <div class="grid grid-2 gap-4 mb-4">
         <div>
             <h4 class="text-sm text-muted mb-3">{{ t('pillars.compliance.ai_act_checklist') or 'Checklist AI Act' }}</h4>
-            <div class="flex flex-col gap-2">
-                <div class="flex items-center justify-between p-3 bg-secondary rounded-lg">
-                    <span><i data-lucide="check-circle" class="inline-block w-4 h-4 mr-2" style="color: var(--color-success);"></i> Documentation technique</span>
-                    <span class="badge badge-healthy">Complet</span>
-                </div>
-                <div class="flex items-center justify-between p-3 bg-secondary rounded-lg">
-                    <span><i data-lucide="check-circle" class="inline-block w-4 h-4 mr-2" style="color: var(--color-success);"></i> Évaluation des risques</span>
-                    <span class="badge badge-healthy">Complet</span>
-                </div>
-                <div class="flex items-center justify-between p-3 bg-secondary rounded-lg">
-                    <span><i data-lucide="clock" class="inline-block w-4 h-4 mr-2" style="color: var(--color-warning);"></i> Tests de robustesse</span>
-                    <span class="badge badge-warning">En cours</span>
-                </div>
-                <div class="flex items-center justify-between p-3 bg-secondary rounded-lg">
-                    <span><i data-lucide="clock" class="inline-block w-4 h-4 mr-2" style="color: var(--color-warning);"></i> Human oversight procedures</span>
-                    <span class="badge badge-warning">En cours</span>
-                </div>
-                <div class="flex items-center justify-between p-3 bg-secondary rounded-lg">
-                    <span><i data-lucide="circle" class="inline-block w-4 h-4 mr-2" style="color: var(--text-muted);"></i> Audit externe</span>
-                    <span class="badge" style="background: var(--bg-tertiary);">Planifié Q1</span>
-                </div>
+            <div class="pillar-checklist-item">
+                <span class="check-label"><i data-lucide="check-circle" style="color: var(--color-success);"></i> {{ t('pillars.compliance.tech_doc') or 'Documentation technique' }}</span>
+                <span class="badge badge-healthy">{{ t('common.complete') or 'Complet' }}</span>
+            </div>
+            <div class="pillar-checklist-item">
+                <span class="check-label"><i data-lucide="check-circle" style="color: var(--color-success);"></i> {{ t('pillars.compliance.risk_assessment') or 'Évaluation des risques' }}</span>
+                <span class="badge badge-healthy">{{ t('common.complete') or 'Complet' }}</span>
+            </div>
+            <div class="pillar-checklist-item">
+                <span class="check-label"><i data-lucide="clock" style="color: var(--color-warning);"></i> {{ t('pillars.compliance.robustness_tests') or 'Tests de robustesse' }}</span>
+                <span class="badge badge-warning">{{ t('common.in_progress') or 'En cours' }}</span>
+            </div>
+            <div class="pillar-checklist-item">
+                <span class="check-label"><i data-lucide="clock" style="color: var(--color-warning);"></i> {{ t('pillars.compliance.human_oversight') or 'Procédures de contrôle humain' }}</span>
+                <span class="badge badge-warning">{{ t('common.in_progress') or 'En cours' }}</span>
+            </div>
+            <div class="pillar-checklist-item">
+                <span class="check-label"><i data-lucide="circle" style="color: var(--text-muted);"></i> {{ t('pillars.compliance.external_audit') or 'Audit externe' }}</span>
+                <span class="badge" style="background: var(--bg-tertiary);">{{ t('pillars.compliance.planned_q1') or 'Planifié Q1' }}</span>
             </div>
         </div>
         <div>
             <h4 class="text-sm text-muted mb-3">{{ t('pillars.compliance.risk_classification') or 'Classification des Risques' }}</h4>
-            <div class="chart-container" style="height: 200px;">
+            <div class="chart-container" style="height: 220px;">
                 <canvas id="riskClassChart"></canvas>
             </div>
-            <div class="text-center mt-4">
-                <span class="badge badge-warning" style="font-size: 1rem; padding: var(--space-2) var(--space-3);">
+            <div class="text-center" style="margin-top: 12px;">
+                <span class="badge badge-warning" style="font-size: 0.9rem; padding: 6px 14px;">
                     <i data-lucide="alert-triangle" class="inline-block w-4 h-4 mr-1"></i>
-                    3 Modèles à Haut Risque
+                    {{ t('pillars.compliance.high_risk_models') or '3 Modèles à Haut Risque' }}
                 </span>
             </div>
         </div>
@@ -284,6 +257,7 @@
 document.addEventListener('DOMContentLoaded', () => {
     loadComplianceData();
     initCharts();
+    populateVersioningTable();
     lucide.createIcons();
 });
 
@@ -299,6 +273,29 @@ async function loadComplianceData() {
     }
 }
 
+function populateVersioningTable() {
+    const models = [
+        { name: 'fraud-detection', version: 'v3.2.1', count: 24, daysAgo: 5 },
+        { name: 'recommendation-engine', version: 'v2.8.0', count: 18, daysAgo: 10 },
+        { name: 'pricing-model', version: 'v2.1.3', count: 12, daysAgo: 3 }
+    ];
+
+    const tbody = document.getElementById('versioningTable');
+    tbody.innerHTML = models.map(m => {
+        const date = new Date();
+        date.setDate(date.getDate() - m.daysAgo);
+        const formatted = date.toLocaleDateString('fr-FR', { year: 'numeric', month: '2-digit', day: '2-digit' });
+        return `<tr>
+            <td><strong>${m.name}</strong></td>
+            <td>${m.version}</td>
+            <td>${m.count}</td>
+            <td>${formatted}</td>
+            <td><button class="btn btn-secondary btn-sm"><i data-lucide="rotate-ccw"></i></button></td>
+        </tr>`;
+    }).join('');
+    lucide.createIcons();
+}
+
 function initCharts() {
     // Inference Chart
     const inferenceCtx = document.getElementById('inferenceChart').getContext('2d');
@@ -309,8 +306,8 @@ function initCharts() {
             datasets: [{
                 label: 'Inférences (K)',
                 data: [185, 192, 178, 195, 188, 120, 95],
-                backgroundColor: 'rgba(99, 102, 241, 0.8)',
-                borderRadius: 4
+                backgroundColor: 'rgba(27, 42, 74, 0.8)',
+                borderRadius: 6
             }]
         },
         options: {
@@ -329,7 +326,7 @@ function initCharts() {
     new Chart(riskCtx, {
         type: 'doughnut',
         data: {
-            labels: ['Minimal', 'Limited', 'High', 'Unacceptable'],
+            labels: ['Minimal', 'Limité', 'Élevé', 'Inacceptable'],
             datasets: [{
                 data: [5, 4, 3, 0],
                 backgroundColor: ['#10b981', '#3b82f6', '#f59e0b', '#ef4444'],
@@ -340,7 +337,39 @@ function initCharts() {
             responsive: true,
             maintainAspectRatio: false,
             cutout: '60%',
-            plugins: { legend: { position: 'bottom', labels: { boxWidth: 12 } } }
+            plugins: { legend: { position: 'bottom', labels: { boxWidth: 12, padding: 8 } } }
+        }
+    });
+
+    // Lineage Flow Chart (replaces empty placeholder)
+    const lineageCtx = document.getElementById('lineageFlowChart').getContext('2d');
+    new Chart(lineageCtx, {
+        type: 'bar',
+        data: {
+            labels: ['BDD Transactions', 'Logs Serveur', 'API Externes', 'Données Client', 'Capteurs IoT', 'Fichiers CSV', 'Streaming', 'Data Lake'],
+            datasets: [
+                {
+                    label: 'Transformations',
+                    data: [4, 3, 2, 3, 1, 2, 2, 1],
+                    backgroundColor: 'rgba(27, 42, 74, 0.7)',
+                    borderRadius: 4
+                },
+                {
+                    label: 'Modèles alimentés',
+                    data: [3, 2, 1, 2, 1, 1, 2, 3],
+                    backgroundColor: 'rgba(37, 99, 235, 0.6)',
+                    borderRadius: 4
+                }
+            ]
+        },
+        options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            plugins: { legend: { position: 'bottom', labels: { boxWidth: 12 } } },
+            scales: {
+                x: { grid: { display: false }, ticks: { font: { size: 10 } } },
+                y: { beginAtZero: true, ticks: { stepSize: 1 } }
+            }
         }
     });
 }

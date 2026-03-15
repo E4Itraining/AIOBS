@@ -167,15 +167,15 @@
     </div>
 
     <div id="anomalyAlerts" class="mt-4">
-        <div class="flex items-center gap-4 p-4" style="border-bottom: 1px solid var(--border-color); background: var(--color-warning-light); border-radius: var(--radius-md);">
+        <div class="pillar-alert-item" style="background: var(--color-warning-light); border-radius: var(--radius-lg);">
             <span class="badge badge-warning"><span class="badge-dot"></span>Anomalie</span>
-            <div style="flex: 1;">
+            <div class="alert-body">
                 <strong>Pic de requêtes inhabituel détecté</strong>
-                <div class="text-sm text-muted">fraud-detection: +340% de requêtes vs baseline - il y a 45min</div>
+                <div class="text-sm">fraud-detection: +340% de requêtes vs baseline - il y a 45min</div>
             </div>
             <button class="btn btn-warning btn-sm">
                 <i data-lucide="search"></i>
-                Investiguer
+                {{ t('actions.investigate') or 'Investiguer' }}
             </button>
         </div>
     </div>
@@ -193,27 +193,25 @@
     <div class="grid grid-2 gap-4">
         <div>
             <h4 class="text-sm text-muted mb-3">{{ t('pillars.security.protection_status') or 'Statut des Protections' }}</h4>
-            <div class="flex flex-col gap-2">
-                <div class="flex items-center justify-between p-3 bg-secondary rounded-lg">
-                    <span><i data-lucide="syringe" class="inline-block w-4 h-4 mr-2"></i> Prompt Injection Guard</span>
-                    <span class="badge badge-healthy">Actif</span>
-                </div>
-                <div class="flex items-center justify-between p-3 bg-secondary rounded-lg">
-                    <span><i data-lucide="alert-triangle" class="inline-block w-4 h-4 mr-2"></i> Adversarial Detection</span>
-                    <span class="badge badge-healthy">Actif</span>
-                </div>
-                <div class="flex items-center justify-between p-3 bg-secondary rounded-lg">
-                    <span><i data-lucide="database" class="inline-block w-4 h-4 mr-2"></i> Data Extraction Prevention</span>
-                    <span class="badge badge-healthy">Actif</span>
-                </div>
-                <div class="flex items-center justify-between p-3 bg-secondary rounded-lg">
-                    <span><i data-lucide="activity" class="inline-block w-4 h-4 mr-2"></i> Anomaly Detection</span>
-                    <span class="badge badge-healthy">Actif</span>
-                </div>
-                <div class="flex items-center justify-between p-3 bg-secondary rounded-lg">
-                    <span><i data-lucide="lock" class="inline-block w-4 h-4 mr-2"></i> Output Validation</span>
-                    <span class="badge badge-healthy">Actif</span>
-                </div>
+            <div class="protection-item">
+                <span class="protection-label"><i data-lucide="syringe"></i> Prompt Injection Guard</span>
+                <span class="badge badge-healthy">{{ t('common.active') or 'Actif' }}</span>
+            </div>
+            <div class="protection-item">
+                <span class="protection-label"><i data-lucide="alert-triangle"></i> {{ t('pillars.security.adversarial_detection') or 'Détection Adversariale' }}</span>
+                <span class="badge badge-healthy">{{ t('common.active') or 'Actif' }}</span>
+            </div>
+            <div class="protection-item">
+                <span class="protection-label"><i data-lucide="database"></i> {{ t('pillars.security.data_extraction_prevention') or 'Prévention Extraction' }}</span>
+                <span class="badge badge-healthy">{{ t('common.active') or 'Actif' }}</span>
+            </div>
+            <div class="protection-item">
+                <span class="protection-label"><i data-lucide="activity"></i> {{ t('pillars.security.anomaly_detection') or 'Détection d\'Anomalies' }}</span>
+                <span class="badge badge-healthy">{{ t('common.active') or 'Actif' }}</span>
+            </div>
+            <div class="protection-item">
+                <span class="protection-label"><i data-lucide="lock"></i> {{ t('pillars.security.output_validation') or 'Validation des Sorties' }}</span>
+                <span class="badge badge-healthy">{{ t('common.active') or 'Actif' }}</span>
             </div>
         </div>
         <div>

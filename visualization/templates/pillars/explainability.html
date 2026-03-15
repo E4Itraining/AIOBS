@@ -35,7 +35,7 @@
         </div>
         <div class="pillar-kpi-value" id="featureImportance">92%</div>
         <div class="pillar-kpi-trend stable">
-            <i data-lucide="check"></i> Disponible
+            <i data-lucide="check"></i> {{ t('common.available') or 'Disponible' }}
         </div>
     </div>
 
@@ -63,7 +63,7 @@
 
     <div class="pillar-kpi-card">
         <div class="pillar-kpi-header">
-            <span class="pillar-kpi-label">{{ t('pillars.explainability.compliance_rate') or 'Taux Conformité Éthique' }}</span>
+            <span class="pillar-kpi-label">{{ t('pillars.explainability.compliance_rate') or 'Conformité Éthique' }}</span>
             <i data-lucide="heart"></i>
         </div>
         <div class="pillar-kpi-value" style="color: var(--color-success);" id="ethicsRate">100%</div>
@@ -95,16 +95,9 @@
             </div>
         </div>
         <div class="card">
-            <h4 class="text-sm text-muted mb-3">{{ t('pillars.explainability.feature_correlation') or 'Matrice de Corrélation' }}</h4>
-            <div class="chart-container" style="height: 300px; display: flex; align-items: center; justify-content: center;">
-                <div class="text-center">
-                    <i data-lucide="grid-3x3" style="width: 64px; height: 64px; color: var(--text-muted);"></i>
-                    <p class="text-muted mt-2">Heatmap de corrélation</p>
-                    <button class="btn btn-secondary btn-sm mt-2">
-                        <i data-lucide="maximize-2"></i>
-                        Agrandir
-                    </button>
-                </div>
+            <h4 class="text-sm text-muted mb-3">{{ t('pillars.explainability.shap_summary') or 'SHAP Summary' }}</h4>
+            <div class="chart-container" style="height: 300px;">
+                <canvas id="shapSummaryChart"></canvas>
             </div>
         </div>
     </div>
@@ -122,20 +115,20 @@
     <div class="grid grid-2 gap-4 mb-4">
         <div class="card">
             <h4 class="text-sm text-muted mb-2">{{ t('pillars.explainability.confidence_distribution') or 'Distribution des Scores' }}</h4>
-            <div class="chart-container" style="height: 200px;">
+            <div class="chart-container" style="height: 220px;">
                 <canvas id="confidenceDistChart"></canvas>
             </div>
         </div>
         <div class="card">
             <h4 class="text-sm text-muted mb-2">{{ t('pillars.explainability.low_confidence') or 'Prédictions Basse Confiance' }}</h4>
-            <div class="flex justify-around text-center" style="height: 200px; align-items: center;">
-                <div>
-                    <div class="kpi-value" style="font-size: 3rem; color: var(--color-warning);">2.3%</div>
-                    <div class="text-muted">< 70% confiance</div>
+            <div style="height: 220px; display: flex; align-items: center; justify-content: space-around;">
+                <div class="stat-highlight">
+                    <div class="stat-value" style="color: var(--color-warning);">2.3%</div>
+                    <div class="stat-label">&lt; 70% confiance</div>
                 </div>
-                <div>
-                    <div class="kpi-value" style="font-size: 3rem; color: var(--color-danger);">0.4%</div>
-                    <div class="text-muted">< 50% confiance</div>
+                <div class="stat-highlight">
+                    <div class="stat-value" style="color: var(--color-danger);">0.4%</div>
+                    <div class="stat-label">&lt; 50% confiance</div>
                 </div>
             </div>
         </div>
@@ -188,47 +181,38 @@
         </h2>
     </div>
 
-    <div class="card mb-4" style="background: linear-gradient(135deg, var(--pillar-explainability-light) 0%, var(--bg-card) 100%);">
-        <div class="grid grid-3 gap-4 text-center">
-            <div>
-                <div class="kpi-value" style="color: var(--pillar-explainability);">78%</div>
-                <div class="text-sm text-muted">Prédictions avec alternatives</div>
-            </div>
-            <div>
-                <div class="kpi-value" style="color: var(--pillar-explainability);">3.2</div>
-                <div class="text-sm text-muted">Alternatives moyennes/prédiction</div>
-            </div>
-            <div>
-                <div class="kpi-value" style="color: var(--pillar-explainability);">15%</div>
-                <div class="text-sm text-muted">Écart moyen avec 2ème choix</div>
-            </div>
+    <div class="grid grid-3 gap-4 mb-4">
+        <div class="card stat-highlight">
+            <div class="stat-value" style="color: var(--pillar-explainability); font-size: 2.5rem;">78%</div>
+            <div class="stat-label">{{ t('pillars.explainability.with_alternatives') or 'Prédictions avec alternatives' }}</div>
+        </div>
+        <div class="card stat-highlight">
+            <div class="stat-value" style="color: var(--pillar-explainability); font-size: 2.5rem;">3.2</div>
+            <div class="stat-label">{{ t('pillars.explainability.avg_alternatives') or 'Alternatives moy./prédiction' }}</div>
+        </div>
+        <div class="card stat-highlight">
+            <div class="stat-value" style="color: var(--pillar-explainability); font-size: 2.5rem;">15%</div>
+            <div class="stat-label">{{ t('pillars.explainability.gap_second') or 'Écart moyen avec 2ème choix' }}</div>
         </div>
     </div>
 
-    <p class="text-muted mb-4">
-        {{ t('pillars.explainability.alternatives_desc') or 'Les alternatives écartées permettent de comprendre pourquoi le modèle a choisi une prédiction plutôt qu\'une autre.' }}
-    </p>
-
-    <div class="example-prediction card">
+    <div class="card">
         <h4 class="text-sm mb-3">{{ t('pillars.explainability.example') or 'Exemple de prédiction expliquée' }}</h4>
-        <div class="flex gap-4">
-            <div style="flex: 1;">
-                <div class="text-sm text-muted">Prédiction choisie:</div>
-                <div class="p-3 bg-success-light rounded-lg mt-1" style="border-left: 4px solid var(--color-success);">
-                    <strong>Fraude détectée</strong> (93.2% confiance)
-                </div>
+        <div class="prediction-example">
+            <div class="prediction-option chosen">
+                <div class="pred-label">{{ t('pillars.explainability.chosen') or 'Prédiction choisie' }}</div>
+                <div class="pred-value">{{ t('pillars.explainability.fraud_detected') or 'Fraude détectée' }}</div>
+                <div class="pred-confidence">93.2% confiance</div>
             </div>
-            <div style="flex: 1;">
-                <div class="text-sm text-muted">Alternative 1:</div>
-                <div class="p-3 bg-secondary rounded-lg mt-1" style="border-left: 4px solid var(--text-muted);">
-                    <strong>Transaction suspecte</strong> (5.8%)
-                </div>
+            <div class="prediction-option">
+                <div class="pred-label">Alternative 1</div>
+                <div class="pred-value">{{ t('pillars.explainability.suspicious') or 'Transaction suspecte' }}</div>
+                <div class="pred-confidence">5.8%</div>
             </div>
-            <div style="flex: 1;">
-                <div class="text-sm text-muted">Alternative 2:</div>
-                <div class="p-3 bg-secondary rounded-lg mt-1" style="border-left: 4px solid var(--text-muted);">
-                    <strong>Transaction normale</strong> (1.0%)
-                </div>
+            <div class="prediction-option">
+                <div class="pred-label">Alternative 2</div>
+                <div class="pred-value">{{ t('pillars.explainability.normal') or 'Transaction normale' }}</div>
+                <div class="pred-confidence">1.0%</div>
             </div>
         </div>
     </div>
@@ -241,34 +225,32 @@
             <i data-lucide="heart"></i>
             {{ t('pillars.explainability.ethics') or 'Obligations Légales et Éthiques' }}
         </h2>
-        <span class="badge badge-healthy">Conforme</span>
+        <span class="badge badge-healthy">{{ t('common.compliant') or 'Conforme' }}</span>
     </div>
 
     <div class="grid grid-2 gap-4">
         <div>
             <h4 class="text-sm text-muted mb-3">{{ t('pillars.explainability.ethics_checklist') or 'Checklist Éthique' }}</h4>
-            <div class="flex flex-col gap-2">
-                <div class="flex items-center justify-between p-3 bg-secondary rounded-lg">
-                    <span><i data-lucide="check-circle" class="inline-block w-4 h-4 mr-2" style="color: var(--color-success);"></i> Droit à l'explication (GDPR Art. 22)</span>
-                    <span class="badge badge-healthy">OK</span>
-                </div>
-                <div class="flex items-center justify-between p-3 bg-secondary rounded-lg">
-                    <span><i data-lucide="check-circle" class="inline-block w-4 h-4 mr-2" style="color: var(--color-success);"></i> Absence de biais discriminatoire</span>
-                    <span class="badge badge-healthy">OK</span>
-                </div>
-                <div class="flex items-center justify-between p-3 bg-secondary rounded-lg">
-                    <span><i data-lucide="check-circle" class="inline-block w-4 h-4 mr-2" style="color: var(--color-success);"></i> Transparence algorithmique</span>
-                    <span class="badge badge-healthy">OK</span>
-                </div>
-                <div class="flex items-center justify-between p-3 bg-secondary rounded-lg">
-                    <span><i data-lucide="check-circle" class="inline-block w-4 h-4 mr-2" style="color: var(--color-success);"></i> Documentation des décisions</span>
-                    <span class="badge badge-healthy">OK</span>
-                </div>
+            <div class="pillar-checklist-item">
+                <span class="check-label"><i data-lucide="check-circle" style="color: var(--color-success);"></i> {{ t('pillars.explainability.gdpr_art22') or 'Droit à l\'explication (RGPD Art. 22)' }}</span>
+                <span class="badge badge-healthy">OK</span>
+            </div>
+            <div class="pillar-checklist-item">
+                <span class="check-label"><i data-lucide="check-circle" style="color: var(--color-success);"></i> {{ t('pillars.explainability.no_bias') or 'Absence de biais discriminatoire' }}</span>
+                <span class="badge badge-healthy">OK</span>
+            </div>
+            <div class="pillar-checklist-item">
+                <span class="check-label"><i data-lucide="check-circle" style="color: var(--color-success);"></i> {{ t('pillars.explainability.transparency') or 'Transparence algorithmique' }}</span>
+                <span class="badge badge-healthy">OK</span>
+            </div>
+            <div class="pillar-checklist-item">
+                <span class="check-label"><i data-lucide="check-circle" style="color: var(--color-success);"></i> {{ t('pillars.explainability.decision_doc') or 'Documentation des décisions' }}</span>
+                <span class="badge badge-healthy">OK</span>
             </div>
         </div>
         <div>
             <h4 class="text-sm text-muted mb-3">{{ t('pillars.explainability.bias_monitoring') or 'Monitoring des Biais' }}</h4>
-            <div class="chart-container" style="height: 200px;">
+            <div class="chart-container" style="height: 220px;">
                 <canvas id="biasChart"></canvas>
             </div>
         </div>
@@ -317,7 +299,40 @@ function initCharts() {
             plugins: { legend: { display: false } },
             scales: {
                 x: { beginAtZero: true, max: 0.3 },
-                y: { grid: { display: false } }
+                y: { grid: { display: false }, ticks: { font: { size: 11 } } }
+            }
+        }
+    });
+
+    // SHAP Summary Chart (replaces empty correlation matrix)
+    const shapCtx = document.getElementById('shapSummaryChart').getContext('2d');
+    new Chart(shapCtx, {
+        type: 'bar',
+        data: {
+            labels: ['transaction_amount', 'time_since_last', 'merchant_category', 'device_type', 'location_risk', 'velocity_24h', 'card_age', 'avg_transaction', 'failed_attempts', 'new_device'],
+            datasets: [
+                {
+                    label: 'Impact positif',
+                    data: [0.15, 0.12, 0.08, 0.06, 0.07, 0.05, 0.03, 0.02, 0.02, 0.01],
+                    backgroundColor: 'rgba(239, 68, 68, 0.7)',
+                    borderRadius: 4
+                },
+                {
+                    label: 'Impact négatif',
+                    data: [-0.08, -0.06, -0.07, -0.06, -0.03, -0.03, -0.03, -0.02, -0.01, 0],
+                    backgroundColor: 'rgba(59, 130, 246, 0.7)',
+                    borderRadius: 4
+                }
+            ]
+        },
+        options: {
+            indexAxis: 'y',
+            responsive: true,
+            maintainAspectRatio: false,
+            plugins: { legend: { position: 'bottom', labels: { boxWidth: 12 } } },
+            scales: {
+                x: { min: -0.2, max: 0.2 },
+                y: { grid: { display: false }, ticks: { font: { size: 11 } } }
             }
         }
     });
@@ -372,7 +387,7 @@ function initCharts() {
             scales: {
                 r: { min: 0, max: 0.1, ticks: { stepSize: 0.02 } }
             },
-            plugins: { legend: { position: 'bottom' } }
+            plugins: { legend: { position: 'bottom', labels: { boxWidth: 12 } } }
         }
     });
 }
